@@ -122,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert to CSV format
       const headers = [
         "ID", "First Name", "Last Name", "Email", "Date of Birth", 
-        "Nationality", "Position", "Age Group", "Rating", "Status", "Notes"
+        "Nationality", "Position", "Age Group", "Status", "Notes"
       ];
       
       const csvData = [
@@ -136,7 +136,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `"${player.nationality}"`,
           `"${player.position}"`,
           `"${player.ageGroup}"`,
-          player.rating || 0,
           `"${player.status}"`,
           `"${player.notes || ""}"`
         ].join(","))

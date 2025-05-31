@@ -252,9 +252,6 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
                   Country
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rating
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -296,14 +293,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
                       <span className="ml-2 text-lg">{getCountryFlag(player.nationality)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium text-gray-900">{player.rating || 0}</span>
-                      <div className="ml-2 flex text-yellow-400">
-                        {renderStars(player.rating || 0)}
-                      </div>
-                    </div>
-                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Badge className={getStatusColor(player.status)}>
                       {player.status === "on_trial" ? "On Trial" : player.status.charAt(0).toUpperCase() + player.status.slice(1)}

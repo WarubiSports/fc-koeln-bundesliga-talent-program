@@ -23,7 +23,6 @@ export interface IStorage {
     totalPlayers: number;
     activeTeams: number;
     countries: number;
-    avgRating: number;
   }>;
 }
 
@@ -74,8 +73,8 @@ export class MemStorage implements IStorage {
     const player: Player = {
       ...insertPlayer,
       id,
-      rating: insertPlayer.rating || 0,
       status: insertPlayer.status || "active",
+      notes: insertPlayer.notes || null,
       createdAt: new Date(),
     };
     this.players.set(id, player);
@@ -129,7 +128,6 @@ export class MemStorage implements IStorage {
     totalPlayers: number;
     activeTeams: number;
     countries: number;
-    avgRating: number;
   }> {
     const allPlayers = Array.from(this.players.values());
     const totalPlayers = allPlayers.length;
@@ -139,16 +137,11 @@ export class MemStorage implements IStorage {
     
     // Calculate unique countries
     const countries = new Set(allPlayers.map(p => p.nationality)).size;
-    
-    // Calculate average rating
-    const totalRating = allPlayers.reduce((sum, player) => sum + (player.rating || 0), 0);
-    const avgRating = totalPlayers > 0 ? Number((totalRating / totalPlayers).toFixed(1)) : 0;
 
     return {
       totalPlayers,
       activeTeams,
       countries,
-      avgRating,
     };
   }
 }
