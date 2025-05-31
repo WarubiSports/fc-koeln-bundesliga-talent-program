@@ -4,12 +4,8 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12">
-              <img 
-                src="/attached_assets/1.FC Köln Football School.png" 
-                alt="1.FC Köln Football School" 
-                className="w-full h-full object-contain"
-              />
+            <div className="w-12 h-12 bg-fc-red rounded-lg flex items-center justify-center">
+              <div className="text-white font-bold text-lg">FC</div>
             </div>
             <div>
               <h1 className="text-xl font-bold text-fc-dark">1.FC Köln</h1>
