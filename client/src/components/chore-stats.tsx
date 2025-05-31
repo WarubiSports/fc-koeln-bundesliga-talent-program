@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ChoreStats {
   totalChores: number;
@@ -15,105 +15,88 @@ export default function ChoreStats() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardContent className="p-6">
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded mb-4"></div>
-              <div className="h-3 bg-gray-200 rounded"></div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="text-center">
+                <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3 animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   if (!stats) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-red-600">Failed to load chore statistics</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return null;
   }
 
+  const statItems = [
+    {
+      id: 1,
+      icon: "fas fa-clipboard-list",
+      iconColor: "text-blue-600",
+      bgColor: "bg-blue-100",
+      value: stats.totalChores,
+      label: "Total Chores",
+      description: "Across all houses"
+    },
+    {
+      id: 2,
+      icon: "fas fa-clock",
+      iconColor: "text-yellow-600",
+      bgColor: "bg-yellow-100",
+      value: stats.pendingChores,
+      label: "Pending",
+      description: "Waiting to start"
+    },
+    {
+      id: 3,
+      icon: "fas fa-check-circle",
+      iconColor: "text-green-600",
+      bgColor: "bg-green-100",
+      value: stats.completedChores,
+      label: "Completed",
+      description: "Finished tasks"
+    },
+    {
+      id: 4,
+      icon: "fas fa-exclamation-triangle",
+      iconColor: "text-red-600",
+      bgColor: "bg-red-100",
+      value: stats.overdueChores,
+      label: "Overdue",
+      description: "Past due date"
+    }
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Chores</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.totalChores}</p>
+    <Card className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+      <CardHeader className="border-b border-gray-200">
+        <CardTitle className="text-xl font-bold text-fc-dark flex items-center">
+          <i className="fas fa-chart-bar text-fc-red mr-3"></i>
+          Chore Statistics
+        </CardTitle>
+        <p className="text-gray-600">Overview of all house chores</p>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {statItems.map((item) => (
+            <div key={item.id} className="text-center">
+              <div className={`w-16 h-16 ${item.bgColor} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                <i className={`${item.icon} ${item.iconColor} text-xl`}></i>
+              </div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{item.value}</div>
+              <div className="text-sm font-semibold text-gray-700 mb-1">{item.label}</div>
+              <div className="text-xs text-gray-500">{item.description}</div>
             </div>
-            <div className="w-12 h-12 bg-fc-red bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-tasks text-fc-red text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-fc-success font-medium">All tasks</span>
-            <span className="text-gray-600 ml-1">in the system</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.pendingChores}</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-500 bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-clock text-yellow-500 text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-yellow-600 font-medium">Waiting</span>
-            <span className="text-gray-600 ml-1">to be started</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.completedChores}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-500 bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-check text-green-500 text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-fc-success font-medium">Finished</span>
-            <span className="text-gray-600 ml-1">tasks</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Overdue</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.overdueChores}</p>
-            </div>
-            <div className="w-12 h-12 bg-red-500 bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-exclamation-triangle text-red-500 text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-red-600 font-medium">Past due</span>
-            <span className="text-gray-600 ml-1">date</span>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

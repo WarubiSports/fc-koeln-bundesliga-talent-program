@@ -153,7 +153,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all chores
   app.get("/api/chores", async (req, res) => {
     try {
-      const chores = await storage.getAllChores();
+      const house = req.query.house as string;
+      const chores = house 
+        ? await storage.getChoresByHouse(house)
+        : await storage.getAllChores();
       res.json(chores);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch chores" });
