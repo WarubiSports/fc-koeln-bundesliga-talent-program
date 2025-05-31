@@ -49,6 +49,22 @@ export default function HouseRules() {
       bgColor: "bg-gray-100",
       title: "Report maintenance issues",
       description: "Notify immediately if something needs fixing"
+    },
+    {
+      id: 7,
+      icon: "fas fa-moon",
+      iconColor: "text-indigo-600",
+      bgColor: "bg-indigo-100",
+      title: "U18 curfew",
+      description: "Under 18 must be home by 10pm"
+    },
+    {
+      id: 8,
+      icon: "fas fa-clock",
+      iconColor: "text-teal-600",
+      bgColor: "bg-teal-100",
+      title: "18+ curfew",
+      description: "18 and over must be home by 12am (midnight)"
     }
   ];
 
