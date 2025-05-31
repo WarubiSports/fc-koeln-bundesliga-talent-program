@@ -1,4 +1,4 @@
-import { players, users, type Player, type InsertPlayer, type UpdatePlayer, type User, type InsertUser } from "@shared/schema";
+import { players, users, chores, type Player, type InsertPlayer, type UpdatePlayer, type User, type InsertUser, type Chore, type InsertChore, type UpdateChore } from "@shared/schema";
 
 export interface IStorage {
   // User methods
@@ -24,19 +24,97 @@ export interface IStorage {
     activeTeams: number;
     countries: number;
   }>;
+
+  // Chore methods
+  getAllChores(): Promise<Chore[]>;
+  getChore(id: number): Promise<Chore | undefined>;
+  createChore(chore: InsertChore): Promise<Chore>;
+  updateChore(id: number, updates: UpdateChore): Promise<Chore | undefined>;
+  deleteChore(id: number): Promise<boolean>;
+  getChoreStats(): Promise<{
+    totalChores: number;
+    pendingChores: number;
+    completedChores: number;
+    overdueChores: number;
+  }>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private players: Map<number, Player>;
+  private chores: Map<number, Chore>;
   private currentUserId: number;
   private currentPlayerId: number;
+  private currentChoreId: number;
 
   constructor() {
     this.users = new Map();
     this.players = new Map();
+    this.chores = new Map();
     this.currentUserId = 1;
     this.currentPlayerId = 1;
+    this.currentChoreId = 1;
+    
+    // Add some initial chores
+    this.seedChores();
+  }
+
+  private seedChores() {
+    const initialChores: Omit<Chore, 'id'>[] = [
+      {
+        title: "Take out recycling bin",
+        description: "Put recycling bin out on curb for pickup",
+        category: "trash",
+        frequency: "weekly",
+        assignedTo: "John",
+        dueDate: "2024-06-07",
+        status: "pending",
+        priority: "medium",
+        createdAt: new Date(),
+        completedAt: null,
+      },
+      {
+        title: "Clean bathroom",
+        description: "Deep clean main bathroom - toilet, sink, shower, floor",
+        category: "cleaning",
+        frequency: "weekly",
+        assignedTo: "Sarah",
+        dueDate: "2024-06-05",
+        status: "pending",
+        priority: "high",
+        createdAt: new Date(),
+        completedAt: null,
+      },
+      {
+        title: "Take out garbage bin",
+        description: "Put garbage bin out for collection",
+        category: "trash",
+        frequency: "weekly",
+        assignedTo: "Mike",
+        dueDate: "2024-06-06",
+        status: "completed",
+        priority: "medium",
+        createdAt: new Date(),
+        completedAt: new Date(),
+      },
+      {
+        title: "Clean kitchen",
+        description: "Wipe counters, clean appliances, mop floor",
+        category: "cleaning",
+        frequency: "daily",
+        assignedTo: "Anna",
+        dueDate: "2024-06-01",
+        status: "in_progress",
+        priority: "high",
+        createdAt: new Date(),
+        completedAt: null,
+      },
+    ];
+
+    initialChores.forEach(chore => {
+      const id = this.currentChoreId++;
+      this.chores.set(id, { ...chore, id });
+    });
   }
 
   // User methods
@@ -142,6 +220,78 @@ export class MemStorage implements IStorage {
       totalPlayers,
       activeTeams,
       countries,
+    };
+  }
+
+  // Chore methods
+  async getAllChores(): Promise<Chore[]> {
+    return Array.from(this.chores.values()).sort((a, b) => 
+      new Date(a.dueDate || '9999-12-31').getTime() - new Date(b.dueDate || '9999-12-31').getTime()
+    );
+  }
+
+  async getChore(id: number): Promise<Chore | undefined> {
+    return this.chores.get(id);
+  }
+
+  async createChore(insertChore: InsertChore): Promise<Chore> {
+    const id = this.currentChoreId++;
+    const chore: Chore = {
+      ...insertChore,
+      id,
+      status: insertChore.status || "pending",
+      priority: insertChore.priority || "medium",
+      description: insertChore.description || null,
+      assignedTo: insertChore.assignedTo || null,
+      dueDate: insertChore.dueDate || null,
+      createdAt: new Date(),
+      completedAt: null,
+    };
+    this.chores.set(id, chore);
+    return chore;
+  }
+
+  async updateChore(id: number, updates: UpdateChore): Promise<Chore | undefined> {
+    const existingChore = this.chores.get(id);
+    if (!existingChore) {
+      return undefined;
+    }
+
+    const updatedChore: Chore = {
+      ...existingChore,
+      ...updates,
+      completedAt: updates.status === "completed" ? new Date() : existingChore.completedAt,
+    };
+    this.chores.set(id, updatedChore);
+    return updatedChore;
+  }
+
+  async deleteChore(id: number): Promise<boolean> {
+    return this.chores.delete(id);
+  }
+
+  async getChoreStats(): Promise<{
+    totalChores: number;
+    pendingChores: number;
+    completedChores: number;
+    overdueChores: number;
+  }> {
+    const allChores = Array.from(this.chores.values());
+    const totalChores = allChores.length;
+    
+    const pendingChores = allChores.filter(c => c.status === "pending").length;
+    const completedChores = allChores.filter(c => c.status === "completed").length;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const overdueChores = allChores.filter(c => 
+      c.status !== "completed" && c.dueDate && c.dueDate < today
+    ).length;
+
+    return {
+      totalChores,
+      pendingChores,
+      completedChores,
+      overdueChores,
     };
   }
 }

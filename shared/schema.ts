@@ -50,3 +50,38 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export const chores = pgTable("chores", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // cleaning, trash, maintenance, other
+  frequency: text("frequency").notNull(), // daily, weekly, monthly
+  assignedTo: text("assigned_to"),
+  dueDate: text("due_date"),
+  status: text("status").notNull().default("pending"), // pending, in_progress, completed
+  priority: text("priority").notNull().default("medium"), // low, medium, high
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const insertChoreSchema = createInsertSchema(chores).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+}).extend({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  category: z.enum(["cleaning", "trash", "maintenance", "other"]),
+  frequency: z.enum(["daily", "weekly", "monthly"]),
+  assignedTo: z.string().optional(),
+  dueDate: z.string().optional(),
+  status: z.enum(["pending", "in_progress", "completed"]).default("pending"),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
+});
+
+export const updateChoreSchema = insertChoreSchema.partial();
+
+export type InsertChore = z.infer<typeof insertChoreSchema>;
+export type UpdateChore = z.infer<typeof updateChoreSchema>;
+export type Chore = typeof chores.$inferSelect;

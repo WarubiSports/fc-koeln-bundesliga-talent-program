@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPlayerSchema, updatePlayerSchema } from "@shared/schema";
+import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -146,6 +146,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(csvData);
     } catch (error) {
       res.status(500).json({ message: "Failed to export player data" });
+    }
+  });
+
+  // Chore routes
+  // Get all chores
+  app.get("/api/chores", async (req, res) => {
+    try {
+      const chores = await storage.getAllChores();
+      res.json(chores);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch chores" });
+    }
+  });
+
+  // Get chore by ID
+  app.get("/api/chores/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const chore = await storage.getChore(id);
+      
+      if (!chore) {
+        return res.status(404).json({ message: "Chore not found" });
+      }
+      
+      res.json(chore);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch chore" });
+    }
+  });
+
+  // Create new chore
+  app.post("/api/chores", async (req, res) => {
+    try {
+      const validatedData = insertChoreSchema.parse(req.body);
+      const chore = await storage.createChore(validatedData);
+      res.status(201).json(chore);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation failed", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create chore" });
+    }
+  });
+
+  // Update chore
+  app.put("/api/chores/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = updateChoreSchema.parse(req.body);
+      
+      const updatedChore = await storage.updateChore(id, validatedData);
+      
+      if (!updatedChore) {
+        return res.status(404).json({ message: "Chore not found" });
+      }
+      
+      res.json(updatedChore);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation failed", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to update chore" });
+    }
+  });
+
+  // Delete chore
+  app.delete("/api/chores/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteChore(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Chore not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete chore" });
+    }
+  });
+
+  // Get chore statistics
+  app.get("/api/chores/stats", async (req, res) => {
+    try {
+      const stats = await storage.getChoreStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch chore statistics" });
     }
   });
 
