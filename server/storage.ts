@@ -1,4 +1,4 @@
-import { players, users, chores, type Player, type InsertPlayer, type UpdatePlayer, type User, type InsertUser, type Chore, type InsertChore, type UpdateChore } from "@shared/schema";
+import { players, users, chores, practiceExcuses, type Player, type InsertPlayer, type UpdatePlayer, type User, type InsertUser, type Chore, type InsertChore, type UpdateChore, type PracticeExcuse, type InsertPracticeExcuse, type UpdatePracticeExcuse } from "@shared/schema";
 
 export interface IStorage {
   // User methods
@@ -38,15 +38,33 @@ export interface IStorage {
     completedChores: number;
     overdueChores: number;
   }>;
+
+  // Practice excuse methods
+  getAllPracticeExcuses(): Promise<PracticeExcuse[]>;
+  getPracticeExcuse(id: number): Promise<PracticeExcuse | undefined>;
+  createPracticeExcuse(excuse: InsertPracticeExcuse): Promise<PracticeExcuse>;
+  updatePracticeExcuse(id: number, updates: UpdatePracticeExcuse): Promise<PracticeExcuse | undefined>;
+  deletePracticeExcuse(id: number): Promise<boolean>;
+  getPracticeExcusesByPlayer(playerName: string): Promise<PracticeExcuse[]>;
+  getPracticeExcusesByDate(date: string): Promise<PracticeExcuse[]>;
+  getPracticeExcuseStats(): Promise<{
+    totalExcuses: number;
+    pendingExcuses: number;
+    approvedExcuses: number;
+    deniedExcuses: number;
+    excusesByReason: Record<string, number>;
+  }>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private players: Map<number, Player>;
   private chores: Map<number, Chore>;
+  private practiceExcuses: Map<number, PracticeExcuse>;
   private currentUserId: number;
   private currentPlayerId: number;
   private currentChoreId: number;
+  private currentPracticeExcuseId: number;
 
   constructor() {
     this.users = new Map();

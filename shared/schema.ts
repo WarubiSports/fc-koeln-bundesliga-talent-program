@@ -87,3 +87,29 @@ export const updateChoreSchema = insertChoreSchema.partial();
 export type InsertChore = z.infer<typeof insertChoreSchema>;
 export type UpdateChore = z.infer<typeof updateChoreSchema>;
 export type Chore = typeof chores.$inferSelect;
+
+// Practice excuses table
+export const practiceExcuses = pgTable("practice_excuses", {
+  id: serial("id").primaryKey(),
+  playerName: text("player_name").notNull(),
+  date: text("date").notNull(), // YYYY-MM-DD format
+  reason: text("reason").notNull(),
+  status: text("status").notNull().default("pending"), // pending, approved, denied
+  submittedAt: text("submitted_at").notNull(),
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: text("reviewed_at"),
+  notes: text("notes")
+});
+
+export const insertPracticeExcuseSchema = createInsertSchema(practiceExcuses).omit({
+  id: true,
+  submittedAt: true,
+  reviewedBy: true,
+  reviewedAt: true
+});
+
+export const updatePracticeExcuseSchema = insertPracticeExcuseSchema.partial();
+
+export type InsertPracticeExcuse = z.infer<typeof insertPracticeExcuseSchema>;
+export type UpdatePracticeExcuse = z.infer<typeof updatePracticeExcuseSchema>;
+export type PracticeExcuse = typeof practiceExcuses.$inferSelect;
