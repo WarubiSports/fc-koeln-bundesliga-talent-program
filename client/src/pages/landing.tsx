@@ -8,9 +8,9 @@ export default function Landing() {
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-6">
             <img 
-              src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iOCIgZmlsbD0iI0RDMjYyNiIvPgo8cGF0aCBkPSJNMjQgMjRINTZWMzJIMjRWMjRaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjQgMzZINTZWNDRIMjRWMzZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjQgNDhINTZWNTZIMjRWNDhaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K"
-              alt="FC Köln Logo" 
-              className="w-16 h-16"
+              src="/attached_assets/1.FC Köln Football School.png"
+              alt="FC Köln Football School" 
+              className="w-20 h-20 object-contain"
             />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
