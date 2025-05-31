@@ -23,9 +23,9 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
   // Build query params
   const queryParams = new URLSearchParams();
   if (searchQuery) queryParams.set("search", searchQuery);
-  if (positionFilter) queryParams.set("position", positionFilter);
-  if (ageGroupFilter) queryParams.set("ageGroup", ageGroupFilter);
-  if (countryFilter) queryParams.set("nationality", countryFilter);
+  if (positionFilter && positionFilter !== "all") queryParams.set("position", positionFilter);
+  if (ageGroupFilter && ageGroupFilter !== "all") queryParams.set("ageGroup", ageGroupFilter);
+  if (countryFilter && countryFilter !== "all") queryParams.set("nationality", countryFilter);
 
   const { data: players, isLoading } = useQuery<Player[]>({
     queryKey: ["/api/players", queryParams.toString()],
@@ -185,7 +185,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <SelectValue placeholder="All Positions" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Positions</SelectItem>
+              <SelectItem value="all">All Positions</SelectItem>
               <SelectItem value="goalkeeper">Goalkeeper</SelectItem>
               <SelectItem value="defender">Defender</SelectItem>
               <SelectItem value="midfielder">Midfielder</SelectItem>
@@ -197,7 +197,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <SelectValue placeholder="All Age Groups" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Age Groups</SelectItem>
+              <SelectItem value="all">All Age Groups</SelectItem>
               <SelectItem value="u16">Under 16</SelectItem>
               <SelectItem value="u18">Under 18</SelectItem>
               <SelectItem value="u21">Under 21</SelectItem>
@@ -208,7 +208,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <SelectValue placeholder="All Countries" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Countries</SelectItem>
+              <SelectItem value="all">All Countries</SelectItem>
               <SelectItem value="germany">Germany</SelectItem>
               <SelectItem value="brazil">Brazil</SelectItem>
               <SelectItem value="france">France</SelectItem>
@@ -230,7 +230,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
           </div>
         ) : !players || players.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
-            {searchQuery || positionFilter || ageGroupFilter || countryFilter
+            {searchQuery || (positionFilter && positionFilter !== "all") || (ageGroupFilter && ageGroupFilter !== "all") || (countryFilter && countryFilter !== "all")
               ? "No players found matching your criteria."
               : "No players registered yet. Add your first player to get started."
             }
