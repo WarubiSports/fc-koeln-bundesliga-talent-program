@@ -1,10 +1,28 @@
-import { players, users, chores, practiceExcuses, type Player, type InsertPlayer, type UpdatePlayer, type User, type InsertUser, type Chore, type InsertChore, type UpdateChore, type PracticeExcuse, type InsertPracticeExcuse, type UpdatePracticeExcuse } from "@shared/schema";
+import {
+  users,
+  players,
+  chores,
+  practiceExcuses,
+  type User,
+  type UpsertUser,
+  type Player,
+  type InsertPlayer,
+  type UpdatePlayer,
+  type Chore,
+  type InsertChore,
+  type UpdateChore,
+  type PracticeExcuse,
+  type InsertPracticeExcuse,
+  type UpdatePracticeExcuse,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, ilike, sql } from "drizzle-orm";
 
+// Interface for storage operations
 export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // User operations (for authentication)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
 
   // Player methods
   getAllPlayers(): Promise<Player[]>;
