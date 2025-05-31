@@ -44,7 +44,8 @@ const generatePracticeSessions = () => {
         location: "FC Köln Training Ground",
         type: "training",
         description: "Daily training session - 10:00 AM to 11:45 AM",
-        participants: ["All Teams"]
+        participants: ["Bundesliga Talent Program"],
+        targetGroups: ["Bundesliga Talent Program"]
       });
     }
   }
@@ -65,23 +66,23 @@ const additionalEvents: CalendarEvent[] = [
   },
   {
     id: 1001,
-    title: "Match vs Bayer Leverkusen U19",
+    title: "Bundesliga Talent Program vs Bayer Leverkusen Academy",
     date: "2024-06-08",
     time: "14:00",
     location: "RheinEnergieSTADION",
     type: "match",
-    description: "Youth league match",
-    targetGroups: ["U19 Team"]
+    description: "Academy league match against Bayer Leverkusen",
+    targetGroups: ["Bundesliga Talent Program"]
   },
   {
     id: 1002,
-    title: "Team Meeting",
+    title: "Team Strategy Meeting",
     date: "2024-06-05",
     time: "16:00",
     location: "Conference Room",
     type: "meeting",
-    description: "Weekly team strategy and review session",
-    targetGroups: ["All Teams"]
+    description: "Weekly tactical review and upcoming match preparation",
+    targetGroups: ["Bundesliga Talent Program"]
   },
   {
     id: 1003,
@@ -118,13 +119,13 @@ const additionalEvents: CalendarEvent[] = [
   },
   {
     id: 1006,
-    title: "U21 Strategy Meeting",
+    title: "Bundesliga Talent Program Evaluation",
     date: "2024-06-09",
     time: "11:00",
     location: "Tactics Room",
     type: "meeting",
-    description: "Preparation for upcoming tournament matches",
-    targetGroups: ["U21 Team"],
+    description: "Monthly progress review and development planning",
+    targetGroups: ["Bundesliga Talent Program"],
     isPrivate: false
   },
   {
@@ -136,6 +137,17 @@ const additionalEvents: CalendarEvent[] = [
     type: "training",
     description: "Sprint intervals and cone drills for improved acceleration",
     targetGroups: ["Midfielders", "Forwards"],
+    isPrivate: false
+  },
+  {
+    id: 1008,
+    title: "Defensive Tactics Workshop",
+    date: "2024-06-11",
+    time: "14:30",
+    location: "Video Analysis Room",
+    type: "meeting",
+    description: "Set piece defending and pressing strategies",
+    targetGroups: ["Defenders", "Midfielders"],
     isPrivate: false
   }
 ];
@@ -151,7 +163,7 @@ export default function CalendarPage() {
 
   // Available players and groups for filtering
   const availablePlayers = ["All Players", "Max Mueller", "Erik Fischer", "Hans Weber", "Jan Richter"];
-  const availableGroups = ["All Groups", "U18 Team", "U19 Team", "U21 Team", "Goalkeepers", "Midfielders", "Forwards", "Widdersdorf 1 Residents"];
+  const availableGroups = ["All Groups", "Bundesliga Talent Program", "Goalkeepers", "Midfielders", "Forwards", "Defenders", "Widdersdorf 1 Residents", "Widdersdorf 2 Residents", "Widdersdorf 3 Residents"];
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
@@ -179,14 +191,14 @@ export default function CalendarPage() {
         if (event.targetPlayers && !event.targetPlayers.includes(selectedPlayer)) {
           return false;
         }
-        if (!event.targetPlayers && event.targetGroups && !event.targetGroups.includes("All Teams")) {
+        if (!event.targetPlayers && event.targetGroups && !event.targetGroups.includes("Bundesliga Talent Program")) {
           return false;
         }
       }
 
       // Filter by group
       if (selectedGroup !== "All Groups") {
-        if (event.targetGroups && !event.targetGroups.includes(selectedGroup) && !event.targetGroups.includes("All Teams")) {
+        if (event.targetGroups && !event.targetGroups.includes(selectedGroup) && !event.targetGroups.includes("Bundesliga Talent Program")) {
           return false;
         }
         if (!event.targetGroups && selectedGroup !== "All Groups") {
