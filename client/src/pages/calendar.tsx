@@ -16,45 +16,67 @@ interface CalendarEvent {
   participants?: string[];
 }
 
-const sampleEvents: CalendarEvent[] = [
+// Generate practice sessions for weekdays
+const generatePracticeSessions = () => {
+  const events: CalendarEvent[] = [];
+  let eventId = 1;
+  
+  // Generate for the next 4 weeks
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(startDate.getDate() + 28);
+  
+  for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+    const dayOfWeek = date.getDay();
+    // Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+      events.push({
+        id: eventId++,
+        title: "Daily Practice Session",
+        date: date.toISOString().split('T')[0],
+        time: "10:00",
+        location: "FC Köln Training Ground",
+        type: "training",
+        description: "Daily training session - 10:00 AM to 11:45 AM",
+        participants: ["All Teams"]
+      });
+    }
+  }
+  
+  return events;
+};
+
+const additionalEvents: CalendarEvent[] = [
   {
-    id: 1,
-    title: "Morning Training Session",
-    date: "2024-06-01",
-    time: "09:00",
-    location: "Training Ground A",
-    type: "training",
-    description: "Technical skills and passing drills",
-    participants: ["U18 Team", "U21 Team"]
-  },
-  {
-    id: 2,
+    id: 1000,
     title: "House Meeting - Widdersdorf 1",
-    date: "2024-06-01",
+    date: "2024-06-03",
     time: "19:00",
     location: "Widdersdorf 1 Common Room",
     type: "house",
     description: "Weekly house rules discussion and chore assignments"
   },
   {
-    id: 3,
+    id: 1001,
     title: "Match vs Bayer Leverkusen U19",
-    date: "2024-06-02",
+    date: "2024-06-08",
     time: "14:00",
     location: "RheinEnergieSTADION",
     type: "match",
     description: "Youth league match"
   },
   {
-    id: 4,
-    title: "Curfew Reminder",
-    date: "2024-06-01",
-    time: "22:00",
-    location: "All Houses",
-    type: "house",
-    description: "U18 players must be home by 10pm"
+    id: 1002,
+    title: "Team Meeting",
+    date: "2024-06-05",
+    time: "16:00",
+    location: "Conference Room",
+    type: "meeting",
+    description: "Weekly team strategy and review session"
   }
 ];
+
+const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additionalEvents];
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
