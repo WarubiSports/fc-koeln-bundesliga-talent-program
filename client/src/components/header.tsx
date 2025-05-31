@@ -30,9 +30,6 @@ export default function Header() {
             <a href="/calendar" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
               Calendar
             </a>
-            <a href="#teams" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
-              Teams
-            </a>
             <a href="#analytics" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
               Analytics
             </a>
@@ -78,13 +75,6 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Calendar
-              </a>
-              <a
-                href="#teams"
-                className="block px-3 py-2 text-gray-700 hover:text-fc-red hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Teams
               </a>
               <a
                 href="#analytics"
