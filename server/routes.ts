@@ -233,8 +233,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get chore statistics
-  app.get("/api/chores/stats", async (req, res) => {
+  // Get chore statistics  
+  app.get("/api/chore-stats", async (req, res) => {
     try {
       const stats = await storage.getChoreStats();
       res.json(stats);

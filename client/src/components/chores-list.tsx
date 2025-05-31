@@ -29,7 +29,7 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/chores/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
       toast({ description: "Chore updated successfully" });
     },
     onError: () => {
@@ -46,7 +46,7 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/chores/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
       toast({ description: "Chore deleted successfully" });
     },
     onError: () => {

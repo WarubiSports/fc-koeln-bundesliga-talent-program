@@ -41,7 +41,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/chores/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
       toast({ description: "Chore added successfully" });
       form.reset();
       onClose();

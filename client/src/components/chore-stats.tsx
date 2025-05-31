@@ -10,7 +10,7 @@ interface ChoreStats {
 
 export default function ChoreStats() {
   const { data: stats, isLoading } = useQuery<ChoreStats>({
-    queryKey: ["/api/chores/stats"],
+    queryKey: ["/api/chore-stats"],
   });
 
   if (isLoading) {
