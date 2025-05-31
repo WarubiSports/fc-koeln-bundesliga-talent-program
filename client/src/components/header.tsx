@@ -6,9 +6,13 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12">
               <img 
-                src="/fc-koln-logo.png" 
+                src="https://upload.wikimedia.org/wikipedia/en/1/15/FC_K%C3%B6ln_logo.svg" 
                 alt="1.FC Köln" 
                 className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.innerHTML = '<div class="w-12 h-12 bg-fc-red rounded-full flex items-center justify-center"><span class="text-white font-bold text-sm">FC</span></div>';
+                }}
               />
             </div>
             <div>
