@@ -8,6 +8,7 @@ import Dashboard from "@/pages/dashboard";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import Landing from "@/pages/landing";
+import SimpleLogin from "@/pages/simple-login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,7 +17,10 @@ function Router() {
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={SimpleLogin} />
+          <Route path="/landing" component={Landing} />
+        </>
       ) : (
         <>
           <Route path="/" component={Dashboard} />
