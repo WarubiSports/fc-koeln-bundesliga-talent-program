@@ -21,7 +21,6 @@ export interface IStorage {
   }): Promise<Player[]>;
   getPlayerStats(): Promise<{
     totalPlayers: number;
-    activeTeams: number;
     countries: number;
   }>;
 
@@ -227,21 +226,16 @@ export class MemStorage implements IStorage {
 
   async getPlayerStats(): Promise<{
     totalPlayers: number;
-    activeTeams: number;
     countries: number;
   }> {
     const allPlayers = Array.from(this.players.values());
     const totalPlayers = allPlayers.length;
-    
-    // Calculate unique age groups as "teams"
-    const activeTeams = new Set(allPlayers.map(p => p.ageGroup)).size;
     
     // Calculate unique countries
     const countries = new Set(allPlayers.map(p => p.nationality)).size;
 
     return {
       totalPlayers,
-      activeTeams,
       countries,
     };
   }

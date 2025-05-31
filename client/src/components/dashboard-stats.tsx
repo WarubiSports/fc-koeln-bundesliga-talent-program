@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface Stats {
   totalPlayers: number;
-  activeTeams: number;
   countries: number;
 }
 
@@ -41,7 +40,7 @@ export default function DashboardStats() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -54,26 +53,8 @@ export default function DashboardStats() {
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
-            <span className="text-fc-success font-medium">Active</span>
-            <span className="text-gray-600 ml-1">players registered</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Age Groups</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.activeTeams}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-500 bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-layer-group text-blue-500 text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-fc-success font-medium">U16, U18, U21</span>
-            <span className="text-gray-600 ml-1">categories</span>
+            <span className="text-fc-success font-medium">Bundesliga Talent Program</span>
+            <span className="text-gray-600 ml-1">members</span>
           </div>
         </CardContent>
       </Card>
