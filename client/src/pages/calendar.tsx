@@ -2,8 +2,11 @@ import Header from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plus, Clock, MapPin, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Plus, Clock, MapPin, Users, FileText } from "lucide-react";
 import { useState } from "react";
+import PracticeExcuseModal from "@/components/practice-excuse-modal";
+import PracticeExcuseStats from "@/components/practice-excuse-stats";
 
 interface CalendarEvent {
   id: number;
@@ -81,6 +84,7 @@ const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additio
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [events] = useState<CalendarEvent[]>(sampleEvents);
+  const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
@@ -123,10 +127,20 @@ export default function CalendarPage() {
             <h1 className="text-3xl font-bold text-fc-dark">Calendar</h1>
             <p className="text-gray-600 mt-2">Manage training sessions, matches, and house events</p>
           </div>
-          <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Event
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setIsExcuseModalOpen(true)}
+              variant="outline" 
+              className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Request Practice Excuse
+            </Button>
+            <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Event
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
