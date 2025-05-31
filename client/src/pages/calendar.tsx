@@ -66,7 +66,7 @@ const additionalEvents: CalendarEvent[] = [
   },
   {
     id: 1001,
-    title: "Bundesliga Talent Program vs Bayer Leverkusen Academy",
+    title: "Match vs Bayer Leverkusen Academy",
     date: "2024-06-08",
     time: "14:00",
     location: "RheinEnergieSTADION",
@@ -119,7 +119,7 @@ const additionalEvents: CalendarEvent[] = [
   },
   {
     id: 1006,
-    title: "Bundesliga Talent Program Evaluation",
+    title: "Team Evaluation Meeting",
     date: "2024-06-09",
     time: "11:00",
     location: "Tactics Room",
