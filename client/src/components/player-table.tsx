@@ -118,26 +118,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
     return flags[nationality.toLowerCase()] || "🌍";
   };
 
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating / 2);
-    const hasHalfStar = (rating % 2) >= 1;
-    
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<i key={i} className="fas fa-star text-xs"></i>);
-    }
-    
-    if (hasHalfStar) {
-      stars.push(<i key="half" className="fas fa-star-half-alt text-xs"></i>);
-    }
-    
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<i key={`empty-${i}`} className="far fa-star text-xs"></i>);
-    }
-    
-    return stars;
-  };
+
 
   return (
     <Card className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">

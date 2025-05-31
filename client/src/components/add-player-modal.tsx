@@ -30,7 +30,6 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
       nationality: "",
       position: "midfielder",
       ageGroup: "u18",
-      rating: 0,
       status: "active",
       notes: "",
     },
@@ -202,27 +201,7 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Initial Rating (0-10)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="0" 
-                      max="10" 
-                      step="0.1"
-                      placeholder="0"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
 
             <FormField
               control={form.control}

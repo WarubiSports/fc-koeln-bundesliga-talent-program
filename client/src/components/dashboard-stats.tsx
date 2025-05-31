@@ -5,7 +5,6 @@ interface Stats {
   totalPlayers: number;
   activeTeams: number;
   countries: number;
-  avgRating: number;
 }
 
 export default function DashboardStats() {
@@ -42,7 +41,7 @@ export default function DashboardStats() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -93,24 +92,6 @@ export default function DashboardStats() {
           <div className="mt-4 flex items-center text-sm">
             <span className="text-fc-success font-medium">International</span>
             <span className="text-gray-600 ml-1">talent diversity</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Avg Rating</p>
-              <p className="text-3xl font-bold text-fc-dark">{stats.avgRating}</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-500 bg-opacity-10 rounded-lg flex items-center justify-center">
-              <i className="fas fa-star text-yellow-500 text-xl"></i>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <span className="text-fc-success font-medium">Performance</span>
-            <span className="text-gray-600 ml-1">rating</span>
           </div>
         </CardContent>
       </Card>
