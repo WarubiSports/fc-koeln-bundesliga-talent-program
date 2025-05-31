@@ -13,11 +13,11 @@ export default function Header() {
             </div>
           </div>
           <nav className="hidden md:flex space-x-8">
-            <a href="#dashboard" className="text-fc-red font-medium border-b-2 border-fc-red pb-4">
+            <a href="/dashboard" className="text-fc-red font-medium border-b-2 border-fc-red pb-4">
               Dashboard
             </a>
-            <a href="#players" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
-              Players
+            <a href="/chores" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
+              Chores
             </a>
             <a href="#teams" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
               Teams

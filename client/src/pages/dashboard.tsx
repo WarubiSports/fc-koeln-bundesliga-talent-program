@@ -40,10 +40,10 @@ export default function Dashboard() {
             <i className="fas fa-home text-lg mb-1"></i>
             <span className="text-xs">Dashboard</span>
           </button>
-          <button className="flex flex-col items-center py-2 text-gray-600">
-            <i className="fas fa-users text-lg mb-1"></i>
-            <span className="text-xs">Players</span>
-          </button>
+          <a href="/chores" className="flex flex-col items-center py-2 text-gray-600">
+            <i className="fas fa-tasks text-lg mb-1"></i>
+            <span className="text-xs">Chores</span>
+          </a>
           <button className="flex flex-col items-center py-2 text-gray-600">
             <i className="fas fa-layer-group text-lg mb-1"></i>
             <span className="text-xs">Teams</span>
