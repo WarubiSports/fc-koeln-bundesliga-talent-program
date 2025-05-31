@@ -17,6 +17,9 @@ interface CalendarEvent {
   type: "training" | "match" | "meeting" | "house" | "other";
   description?: string;
   participants?: string[];
+  targetPlayers?: string[]; // Specific players this event is for
+  targetGroups?: string[]; // Player groups this event is for (U18, U21, Goalkeepers, etc.)
+  isPrivate?: boolean; // Whether event is visible only to target players/groups
 }
 
 // Generate practice sessions for weekdays
@@ -57,7 +60,8 @@ const additionalEvents: CalendarEvent[] = [
     time: "19:00",
     location: "Widdersdorf 1 Common Room",
     type: "house",
-    description: "Weekly house rules discussion and chore assignments"
+    description: "Weekly house rules discussion and chore assignments",
+    targetGroups: ["Widdersdorf 1 Residents"]
   },
   {
     id: 1001,
@@ -66,7 +70,8 @@ const additionalEvents: CalendarEvent[] = [
     time: "14:00",
     location: "RheinEnergieSTADION",
     type: "match",
-    description: "Youth league match"
+    description: "Youth league match",
+    targetGroups: ["U19 Team"]
   },
   {
     id: 1002,
@@ -75,7 +80,63 @@ const additionalEvents: CalendarEvent[] = [
     time: "16:00",
     location: "Conference Room",
     type: "meeting",
-    description: "Weekly team strategy and review session"
+    description: "Weekly team strategy and review session",
+    targetGroups: ["All Teams"]
+  },
+  {
+    id: 1003,
+    title: "Individual Technical Training",
+    date: "2024-06-04",
+    time: "15:00",
+    location: "Training Ground B",
+    type: "training",
+    description: "Personalized ball control and finishing practice",
+    targetPlayers: ["Max Mueller", "Erik Fischer"],
+    isPrivate: true
+  },
+  {
+    id: 1004,
+    title: "Goalkeeper Specific Training",
+    date: "2024-06-06",
+    time: "08:00",
+    location: "Goal Practice Area",
+    type: "training",
+    description: "Shot stopping, distribution and positioning drills",
+    targetGroups: ["Goalkeepers"],
+    isPrivate: false
+  },
+  {
+    id: 1005,
+    title: "Injury Recovery Session",
+    date: "2024-06-07",
+    time: "13:00",
+    location: "Medical Center",
+    type: "other",
+    description: "Physiotherapy and light training for recovering players",
+    targetPlayers: ["Hans Weber"],
+    isPrivate: true
+  },
+  {
+    id: 1006,
+    title: "U21 Strategy Meeting",
+    date: "2024-06-09",
+    time: "11:00",
+    location: "Tactics Room",
+    type: "meeting",
+    description: "Preparation for upcoming tournament matches",
+    targetGroups: ["U21 Team"],
+    isPrivate: false
+  },
+  {
+    id: 1007,
+    title: "Speed & Agility Training",
+    date: "2024-06-10",
+    time: "09:00",
+    location: "Athletic Track",
+    type: "training",
+    description: "Sprint intervals and cone drills for improved acceleration",
+    targetGroups: ["Midfielders", "Forwards"],
+    isPrivate: false
   }
 ];
 
@@ -85,6 +146,12 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<string>("All Players");
+  const [selectedGroup, setSelectedGroup] = useState<string>("All Groups");
+
+  // Available players and groups for filtering
+  const availablePlayers = ["All Players", "Max Mueller", "Erik Fischer", "Hans Weber", "Jan Richter"];
+  const availableGroups = ["All Groups", "U18 Team", "U19 Team", "U21 Team", "Goalkeepers", "Midfielders", "Forwards", "Widdersdorf 1 Residents"];
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
@@ -102,11 +169,37 @@ export default function CalendarPage() {
   };
 
   const getEventsForDate = (date: string) => {
-    return events.filter(event => event.date === date);
+    return filterEvents(events.filter(event => event.date === date));
+  };
+
+  const filterEvents = (eventList: CalendarEvent[]) => {
+    return eventList.filter(event => {
+      // Filter by player
+      if (selectedPlayer !== "All Players") {
+        if (event.targetPlayers && !event.targetPlayers.includes(selectedPlayer)) {
+          return false;
+        }
+        if (!event.targetPlayers && event.targetGroups && !event.targetGroups.includes("All Teams")) {
+          return false;
+        }
+      }
+
+      // Filter by group
+      if (selectedGroup !== "All Groups") {
+        if (event.targetGroups && !event.targetGroups.includes(selectedGroup) && !event.targetGroups.includes("All Teams")) {
+          return false;
+        }
+        if (!event.targetGroups && selectedGroup !== "All Groups") {
+          return false;
+        }
+      }
+
+      return true;
+    });
   };
 
   const formatSelectedDate = (date: string) => {
-    return date.toLocaleDateString('en-US', { 
+    return new Date(date).toLocaleDateString('en-US', { 
       weekday: 'long', 
       year: 'numeric', 
       month: 'long', 
@@ -149,6 +242,42 @@ export default function CalendarPage() {
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6">
+            {/* Player and Group Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Event Filters</CardTitle>
+                <p className="text-gray-600">Filter events by specific players or groups</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Player</label>
+                    <select
+                      value={selectedPlayer}
+                      onChange={(e) => setSelectedPlayer(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      {availablePlayers.map((player) => (
+                        <option key={player} value={player}>{player}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Group</label>
+                    <select
+                      value={selectedGroup}
+                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      {availableGroups.map((group) => (
+                        <option key={group} value={group}>{group}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Calendar Widget */}
               <Card className="lg:col-span-1">
@@ -171,7 +300,7 @@ export default function CalendarPage() {
               {/* Events for Selected Date */}
               <Card className="lg:col-span-2">
                 <CardHeader>
-                  <CardTitle>Events for {formatSelectedDate(new Date(selectedDate))}</CardTitle>
+                  <CardTitle>Events for {formatSelectedDate(selectedDate)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {todayEvents.length > 0 ? (
@@ -204,6 +333,31 @@ export default function CalendarPage() {
                               </div>
                             )}
                           </div>
+
+                          {/* Target Players/Groups Information */}
+                          {(event.targetPlayers || event.targetGroups) && (
+                            <div className="mb-2">
+                              {event.targetPlayers && (
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                    Players: {event.targetPlayers.join(", ")}
+                                  </Badge>
+                                  {event.isPrivate && (
+                                    <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                                      Private
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+                              {event.targetGroups && (
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                    Groups: {event.targetGroups.join(", ")}
+                                  </Badge>
+                                </div>
+                              )}
+                            </div>
+                          )}
                           
                           {event.description && (
                             <p className="text-sm text-gray-600">{event.description}</p>
@@ -229,7 +383,7 @@ export default function CalendarPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {events.slice(0, 6).map((event) => (
+                    {filterEvents(events).slice(0, 6).map((event) => (
                       <div
                         key={event.id}
                         className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
@@ -241,7 +395,7 @@ export default function CalendarPage() {
                           </Badge>
                         </div>
                         
-                        <div className="text-xs text-gray-600 space-y-1">
+                        <div className="text-xs text-gray-600 space-y-1 mb-2">
                           <div className="flex items-center">
                             <Calendar className="w-3 h-3 mr-1" />
                             {new Date(event.date).toLocaleDateString()}
@@ -255,6 +409,31 @@ export default function CalendarPage() {
                             {event.location}
                           </div>
                         </div>
+
+                        {/* Target Information for Upcoming Events */}
+                        {(event.targetPlayers || event.targetGroups) && (
+                          <div className="space-y-1">
+                            {event.targetPlayers && (
+                              <div className="flex items-center gap-1">
+                                <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                                  {event.targetPlayers.join(", ")}
+                                </Badge>
+                                {event.isPrivate && (
+                                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-600 border-amber-200">
+                                    Private
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                            {event.targetGroups && (
+                              <div>
+                                <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
+                                  {event.targetGroups.join(", ")}
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
