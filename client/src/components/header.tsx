@@ -23,6 +23,9 @@ export default function Header() {
             <a href="/chores" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
               Chores
             </a>
+            <a href="/calendar" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
+              Calendar
+            </a>
             <a href="#teams" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
               Teams
             </a>
