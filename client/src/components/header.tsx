@@ -4,16 +4,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-fc-red rounded-full flex items-center justify-center">
-              <svg viewBox="0 0 40 40" className="w-8 h-8 text-white">
-                {/* FC Köln logo - simplified version */}
-                <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-                <circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" strokeWidth="1"/>
-                <text x="20" y="17" textAnchor="middle" fontSize="6" fill="currentColor" fontWeight="bold">FC</text>
-                <text x="20" y="25" textAnchor="middle" fontSize="4" fill="currentColor">KÖLN</text>
-                {/* Goat head silhouette - simplified */}
-                <path d="M15 10 Q20 8 25 10 Q25 15 20 16 Q15 15 15 10" fill="currentColor" opacity="0.3"/>
-              </svg>
+            <div className="w-12 h-12">
+              <img 
+                src="/attached_assets/1.FC Köln Football School.png" 
+                alt="1.FC Köln Football School" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <h1 className="text-xl font-bold text-fc-dark">1.FC Köln</h1>
