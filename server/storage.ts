@@ -31,6 +31,7 @@ export interface IStorage {
   createChore(chore: InsertChore): Promise<Chore>;
   updateChore(id: number, updates: UpdateChore): Promise<Chore | undefined>;
   deleteChore(id: number): Promise<boolean>;
+  getChoresByHouse(house: string): Promise<Chore[]>;
   getChoreStats(): Promise<{
     totalChores: number;
     pendingChores: number;
@@ -66,6 +67,7 @@ export class MemStorage implements IStorage {
         description: "Put recycling bin out on curb for pickup",
         category: "trash",
         frequency: "weekly",
+        house: "Widdersdorf 1",
         assignedTo: "John",
         dueDate: "2024-06-07",
         status: "pending",
@@ -78,6 +80,7 @@ export class MemStorage implements IStorage {
         description: "Deep clean main bathroom - toilet, sink, shower, floor",
         category: "cleaning",
         frequency: "weekly",
+        house: "Widdersdorf 2",
         assignedTo: "Sarah",
         dueDate: "2024-06-05",
         status: "pending",
@@ -90,6 +93,7 @@ export class MemStorage implements IStorage {
         description: "Put garbage bin out for collection",
         category: "trash",
         frequency: "weekly",
+        house: "Widdersdorf 3",
         assignedTo: "Mike",
         dueDate: "2024-06-06",
         status: "completed",
@@ -102,6 +106,7 @@ export class MemStorage implements IStorage {
         description: "Wipe counters, clean appliances, mop floor",
         category: "cleaning",
         frequency: "daily",
+        house: "Widdersdorf 1",
         assignedTo: "Anna",
         dueDate: "2024-06-01",
         status: "in_progress",
@@ -268,6 +273,14 @@ export class MemStorage implements IStorage {
 
   async deleteChore(id: number): Promise<boolean> {
     return this.chores.delete(id);
+  }
+
+  async getChoresByHouse(house: string): Promise<Chore[]> {
+    return Array.from(this.chores.values())
+      .filter(chore => chore.house === house)
+      .sort((a, b) => 
+        new Date(a.dueDate || '9999-12-31').getTime() - new Date(b.dueDate || '9999-12-31').getTime()
+      );
   }
 
   async getChoreStats(): Promise<{

@@ -57,6 +57,7 @@ export const chores = pgTable("chores", {
   description: text("description"),
   category: text("category").notNull(), // cleaning, trash, maintenance, other
   frequency: text("frequency").notNull(), // daily, weekly, monthly
+  house: text("house").notNull().default("Widdersdorf 1"), // Widdersdorf 1, Widdersdorf 2, Widdersdorf 3
   assignedTo: text("assigned_to"),
   dueDate: text("due_date"),
   status: text("status").notNull().default("pending"), // pending, in_progress, completed
@@ -74,6 +75,7 @@ export const insertChoreSchema = createInsertSchema(chores).omit({
   description: z.string().optional(),
   category: z.enum(["cleaning", "trash", "maintenance", "other"]),
   frequency: z.enum(["daily", "weekly", "monthly"]),
+  house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).default("Widdersdorf 1"),
   assignedTo: z.string().optional(),
   dueDate: z.string().optional(),
   status: z.enum(["pending", "in_progress", "completed"]).default("pending"),
