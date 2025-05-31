@@ -14,7 +14,7 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12">
               <img 
-                src="/attached_assets/1.FC Köln Football School.png" 
+                src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png" 
                 alt="FC Köln Football School" 
                 className="w-full h-full object-contain"
               />

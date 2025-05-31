@@ -8,7 +8,7 @@ export default function Landing() {
         <div className="text-center mb-12">
           <div className="flex justify-center items-center mb-6">
             <img 
-              src="/attached_assets/1.FC Köln Football School.png"
+              src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png"
               alt="FC Köln Football School" 
               className="w-20 h-20 object-contain"
             />
