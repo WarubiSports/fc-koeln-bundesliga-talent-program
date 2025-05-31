@@ -143,9 +143,16 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Calendar Widget */}
-          <Card className="lg:col-span-1">
+        <Tabs defaultValue="calendar" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="calendar">Calendar & Events</TabsTrigger>
+            <TabsTrigger value="excuses">Practice Excuses</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Calendar Widget */}
+              <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Calendar className="w-5 h-5 mr-2 text-fc-red" />
@@ -279,6 +286,55 @@ export default function CalendarPage() {
             </div>
           </CardContent>
         </Card>
+
+              {/* Upcoming Events */}
+              <Card className="lg:col-span-3 mt-8">
+                <CardHeader>
+                  <CardTitle>Upcoming Events</CardTitle>
+                  <p className="text-gray-600">Next events across all categories</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {events.slice(0, 6).map((event) => (
+                      <div
+                        key={event.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-semibold text-gray-900 text-sm">{event.title}</h4>
+                          <Badge className={getEventTypeColor(event.type)} variant="outline">
+                            {event.type}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-xs text-gray-600">
+                          <div className="flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {event.time}
+                          </div>
+                          <div className="flex items-center">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            {event.location}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="excuses" className="space-y-6">
+            <PracticeExcuseStats />
+          </TabsContent>
+        </Tabs>
+
+        <PracticeExcuseModal 
+          isOpen={isExcuseModalOpen}
+          onClose={() => setIsExcuseModalOpen(false)}
+          selectedDate={selectedDate}
+        />
       </main>
     </div>
   );
