@@ -125,3 +125,30 @@ export const updatePracticeExcuseSchema = insertPracticeExcuseSchema.partial();
 export type InsertPracticeExcuse = z.infer<typeof insertPracticeExcuseSchema>;
 export type UpdatePracticeExcuse = z.infer<typeof updatePracticeExcuseSchema>;
 export type PracticeExcuse = typeof practiceExcuses.$inferSelect;
+
+// Food Orders Schema
+export const foodOrders = pgTable("food_orders", {
+  id: serial("id").primaryKey(),
+  playerName: varchar("player_name", { length: 255 }).notNull(),
+  orderDate: varchar("order_date", { length: 50 }).notNull(),
+  mealType: varchar("meal_type", { length: 50 }).notNull(), // breakfast, lunch, dinner
+  mainDish: varchar("main_dish", { length: 255 }),
+  sideDish: varchar("side_dish", { length: 255 }),
+  drink: varchar("drink", { length: 255 }),
+  specialRequests: text("special_requests"),
+  allergies: text("allergies"),
+  estimatedCost: varchar("estimated_cost", { length: 20 }),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, confirmed, delivered, cancelled
+  kitchenNotes: text("kitchen_notes"),
+  deliveryTime: varchar("delivery_time", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFoodOrderSchema = createInsertSchema(foodOrders);
+
+export const updateFoodOrderSchema = insertFoodOrderSchema.partial();
+
+export type InsertFoodOrder = z.infer<typeof insertFoodOrderSchema>;
+export type UpdateFoodOrder = z.infer<typeof updateFoodOrderSchema>;
+export type FoodOrder = typeof foodOrders.$inferSelect;

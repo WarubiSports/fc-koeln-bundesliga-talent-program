@@ -3,6 +3,7 @@ import {
   players,
   chores,
   practiceExcuses,
+  foodOrders,
   type User,
   type UpsertUser,
   type Player,
@@ -14,6 +15,9 @@ import {
   type PracticeExcuse,
   type InsertPracticeExcuse,
   type UpdatePracticeExcuse,
+  type FoodOrder,
+  type InsertFoodOrder,
+  type UpdateFoodOrder,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql } from "drizzle-orm";
@@ -70,6 +74,22 @@ export interface IStorage {
     approvedExcuses: number;
     deniedExcuses: number;
     excusesByReason: Record<string, number>;
+  }>;
+
+  // Food order methods
+  getAllFoodOrders(): Promise<FoodOrder[]>;
+  getFoodOrder(id: number): Promise<FoodOrder | undefined>;
+  createFoodOrder(order: InsertFoodOrder): Promise<FoodOrder>;
+  updateFoodOrder(id: number, updates: UpdateFoodOrder): Promise<FoodOrder | undefined>;
+  deleteFoodOrder(id: number): Promise<boolean>;
+  getFoodOrdersByPlayer(playerName: string): Promise<FoodOrder[]>;
+  getFoodOrdersByDate(date: string): Promise<FoodOrder[]>;
+  getFoodOrderStats(): Promise<{
+    totalOrders: number;
+    pendingOrders: number;
+    confirmedOrders: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
   }>;
 }
 
@@ -306,6 +326,64 @@ export class DatabaseStorage implements IStorage {
     } else {
       return 'Other';
     }
+  }
+
+  // Food order methods
+  async getAllFoodOrders(): Promise<FoodOrder[]> {
+    return await db.select().from(foodOrders);
+  }
+
+  async getFoodOrder(id: number): Promise<FoodOrder | undefined> {
+    const [order] = await db.select().from(foodOrders).where(eq(foodOrders.id, id));
+    return order;
+  }
+
+  async createFoodOrder(insertOrder: InsertFoodOrder): Promise<FoodOrder> {
+    const [order] = await db
+      .insert(foodOrders)
+      .values(insertOrder)
+      .returning();
+    return order;
+  }
+
+  async updateFoodOrder(id: number, updates: UpdateFoodOrder): Promise<FoodOrder | undefined> {
+    const [order] = await db
+      .update(foodOrders)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(foodOrders.id, id))
+      .returning();
+    return order;
+  }
+
+  async deleteFoodOrder(id: number): Promise<boolean> {
+    const result = await db.delete(foodOrders).where(eq(foodOrders.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getFoodOrdersByPlayer(playerName: string): Promise<FoodOrder[]> {
+    return await db.select().from(foodOrders).where(eq(foodOrders.playerName, playerName));
+  }
+
+  async getFoodOrdersByDate(date: string): Promise<FoodOrder[]> {
+    return await db.select().from(foodOrders).where(eq(foodOrders.orderDate, date));
+  }
+
+  async getFoodOrderStats(): Promise<{
+    totalOrders: number;
+    pendingOrders: number;
+    confirmedOrders: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
+  }> {
+    const orders = await this.getAllFoodOrders();
+    
+    return {
+      totalOrders: orders.length,
+      pendingOrders: orders.filter(order => order.status === 'pending').length,
+      confirmedOrders: orders.filter(order => order.status === 'confirmed').length,
+      deliveredOrders: orders.filter(order => order.status === 'delivered').length,
+      cancelledOrders: orders.filter(order => order.status === 'cancelled').length,
+    };
   }
 }
 
