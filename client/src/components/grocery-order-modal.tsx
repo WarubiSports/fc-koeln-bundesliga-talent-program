@@ -78,7 +78,11 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     return Object.entries(selectedItems).reduce((total, [itemName, quantity]) => {
       const allItems = Object.values(groceryData).flat();
       const item = allItems.find(i => i.name === itemName);
-      return total + (item ? item.price * quantity : 0);
+      // Exclude household items from budget calculation
+      if (item && item.category !== 'household') {
+        return total + (item.price * quantity);
+      }
+      return total;
     }, 0);
   }, [selectedItems]);
 
@@ -263,7 +267,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900">Select Grocery Items</h3>
                 <div className="text-lg font-bold text-[#DC143C]">
-                  Total: €{totalCost.toFixed(2)}
+                  Food Budget: €{totalCost.toFixed(2)} / €35.00
                 </div>
               </div>
 
@@ -287,7 +291,6 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                             />
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium truncate">{item.name}</div>
-                              <div className="text-xs text-gray-500">€{item.price.toFixed(2)}</div>
                             </div>
                           </div>
                           {item.name in selectedItems && (
@@ -312,11 +315,11 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
             {/* Order limit warning */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center space-x-2">
-                <span className="text-yellow-800 font-medium">⚠️ Order Limit: €35.00 maximum per order</span>
+                <span className="text-yellow-800 font-medium">⚠️ Food Budget Limit: €35.00 maximum (household items excluded)</span>
               </div>
               <p className="text-sm text-yellow-700 mt-1">
-                Your current total is €{totalCost.toFixed(2)}
-                {totalCost > 35 && " - Please reduce your selection to proceed"}
+                Current food budget: €{totalCost.toFixed(2)}
+                {totalCost > 35 && " - Please reduce your food selection to proceed"}
               </p>
             </div>
 
