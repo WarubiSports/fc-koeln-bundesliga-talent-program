@@ -24,9 +24,7 @@ export default function AdminEvents() {
   // Delete event mutation
   const deleteEventMutation = useMutation({
     mutationFn: async (eventId: number) => {
-      await apiRequest(`/api/events/${eventId}`, {
-        method: "DELETE",
-      });
+      await apiRequest(`/api/events/${eventId}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -171,9 +169,9 @@ export default function AdminEvents() {
                       </Button>
                     </div>
                   </div>
-                  {event.type && (
+                  {event.eventType && (
                     <Badge variant="secondary" className="w-fit">
-                      {event.type}
+                      {event.eventType}
                     </Badge>
                   )}
                 </CardHeader>
@@ -196,11 +194,7 @@ export default function AdminEvents() {
                     </div>
                   )}
                   
-                  {event.description && (
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                      {event.description}
-                    </p>
-                  )}
+
                   
                   {event.notes && (
                     <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm">
