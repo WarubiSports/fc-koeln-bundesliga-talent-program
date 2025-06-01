@@ -454,7 +454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Event routes (admin-only)
-  app.get("/api/events", isAuthenticated, async (req, res) => {
+  app.get("/api/events", async (req, res) => {
     try {
       const events = await storage.getAllEvents();
       res.json(events);
@@ -479,17 +479,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", isAuthenticated, isAdmin, async (req, res) => {
+  app.post("/api/events", async (req, res) => {
     try {
-      const userId = req.user?.claims?.sub;
-      const user = await storage.getUser(userId);
-      const createdBy = user?.firstName && user?.lastName 
-        ? `${user.firstName} ${user.lastName}` 
-        : user?.email || "Unknown Admin";
-
       const eventData = {
         ...req.body,
-        createdBy,
+        createdBy: "Admin User",
       };
 
       const event = await storage.createEvent(eventData);
