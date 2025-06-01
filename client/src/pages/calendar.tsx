@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Plus, Clock, MapPin, Users, FileText } from "lucide-react";
 import { useState } from "react";
-import PracticeExcuseModal from "@/components/practice-excuse-modal";
-import PracticeExcuseStats from "@/components/practice-excuse-stats";
+import ExcuseModal from "@/components/excuse-modal";
+import ExcuseStats from "@/components/excuse-stats";
 
 interface CalendarEvent {
   id: number;
@@ -238,7 +238,7 @@ export default function CalendarPage() {
               className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
             >
               <FileText className="w-4 h-4 mr-2" />
-              Request Practice Excuse
+              Request Excuse
             </Button>
             <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
               <Plus className="w-4 h-4 mr-2" />
@@ -250,7 +250,7 @@ export default function CalendarPage() {
         <Tabs defaultValue="calendar" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="calendar">Calendar & Events</TabsTrigger>
-            <TabsTrigger value="excuses">Practice Excuses</TabsTrigger>
+            <TabsTrigger value="excuses">Excuse Requests</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-6">
@@ -455,11 +455,11 @@ export default function CalendarPage() {
           </TabsContent>
 
           <TabsContent value="excuses" className="space-y-6">
-            <PracticeExcuseStats />
+            <ExcuseStats />
           </TabsContent>
         </Tabs>
 
-        <PracticeExcuseModal 
+        <ExcuseModal 
           isOpen={isExcuseModalOpen}
           onClose={() => setIsExcuseModalOpen(false)}
           selectedDate={selectedDate}
