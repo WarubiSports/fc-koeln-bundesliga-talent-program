@@ -291,6 +291,9 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                             />
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium truncate">{item.name}</div>
+                              {item.category !== 'household' && (
+                                <div className="text-xs text-gray-500">€{item.price.toFixed(2)}</div>
+                              )}
                             </div>
                           </div>
                           {item.name in selectedItems && (
