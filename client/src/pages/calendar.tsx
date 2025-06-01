@@ -485,9 +485,22 @@ export default function CalendarPage() {
                         >
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-semibold text-gray-900">{event.title}</h3>
-                            <Badge className={getEventTypeColor(event.type)}>
-                              {event.type}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge className={getEventTypeColor(event.type)}>
+                                {event.type}
+                              </Badge>
+                              {isAdmin && event.isAdminEvent && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteEvent(event.adminEventId)}
+                                  className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                  title="Delete event"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
                           
                           <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
@@ -625,6 +638,13 @@ export default function CalendarPage() {
           onClose={() => setIsExcuseModalOpen(false)}
         />
         
+        <EventCreationModal
+          isOpen={isEventCreationModalOpen}
+          onClose={() => setIsEventCreationModalOpen(false)}
+          onSubmit={handleEventSubmit}
+          initialEventType={selectedEventType}
+          initialDate={selectedDate}
+        />
 
       </main>
     </div>
