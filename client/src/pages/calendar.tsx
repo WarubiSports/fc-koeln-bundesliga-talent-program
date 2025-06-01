@@ -212,7 +212,7 @@ export default function CalendarPage() {
   // Create event mutation for quick event creation
   const createEventMutation = useMutation({
     mutationFn: async (eventData: any) => {
-      await apiRequest("/api/events", "POST", eventData);
+      await apiRequest("POST", "/api/events", eventData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
