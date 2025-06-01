@@ -126,21 +126,30 @@ export type InsertPracticeExcuse = z.infer<typeof insertPracticeExcuseSchema>;
 export type UpdatePracticeExcuse = z.infer<typeof updatePracticeExcuseSchema>;
 export type PracticeExcuse = typeof practiceExcuses.$inferSelect;
 
-// Food Orders Schema
+// Food Orders Schema - Weekly ordering for Monday and Thursday
 export const foodOrders = pgTable("food_orders", {
   id: serial("id").primaryKey(),
   playerName: varchar("player_name", { length: 255 }).notNull(),
-  orderDate: varchar("order_date", { length: 50 }).notNull(),
-  mealType: varchar("meal_type", { length: 50 }).notNull(), // breakfast, lunch, dinner
-  mainDish: varchar("main_dish", { length: 255 }),
-  sideDish: varchar("side_dish", { length: 255 }),
-  drink: varchar("drink", { length: 255 }),
+  weekStartDate: varchar("week_start_date", { length: 50 }).notNull(), // Monday of the week
+  orderDay: varchar("order_day", { length: 20 }).notNull(), // "monday" or "thursday"
+  
+  // Monday meals
+  mondayBreakfast: varchar("monday_breakfast", { length: 255 }),
+  mondayLunch: varchar("monday_lunch", { length: 255 }),
+  mondayDinner: varchar("monday_dinner", { length: 255 }),
+  mondayDrink: varchar("monday_drink", { length: 255 }),
+  
+  // Thursday meals
+  thursdayBreakfast: varchar("thursday_breakfast", { length: 255 }),
+  thursdayLunch: varchar("thursday_lunch", { length: 255 }),
+  thursdayDinner: varchar("thursday_dinner", { length: 255 }),
+  thursdayDrink: varchar("thursday_drink", { length: 255 }),
+  
   specialRequests: text("special_requests"),
   allergies: text("allergies"),
   estimatedCost: varchar("estimated_cost", { length: 20 }),
   status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, confirmed, delivered, cancelled
   kitchenNotes: text("kitchen_notes"),
-  deliveryTime: varchar("delivery_time", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
