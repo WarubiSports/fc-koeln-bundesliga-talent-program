@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/dashboard";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
+import FoodOrders from "@/pages/food-orders";
 import Landing from "@/pages/landing";
 import SimpleLogin from "@/pages/simple-login";
 import NotFound from "@/pages/not-found";
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/chores" component={Chores} />
           <Route path="/calendar" component={Calendar} />
+          <Route path="/food-orders" component={FoodOrders} />
         </>
       )}
       <Route component={NotFound} />
