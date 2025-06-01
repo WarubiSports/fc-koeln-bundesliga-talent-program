@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
-import AddEventModal from "@/components/add-event-modal";
+import EventCreationModal from "@/components/event-creation-modal";
 import type { Event } from "@shared/schema";
 
 interface CalendarEvent {
@@ -176,7 +176,8 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
-  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
+  const [isEventCreationModalOpen, setIsEventCreationModalOpen] = useState(false);
+  const [selectedEventType, setSelectedEventType] = useState("");
   const [selectedPlayer, setSelectedPlayer] = useState<string>("All Players");
   const [selectedGroup, setSelectedGroup] = useState<string>("All Groups");
 
@@ -186,16 +187,20 @@ export default function CalendarPage() {
     enabled: isAuthenticated,
   });
 
-  // Delete event mutation
-  const deleteEventMutation = useMutation({
-    mutationFn: async (eventId: number) => {
-      await apiRequest(`/api/events/${eventId}`, "DELETE");
+
+
+  const isAdmin = user?.role === 'admin';
+
+  // Create event mutation
+  const createEventMutation = useMutation({
+    mutationFn: async (eventData: any) => {
+      await apiRequest("POST", "/api/events", eventData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
       toast({
         title: "Success",
-        description: "Event deleted successfully",
+        description: "Event created successfully",
       });
     },
     onError: (error: Error) => {
@@ -207,18 +212,16 @@ export default function CalendarPage() {
     },
   });
 
-  const isAdmin = user?.role === 'admin';
-
-  // Create event mutation for quick event creation
-  const createEventMutation = useMutation({
-    mutationFn: async (eventData: any) => {
-      await apiRequest("POST", "/api/events", eventData);
+  // Delete event mutation
+  const deleteEventMutation = useMutation({
+    mutationFn: async (eventId: number) => {
+      await apiRequest("DELETE", `/api/events/${eventId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
       toast({
         title: "Success",
-        description: "Event created successfully",
+        description: "Event deleted successfully",
       });
     },
     onError: (error: Error) => {
@@ -241,25 +244,23 @@ export default function CalendarPage() {
       'trial': 'Trial Session'
     };
 
-    console.log('handleAddEvent called with:', eventType, 'isAdmin:', isAdmin, 'selectedDate:', selectedDate);
-    
     if (isAdmin) {
-      // For admins, create actual events in the database
-      const eventData = {
-        title: eventTitles[eventType as keyof typeof eventTitles] || 'New Event',
-        eventType: eventTitles[eventType as keyof typeof eventTitles] || 'Other',
-        date: selectedDate,
-        startTime: '10:00',
-        endTime: '12:00',
-        location: 'FC Köln Training Ground',
-        notes: `Auto-created ${eventTitles[eventType as keyof typeof eventTitles] || 'event'} for ${new Date(selectedDate).toLocaleDateString()}`
-      };
-      console.log('Creating event with data:', eventData);
-      createEventMutation.mutate(eventData);
+      // For admins, open the detailed event creation modal
+      setSelectedEventType(eventTitles[eventType as keyof typeof eventTitles] || 'Other');
+      setIsEventCreationModalOpen(true);
     } else {
       // For players, this opens the excuse modal for the selected activity
-      console.log('Opening excuse modal for player');
       setIsExcuseModalOpen(true);
+    }
+  };
+
+  const handleEventSubmit = (eventData: any) => {
+    createEventMutation.mutate(eventData);
+  };
+
+  const handleDeleteEvent = (eventId: number) => {
+    if (confirm('Are you sure you want to delete this event?')) {
+      deleteEventMutation.mutate(eventId);
     }
   };
 
