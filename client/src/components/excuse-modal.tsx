@@ -60,10 +60,7 @@ export default function ExcuseModal({ isOpen, onClose, selectedDate }: ExcuseMod
 
   const mutation = useMutation({
     mutationFn: async (data: ExcuseFormData) => {
-      const response = await apiRequest("/api/excuses", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const response = await apiRequest("/api/excuses", "POST", data);
       return response;
     },
     onSuccess: () => {
@@ -139,7 +136,7 @@ export default function ExcuseModal({ isOpen, onClose, selectedDate }: ExcuseMod
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {practiceExcuseReasons.map((reason) => (
+                      {excuseReasons.map((reason: string) => (
                         <SelectItem key={reason} value={reason}>
                           {reason}
                         </SelectItem>

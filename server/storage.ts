@@ -2,6 +2,7 @@ import {
   users,
   players,
   chores,
+  excuses,
   practiceExcuses,
   groceryOrders,
   type User,
@@ -12,6 +13,9 @@ import {
   type Chore,
   type InsertChore,
   type UpdateChore,
+  type Excuse,
+  type InsertExcuse,
+  type UpdateExcuse,
   type PracticeExcuse,
   type InsertPracticeExcuse,
   type UpdatePracticeExcuse,
@@ -65,7 +69,23 @@ export interface IStorage {
     overdueChores: number;
   }>;
 
-  // Practice excuse methods
+  // Excuse methods (generalized for any type of excuse)
+  getAllExcuses(): Promise<Excuse[]>;
+  getExcuse(id: number): Promise<Excuse | undefined>;
+  createExcuse(excuse: InsertExcuse): Promise<Excuse>;
+  updateExcuse(id: number, updates: UpdateExcuse): Promise<Excuse | undefined>;
+  deleteExcuse(id: number): Promise<boolean>;
+  getExcusesByPlayer(playerName: string): Promise<Excuse[]>;
+  getExcusesByDate(date: string): Promise<Excuse[]>;
+  getExcuseStats(): Promise<{
+    totalExcuses: number;
+    pendingExcuses: number;
+    approvedExcuses: number;
+    deniedExcuses: number;
+    excusesByReason: Record<string, number>;
+  }>;
+
+  // Legacy methods for backward compatibility
   getAllPracticeExcuses(): Promise<PracticeExcuse[]>;
   getPracticeExcuse(id: number): Promise<PracticeExcuse | undefined>;
   createPracticeExcuse(excuse: InsertPracticeExcuse): Promise<PracticeExcuse>;
@@ -303,19 +323,73 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(practiceExcuses).where(eq(practiceExcuses.date, date));
   }
 
-  async getPracticeExcuseStats(): Promise<{
+  // New generalized excuse methods
+  async getAllExcuses(): Promise<Excuse[]> {
+    const allExcuses = await db.select().from(excuses).orderBy(desc(excuses.submittedAt));
+    return allExcuses;
+  }
+
+  async getExcuse(id: number): Promise<Excuse | undefined> {
+    const [excuse] = await db.select().from(excuses).where(eq(excuses.id, id));
+    return excuse;
+  }
+
+  async createExcuse(insertExcuse: InsertExcuse): Promise<Excuse> {
+    const [excuse] = await db
+      .insert(excuses)
+      .values({
+        ...insertExcuse,
+        submittedAt: new Date().toISOString(),
+      })
+      .returning();
+    return excuse;
+  }
+
+  async updateExcuse(id: number, updates: UpdateExcuse): Promise<Excuse | undefined> {
+    const [excuse] = await db
+      .update(excuses)
+      .set(updates)
+      .where(eq(excuses.id, id))
+      .returning();
+    return excuse;
+  }
+
+  async deleteExcuse(id: number): Promise<boolean> {
+    const result = await db.delete(excuses).where(eq(excuses.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getExcusesByPlayer(playerName: string): Promise<Excuse[]> {
+    const playerExcuses = await db
+      .select()
+      .from(excuses)
+      .where(eq(excuses.playerName, playerName))
+      .orderBy(desc(excuses.submittedAt));
+    return playerExcuses;
+  }
+
+  async getExcusesByDate(date: string): Promise<Excuse[]> {
+    const dateExcuses = await db
+      .select()
+      .from(excuses)
+      .where(eq(excuses.date, date))
+      .orderBy(desc(excuses.submittedAt));
+    return dateExcuses;
+  }
+
+  async getExcuseStats(): Promise<{
     totalExcuses: number;
     pendingExcuses: number;
     approvedExcuses: number;
     deniedExcuses: number;
     excusesByReason: Record<string, number>;
   }> {
-    const total = await db.select({ count: sql<number>`count(*)` }).from(practiceExcuses);
-    const pending = await db.select({ count: sql<number>`count(*)` }).from(practiceExcuses).where(eq(practiceExcuses.status, 'pending'));
-    const approved = await db.select({ count: sql<number>`count(*)` }).from(practiceExcuses).where(eq(practiceExcuses.status, 'approved'));
-    const denied = await db.select({ count: sql<number>`count(*)` }).from(practiceExcuses).where(eq(practiceExcuses.status, 'denied'));
+    const total = await db.select({ count: sql<number>`count(*)` }).from(excuses);
+    const pending = await db.select({ count: sql<number>`count(*)` }).from(excuses).where(eq(excuses.status, 'pending'));
+    const approved = await db.select({ count: sql<number>`count(*)` }).from(excuses).where(eq(excuses.status, 'approved'));
+    const denied = await db.select({ count: sql<number>`count(*)` }).from(excuses).where(eq(excuses.status, 'denied'));
     
-    const allExcuses = await this.getAllPracticeExcuses();
+    const allExcuses = await this.getAllExcuses();
     const excusesByReason: Record<string, number> = {};
     
     allExcuses.forEach(excuse => {
@@ -330,6 +404,17 @@ export class DatabaseStorage implements IStorage {
       deniedExcuses: denied[0]?.count || 0,
       excusesByReason,
     };
+  }
+
+  // Legacy practice excuse methods (for backward compatibility)
+  async getPracticeExcuseStats(): Promise<{
+    totalExcuses: number;
+    pendingExcuses: number;
+    approvedExcuses: number;
+    deniedExcuses: number;
+    excusesByReason: Record<string, number>;
+  }> {
+    return this.getExcuseStats();
   }
 
   private categorizeReason(reason: string): string {
