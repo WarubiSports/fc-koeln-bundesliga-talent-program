@@ -30,6 +30,8 @@ export interface IStorage {
   // User operations (for authentication)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  getPendingUsers(): Promise<User[]>;
+  approveUser(userId: string): Promise<void>;
 
   // Player methods
   getAllPlayers(): Promise<Player[]>;
@@ -121,6 +123,17 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async getPendingUsers(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.approved, "false"));
+  }
+
+  async approveUser(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ approved: "true", updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   // Player methods

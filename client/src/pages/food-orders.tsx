@@ -208,7 +208,7 @@ export default function GroceryOrdersPage() {
                           {getStatusIcon(order.status)}
                           <span className="capitalize">{order.status}</span>
                         </Badge>
-                        {isAuthenticated && (user as any)?.email?.endsWith('@fckoeln.de') && order.status === 'pending' && (
+                        {isAuthenticated && ((user as any)?.email?.endsWith('@fckoeln.de') || (user as any)?.email?.endsWith('@warubi-sports.com')) && order.status === 'pending' && (
                           <div className="flex space-x-2">
                             <Button
                               size="sm"

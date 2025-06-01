@@ -68,7 +68,7 @@ async function upsertUser(
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
     role: isAdmin ? "admin" : "player",
-    approved: isAdmin, // Admins are auto-approved, players need approval
+    approved: isAdmin ? "true" : "false", // Admins are auto-approved, players need approval
   });
 }
 
@@ -142,6 +142,12 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
+    // Check if user is approved
+    const userId = user.claims.sub;
+    const userData = await storage.getUser(userId);
+    if (!userData || userData.approved !== "true") {
+      return res.status(403).json({ message: "Account pending approval" });
+    }
     return next();
   }
 
@@ -155,6 +161,13 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
     updateUserSession(user, tokenResponse);
+    
+    // Check if user is approved after token refresh
+    const userId = user.claims.sub;
+    const userData = await storage.getUser(userId);
+    if (!userData || userData.approved !== "true") {
+      return res.status(403).json({ message: "Account pending approval" });
+    }
     return next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized" });

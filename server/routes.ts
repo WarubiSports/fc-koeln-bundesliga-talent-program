@@ -20,6 +20,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  // Admin routes for user management
+  app.get('/api/admin/pending-users', isAdmin, async (req, res) => {
+    try {
+      const pendingUsers = await storage.getPendingUsers();
+      res.json(pendingUsers);
+    } catch (error) {
+      console.error("Error fetching pending users:", error);
+      res.status(500).json({ message: "Failed to fetch pending users" });
+    }
+  });
+
+  app.put('/api/admin/approve-user/:userId', isAdmin, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      await storage.approveUser(userId);
+      res.json({ message: "User approved successfully" });
+    } catch (error) {
+      console.error("Error approving user:", error);
+      res.status(500).json({ message: "Failed to approve user" });
+    }
+  });
   // Get all players (requires authentication)
   app.get("/api/players", isAuthenticated, async (req, res) => {
     try {
