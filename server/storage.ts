@@ -5,6 +5,7 @@ import {
   excuses,
   practiceExcuses,
   groceryOrders,
+  events,
   type User,
   type UpsertUser,
   type Player,
@@ -25,6 +26,9 @@ import {
   type FoodOrder,
   type InsertFoodOrder,
   type UpdateFoodOrder,
+  type Event,
+  type InsertEvent,
+  type UpdateEvent,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql } from "drizzle-orm";
@@ -116,6 +120,15 @@ export interface IStorage {
     deliveredOrders: number;
     cancelledOrders: number;
   }>;
+
+  // Event methods (admin-only)
+  getAllEvents(): Promise<Event[]>;
+  getEvent(id: number): Promise<Event | undefined>;
+  createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: number, updates: UpdateEvent): Promise<Event | undefined>;
+  deleteEvent(id: number): Promise<boolean>;
+  getEventsByDate(date: string): Promise<Event[]>;
+  getEventsByDateRange(startDate: string, endDate: string): Promise<Event[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -490,6 +503,63 @@ export class DatabaseStorage implements IStorage {
       deliveredOrders: orders.filter(order => order.status === 'delivered').length,
       cancelledOrders: orders.filter(order => order.status === 'cancelled').length,
     };
+  }
+
+  // Event methods (admin-only)
+  async getAllEvents(): Promise<Event[]> {
+    const eventList = await db.select().from(events);
+    return eventList;
+  }
+
+  async getEvent(id: number): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event || undefined;
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db
+      .insert(events)
+      .values({
+        ...insertEvent,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return event;
+  }
+
+  async updateEvent(id: number, updates: UpdateEvent): Promise<Event | undefined> {
+    const [event] = await db
+      .update(events)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(events.id, id))
+      .returning();
+    return event || undefined;
+  }
+
+  async deleteEvent(id: number): Promise<boolean> {
+    const result = await db.delete(events).where(eq(events.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getEventsByDate(date: string): Promise<Event[]> {
+    const eventList = await db
+      .select()
+      .from(events)
+      .where(eq(events.date, date));
+    return eventList;
+  }
+
+  async getEventsByDateRange(startDate: string, endDate: string): Promise<Event[]> {
+    const eventList = await db
+      .select()
+      .from(events)
+      .where(sql`date >= ${startDate} AND date <= ${endDate}`)
+      .orderBy(events.date, events.startTime);
+    return eventList;
   }
 }
 

@@ -173,3 +173,30 @@ export const updateFoodOrderSchema = updateGroceryOrderSchema;
 export type InsertFoodOrder = InsertGroceryOrder;
 export type UpdateFoodOrder = UpdateGroceryOrder;
 export type FoodOrder = GroceryOrder;
+
+// Events table for admin-scheduled calendar events
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  eventType: text("event_type").notNull(), // "team_practice", "group_practice", etc.
+  date: text("date").notNull(), // YYYY-MM-DD format
+  startTime: text("start_time").notNull(), // HH:MM format
+  endTime: text("end_time").notNull(), // HH:MM format
+  location: text("location"),
+  notes: text("notes"),
+  createdBy: text("created_by").notNull(), // Admin who created the event
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEventSchema = createInsertSchema(events).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateEventSchema = insertEventSchema.partial();
+
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type UpdateEvent = z.infer<typeof updateEventSchema>;
+export type Event = typeof events.$inferSelect;
