@@ -39,8 +39,6 @@ const groceryOrderSchema = z.object({
   weekStartDate: z.string().min(1, "Week start date is required"),
   deliveryDay: z.enum(["monday", "thursday"]),
   selectedItems: z.record(z.string(), z.number()).default({}),
-  specialRequests: z.string().optional(),
-  dietaryRestrictions: z.string().optional(),
 });
 
 type GroceryOrderFormData = z.infer<typeof groceryOrderSchema>;
@@ -69,12 +67,10 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
     defaultValues: {
-      playerName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "",
+      playerName: (user as any)?.firstName && (user as any)?.lastName ? `${(user as any).firstName} ${(user as any).lastName}` : "",
       weekStartDate: selectedWeek || getMondayOfWeek(new Date()),
       deliveryDay: "monday",
       selectedItems: {},
-      specialRequests: "",
-      dietaryRestrictions: "",
     },
   });
 
@@ -147,8 +143,8 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
         snacks: formattedItems["Carbohydrates"]?.join(", ") || "",
         beverages: formattedItems["Drinks & Beverages"]?.join(", ") || "",
         supplements: formattedItems["Spices & Sauces"]?.join(", ") || "",
-        specialRequests: data.specialRequests || "",
-        dietaryRestrictions: data.dietaryRestrictions || "",
+        specialRequests: "",
+        dietaryRestrictions: "",
         estimatedCost: totalCost.toFixed(2),
       };
 
@@ -183,6 +179,16 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
       });
       return;
     }
+    
+    if (totalCost > 35) {
+      toast({
+        title: "Order Limit Exceeded",
+        description: "Maximum order amount is €35.00. Current total: €" + totalCost.toFixed(2),
+        variant: "destructive",
+      });
+      return;
+    }
+    
     createOrderMutation.mutate({ ...data, selectedItems });
   };
 
@@ -303,42 +309,15 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="specialRequests"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Special Requests</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Organic preferences, specific brands, delivery instructions..."
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="dietaryRestrictions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dietary Restrictions & Allergies</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Lactose intolerant, gluten-free, nut allergies, vegetarian..."
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Order limit warning */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-yellow-800 font-medium">⚠️ Order Limit: €35.00 maximum per order</span>
+              </div>
+              <p className="text-sm text-yellow-700 mt-1">
+                Your current total is €{totalCost.toFixed(2)}
+                {totalCost > 35 && " - Please reduce your selection to proceed"}
+              </p>
             </div>
 
             <div className="flex justify-end space-x-3 pt-6 border-t">
@@ -352,10 +331,12 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
               </Button>
               <Button
                 type="submit"
-                disabled={createOrderMutation.isPending}
-                className="bg-[#DC143C] hover:bg-[#B91C3C]"
+                disabled={createOrderMutation.isPending || totalCost > 35}
+                className={`${totalCost > 35 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#DC143C] hover:bg-[#B91C3C]'}`}
               >
-                {createOrderMutation.isPending ? "Submitting..." : `Submit Order (€${totalCost.toFixed(2)})`}
+                {createOrderMutation.isPending ? "Submitting..." : 
+                 totalCost > 35 ? `Over Limit (€${totalCost.toFixed(2)})` :
+                 `Submit Order (€${totalCost.toFixed(2)})`}
               </Button>
             </div>
           </form>
