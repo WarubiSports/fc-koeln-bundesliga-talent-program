@@ -35,7 +35,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { groceryCategories, groceryData, getCategoryDisplayName, type GroceryCategory } from "@/lib/grocery-data";
 
 const groceryOrderSchema = z.object({
-  playerName: z.string().min(1, "Player name is required"),
   weekStartDate: z.string().min(1, "Week start date is required"),
   deliveryDay: z.enum(["monday", "thursday"]),
   selectedItems: z.record(z.string(), z.number()).default({}),
@@ -67,7 +66,6 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
     defaultValues: {
-      playerName: (user as any)?.firstName && (user as any)?.lastName ? `${(user as any).firstName} ${(user as any).lastName}` : "",
       weekStartDate: selectedWeek || getMondayOfWeek(new Date()),
       deliveryDay: "monday",
       selectedItems: {},
@@ -135,9 +133,14 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     mutationFn: async (data: GroceryOrderFormData) => {
       const formattedItems = formatSelectedItemsForSubmission();
       
+      // Automatically use logged-in user's name
+      const playerName = (user as any)?.firstName && (user as any)?.lastName 
+        ? `${(user as any).firstName} ${(user as any).lastName}` 
+        : (user as any)?.email || "Unknown Player";
+      
       // Format the data to match the existing grocery order schema
       const orderData = {
-        playerName: data.playerName,
+        playerName,
         weekStartDate: data.weekStartDate,
         deliveryDay: data.deliveryDay,
         proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
@@ -210,21 +213,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="playerName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Player Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Enter player name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="weekStartDate"

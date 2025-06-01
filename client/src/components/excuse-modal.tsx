@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { excuseReasons } from "@/lib/excuse-reasons";
 import {
@@ -32,7 +33,6 @@ import {
 } from "@/components/ui/select";
 
 const excuseSchema = z.object({
-  playerName: z.string().min(1, "Player name is required"),
   activity: z.string().min(1, "Activity is required"),
   reason: z.string().min(1, "Reason is required"),
 });
@@ -46,6 +46,7 @@ interface ExcuseModalProps {
 }
 
 export default function ExcuseModal({ isOpen, onClose, selectedActivity }: ExcuseModalProps) {
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -62,7 +63,6 @@ export default function ExcuseModal({ isOpen, onClose, selectedActivity }: Excus
   const form = useForm<ExcuseFormData>({
     resolver: zodResolver(excuseSchema),
     defaultValues: {
-      playerName: "",
       activity: selectedActivity || "",
       reason: "",
     },
