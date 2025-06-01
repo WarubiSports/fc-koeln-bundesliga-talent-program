@@ -3,16 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ChefHat, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Plus, ShoppingCart, Clock, CheckCircle, XCircle, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { FoodOrder } from "@shared/schema";
-import FoodOrderModal from "@/components/food-order-modal";
+import GroceryOrderModal from "@/components/grocery-order-modal";
 
-export default function FoodOrdersPage() {
+export default function GroceryOrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>();
+  const [selectedWeek, setSelectedWeek] = useState<string>();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
