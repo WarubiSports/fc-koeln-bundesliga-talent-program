@@ -70,7 +70,17 @@ export default function ExcuseModal({ isOpen, onClose, selectedActivity }: Excus
 
   const mutation = useMutation({
     mutationFn: async (data: ExcuseFormData) => {
-      const response = await apiRequest("/api/excuses", "POST", data);
+      // Automatically use logged-in user's name
+      const playerName = (user as any)?.firstName && (user as any)?.lastName 
+        ? `${(user as any).firstName} ${(user as any).lastName}` 
+        : (user as any)?.email || "Unknown Player";
+      
+      const excuseData = {
+        ...data,
+        playerName,
+      };
+      
+      const response = await apiRequest("POST", "/api/excuses", excuseData);
       return response;
     },
     onSuccess: () => {
@@ -105,20 +115,6 @@ export default function ExcuseModal({ isOpen, onClose, selectedActivity }: Excus
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="playerName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Player Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter player name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="activity"
