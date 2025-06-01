@@ -518,7 +518,6 @@ export default function CalendarPage() {
         <ExcuseModal 
           isOpen={isExcuseModalOpen}
           onClose={() => setIsExcuseModalOpen(false)}
-          selectedDate={selectedDate}
         />
       </main>
     </div>

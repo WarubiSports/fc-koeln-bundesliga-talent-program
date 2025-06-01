@@ -33,7 +33,7 @@ import {
 
 const excuseSchema = z.object({
   playerName: z.string().min(1, "Player name is required"),
-  date: z.string().min(1, "Date is required"),
+  activity: z.string().min(1, "Activity is required"),
   reason: z.string().min(1, "Reason is required"),
 });
 
@@ -42,18 +42,28 @@ type ExcuseFormData = z.infer<typeof excuseSchema>;
 interface ExcuseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedDate?: string;
+  selectedActivity?: string;
 }
 
-export default function ExcuseModal({ isOpen, onClose, selectedDate }: ExcuseModalProps) {
+export default function ExcuseModal({ isOpen, onClose, selectedActivity }: ExcuseModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const activities = [
+    "Team Practice Session",
+    "Group Practice Session", 
+    "Cryotherapy Session",
+    "Language School",
+    "Weight Lifting Session",
+    "Doctor's Appointment",
+    "Trial Session"
+  ];
 
   const form = useForm<ExcuseFormData>({
     resolver: zodResolver(excuseSchema),
     defaultValues: {
       playerName: "",
-      date: selectedDate || "",
+      activity: selectedActivity || "",
       reason: "",
     },
   });
@@ -111,13 +121,24 @@ export default function ExcuseModal({ isOpen, onClose, selectedDate }: ExcuseMod
 
             <FormField
               control={form.control}
-              name="date"
+              name="activity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
+                  <FormLabel>Activity</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an activity" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {activities.map((activity) => (
+                        <SelectItem key={activity} value={activity}>
+                          {activity}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

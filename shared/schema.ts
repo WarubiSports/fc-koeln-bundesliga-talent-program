@@ -105,7 +105,7 @@ export type Chore = typeof chores.$inferSelect;
 export const excuses = pgTable("excuses", {
   id: serial("id").primaryKey(),
   playerName: text("player_name").notNull(),
-  date: text("date").notNull(), // YYYY-MM-DD format
+  activity: text("activity").notNull(), // Team Practice, Cryotherapy, etc.
   reason: text("reason").notNull(),
   status: text("status").notNull().default("pending"), // pending, approved, denied
   submittedAt: text("submitted_at").notNull(),
