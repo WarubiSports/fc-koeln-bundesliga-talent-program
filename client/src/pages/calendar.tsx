@@ -241,9 +241,11 @@ export default function CalendarPage() {
       'trial': 'Trial Session'
     };
 
+    console.log('handleAddEvent called with:', eventType, 'isAdmin:', isAdmin, 'selectedDate:', selectedDate);
+    
     if (isAdmin) {
       // For admins, create actual events in the database
-      createEventMutation.mutate({
+      const eventData = {
         title: eventTitles[eventType as keyof typeof eventTitles] || 'New Event',
         eventType: eventTitles[eventType as keyof typeof eventTitles] || 'Other',
         date: selectedDate,
@@ -251,9 +253,12 @@ export default function CalendarPage() {
         endTime: '12:00',
         location: 'FC Köln Training Ground',
         notes: `Auto-created ${eventTitles[eventType as keyof typeof eventTitles] || 'event'} for ${new Date(selectedDate).toLocaleDateString()}`
-      });
+      };
+      console.log('Creating event with data:', eventData);
+      createEventMutation.mutate(eventData);
     } else {
       // For players, this opens the excuse modal for the selected activity
+      console.log('Opening excuse modal for player');
       setIsExcuseModalOpen(true);
     }
   };
