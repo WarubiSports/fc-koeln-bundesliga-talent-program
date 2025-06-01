@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin } = useAuth();
+  const [location] = useLocation();
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -26,17 +28,35 @@ export default function Header() {
           </div>
           
           <nav className="hidden md:flex space-x-8">
-            <a href="/dashboard" className="text-fc-red font-medium border-b-2 border-fc-red pb-4">
+            <a 
+              href="/" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
               Dashboard
             </a>
-            <a href="/chores" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
-              Chores
+            <a 
+              href="/chores" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/chores" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
+              Houses
             </a>
-            <a href="/calendar" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
+            <a 
+              href="/calendar" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/calendar" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
               Calendar
-            </a>
-            <a href="#analytics" className="text-gray-700 hover:text-fc-red transition-colors pb-4">
-              Analytics
             </a>
           </nav>
           
@@ -99,32 +119,37 @@ export default function Header() {
           <div className="md:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
               <a
-                href="/dashboard"
-                className="block px-3 py-2 text-fc-red font-medium bg-fc-red/10 rounded-md"
+                href="/"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Dashboard
               </a>
               <a
                 href="/chores"
-                className="block px-3 py-2 text-gray-700 hover:text-fc-red hover:bg-gray-50 rounded-md"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/chores" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Chores
+                Houses
               </a>
               <a
                 href="/calendar"
-                className="block px-3 py-2 text-gray-700 hover:text-fc-red hover:bg-gray-50 rounded-md"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/calendar" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Calendar
-              </a>
-              <a
-                href="#analytics"
-                className="block px-3 py-2 text-gray-700 hover:text-fc-red hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Analytics
               </a>
             </div>
           </div>
