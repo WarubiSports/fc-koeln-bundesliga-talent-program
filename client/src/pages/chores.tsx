@@ -30,22 +30,22 @@ export default function Chores() {
       {/* Mobile Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
         <div className="flex justify-around">
-          <button className="flex flex-col items-center py-2 text-gray-600">
+          <a href="/" className="flex flex-col items-center py-2 text-gray-600">
             <i className="fas fa-home text-lg mb-1"></i>
             <span className="text-xs">Dashboard</span>
-          </button>
-          <button className="flex flex-col items-center py-2 text-gray-600">
-            <i className="fas fa-users text-lg mb-1"></i>
-            <span className="text-xs">Players</span>
-          </button>
+          </a>
           <button className="flex flex-col items-center py-2 text-fc-red">
             <i className="fas fa-tasks text-lg mb-1"></i>
             <span className="text-xs">Chores</span>
           </button>
-          <button className="flex flex-col items-center py-2 text-gray-600">
-            <i className="fas fa-chart-bar text-lg mb-1"></i>
-            <span className="text-xs">Analytics</span>
-          </button>
+          <a href="/calendar" className="flex flex-col items-center py-2 text-gray-600">
+            <i className="fas fa-calendar text-lg mb-1"></i>
+            <span className="text-xs">Calendar</span>
+          </a>
+          <a href="/food-orders" className="flex flex-col items-center py-2 text-gray-600">
+            <i className="fas fa-shopping-cart text-lg mb-1"></i>
+            <span className="text-xs">Food Orders</span>
+          </a>
         </div>
       </nav>
     </div>
