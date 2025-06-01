@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ShoppingCart, Clock, CheckCircle, XCircle, Calendar } from "lucide-react";
+import { Plus, ShoppingCart, Clock, CheckCircle, XCircle, Calendar, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { FoodOrder } from "@shared/schema";
 import GroceryOrderModal from "@/components/grocery-order-modal";
+import { Link } from "wouter";
 
 export default function GroceryOrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,9 +107,17 @@ export default function GroceryOrdersPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Grocery Orders</h1>
-          <p className="text-gray-600">Manage weekly grocery deliveries for FC Köln players</p>
+        <div className="flex items-center space-x-4">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Grocery Orders</h1>
+            <p className="text-gray-600">Manage weekly grocery deliveries for FC Köln players</p>
+          </div>
         </div>
         <Button
           onClick={() => setIsModalOpen(true)}
