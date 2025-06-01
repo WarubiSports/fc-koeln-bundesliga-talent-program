@@ -126,38 +126,41 @@ export type InsertPracticeExcuse = z.infer<typeof insertPracticeExcuseSchema>;
 export type UpdatePracticeExcuse = z.infer<typeof updatePracticeExcuseSchema>;
 export type PracticeExcuse = typeof practiceExcuses.$inferSelect;
 
-// Food Orders Schema - Weekly ordering for Monday and Thursday
-export const foodOrders = pgTable("food_orders", {
+// Grocery Orders Schema - Weekly ordering for Monday and Thursday
+export const groceryOrders = pgTable("grocery_orders", {
   id: serial("id").primaryKey(),
   playerName: varchar("player_name", { length: 255 }).notNull(),
   weekStartDate: varchar("week_start_date", { length: 50 }).notNull(), // Monday of the week
-  orderDay: varchar("order_day", { length: 20 }).notNull(), // "monday" or "thursday"
+  deliveryDay: varchar("delivery_day", { length: 20 }).notNull(), // "monday" or "thursday"
   
-  // Monday meals
-  mondayBreakfast: varchar("monday_breakfast", { length: 255 }),
-  mondayLunch: varchar("monday_lunch", { length: 255 }),
-  mondayDinner: varchar("monday_dinner", { length: 255 }),
-  mondayDrink: varchar("monday_drink", { length: 255 }),
-  
-  // Thursday meals
-  thursdayBreakfast: varchar("thursday_breakfast", { length: 255 }),
-  thursdayLunch: varchar("thursday_lunch", { length: 255 }),
-  thursdayDinner: varchar("thursday_dinner", { length: 255 }),
-  thursdayDrink: varchar("thursday_drink", { length: 255 }),
+  // Grocery categories
+  proteins: text("proteins"), // meat, fish, eggs, dairy
+  vegetables: text("vegetables"), // fresh vegetables
+  fruits: text("fruits"), // fresh fruits
+  grains: text("grains"), // bread, pasta, rice, cereals
+  snacks: text("snacks"), // healthy snacks, protein bars
+  beverages: text("beverages"), // water, juices, sports drinks
+  supplements: text("supplements"), // protein powder, vitamins
   
   specialRequests: text("special_requests"),
-  allergies: text("allergies"),
+  dietaryRestrictions: text("dietary_restrictions"),
   estimatedCost: varchar("estimated_cost", { length: 20 }),
   status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, confirmed, delivered, cancelled
-  kitchenNotes: text("kitchen_notes"),
+  adminNotes: text("admin_notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertFoodOrderSchema = createInsertSchema(foodOrders);
+export const insertGroceryOrderSchema = createInsertSchema(groceryOrders);
+export const updateGroceryOrderSchema = insertGroceryOrderSchema.partial();
 
-export const updateFoodOrderSchema = insertFoodOrderSchema.partial();
+export type InsertGroceryOrder = z.infer<typeof insertGroceryOrderSchema>;
+export type UpdateGroceryOrder = z.infer<typeof updateGroceryOrderSchema>;
+export type GroceryOrder = typeof groceryOrders.$inferSelect;
 
-export type InsertFoodOrder = z.infer<typeof insertFoodOrderSchema>;
-export type UpdateFoodOrder = z.infer<typeof updateFoodOrderSchema>;
-export type FoodOrder = typeof foodOrders.$inferSelect;
+// Legacy compatibility for existing code
+export const insertFoodOrderSchema = insertGroceryOrderSchema;
+export const updateFoodOrderSchema = updateGroceryOrderSchema;
+export type InsertFoodOrder = InsertGroceryOrder;
+export type UpdateFoodOrder = UpdateGroceryOrder;
+export type FoodOrder = GroceryOrder;

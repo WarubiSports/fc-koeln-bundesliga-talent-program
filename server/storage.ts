@@ -3,7 +3,7 @@ import {
   players,
   chores,
   practiceExcuses,
-  foodOrders,
+  groceryOrders,
   type User,
   type UpsertUser,
   type Player,
@@ -15,6 +15,9 @@ import {
   type PracticeExcuse,
   type InsertPracticeExcuse,
   type UpdatePracticeExcuse,
+  type GroceryOrder,
+  type InsertGroceryOrder,
+  type UpdateGroceryOrder,
   type FoodOrder,
   type InsertFoodOrder,
   type UpdateFoodOrder,
@@ -328,19 +331,19 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Food order methods
+  // Grocery order methods
   async getAllFoodOrders(): Promise<FoodOrder[]> {
-    return await db.select().from(foodOrders);
+    return await db.select().from(groceryOrders);
   }
 
   async getFoodOrder(id: number): Promise<FoodOrder | undefined> {
-    const [order] = await db.select().from(foodOrders).where(eq(foodOrders.id, id));
+    const [order] = await db.select().from(groceryOrders).where(eq(groceryOrders.id, id));
     return order;
   }
 
   async createFoodOrder(insertOrder: InsertFoodOrder): Promise<FoodOrder> {
     const [order] = await db
-      .insert(foodOrders)
+      .insert(groceryOrders)
       .values(insertOrder)
       .returning();
     return order;
@@ -348,24 +351,24 @@ export class DatabaseStorage implements IStorage {
 
   async updateFoodOrder(id: number, updates: UpdateFoodOrder): Promise<FoodOrder | undefined> {
     const [order] = await db
-      .update(foodOrders)
+      .update(groceryOrders)
       .set({ ...updates, updatedAt: new Date() })
-      .where(eq(foodOrders.id, id))
+      .where(eq(groceryOrders.id, id))
       .returning();
     return order;
   }
 
   async deleteFoodOrder(id: number): Promise<boolean> {
-    const result = await db.delete(foodOrders).where(eq(foodOrders.id, id));
-    return result.rowCount > 0;
+    const result = await db.delete(groceryOrders).where(eq(groceryOrders.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   async getFoodOrdersByPlayer(playerName: string): Promise<FoodOrder[]> {
-    return await db.select().from(foodOrders).where(eq(foodOrders.playerName, playerName));
+    return await db.select().from(groceryOrders).where(eq(groceryOrders.playerName, playerName));
   }
 
   async getFoodOrdersByDate(date: string): Promise<FoodOrder[]> {
-    return await db.select().from(foodOrders).where(eq(foodOrders.orderDate, date));
+    return await db.select().from(groceryOrders).where(eq(groceryOrders.weekStartDate, date));
   }
 
   async getFoodOrderStats(): Promise<{
