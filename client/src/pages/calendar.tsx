@@ -209,6 +209,27 @@ export default function CalendarPage() {
 
   const isAdmin = user?.role === 'admin';
 
+  // Create event mutation for quick event creation
+  const createEventMutation = useMutation({
+    mutationFn: async (eventData: any) => {
+      await apiRequest("/api/events", "POST", eventData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({
+        title: "Success",
+        description: "Event created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleAddEvent = (eventType: string) => {
     const eventTitles = {
       'team-practice': 'Team Practice Session',
@@ -220,8 +241,21 @@ export default function CalendarPage() {
       'trial': 'Trial Session'
     };
 
-    // For now, show an alert with the selected event type
-    alert(`Adding: ${eventTitles[eventType as keyof typeof eventTitles]}`);
+    if (isAdmin) {
+      // For admins, create actual events in the database
+      createEventMutation.mutate({
+        title: eventTitles[eventType as keyof typeof eventTitles] || 'New Event',
+        eventType: eventTitles[eventType as keyof typeof eventTitles] || 'Other',
+        date: selectedDate,
+        startTime: '10:00',
+        endTime: '12:00',
+        location: 'FC Köln Training Ground',
+        notes: `Auto-created ${eventTitles[eventType as keyof typeof eventTitles] || 'event'} for ${new Date(selectedDate).toLocaleDateString()}`
+      });
+    } else {
+      // For players, this opens the excuse modal for the selected activity
+      setIsExcuseModalOpen(true);
+    }
   };
 
   // Available players and groups for filtering
@@ -363,15 +397,6 @@ export default function CalendarPage() {
                   <Target className="w-4 h-4 mr-2" />
                   Trial
                 </DropdownMenuItem>
-                {isAdmin && (
-                  <>
-                    <div className="border-t my-1"></div>
-                    <DropdownMenuItem onClick={() => setIsAddEventModalOpen(true)}>
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Custom Event (Admin)
-                    </DropdownMenuItem>
-                  </>
-                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -594,10 +619,7 @@ export default function CalendarPage() {
           onClose={() => setIsExcuseModalOpen(false)}
         />
         
-        <AddEventModal 
-          isOpen={isAddEventModalOpen}
-          onClose={() => setIsAddEventModalOpen(false)}
-        />
+
       </main>
     </div>
   );
