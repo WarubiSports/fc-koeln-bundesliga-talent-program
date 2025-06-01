@@ -57,18 +57,18 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  // Check if this is an admin user based on email domain or specific emails
-  const isAdmin = claims["email"]?.endsWith("@fckoeln.de") || 
-                  claims["email"] === "admin@fckoeln.com" ||
-                  claims["email"] === "coach@fckoeln.com";
+  // Check if this is an admin user based on email domain
+  const email = claims["email"];
+  const isAdmin = email?.endsWith("@fckoeln.de") || email?.endsWith("@warubi-sports.com");
   
   await storage.upsertUser({
     id: claims["sub"],
-    email: claims["email"],
+    email: email,
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
     role: isAdmin ? "admin" : "player",
+    approved: isAdmin, // Admins are auto-approved, players need approval
   });
 }
 

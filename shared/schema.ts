@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, varchar, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, varchar, jsonb, index, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -56,6 +56,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: text("role").notNull().default("player"), // admin, player
+  approved: text("approved").notNull().default("false"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
