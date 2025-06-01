@@ -22,18 +22,14 @@ export default function GroceryOrdersPage() {
     enabled: isAuthenticated,
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats = {} } = useQuery({
     queryKey: ["/api/food-order-stats"],
     enabled: isAuthenticated,
   });
 
   const updateOrderMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      await apiRequest(`/api/food-orders/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ status }),
-        headers: { "Content-Type": "application/json" },
-      });
+      return await apiRequest("PUT", `/api/food-orders/${id}`, { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
@@ -55,247 +51,270 @@ export default function GroceryOrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-yellow-100 text-yellow-800";
       case "confirmed":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-blue-100 text-blue-800";
       case "delivered":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-800";
       case "cancelled":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getMealTypeIcon = (mealType: string) => {
-    switch (mealType) {
-      case "breakfast":
-        return "🥐";
-      case "lunch":
-        return "🍽️";
-      case "dinner":
-        return "🍲";
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="h-4 w-4" />;
+      case "confirmed":
+        return <CheckCircle className="h-4 w-4" />;
+      case "delivered":
+        return <CheckCircle className="h-4 w-4" />;
+      case "cancelled":
+        return <XCircle className="h-4 w-4" />;
       default:
-        return "🍴";
+        return <Clock className="h-4 w-4" />;
     }
   };
 
-  if (!isAuthenticated) {
+  const handleUpdateStatus = (id: number, status: string) => {
+    updateOrderMutation.mutate({ id, status });
+  };
+
+  const handleNewOrder = (week?: string) => {
+    setSelectedWeek(week);
+    setIsModalOpen(true);
+  };
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="p-6 text-center">
-          <CardContent>
-            <ChefHat className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Access Required</h3>
-            <p className="text-gray-600 mb-4">Please log in to access the food ordering system.</p>
-            <Button onClick={() => window.location.href = '/api/login'}>
-              Log In
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Food Orders</h1>
-          <p className="text-gray-600">Manage meal orders for FC Köln players</p>
+          <h1 className="text-2xl font-bold text-gray-900">Grocery Orders</h1>
+          <p className="text-gray-600">Manage weekly grocery deliveries for FC Köln players</p>
         </div>
         <Button
           onClick={() => setIsModalOpen(true)}
           className="bg-[#DC143C] hover:bg-[#B91C3C] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
-          New Food Order
+          New Grocery Order
         </Button>
       </div>
 
       {/* Statistics */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <ChefHat className="h-5 w-5 text-[#DC143C]" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(stats as any).totalOrders || 0}</div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-yellow-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.pendingOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(stats as any).pendingOrders || 0}</div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-blue-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.confirmedOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(stats as any).confirmedOrders || 0}</div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Delivered</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.deliveredOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Delivered</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(stats as any).deliveredOrders || 0}</div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <XCircle className="h-5 w-5 text-red-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.cancelledOrders}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cancelled</CardTitle>
+            <XCircle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{(stats as any).cancelledOrders || 0}</div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Food Orders List */}
+      {/* Orders List */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <ChefHat className="h-5 w-5" />
-            <span>Recent Food Orders</span>
-          </CardTitle>
+          <CardTitle>Grocery Orders</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-16 bg-gray-200 rounded"></div>
-                </div>
-              ))}
-            </div>
-          ) : orders.length === 0 ? (
+          {Array.isArray(orders) && orders.length === 0 ? (
             <div className="text-center py-8">
-              <ChefHat className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-gray-600">No food orders yet. Create your first order to get started.</p>
+              <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">No grocery orders yet</p>
+              <Button
+                onClick={() => handleNewOrder()}
+                className="mt-4 bg-[#DC143C] hover:bg-[#B91C3C] text-white"
+              >
+                Create First Order
+              </Button>
             </div>
           ) : (
             <div className="space-y-4">
-              {orders.map((order: FoodOrder) => (
-                <div
-                  key={order.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{getMealTypeIcon(order.mealType)}</div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{order.playerName}</h3>
-                        <p className="text-sm text-gray-600">
-                          {order.mealType.charAt(0).toUpperCase() + order.mealType.slice(1)} • {order.orderDate}
-                        </p>
+              {Array.isArray(orders) && orders.map((order: FoodOrder) => (
+                <Card key={order.id} className="border-l-4 border-l-[#DC143C]">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div>
+                          <h3 className="font-semibold text-lg">{order.playerName}</h3>
+                          <p className="text-sm text-gray-600">
+                            Week of {new Date(order.weekStartDate).toLocaleDateString()} • {order.deliveryDay}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className={`${getStatusColor(order.status)} flex items-center space-x-1`}>
+                          {getStatusIcon(order.status)}
+                          <span className="capitalize">{order.status}</span>
+                        </Badge>
+                        {isAuthenticated && (user as any)?.email?.endsWith('@fckoeln.de') && order.status === 'pending' && (
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleUpdateStatus(order.id, 'confirmed')}
+                              disabled={updateOrderMutation.isPending}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              Confirm
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleUpdateStatus(order.id, 'cancelled')}
+                              disabled={updateOrderMutation.isPending}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </Badge>
-                      {user?.email?.includes('@fckoeln.de') && order.status === 'pending' && (
-                        <div className="flex space-x-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateOrderMutation.mutate({ id: order.id, status: 'confirmed' })}
-                            className="border-green-200 text-green-700 hover:bg-green-50"
-                          >
-                            Confirm
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateOrderMutation.mutate({ id: order.id, status: 'cancelled' })}
-                            className="border-red-200 text-red-700 hover:bg-red-50"
-                          >
-                            Cancel
-                          </Button>
+
+                    {/* Grocery Categories */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      {order.proteins && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Proteins</h4>
+                          <p className="text-sm text-gray-600">{order.proteins}</p>
+                        </div>
+                      )}
+                      {order.vegetables && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Vegetables</h4>
+                          <p className="text-sm text-gray-600">{order.vegetables}</p>
+                        </div>
+                      )}
+                      {order.fruits && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Fruits</h4>
+                          <p className="text-sm text-gray-600">{order.fruits}</p>
+                        </div>
+                      )}
+                      {order.grains && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Grains</h4>
+                          <p className="text-sm text-gray-600">{order.grains}</p>
+                        </div>
+                      )}
+                      {order.snacks && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Snacks</h4>
+                          <p className="text-sm text-gray-600">{order.snacks}</p>
+                        </div>
+                      )}
+                      {order.beverages && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Beverages</h4>
+                          <p className="text-sm text-gray-600">{order.beverages}</p>
+                        </div>
+                      )}
+                      {order.supplements && (
+                        <div>
+                          <h4 className="font-medium text-sm text-gray-700 mb-1">Supplements</h4>
+                          <p className="text-sm text-gray-600">{order.supplements}</p>
                         </div>
                       )}
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-600">Main Dish</p>
-                      <p className="font-medium">{order.mainDish || "Not specified"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Side Dish</p>
-                      <p className="font-medium">{order.sideDish || "Not specified"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Drink</p>
-                      <p className="font-medium">{order.drink || "Not specified"}</p>
-                    </div>
-                  </div>
-
-                  {order.specialRequests && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-gray-600 text-sm">Special Requests</p>
-                      <p className="text-sm">{order.specialRequests}</p>
-                    </div>
-                  )}
-
-                  {order.allergies && (
-                    <div className="mt-2">
-                      <p className="text-red-600 text-sm font-medium">Allergies: {order.allergies}</p>
-                    </div>
-                  )}
-
-                  {order.estimatedCost && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600">Estimated Cost: <span className="font-medium">€{order.estimatedCost}</span></p>
-                    </div>
-                  )}
-
-                  {order.deliveryTime && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600">Delivery Time: <span className="font-medium">{order.deliveryTime}</span></p>
-                    </div>
-                  )}
-                </div>
+                    {/* Additional Info */}
+                    {(order.dietaryRestrictions || order.estimatedCost || order.specialRequests) && (
+                      <div className="border-t pt-4 mt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          {order.dietaryRestrictions && (
+                            <div>
+                              <span className="font-medium text-gray-700">Dietary Restrictions:</span>
+                              <p className="text-gray-600">{order.dietaryRestrictions}</p>
+                            </div>
+                          )}
+                          {order.estimatedCost && (
+                            <div>
+                              <span className="font-medium text-gray-700">Estimated Cost:</span>
+                              <p className="text-gray-600">€{order.estimatedCost}</p>
+                            </div>
+                          )}
+                          {order.specialRequests && (
+                            <div>
+                              <span className="font-medium text-gray-700">Special Requests:</span>
+                              <p className="text-gray-600">{order.specialRequests}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Food Order Modal */}
-      <FoodOrderModal
+      {/* Modal */}
+      <GroceryOrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        selectedDate={selectedDate}
+        selectedWeek={selectedWeek}
       />
     </div>
   );
