@@ -173,17 +173,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <SelectItem value="forward">Forward</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={ageGroupFilter} onValueChange={setAgeGroupFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Age Groups" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Age Groups</SelectItem>
-              <SelectItem value="u16">Under 16</SelectItem>
-              <SelectItem value="u18">Under 18</SelectItem>
-              <SelectItem value="u21">Under 21</SelectItem>
-            </SelectContent>
-          </Select>
+
           <Select value={countryFilter} onValueChange={setCountryFilter}>
             <SelectTrigger>
               <SelectValue placeholder="All Countries" />
@@ -227,9 +217,6 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
                   Position
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Age Group
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Country
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -262,9 +249,6 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
                     <Badge className={getPositionColor(player.position)}>
                       {player.position.charAt(0).toUpperCase() + player.position.slice(1)}
                     </Badge>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {player.ageGroup.toUpperCase()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
