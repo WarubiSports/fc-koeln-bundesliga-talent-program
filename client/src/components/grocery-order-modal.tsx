@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,24 +27,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { groceryCategories, groceryData, getCategoryDisplayName, type GroceryCategory } from "@/lib/grocery-data";
 
 const groceryOrderSchema = z.object({
   playerName: z.string().min(1, "Player name is required"),
   weekStartDate: z.string().min(1, "Week start date is required"),
   deliveryDay: z.enum(["monday", "thursday"]),
-  proteins: z.string().optional(),
-  vegetables: z.string().optional(),
-  fruits: z.string().optional(),
-  grains: z.string().optional(),
-  snacks: z.string().optional(),
-  beverages: z.string().optional(),
-  supplements: z.string().optional(),
+  selectedItems: z.record(z.string(), z.number()).default({}),
   specialRequests: z.string().optional(),
   dietaryRestrictions: z.string().optional(),
-  estimatedCost: z.string().optional(),
 });
 
 type GroceryOrderFormData = z.infer<typeof groceryOrderSchema>;
@@ -68,6 +64,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
 
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
@@ -75,26 +72,87 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
       playerName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "",
       weekStartDate: selectedWeek || getMondayOfWeek(new Date()),
       deliveryDay: "monday",
-      proteins: "",
-      vegetables: "",
-      fruits: "",
-      grains: "",
-      snacks: "",
-      beverages: "",
-      supplements: "",
+      selectedItems: {},
       specialRequests: "",
       dietaryRestrictions: "",
-      estimatedCost: "",
     },
   });
 
+  const totalCost = useMemo(() => {
+    return Object.entries(selectedItems).reduce((total, [itemName, quantity]) => {
+      const allItems = Object.values(groceryData).flat();
+      const item = allItems.find(i => i.name === itemName);
+      return total + (item ? item.price * quantity : 0);
+    }, 0);
+  }, [selectedItems]);
+
+  const handleItemToggle = (itemName: string, checked: boolean) => {
+    setSelectedItems(prev => {
+      const newItems = { ...prev };
+      if (checked) {
+        newItems[itemName] = 1;
+      } else {
+        delete newItems[itemName];
+      }
+      return newItems;
+    });
+  };
+
+  const handleQuantityChange = (itemName: string, quantity: number) => {
+    if (quantity <= 0) {
+      setSelectedItems(prev => {
+        const newItems = { ...prev };
+        delete newItems[itemName];
+        return newItems;
+      });
+    } else {
+      setSelectedItems(prev => ({
+        ...prev,
+        [itemName]: quantity
+      }));
+    }
+  };
+
+  const formatSelectedItemsForSubmission = () => {
+    const categories: Record<string, string[]> = {};
+    
+    Object.entries(selectedItems).forEach(([itemName, quantity]) => {
+      const allItems = Object.values(groceryData).flat();
+      const item = allItems.find(i => i.name === itemName);
+      if (item) {
+        const categoryName = getCategoryDisplayName(item.category as GroceryCategory);
+        if (!categories[categoryName]) {
+          categories[categoryName] = [];
+        }
+        categories[categoryName].push(`${itemName} (${quantity}x)`);
+      }
+    });
+
+    return categories;
+  };
+
   const createOrderMutation = useMutation({
     mutationFn: async (data: GroceryOrderFormData) => {
-      return await apiRequest("/api/food-orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const formattedItems = formatSelectedItemsForSubmission();
+      
+      // Format the data to match the existing grocery order schema
+      const orderData = {
+        playerName: data.playerName,
+        weekStartDate: data.weekStartDate,
+        deliveryDay: data.deliveryDay,
+        proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
+        vegetables: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
+        fruits: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
+        grains: formattedItems["Carbohydrates"]?.join(", ") || "",
+        snacks: formattedItems["Carbohydrates"]?.join(", ") || "",
+        beverages: formattedItems["Drinks & Beverages"]?.join(", ") || "",
+        supplements: formattedItems["Spices & Sauces"]?.join(", ") || "",
+        specialRequests: data.specialRequests || "",
+        dietaryRestrictions: data.dietaryRestrictions || "",
+        estimatedCost: totalCost.toFixed(2),
+      };
+
+      return await apiRequest("POST", "/api/food-orders", orderData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
@@ -104,6 +162,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
         description: "Grocery order submitted successfully",
       });
       form.reset();
+      setSelectedItems({});
       onClose();
     },
     onError: () => {
@@ -116,21 +175,32 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   });
 
   const onSubmit = (data: GroceryOrderFormData) => {
-    createOrderMutation.mutate(data);
+    if (Object.keys(selectedItems).length === 0) {
+      toast({
+        title: "No Items Selected",
+        description: "Please select at least one item for your grocery order",
+        variant: "destructive",
+      });
+      return;
+    }
+    createOrderMutation.mutate({ ...data, selectedItems });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[#DC143C]">
             New Weekly Grocery Order
           </DialogTitle>
+          <p className="text-sm text-gray-600">
+            Order deadline: Monday 8am (Tuesday delivery) • Thursday 8am (Friday delivery)
+          </p>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="playerName"
@@ -158,154 +228,111 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                   </FormItem>
                 )}
               />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="deliveryDay"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Delivery Day</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select delivery day" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="monday">📦 Monday</SelectItem>
-                      <SelectItem value="thursday">📦 Thursday</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Grocery Categories</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="proteins"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🥩 Proteins</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Chicken breast, salmon, eggs, Greek yogurt, protein powder..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="vegetables"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🥬 Vegetables</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Broccoli, spinach, carrots, bell peppers, tomatoes..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="fruits"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🍎 Fruits</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Bananas, apples, berries, oranges, avocados..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="grains"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🍞 Grains & Carbs</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Brown rice, quinoa, oats, whole grain bread, pasta..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="snacks"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🥜 Healthy Snacks</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Nuts, protein bars, fruit, energy balls..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="beverages"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>🥤 Beverages</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Water, sports drinks, coconut water, protein shakes..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
-                name="supplements"
+                name="deliveryDay"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>💊 Supplements</FormLabel>
+                    <FormLabel>Delivery Day</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select delivery day" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="monday">Tuesday Delivery (Order by Monday 8am)</SelectItem>
+                        <SelectItem value="thursday">Friday Delivery (Order by Thursday 8am)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Grocery Selection */}
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Select Grocery Items</h3>
+                <div className="text-lg font-bold text-[#DC143C]">
+                  Total: €{totalCost.toFixed(2)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groceryCategories.map((category) => (
+                  <Card key={category} className="h-fit">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium">
+                        {getCategoryDisplayName(category)}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {groceryData[category].map((item) => (
+                        <div key={item.name} className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2 flex-1 min-w-0">
+                            <Checkbox
+                              checked={item.name in selectedItems}
+                              onCheckedChange={(checked) => 
+                                handleItemToggle(item.name, checked as boolean)
+                              }
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{item.name}</div>
+                              <div className="text-xs text-gray-500">€{item.price.toFixed(2)}</div>
+                            </div>
+                          </div>
+                          {item.name in selectedItems && (
+                            <Input
+                              type="number"
+                              min="1"
+                              value={selectedItems[item.name]}
+                              onChange={(e) => 
+                                handleQuantityChange(item.name, parseInt(e.target.value) || 0)
+                              }
+                              className="w-16 h-8 text-xs"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="specialRequests"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Special Requests</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
-                        placeholder="Vitamins, protein powder, creatine, magnesium..."
-                        rows={2}
+                        placeholder="Organic preferences, specific brands, delivery instructions..."
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dietaryRestrictions"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dietary Restrictions & Allergies</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Lactose intolerant, gluten-free, nut allergies, vegetarian..."
+                        rows={3}
                       />
                     </FormControl>
                     <FormMessage />
@@ -314,59 +341,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="estimatedCost"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estimated Cost (€)</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="150.00" type="number" step="0.01" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="specialRequests"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Special Requests</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Organic preferences, specific brands, delivery instructions..."
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dietaryRestrictions"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dietary Restrictions & Allergies</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Lactose intolerant, gluten-free, nut allergies, vegetarian..."
-                      rows={2}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-3 pt-6">
+            <div className="flex justify-end space-x-3 pt-6 border-t">
               <Button
                 type="button"
                 variant="outline"
@@ -380,7 +355,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                 disabled={createOrderMutation.isPending}
                 className="bg-[#DC143C] hover:bg-[#B91C3C]"
               >
-                {createOrderMutation.isPending ? "Submitting..." : "Submit Order"}
+                {createOrderMutation.isPending ? "Submitting..." : `Submit Order (€${totalCost.toFixed(2)})`}
               </Button>
             </div>
           </form>
