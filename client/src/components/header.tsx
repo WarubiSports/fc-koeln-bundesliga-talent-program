@@ -68,18 +68,6 @@ export default function Header() {
             >
               Food Orders
             </a>
-            {isAdmin && (
-              <a 
-                href="/admin-events" 
-                className={`transition-all duration-200 pb-4 ${
-                  location === "/admin-events" 
-                    ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                    : "text-gray-700 hover:text-[#DC143C] transition-colors"
-                }`}
-              >
-                Events
-              </a>
-            )}
           </nav>
           
           <div className="flex items-center space-x-4">
@@ -184,19 +172,6 @@ export default function Header() {
               >
                 Food Orders
               </a>
-              {isAdmin && (
-                <a
-                  href="/admin-events"
-                  className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                    location === "/admin-events" 
-                      ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                      : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Events
-                </a>
-              )}
             </div>
           </div>
         )}

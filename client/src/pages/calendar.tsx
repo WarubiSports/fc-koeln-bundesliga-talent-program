@@ -9,10 +9,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck, Target } from "lucide-react";
+import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck, Target, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
+import AddEventModal from "@/components/add-event-modal";
+import type { Event } from "@shared/schema";
 
 interface CalendarEvent {
   id: number;
@@ -161,11 +167,42 @@ const additionalEvents: CalendarEvent[] = [
 const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additionalEvents];
 
 export default function CalendarPage() {
+  const { user, isAuthenticated } = useAuth();
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
+  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string>("All Players");
   const [selectedGroup, setSelectedGroup] = useState<string>("All Groups");
+
+  // Fetch admin events from database
+  const { data: adminEvents = [] } = useQuery({
+    queryKey: ["/api/events"],
+    enabled: isAuthenticated,
+  });
+
+  // Delete event mutation
+  const deleteEventMutation = useMutation({
+    mutationFn: async (eventId: number) => {
+      await apiRequest(`/api/events/${eventId}`, "DELETE");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({
+        title: "Success",
+        description: "Event deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const isAdmin = user?.role === 'admin';
 
   const handleAddEvent = (eventType: string) => {
     const eventTitles = {
@@ -202,7 +239,30 @@ export default function CalendarPage() {
   };
 
   const getEventsForDate = (date: string) => {
-    return filterEvents(events.filter(event => event.date === date));
+    // Combine static events with database events
+    const staticEvents = filterEvents(events.filter(event => event.date === date));
+    const dbEvents = adminEvents
+      .filter((event: Event) => event.date === date)
+      .map((event: Event) => ({
+        id: event.id + 10000, // Offset to avoid ID conflicts
+        title: event.title,
+        date: event.date,
+        time: event.startTime,
+        location: event.location || "TBD",
+        type: event.eventType?.toLowerCase().includes('practice') ? 'training' as const : 
+              event.eventType?.toLowerCase().includes('match') ? 'match' as const :
+              event.eventType?.toLowerCase().includes('meeting') ? 'meeting' as const : 'other' as const,
+        description: event.notes || undefined,
+        targetGroups: ["Bundesliga Talent Program"],
+        isPrivate: false,
+        isAdminEvent: true,
+        adminEventId: event.id,
+        endTime: event.endTime,
+        eventType: event.eventType,
+        createdBy: event.createdBy
+      }));
+    
+    return [...staticEvents, ...dbEvents];
   };
 
   const filterEvents = (eventList: CalendarEvent[]) => {
@@ -298,6 +358,15 @@ export default function CalendarPage() {
                   <Target className="w-4 h-4 mr-2" />
                   Trial
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <div className="border-t my-1"></div>
+                    <DropdownMenuItem onClick={() => setIsAddEventModalOpen(true)}>
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Custom Event (Admin)
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
