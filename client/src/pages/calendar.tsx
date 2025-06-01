@@ -865,23 +865,25 @@ export default function CalendarPage() {
                 </CardContent>
               </Card>
 
-              {/* Upcoming Events */}
-              <Card className="lg:col-span-3 mt-8">
-                <CardHeader>
-                  <CardTitle>Upcoming Events</CardTitle>
-                  <p className="text-gray-600">Next events across all categories</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filterEvents(events).slice(0, 6).map((event) => (
-                      <div
-                        key={event.id}
-                        className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold text-gray-900 text-sm">{event.title}</h4>
-                          <Badge className={getEventTypeColor(event.type)} variant="outline">
-                            {event.type}
+            </div>
+
+            {/* Upcoming Events */}
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>Upcoming Events</CardTitle>
+                <p className="text-gray-600">Next events across all categories</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filterEvents(events).slice(0, 6).map((event) => (
+                    <div
+                      key={event.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-semibold text-gray-900 text-sm">{event.title}</h4>
+                        <Badge className={getEventTypeColor(event.type)} variant="outline">
+                          {event.type}
                           </Badge>
                         </div>
                         
@@ -929,7 +931,6 @@ export default function CalendarPage() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
           </TabsContent>
 
           <TabsContent value="excuses" className="space-y-6">
