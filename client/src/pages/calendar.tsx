@@ -398,14 +398,21 @@ export default function CalendarPage() {
   // Calendar rendering functions
   const renderDayView = () => {
     const dayEvents = getEventsForDate(format(currentDate, 'yyyy-MM-dd'));
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // Start at 6 AM, end at 11 PM
+
+    const formatTime12Hour = (hour: number) => {
+      if (hour === 0) return '12:00 AM';
+      if (hour === 12) return '12:00 PM';
+      if (hour < 12) return `${hour}:00 AM`;
+      return `${hour - 12}:00 PM`;
+    };
 
     return (
       <div className="grid grid-cols-1 gap-4">
         <div className="border rounded-lg p-4">
           <div className="grid grid-cols-12 gap-2 text-sm">
             {hours.map(hour => {
-              const timeSlot = `${hour.toString().padStart(2, '0')}:00`;
+              const timeSlot = formatTime12Hour(hour);
               const eventsAtHour = dayEvents.filter(event => 
                 event.time && event.time.startsWith(hour.toString().padStart(2, '0'))
               );
@@ -413,7 +420,7 @@ export default function CalendarPage() {
               return (
                 <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
                   <div className="flex">
-                    <div className="w-16 text-gray-500 text-xs">{timeSlot}</div>
+                    <div className="w-20 text-gray-500 text-xs font-medium">{timeSlot}</div>
                     <div className="flex-1">
                       {eventsAtHour.map(event => (
                         <div key={event.id} className="mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs">
@@ -435,6 +442,14 @@ export default function CalendarPage() {
   const renderWeekView = () => {
     const weekStart = startOfWeek(currentDate);
     const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // Start at 6 AM, end at 11 PM
+
+    const formatTime12Hour = (hour: number) => {
+      if (hour === 0) return '12 AM';
+      if (hour === 12) return '12 PM';
+      if (hour < 12) return `${hour} AM`;
+      return `${hour - 12} PM`;
+    };
     
     return (
       <div className="grid grid-cols-8 gap-1 border rounded-lg overflow-hidden">
@@ -448,10 +463,10 @@ export default function CalendarPage() {
           </div>
         ))}
         
-        {Array.from({ length: 24 }, (_, hour) => (
+        {hours.map(hour => (
           <div key={hour} className="contents">
             <div className="p-2 text-xs text-gray-500 border-t">
-              {hour.toString().padStart(2, '0')}:00
+              {formatTime12Hour(hour)}
             </div>
             {weekDays.map(day => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
