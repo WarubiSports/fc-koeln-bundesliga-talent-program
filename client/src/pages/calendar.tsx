@@ -255,7 +255,66 @@ export default function CalendarPage() {
   };
 
   const handleEventSubmit = (eventData: any) => {
-    createEventMutation.mutate(eventData);
+    if (eventData.isRecurring) {
+      // Create multiple events for recurring pattern
+      const events = generateRecurringEvents(eventData);
+      events.forEach(event => {
+        createEventMutation.mutate(event);
+      });
+    } else {
+      // Create single event
+      createEventMutation.mutate(eventData);
+    }
+  };
+
+  const generateRecurringEvents = (eventData: any) => {
+    const events = [];
+    const startDate = new Date(eventData.date);
+    const count = parseInt(eventData.recurringCount) || 4;
+    const endDate = eventData.recurringEndDate ? new Date(eventData.recurringEndDate) : null;
+
+    for (let i = 0; i < count; i++) {
+      const eventDate = new Date(startDate);
+      
+      // Calculate the date for this occurrence
+      switch (eventData.recurringType) {
+        case 'daily':
+          eventDate.setDate(startDate.getDate() + i);
+          break;
+        case 'weekly':
+          eventDate.setDate(startDate.getDate() + (i * 7));
+          break;
+        case 'biweekly':
+          eventDate.setDate(startDate.getDate() + (i * 14));
+          break;
+        case 'monthly':
+          eventDate.setMonth(startDate.getMonth() + i);
+          break;
+      }
+
+      // Stop if we've passed the end date
+      if (endDate && eventDate > endDate) {
+        break;
+      }
+
+      // Create event data for this occurrence
+      const event = {
+        ...eventData,
+        date: eventDate.toISOString().split('T')[0],
+        title: i === 0 ? eventData.title : `${eventData.title} (${i + 1}/${count})`,
+        notes: eventData.notes + (i === 0 ? ' (Recurring series)' : ` (Part ${i + 1} of recurring series)`)
+      };
+
+      // Remove recurring-specific fields from individual events
+      delete event.isRecurring;
+      delete event.recurringType;
+      delete event.recurringEndDate;
+      delete event.recurringCount;
+
+      events.push(event);
+    }
+
+    return events;
   };
 
   const handleDeleteEvent = (eventId: number) => {

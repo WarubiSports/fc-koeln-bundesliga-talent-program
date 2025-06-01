@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { CalendarDays, Clock, MapPin, FileText } from "lucide-react";
+import { CalendarDays, Clock, MapPin, FileText, Repeat } from "lucide-react";
 
 interface EventCreationModalProps {
   isOpen: boolean;
@@ -57,7 +58,11 @@ export default function EventCreationModal({
     startTime: "10:00",
     endTime: "12:00",
     location: "FC Köln Training Ground",
-    notes: ""
+    notes: "",
+    isRecurring: false,
+    recurringType: "weekly",
+    recurringEndDate: "",
+    recurringCount: 4
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -72,7 +77,11 @@ export default function EventCreationModal({
       startTime: "10:00",
       endTime: "12:00",
       location: "FC Köln Training Ground",
-      notes: ""
+      notes: "",
+      isRecurring: false,
+      recurringType: "weekly",
+      recurringEndDate: "",
+      recurringCount: 4
     });
   };
 
@@ -205,6 +214,72 @@ export default function EventCreationModal({
               placeholder="Add any additional details or instructions..."
               rows={3}
             />
+          </div>
+
+          {/* Recurring Event Options */}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="isRecurring"
+                checked={formData.isRecurring}
+                onCheckedChange={(checked) => handleInputChange('isRecurring', checked.toString())}
+              />
+              <Label htmlFor="isRecurring" className="flex items-center gap-2 cursor-pointer">
+                <Repeat className="w-4 h-4" />
+                Create recurring event
+              </Label>
+            </div>
+
+            {formData.isRecurring && (
+              <div className="ml-6 space-y-4 border-l-2 border-gray-200 pl-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="recurringType">Repeat Pattern</Label>
+                    <Select
+                      value={formData.recurringType}
+                      onValueChange={(value) => handleInputChange('recurringType', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select pattern" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="recurringCount">Number of Events</Label>
+                    <Input
+                      id="recurringCount"
+                      type="number"
+                      min="2"
+                      max="52"
+                      value={formData.recurringCount}
+                      onChange={(e) => handleInputChange('recurringCount', e.target.value)}
+                      placeholder="4"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="recurringEndDate">End Date (Optional)</Label>
+                  <Input
+                    id="recurringEndDate"
+                    type="date"
+                    value={formData.recurringEndDate}
+                    onChange={(e) => handleInputChange('recurringEndDate', e.target.value)}
+                    placeholder="Leave empty to use count"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Leave empty to create {formData.recurringCount} events, or set an end date
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
