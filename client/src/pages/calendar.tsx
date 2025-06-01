@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown } from "lucide-react";
+import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck } from "lucide-react";
 import { useState } from "react";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
@@ -275,27 +275,27 @@ export default function CalendarPage() {
                   Team Practice Session
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('group-practice')}>
-                  <Users className="w-4 h-4 mr-2" />
+                  <UserCheck className="w-4 h-4 mr-2" />
                   Group Practice Session
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('cryotherapy')}>
-                  <Clock className="w-4 h-4 mr-2" />
+                  <Snowflake className="w-4 h-4 mr-2" />
                   Cryotherapy
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('language-school')}>
-                  <FileText className="w-4 h-4 mr-2" />
+                  <BookOpen className="w-4 h-4 mr-2" />
                   Language School
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('weight-lifting')}>
-                  <Users className="w-4 h-4 mr-2" />
+                  <Dumbbell className="w-4 h-4 mr-2" />
                   Weight Lifting
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('doctor-appointment')}>
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Stethoscope className="w-4 h-4 mr-2" />
                   Doctor's Appointment
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('trial')}>
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <UserCheck className="w-4 h-4 mr-2" />
                   Trial
                 </DropdownMenuItem>
               </DropdownMenuContent>
