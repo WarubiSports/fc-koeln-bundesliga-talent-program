@@ -9,8 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck, Target, Edit, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck, Target, Edit, Trash2, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { useState, useMemo } from "react";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addDays, startOfDay, endOfDay, addWeeks, subWeeks, subDays, isToday } from "date-fns";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -174,6 +175,8 @@ const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additio
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuth();
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('month');
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
   const [isEventCreationModalOpen, setIsEventCreationModalOpen] = useState(false);
@@ -321,6 +324,203 @@ export default function CalendarPage() {
     if (confirm('Are you sure you want to delete this event?')) {
       deleteEventMutation.mutate(eventId);
     }
+  };
+
+  // Navigation functions
+  const navigatePrevious = () => {
+    switch (calendarView) {
+      case 'day':
+        setCurrentDate(subDays(currentDate, 1));
+        break;
+      case 'week':
+        setCurrentDate(subWeeks(currentDate, 1));
+        break;
+      case 'month':
+        setCurrentDate(subMonths(currentDate, 1));
+        break;
+    }
+  };
+
+  const navigateNext = () => {
+    switch (calendarView) {
+      case 'day':
+        setCurrentDate(addDays(currentDate, 1));
+        break;
+      case 'week':
+        setCurrentDate(addWeeks(currentDate, 1));
+        break;
+      case 'month':
+        setCurrentDate(addMonths(currentDate, 1));
+        break;
+    }
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  // Date range calculations for different views
+  const getDateRange = () => {
+    switch (calendarView) {
+      case 'day':
+        return {
+          start: startOfDay(currentDate),
+          end: endOfDay(currentDate),
+          title: format(currentDate, 'EEEE, MMMM d, yyyy')
+        };
+      case 'week':
+        const weekStart = startOfWeek(currentDate);
+        const weekEnd = endOfWeek(currentDate);
+        return {
+          start: weekStart,
+          end: weekEnd,
+          title: `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`
+        };
+      case 'month':
+        const monthStart = startOfMonth(currentDate);
+        const monthEnd = endOfMonth(currentDate);
+        return {
+          start: monthStart,
+          end: monthEnd,
+          title: format(currentDate, 'MMMM yyyy')
+        };
+      default:
+        return {
+          start: new Date(),
+          end: new Date(),
+          title: ''
+        };
+    }
+  };
+
+  const dateRange = getDateRange();
+
+  // Calendar rendering functions
+  const renderDayView = () => {
+    const dayEvents = getEventsForDate(format(currentDate, 'yyyy-MM-dd'));
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+
+    return (
+      <div className="grid grid-cols-1 gap-4">
+        <div className="border rounded-lg p-4">
+          <div className="grid grid-cols-12 gap-2 text-sm">
+            {hours.map(hour => {
+              const timeSlot = `${hour.toString().padStart(2, '0')}:00`;
+              const eventsAtHour = dayEvents.filter(event => 
+                event.time && event.time.startsWith(hour.toString().padStart(2, '0'))
+              );
+              
+              return (
+                <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
+                  <div className="flex">
+                    <div className="w-16 text-gray-500 text-xs">{timeSlot}</div>
+                    <div className="flex-1">
+                      {eventsAtHour.map(event => (
+                        <div key={event.id} className="mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs">
+                          <div className="font-medium">{event.title}</div>
+                          <div className="text-gray-600">{event.location}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderWeekView = () => {
+    const weekStart = startOfWeek(currentDate);
+    const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    
+    return (
+      <div className="grid grid-cols-8 gap-1 border rounded-lg overflow-hidden">
+        <div className="p-2 bg-gray-50 text-xs font-medium">Time</div>
+        {weekDays.map(day => (
+          <div key={day.toISOString()} className="p-2 bg-gray-50 text-xs font-medium text-center">
+            <div>{format(day, 'EEE')}</div>
+            <div className={`${isToday(day) ? 'text-fc-red font-bold' : ''}`}>
+              {format(day, 'd')}
+            </div>
+          </div>
+        ))}
+        
+        {Array.from({ length: 24 }, (_, hour) => (
+          <div key={hour} className="contents">
+            <div className="p-2 text-xs text-gray-500 border-t">
+              {hour.toString().padStart(2, '0')}:00
+            </div>
+            {weekDays.map(day => {
+              const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
+              const eventsAtHour = dayEvents.filter(event => 
+                event.time && event.time.startsWith(hour.toString().padStart(2, '0'))
+              );
+              
+              return (
+                <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px]">
+                  {eventsAtHour.map(event => (
+                    <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1">
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderMonthView = () => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const calendarStart = startOfWeek(monthStart);
+    const calendarEnd = endOfWeek(monthEnd);
+    const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+    
+    return (
+      <div className="grid grid-cols-7 gap-1 border rounded-lg overflow-hidden">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="p-3 bg-gray-50 text-sm font-medium text-center">
+            {day}
+          </div>
+        ))}
+        
+        {calendarDays.map(day => {
+          const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
+          const isCurrentMonth = isSameMonth(day, currentDate);
+          const isSelected = isSameDay(day, new Date(selectedDate));
+          
+          return (
+            <div 
+              key={day.toISOString()} 
+              className={`p-2 min-h-[100px] border-t cursor-pointer hover:bg-gray-50 ${
+                !isCurrentMonth ? 'text-gray-400 bg-gray-50/50' : ''
+              } ${isSelected ? 'bg-fc-red/10' : ''} ${isToday(day) ? 'ring-2 ring-fc-red' : ''}`}
+              onClick={() => setSelectedDate(format(day, 'yyyy-MM-dd'))}
+            >
+              <div className={`text-sm mb-1 ${isToday(day) ? 'font-bold text-fc-red' : ''}`}>
+                {format(day, 'd')}
+              </div>
+              <div className="space-y-1">
+                {dayEvents.slice(0, 3).map(event => (
+                  <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded truncate">
+                    {event.title}
+                  </div>
+                ))}
+                {dayEvents.length > 3 && (
+                  <div className="text-xs text-gray-500">+{dayEvents.length - 3} more</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   // Available players and groups for filtering
@@ -510,27 +710,57 @@ export default function CalendarPage() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Calendar Widget */}
-              <Card className="lg:col-span-1">
-                <CardHeader>
+            {/* Advanced Calendar View */}
+            <Card className="mb-8">
+              <CardHeader>
+                <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-fc-red" />
-                    Calendar
+                    {dateRange.title}
                   </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </CardContent>
-              </Card>
+                  <div className="flex items-center gap-4">
+                    {/* View Toggle */}
+                    <Tabs value={calendarView} onValueChange={(value: any) => setCalendarView(value)}>
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="day">Day</TabsTrigger>
+                        <TabsTrigger value="week">Week</TabsTrigger>
+                        <TabsTrigger value="month">Month</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    
+                    {/* Navigation */}
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" onClick={navigatePrevious}>
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={goToToday}>
+                        Today
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={navigateNext}>
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Tabs value={calendarView}>
+                  <TabsContent value="day" className="mt-0">
+                    {renderDayView()}
+                  </TabsContent>
+                  <TabsContent value="week" className="mt-0">
+                    {renderWeekView()}
+                  </TabsContent>
+                  <TabsContent value="month" className="mt-0">
+                    {renderMonthView()}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
 
-              {/* Events for Selected Date */}
-              <Card className="lg:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Event Details */}
+              <Card className="lg:col-span-3">
                 <CardHeader>
                   <CardTitle>Events for {formatSelectedDate(selectedDate)}</CardTitle>
                 </CardHeader>
