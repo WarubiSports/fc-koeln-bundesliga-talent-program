@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema } from "@shared/schema";
+import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema, insertFoodOrderSchema, updateFoodOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 
@@ -372,6 +372,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     res.json(stats);
+  });
+
+  // Food order routes
+  app.get("/api/food-orders", async (req, res) => {
+    try {
+      const orders = await storage.getAllFoodOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching food orders:", error);
+      res.status(500).json({ message: "Failed to fetch food orders" });
+    }
+  });
+
+  app.post("/api/food-orders", async (req, res) => {
+    try {
+      const validatedData = insertFoodOrderSchema.parse(req.body);
+      const order = await storage.createFoodOrder(validatedData);
+      res.status(201).json(order);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid data", errors: error.errors });
+      } else {
+        console.error("Error creating food order:", error);
+        res.status(500).json({ message: "Failed to create food order" });
+      }
+    }
+  });
+
+  app.get("/api/food-order-stats", async (req, res) => {
+    try {
+      const stats = await storage.getFoodOrderStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching food order stats:", error);
+      res.status(500).json({ message: "Failed to fetch food order stats" });
+    }
+  });
+
+  app.put("/api/food-orders/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = updateFoodOrderSchema.parse(req.body);
+      const order = await storage.updateFoodOrder(id, validatedData);
+      if (!order) {
+        res.status(404).json({ message: "Food order not found" });
+        return;
+      }
+      res.json(order);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid data", errors: error.errors });
+      } else {
+        console.error("Error updating food order:", error);
+        res.status(500).json({ message: "Failed to update food order" });
+      }
+    }
   });
 
   const httpServer = createServer(app);

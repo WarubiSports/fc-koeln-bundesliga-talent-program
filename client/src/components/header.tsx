@@ -58,6 +58,16 @@ export default function Header() {
             >
               Calendar
             </a>
+            <a 
+              href="/food-orders" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/food-orders" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
+              Food Orders
+            </a>
           </nav>
           
           <div className="flex items-center space-x-4">
@@ -150,6 +160,17 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Calendar
+              </a>
+              <a
+                href="/food-orders"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/food-orders" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Food Orders
               </a>
             </div>
           </div>
