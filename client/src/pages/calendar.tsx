@@ -32,6 +32,11 @@ interface CalendarEvent {
   targetPlayers?: string[]; // Specific players this event is for
   targetGroups?: string[]; // Player groups this event is for (U18, U21, Goalkeepers, etc.)
   isPrivate?: boolean; // Whether event is visible only to target players/groups
+  isAdminEvent?: boolean; // Whether this is an admin-created event from database
+  adminEventId?: number; // The actual database event ID
+  endTime?: string;
+  eventType?: string;
+  createdBy?: string;
 }
 
 // Generate practice sessions for weekdays
@@ -587,6 +592,11 @@ export default function CalendarPage() {
         <ExcuseModal 
           isOpen={isExcuseModalOpen}
           onClose={() => setIsExcuseModalOpen(false)}
+        />
+        
+        <AddEventModal 
+          isOpen={isAddEventModalOpen}
+          onClose={() => setIsAddEventModalOpen(false)}
         />
       </main>
     </div>
