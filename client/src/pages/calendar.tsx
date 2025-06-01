@@ -864,7 +864,6 @@ export default function CalendarPage() {
                   )}
                 </CardContent>
               </Card>
-
             </div>
 
             {/* Upcoming Events */}
@@ -884,53 +883,53 @@ export default function CalendarPage() {
                         <h4 className="font-semibold text-gray-900 text-sm">{event.title}</h4>
                         <Badge className={getEventTypeColor(event.type)} variant="outline">
                           {event.type}
-                          </Badge>
-                        </div>
-                        
-                        <div className="text-xs text-gray-600 space-y-1 mb-2">
-                          <div className="flex items-center">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {new Date(event.date).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {event.time}
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {event.location}
-                          </div>
-                        </div>
-
-                        {/* Target Information for Upcoming Events */}
-                        {(event.targetPlayers || event.targetGroups) && (
-                          <div className="space-y-1">
-                            {event.targetPlayers && (
-                              <div className="flex items-center gap-1">
-                                <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
-                                  {event.targetPlayers.join(", ")}
-                                </Badge>
-                                {event.isPrivate && (
-                                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-600 border-amber-200">
-                                    Private
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
-                            {event.targetGroups && (
-                              <div>
-                                <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
-                                  {event.targetGroups.join(", ")}
-                                </Badge>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        </Badge>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      
+                      <div className="text-xs text-gray-600 space-y-1 mb-2">
+                        <div className="flex items-center">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {new Date(event.date).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {event.time}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-3 h-3 mr-1" />
+                          {event.location}
+                        </div>
+                      </div>
+
+                      {/* Target Information for Upcoming Events */}
+                      {(event.targetPlayers || event.targetGroups) && (
+                        <div className="space-y-1">
+                          {event.targetPlayers && (
+                            <div className="flex items-center gap-1">
+                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                                {event.targetPlayers.join(", ")}
+                              </Badge>
+                              {event.isPrivate && (
+                                <Badge variant="outline" className="text-xs bg-amber-50 text-amber-600 border-amber-200">
+                                  Private
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                          {event.targetGroups && (
+                            <div>
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
+                                {event.targetGroups.join(", ")}
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="excuses" className="space-y-6">
