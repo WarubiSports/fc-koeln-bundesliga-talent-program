@@ -29,7 +29,7 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
       dateOfBirth: "",
       nationality: "",
       position: "midfielder",
-      ageGroup: "u18",
+
       status: "active",
       notes: "",
     },
@@ -163,28 +163,7 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="ageGroup"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Age Group</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select age group" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="u16">Under 16</SelectItem>
-                        <SelectItem value="u18">Under 18</SelectItem>
-                        <SelectItem value="u21">Under 21</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
             </div>
 
             <FormField

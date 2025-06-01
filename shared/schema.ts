@@ -10,7 +10,7 @@ export const players = pgTable("players", {
   dateOfBirth: text("date_of_birth").notNull(),
   nationality: text("nationality").notNull(),
   position: text("position").notNull(), // goalkeeper, defender, midfielder, forward
-  ageGroup: text("age_group").notNull(), // u16, u18, u21
+  // ageGroup removed - single Bundesliga Talent Program
   status: text("status").notNull().default("active"), // active, on_trial, inactive
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -26,7 +26,7 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   position: z.enum(["goalkeeper", "defender", "midfielder", "forward"]),
-  ageGroup: z.enum(["u16", "u18", "u21"]),
+  // ageGroup removed - single team structure
   status: z.enum(["active", "on_trial", "inactive"]).default("active"),
   notes: z.string().optional(),
 });

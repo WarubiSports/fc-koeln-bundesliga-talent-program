@@ -16,7 +16,7 @@ interface PlayerTableProps {
 export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
-  const [ageGroupFilter, setAgeGroupFilter] = useState("");
+
   const [countryFilter, setCountryFilter] = useState("");
   const { toast } = useToast();
 
@@ -24,7 +24,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
   const queryParams = new URLSearchParams();
   if (searchQuery) queryParams.set("search", searchQuery);
   if (positionFilter && positionFilter !== "all") queryParams.set("position", positionFilter);
-  if (ageGroupFilter && ageGroupFilter !== "all") queryParams.set("ageGroup", ageGroupFilter);
+
   if (countryFilter && countryFilter !== "all") queryParams.set("nationality", countryFilter);
 
   const { data: players, isLoading } = useQuery<Player[]>({
@@ -211,7 +211,7 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
           </div>
         ) : !players || players.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
-            {searchQuery || (positionFilter && positionFilter !== "all") || (ageGroupFilter && ageGroupFilter !== "all") || (countryFilter && countryFilter !== "all")
+            {searchQuery || (positionFilter && positionFilter !== "all") || (countryFilter && countryFilter !== "all")
               ? "No players found matching your criteria."
               : "No players registered yet. Add your first player to get started."
             }
