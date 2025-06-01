@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Plus, Clock, MapPin, Users, FileText } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
@@ -161,6 +167,21 @@ export default function CalendarPage() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>("All Players");
   const [selectedGroup, setSelectedGroup] = useState<string>("All Groups");
 
+  const handleAddEvent = (eventType: string) => {
+    const eventTitles = {
+      'team-practice': 'Team Practice Session',
+      'group-practice': 'Group Practice Session', 
+      'cryotherapy': 'Cryotherapy Session',
+      'language-school': 'Language School',
+      'weight-lifting': 'Weight Lifting Session',
+      'doctor-appointment': "Doctor's Appointment",
+      'trial': 'Trial Session'
+    };
+
+    // For now, show an alert with the selected event type
+    alert(`Adding: ${eventTitles[eventType as keyof typeof eventTitles]}`);
+  };
+
   // Available players and groups for filtering
   const availablePlayers = ["All Players", "Max Mueller", "Erik Fischer", "Hans Weber", "Jan Richter"];
   const availableGroups = ["All Groups", "Bundesliga Talent Program", "Goalkeepers", "Midfielders", "Forwards", "Defenders", "Widdersdorf 1 Residents", "Widdersdorf 2 Residents", "Widdersdorf 3 Residents"];
@@ -240,10 +261,45 @@ export default function CalendarPage() {
               <FileText className="w-4 h-4 mr-2" />
               Request Excuse
             </Button>
-            <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Event
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Event
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => handleAddEvent('team-practice')}>
+                  <Users className="w-4 h-4 mr-2" />
+                  Team Practice Session
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('group-practice')}>
+                  <Users className="w-4 h-4 mr-2" />
+                  Group Practice Session
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('cryotherapy')}>
+                  <Clock className="w-4 h-4 mr-2" />
+                  Cryotherapy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('language-school')}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Language School
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('weight-lifting')}>
+                  <Users className="w-4 h-4 mr-2" />
+                  Weight Lifting
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('doctor-appointment')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Doctor's Appointment
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddEvent('trial')}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Trial
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
