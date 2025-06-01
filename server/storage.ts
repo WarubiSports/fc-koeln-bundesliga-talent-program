@@ -31,7 +31,7 @@ import {
   type UpdateEvent,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, sql } from "drizzle-orm";
+import { eq, ilike, sql, desc } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -333,7 +333,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPracticeExcusesByDate(date: string): Promise<PracticeExcuse[]> {
-    return await db.select().from(practiceExcuses).where(eq(practiceExcuses.date, date));
+    return await db.select().from(practiceExcuses).where(sql`submitted_at LIKE ${date + '%'}`);
   }
 
   // New generalized excuse methods
@@ -385,7 +385,7 @@ export class DatabaseStorage implements IStorage {
     const dateExcuses = await db
       .select()
       .from(excuses)
-      .where(eq(excuses.date, date))
+      .where(sql`submitted_at LIKE ${date + '%'}`)
       .orderBy(desc(excuses.submittedAt));
     return dateExcuses;
   }
@@ -542,7 +542,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEvent(id: number): Promise<boolean> {
     const result = await db.delete(events).where(eq(events.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getEventsByDate(date: string): Promise<Event[]> {

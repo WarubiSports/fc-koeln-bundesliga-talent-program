@@ -452,6 +452,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Event routes (admin-only)
+  app.get("/api/events", isAuthenticated, async (req, res) => {
+    try {
+      const events = await storage.getAllEvents();
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  app.get("/api/events/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const event = await storage.getEvent(id);
+      if (!event) {
+        res.status(404).json({ message: "Event not found" });
+        return;
+      }
+      res.json(event);
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      res.status(500).json({ message: "Failed to fetch event" });
+    }
+  });
+
+  app.post("/api/events", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      const createdBy = user?.firstName && user?.lastName 
+        ? `${user.firstName} ${user.lastName}` 
+        : user?.email || "Unknown Admin";
+
+      const eventData = {
+        ...req.body,
+        createdBy,
+      };
+
+      const event = await storage.createEvent(eventData);
+      res.status(201).json(event);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      res.status(500).json({ message: "Failed to create event" });
+    }
+  });
+
+  app.put("/api/events/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const event = await storage.updateEvent(id, req.body);
+      if (!event) {
+        res.status(404).json({ message: "Event not found" });
+        return;
+      }
+      res.json(event);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Failed to update event" });
+    }
+  });
+
+  app.delete("/api/events/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteEvent(id);
+      if (!success) {
+        res.status(404).json({ message: "Event not found" });
+        return;
+      }
+      res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+
+  app.get("/api/events/date/:date", isAuthenticated, async (req, res) => {
+    try {
+      const date = req.params.date;
+      const events = await storage.getEventsByDate(date);
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching events by date:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
