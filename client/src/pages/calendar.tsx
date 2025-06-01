@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck } from "lucide-react";
+import { Calendar, Plus, Clock, MapPin, Users, FileText, ChevronDown, Dumbbell, Snowflake, BookOpen, Stethoscope, UserCheck, Target } from "lucide-react";
 import { useState } from "react";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
@@ -295,7 +295,7 @@ export default function CalendarPage() {
                   Doctor's Appointment
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('trial')}>
-                  <UserCheck className="w-4 h-4 mr-2" />
+                  <Target className="w-4 h-4 mr-2" />
                   Trial
                 </DropdownMenuItem>
               </DropdownMenuContent>
