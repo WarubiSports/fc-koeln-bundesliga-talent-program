@@ -101,8 +101,8 @@ export type InsertChore = z.infer<typeof insertChoreSchema>;
 export type UpdateChore = z.infer<typeof updateChoreSchema>;
 export type Chore = typeof chores.$inferSelect;
 
-// Practice excuses table
-export const practiceExcuses = pgTable("practice_excuses", {
+// Excuses table (generalized for any type of excuse)
+export const excuses = pgTable("excuses", {
   id: serial("id").primaryKey(),
   playerName: text("player_name").notNull(),
   date: text("date").notNull(), // YYYY-MM-DD format
@@ -114,18 +114,26 @@ export const practiceExcuses = pgTable("practice_excuses", {
   notes: text("notes")
 });
 
-export const insertPracticeExcuseSchema = createInsertSchema(practiceExcuses).omit({
+export const insertExcuseSchema = createInsertSchema(excuses).omit({
   id: true,
   submittedAt: true,
   reviewedBy: true,
   reviewedAt: true
 });
 
-export const updatePracticeExcuseSchema = insertPracticeExcuseSchema.partial();
+export const updateExcuseSchema = insertExcuseSchema.partial();
 
-export type InsertPracticeExcuse = z.infer<typeof insertPracticeExcuseSchema>;
-export type UpdatePracticeExcuse = z.infer<typeof updatePracticeExcuseSchema>;
-export type PracticeExcuse = typeof practiceExcuses.$inferSelect;
+export type InsertExcuse = z.infer<typeof insertExcuseSchema>;
+export type UpdateExcuse = z.infer<typeof updateExcuseSchema>;
+export type Excuse = typeof excuses.$inferSelect;
+
+// Legacy aliases for backward compatibility
+export const practiceExcuses = excuses;
+export const insertPracticeExcuseSchema = insertExcuseSchema;
+export const updatePracticeExcuseSchema = updateExcuseSchema;
+export type InsertPracticeExcuse = InsertExcuse;
+export type UpdatePracticeExcuse = UpdateExcuse;
+export type PracticeExcuse = Excuse;
 
 // Grocery Orders Schema - Weekly ordering for Monday and Thursday
 export const groceryOrders = pgTable("grocery_orders", {
