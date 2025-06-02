@@ -79,7 +79,23 @@ export default function Landing() {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/auth/login', { 
+                      method: 'POST',
+                      credentials: 'include'
+                    });
+                    if (response.ok) {
+                      window.location.reload();
+                    } else {
+                      // Fallback to OpenID Connect flow
+                      window.location.href = '/api/login';
+                    }
+                  } catch (error) {
+                    // Fallback to OpenID Connect flow
+                    window.location.href = '/api/login';
+                  }
+                }}
                 className="bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
                 size="lg"
               >

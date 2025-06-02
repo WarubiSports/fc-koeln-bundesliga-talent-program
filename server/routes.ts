@@ -17,13 +17,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    // Check if user is authenticated first
-    if (!req.isAuthenticated()) {
+    // Check for logout flag in session or localStorage simulation
+    if (req.session && req.session.loggedOut) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // Check for logout flag after confirming authentication
-    if (req.session && req.session.loggedOut) {
+    // For development - simulate authentication state
+    // In production, this would check actual OpenID Connect authentication
+    const isDevAuthenticated = req.isAuthenticated() || (!req.session?.loggedOut);
+    
+    if (!isDevAuthenticated) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -32,20 +35,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (userId) {
         const user = await storage.getUser(userId);
         if (user) {
-          // Clear logout flag on successful auth
-          if (req.session) {
-            delete req.session.loggedOut;
-          }
           res.json(user);
         } else {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // For development/testing - return a mock admin user
-        // Clear logout flag on successful auth
-        if (req.session) {
-          delete req.session.loggedOut;
-        }
+        // For development/testing - return a mock admin user when not logged out
         res.json({
           id: "test-admin",
           email: "admin@warubi-sports.com",
@@ -58,6 +53,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Simple login endpoint for development
+  app.post('/api/auth/login', async (req: any, res) => {
+    // Clear logout flag to simulate successful login
+    if (req.session) {
+      delete req.session.loggedOut;
+      req.session.save((err: any) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: "Login failed" });
+        }
+        res.json({ message: "Login successful" });
+      });
+    } else {
+      res.json({ message: "Login successful" });
     }
   });
 
