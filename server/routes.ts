@@ -24,6 +24,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/');
   });
 
+
+
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     // Set cache control headers to prevent caching
@@ -83,6 +85,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Login endpoint with form data
   app.post('/api/auth/login', async (req: any, res) => {
+    // Clear the logout flag when user logs in
+    isDevLoggedOut = false;
+    
     const { email, password, firstName, lastName } = req.body;
     
     console.log('Login attempt with:', { email, firstName, lastName });
