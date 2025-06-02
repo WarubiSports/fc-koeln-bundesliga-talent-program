@@ -30,12 +30,19 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        // Store user data temporarily in localStorage
+        localStorage.setItem('tempUserData', JSON.stringify(result.user));
+        
         toast({
           title: "Login Successful",
           description: "Welcome to the FC Köln management system!",
         });
-        // Redirect to dashboard
-        window.location.href = '/';
+        
+        // Force a full page reload to ensure session is recognized
+        setTimeout(() => {
+          window.location.replace('/');
+        }, 500);
       } else {
         toast({
           title: "Login Failed",
