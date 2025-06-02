@@ -127,12 +127,9 @@ export async function setupAuth(app: Express) {
         if (err) {
           console.error('Session destruction error:', err);
         }
-        res.redirect(
-          client.buildEndSessionUrl(config, {
-            client_id: process.env.REPL_ID!,
-            post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-          }).href
-        );
+        // Clear the session cookie
+        res.clearCookie('connect.sid');
+        res.redirect("/");
       });
     });
   });
