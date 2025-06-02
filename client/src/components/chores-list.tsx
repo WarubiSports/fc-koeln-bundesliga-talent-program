@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Calendar, User, Clock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import type { Chore } from "../../../shared/schema";
 
 interface ChoresListProps {
@@ -14,6 +15,8 @@ interface ChoresListProps {
 
 export default function ChoresList({ onAddChore }: ChoresListProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [selectedHouse, setSelectedHouse] = useState<string>("Widdersdorf 1");
 
   const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
@@ -101,13 +104,15 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
             <i className="fas fa-tasks text-fc-red mr-3"></i>
             House Chores
           </CardTitle>
-          <Button 
-            onClick={onAddChore}
-            className="bg-fc-red hover:bg-fc-red/90 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Chore
-          </Button>
+          {isAdmin && (
+            <Button 
+              onClick={onAddChore}
+              className="bg-fc-red hover:bg-fc-red/90 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Chore
+            </Button>
+          )}
         </div>
         <p className="text-gray-600">Manage tasks for each house location</p>
       </CardHeader>
@@ -182,15 +187,17 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
                               {chore.status === "pending" ? "Start" : "Complete"}
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => deleteChoreMutation.mutate(chore.id)}
-                            disabled={deleteChoreMutation.isPending}
-                            className="text-red-600 border-red-600 hover:bg-red-50"
-                          >
-                            Delete
-                          </Button>
+                          {isAdmin && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteChoreMutation.mutate(chore.id)}
+                              disabled={deleteChoreMutation.isPending}
+                              className="text-red-600 border-red-600 hover:bg-red-50"
+                            >
+                              Delete
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -202,10 +209,12 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No chores for {house}</h3>
                     <p className="text-gray-600 mb-4">Get started by adding the first chore for this house.</p>
-                    <Button onClick={onAddChore} className="bg-fc-red hover:bg-fc-red/90 text-white">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add First Chore
-                    </Button>
+                    {isAdmin && (
+                      <Button onClick={onAddChore} className="bg-fc-red hover:bg-fc-red/90 text-white">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add First Chore
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
