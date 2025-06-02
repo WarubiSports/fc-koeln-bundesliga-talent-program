@@ -3,95 +3,150 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SimpleLogin() {
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleLogin = async (role: "admin" | "player") => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login by storing user data in localStorage
-    const userData = {
-      id: role === "admin" ? "admin-1" : "player-1",
-      email: email || (role === "admin" ? "admin@fckoeln.de" : "player@fckoeln.de"),
-      firstName: role === "admin" ? "Max" : "Player",
-      lastName: role === "admin" ? "Bisinger" : "User", 
-      role: role,
-      profileImageUrl: null
-    };
-    
-    localStorage.setItem("fc_koeln_user", JSON.stringify(userData));
-    
-    // Reload to trigger auth state change
-    window.location.reload();
+
+    try {
+      // For returning users, we'll use their existing profile data
+      const loginData = {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.email.split('@')[0].split('.')[0] || "User",
+        lastName: formData.email.split('@')[0].split('.')[1] || "Name"
+      };
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(loginData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        localStorage.setItem('tempUserData', JSON.stringify(result.user));
+        
+        toast({
+          title: "Welcome Back!",
+          description: "You've been logged in successfully.",
+        });
+        
+        setTimeout(() => {
+          window.location.replace('/');
+        }, 500);
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Please check your credentials and try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Login Error",
+        description: "An error occurred during login. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-fc-red/5 to-gray-50 flex items-center justify-center">
-      <div className="container mx-auto px-4 max-w-md">
-        <div className="text-center mb-8">
-          <img 
-            src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png"
-            alt="FC Köln Football School" 
-            className="w-20 h-20 object-contain mx-auto mb-4"
-          />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            FC Köln Talent Program
-          </h1>
-          <p className="text-gray-600">
-            Choose your access level to enter
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Access System</CardTitle>
-            <CardDescription>
-              Select your role to enter the management system
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email (optional)</Label>
+    <div className="min-h-screen bg-gradient-to-br from-fc-red/5 to-gray-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <img 
+              src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png"
+              alt="FC Köln Football School" 
+              className="w-16 h-16 object-contain"
+            />
+          </div>
+          <CardTitle className="text-2xl text-fc-red">Quick Login</CardTitle>
+          <CardDescription>
+            For returning users - sign in with email and password only
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@fckoeln.de"
+                value={formData.email}
+                onChange={handleChange}
+                required
               />
             </div>
             
-            <div className="space-y-3">
-              <Button
-                onClick={() => handleLogin("admin")}
-                disabled={isLoading}
-                className="w-full bg-fc-red hover:bg-fc-red/90 text-white"
-              >
-                <i className="fas fa-user-shield mr-2"></i>
-                Enter as Admin
-              </Button>
-              
-              <Button
-                onClick={() => handleLogin("player")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
-              >
-                <i className="fas fa-futbol mr-2"></i>
-                Enter as Player
-              </Button>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
             </div>
-
-            <div className="text-xs text-gray-500 space-y-1">
-              <p><strong>Admin Access:</strong> Full system management</p>
-              <p><strong>Player Access:</strong> View schedules, submit excuses</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-fc-red hover:bg-fc-red/90 text-white"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
+            </Button>
+          </form>
+          
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-sm text-gray-600">
+              New user or need to update your profile?
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/login'}
+              className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
+            >
+              Full Registration Form
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              onClick={() => window.location.href = '/'}
+              className="text-sm text-gray-600 hover:text-fc-red"
+            >
+              ← Back to landing page
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

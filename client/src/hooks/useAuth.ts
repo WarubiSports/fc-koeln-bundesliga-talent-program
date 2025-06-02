@@ -13,21 +13,23 @@ export function useAuth() {
     gcTime: 0, // Don't cache auth data (v5 syntax)
   });
 
-  // Check for temporary user data on mount
+  // Check for temporary user data immediately
   useEffect(() => {
     const tempUserData = localStorage.getItem('tempUserData');
-    if (tempUserData && !user) {
+    if (tempUserData) {
       try {
         const userData = JSON.parse(tempUserData);
         setTempUser(userData);
-        // Clear the temporary data
-        localStorage.removeItem('tempUserData');
+        // Keep the data for a short time to ensure smooth transition
+        setTimeout(() => {
+          localStorage.removeItem('tempUserData');
+        }, 2000);
       } catch (error) {
         console.error('Error parsing temp user data:', error);
         localStorage.removeItem('tempUserData');
       }
     }
-  }, [user]);
+  }, []);
 
   const finalUser = user || tempUser;
 

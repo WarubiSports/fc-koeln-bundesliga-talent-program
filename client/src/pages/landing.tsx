@@ -77,16 +77,27 @@ export default function Landing() {
                 Sign in with your account to get started
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Button 
                 onClick={() => window.location.href = '/login'}
-                className="bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
+                className="w-full bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
+                size="lg"
+              >
+                <i className="fas fa-user-plus mr-2"></i>
+                New User Registration
+              </Button>
+              
+              <Button 
+                onClick={() => window.location.href = '/simple-login'}
+                variant="outline"
+                className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white px-8 py-3 text-lg"
                 size="lg"
               >
                 <i className="fas fa-sign-in-alt mr-2"></i>
-                Sign In
+                Returning User Login
               </Button>
-              <p className="text-xs text-gray-500 mt-4">
+              
+              <p className="text-xs text-gray-500 mt-4 text-center">
                 Your access level will be automatically determined based on your account
               </p>
             </CardContent>
