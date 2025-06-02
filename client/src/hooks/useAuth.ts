@@ -28,10 +28,23 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    // Clear any existing authentication state on page load
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    setUser(null);
+    // Check for stored authentication token
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('userData');
+    
+    if (token && userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+    
     setIsLoading(false);
   }, []);
 
