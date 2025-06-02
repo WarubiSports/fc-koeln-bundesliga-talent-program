@@ -5,21 +5,23 @@ import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreS
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 
+// Simple in-memory logout state for development
+let isDevLoggedOut = false;
+
+// Export function to set logout state
+export function setDevLoggedOut(value: boolean) {
+  isDevLoggedOut = value;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
   // Login route to clear logout flag
   app.get('/api/login', async (req: any, res) => {
-    // Clear the logout flag from session
-    if (req.session) {
-      req.session.isLoggedOut = false;
-      req.session.save(() => {
-        res.redirect('/');
-      });
-    } else {
-      res.redirect('/');
-    }
+    // Clear the in-memory logout flag
+    isDevLoggedOut = false;
+    res.redirect('/');
   });
 
   // Auth routes
@@ -59,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } else {
         // Return logged in user for development access only if not explicitly logged out
-        if (req.session?.isLoggedOut === true) {
+        if (isDevLoggedOut) {
           res.status(401).json({ message: "Unauthorized" });
         } else {
           // Return logged in user for development access

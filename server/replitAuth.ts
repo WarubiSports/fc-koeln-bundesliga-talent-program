@@ -143,13 +143,20 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req: any, res) => {
-    console.log('Logout requested');
+    console.log('Logout requested - setting logout flag');
     
-    // Set logout flag in existing session before destroying
+    // Import and use the logout flag from routes
+    import('./routes').then(routes => {
+      if (routes.setDevLoggedOut) {
+        routes.setDevLoggedOut(true);
+        console.log('Logout flag set to true');
+      }
+    });
+    
+    // Clear session if it exists
     if (req.session) {
-      req.session.isLoggedOut = true;
-      req.session.save(() => {
-        console.log('Session updated with logout flag, redirecting');
+      req.session.destroy(() => {
+        console.log('Session destroyed, redirecting to landing page');
         res.writeHead(302, {
           'Location': '/',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
