@@ -17,13 +17,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    // Check for logout flag first
-    if (req.session && req.session.loggedOut) {
+    // Check if user is authenticated first
+    if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // Check if user is authenticated
-    if (!req.isAuthenticated()) {
+    // Check for logout flag after confirming authentication
+    if (req.session && req.session.loggedOut) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 

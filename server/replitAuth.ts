@@ -115,19 +115,31 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
-    })((req as any), res, (err: any) => {
+    passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any) => {
       if (err) {
-        return next(err);
+        console.error('Auth error:', err);
+        return res.redirect("/api/login");
       }
-      // Clear logout flag on successful login
-      if (req.session) {
-        delete (req.session as any).loggedOut;
+      if (!user) {
+        console.error('No user returned from auth');
+        return res.redirect("/api/login");
       }
-      next();
-    });
+      
+      req.logIn(user, (err: any) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.redirect("/api/login");
+        }
+        
+        // Clear logout flag on successful login
+        if (req.session) {
+          delete (req.session as any).loggedOut;
+          console.log('Cleared logout flag, redirecting to dashboard');
+        }
+        
+        return res.redirect("/");
+      });
+    })(req, res, next);
   });
 
   app.get("/api/logout", (req, res) => {
