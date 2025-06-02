@@ -61,31 +61,36 @@ const eventTypes = [
 interface AddEventModalProps {
   isOpen: boolean;
   onClose: () => void;
+  editingEvent?: any | null;
 }
 
-export default function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
+export default function AddEventModal({ isOpen, onClose, editingEvent }: AddEventModalProps) {
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
-      title: "",
-      eventType: "",
-      date: "",
-      startTime: "",
-      endTime: "",
-      location: "",
-      notes: "",
+      title: editingEvent?.title || "",
+      eventType: editingEvent?.eventType || "",
+      date: editingEvent?.date || "",
+      startTime: editingEvent?.startTime || "",
+      endTime: editingEvent?.endTime || "",
+      location: editingEvent?.location || "",
+      notes: editingEvent?.notes || "",
     },
   });
 
   const mutation = useMutation({
     mutationFn: async (data: EventFormData) => {
-      await apiRequest("/api/events", "POST", data);
+      if (editingEvent) {
+        await apiRequest(`/api/events/${editingEvent.id}`, "PATCH", data);
+      } else {
+        await apiRequest("/api/events", "POST", data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
       toast({
         title: "Success",
-        description: "Event created successfully",
+        description: editingEvent ? "Event updated successfully" : "Event created successfully",
       });
       form.reset();
       onClose();
@@ -112,7 +117,9 @@ export default function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Create New Event</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            {editingEvent ? "Edit Event" : "Create New Event"}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -250,7 +257,7 @@ export default function AddEventModal({ isOpen, onClose }: AddEventModalProps) {
                 disabled={mutation.isPending}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
-                {mutation.isPending ? "Creating..." : "Create Event"}
+                {mutation.isPending ? (editingEvent ? "Updating..." : "Creating...") : (editingEvent ? "Update Event" : "Create Event")}
               </Button>
             </div>
           </form>

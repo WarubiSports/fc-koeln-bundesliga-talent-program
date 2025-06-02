@@ -14,6 +14,7 @@ import type { Event } from "@shared/schema";
 export default function AdminEvents() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Fetch events
   const { data: events = [], isLoading } = useQuery({
@@ -155,6 +156,7 @@ export default function AdminEvents() {
                         variant="outline"
                         size="sm"
                         className="p-2"
+                        onClick={() => setEditingEvent(event)}
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
