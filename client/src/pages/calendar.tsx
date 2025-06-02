@@ -626,23 +626,23 @@ export default function CalendarPage() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-fc-dark">Calendar</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-fc-dark">Calendar</h1>
             <p className="text-gray-600 mt-2">Manage training sessions, matches and events</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button 
               onClick={() => setIsExcuseModalOpen(true)}
               variant="outline" 
-              className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
+              className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white w-full sm:w-auto"
             >
               <FileText className="w-4 h-4 mr-2" />
               Request Excuse
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="bg-fc-red hover:bg-fc-red/90 text-white">
+                <Button className="bg-fc-red hover:bg-fc-red/90 text-white w-full sm:w-auto">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Event
                   <ChevronDown className="w-4 h-4 ml-2" />
@@ -728,12 +728,12 @@ export default function CalendarPage() {
             {/* Advanced Calendar View */}
             <Card className="mb-8">
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <CardTitle className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-fc-red" />
                     {dateRange.title}
                   </CardTitle>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     {/* View Toggle */}
                     <Tabs value={calendarView} onValueChange={(value: any) => setCalendarView(value)}>
                       <TabsList className="grid w-full grid-cols-3">
@@ -744,7 +744,7 @@ export default function CalendarPage() {
                     </Tabs>
                     
                     {/* Navigation */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
                       <Button variant="outline" size="sm" onClick={navigatePrevious}>
                         <ChevronLeft className="w-4 h-4" />
                       </Button>

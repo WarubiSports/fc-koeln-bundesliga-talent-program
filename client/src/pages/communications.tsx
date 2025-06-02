@@ -124,7 +124,7 @@ export default function Communications() {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col md:block hidden md:flex">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
             <Dialog open={isNewMessageOpen} onOpenChange={setIsNewMessageOpen}>
