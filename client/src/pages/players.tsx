@@ -8,8 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
+import { UserCheck, UserX, Clock } from "lucide-react";
 
 export default function Players() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,6 +43,32 @@ export default function Players() {
       nationality: filterNationality === "all" ? undefined : filterNationality, 
       status: filterStatus === "all" ? undefined : filterStatus 
     }],
+  });
+
+  // Fetch pending users (admin only)
+  const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery({
+    queryKey: ["/api/admin/pending-users"],
+    enabled: isAdmin,
+  });
+
+  const approveUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await apiRequest("PUT", `/api/admin/approve-user/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      toast({
+        title: "User approved",
+        description: "User has been approved and can now access the system.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const addPlayerMutation = useMutation({
@@ -107,8 +136,8 @@ export default function Players() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Players</h1>
-              <p className="text-gray-600">Manage the International Talent Program roster</p>
+              <h1 className="text-2xl font-bold text-gray-900">Players & Users</h1>
+              <p className="text-gray-600">Manage players and user approvals</p>
             </div>
             
             {isAdmin && (
@@ -218,8 +247,24 @@ export default function Players() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Tabs defaultValue="players" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="players">Players</TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="pending" className="relative">
+                Pending Approvals
+                {pendingUsers.length > 0 && (
+                  <Badge className="ml-2 bg-fc-red text-white text-xs px-1.5 py-0.5">
+                    {pendingUsers.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            )}
+          </TabsList>
+
+          <TabsContent value="players" className="mt-6">
+            {/* Filters */}
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
           <Input
             placeholder="Search players..."
             value={searchQuery}
@@ -332,6 +377,75 @@ export default function Players() {
             ))}
           </div>
         )}
+          </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="pending" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Clock className="w-5 h-5 mr-2 text-fc-red" />
+                    Pending User Approvals
+                  </CardTitle>
+                  <p className="text-gray-600">Users awaiting approval to access the system</p>
+                </CardHeader>
+                <CardContent>
+                  {pendingUsersLoading ? (
+                    <div className="flex justify-center items-center h-32">
+                      <div className="text-gray-500">Loading pending users...</div>
+                    </div>
+                  ) : pendingUsers.length === 0 ? (
+                    <div className="text-center py-8">
+                      <UserCheck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No pending approvals</h3>
+                      <p className="text-gray-600">All users have been approved or no new registrations.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {pendingUsers.map((user: any) => (
+                        <div key={user.id} className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                              {user.profileImageUrl ? (
+                                <img 
+                                  src={user.profileImageUrl} 
+                                  alt="Profile" 
+                                  className="w-10 h-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <i className="fas fa-user text-gray-600"></i>
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-gray-900">
+                                {user.firstName ? `${user.firstName} ${user.lastName}` : user.email}
+                              </h4>
+                              <p className="text-sm text-gray-600">{user.email}</p>
+                              <p className="text-xs text-gray-500">
+                                Registered: {new Date(user.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => approveUserMutation.mutate(user.id)}
+                              disabled={approveUserMutation.isPending}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <UserCheck className="w-4 h-4 mr-1" />
+                              Approve
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+        </Tabs>
       </div>
     </div>
   );
