@@ -126,6 +126,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to approve user" });
     }
   });
+
+  // Profile completion endpoint
+  app.post('/api/auth/complete-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const { dateOfBirth, nationality, position } = req.body;
+      const userId = req.user.claims.sub;
+
+      // Update user profile with additional information
+      await storage.updateUserProfile(userId, {
+        dateOfBirth,
+        nationality,
+        position
+      });
+
+      res.json({ message: "Profile completed successfully" });
+    } catch (error) {
+      console.error("Error completing profile:", error);
+      res.status(500).json({ message: "Failed to complete profile" });
+    }
+  });
   // Get all players
   app.get("/api/players", async (req, res) => {
     try {

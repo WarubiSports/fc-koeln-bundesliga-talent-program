@@ -40,6 +40,11 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   getPendingUsers(): Promise<User[]>;
   approveUser(userId: string): Promise<void>;
+  updateUserProfile(userId: string, profileData: {
+    dateOfBirth?: string;
+    nationality?: string;
+    position?: string;
+  }): Promise<void>;
 
   // Player methods
   getAllPlayers(): Promise<Player[]>;
@@ -210,6 +215,20 @@ export class DatabaseStorage implements IStorage {
 
     // Create player record automatically
     await this.syncUserToPlayer(user);
+  }
+
+  async updateUserProfile(userId: string, profileData: {
+    dateOfBirth?: string;
+    nationality?: string;
+    position?: string;
+  }): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        ...profileData,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
   }
 
   // Helper method to sync a user to player database

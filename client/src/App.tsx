@@ -14,6 +14,8 @@ import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
 import SimpleLogin from "@/pages/simple-login";
 import LoginForm from "@/pages/login-form";
+import CompleteProfile from "@/pages/complete-profile";
+import WaitingApproval from "@/pages/waiting-approval";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -45,8 +47,11 @@ function Router() {
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/admin-events" component={AdminEvents} />
           <Route path="/communications" component={Communications} />
+          <Route path="/complete-profile" component={CompleteProfile} />
+          <Route path="/waiting-approval" component={WaitingApproval} />
         </>
       )}
+      <Route component={NotFound} />
     </Switch>
   );
 }
