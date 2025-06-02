@@ -196,10 +196,58 @@ export class DatabaseStorage implements IStorage {
   }
 
   async approveUser(userId: string): Promise<void> {
+    // Get the user details first
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Approve the user
     await db
       .update(users)
       .set({ approved: "true", updatedAt: new Date() })
       .where(eq(users.id, userId));
+
+    // Create player record automatically
+    await this.syncUserToPlayer(user);
+  }
+
+  // Helper method to sync a user to player database
+  private async syncUserToPlayer(user: User): Promise<void> {
+    if (!user.email) return;
+
+    // Check if player already exists
+    const [existingPlayer] = await db
+      .select()
+      .from(players)
+      .where(eq(players.email, user.email));
+
+    // Create player record if it doesn't exist
+    if (!existingPlayer) {
+      await db.insert(players).values({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email,
+        dateOfBirth: user.dateOfBirth || "1995-01-01",
+        nationality: user.nationality || "Germany",
+        position: user.position || "Midfielder",
+        status: "active",
+        profileImageUrl: user.profileImageUrl,
+        notes: "Auto-created from approved user account"
+      });
+    }
+  }
+
+  // Sync all approved users to player database
+  async syncAllApprovedUsersToPlayers(): Promise<void> {
+    const approvedUsers = await db
+      .select()
+      .from(users)
+      .where(eq(users.approved, "true"));
+
+    for (const user of approvedUsers) {
+      await this.syncUserToPlayer(user);
+    }
   }
 
   // Player methods
