@@ -629,7 +629,7 @@ export default function CalendarPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-fc-dark">Calendar</h1>
-            <p className="text-gray-600 mt-2">Manage training sessions, matches, events and practice excuses</p>
+            <p className="text-gray-600 mt-2">Manage training sessions, matches and events</p>
           </div>
           <div className="flex gap-2">
             <Button 

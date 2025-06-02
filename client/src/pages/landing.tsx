@@ -38,7 +38,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Manage player roster and information</li>
                 <li>• Schedule training sessions and matches</li>
-                <li>• Review practice excuse requests</li>
+                <li>• Create calendar events and activities</li>
                 <li>• Oversee house management and chores</li>
                 <li>• Access analytics and reports</li>
               </ul>
@@ -60,9 +60,9 @@ export default function Landing() {
             <CardContent>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• View training schedule and events</li>
-                <li>• Submit practice excuse requests</li>
-                <li>• Check assigned chores and tasks</li>
                 <li>• Access personal calendar</li>
+                <li>• Check assigned chores and tasks</li>
+                <li>• Order weekly groceries</li>
                 <li>• Update availability status</li>
               </ul>
             </CardContent>
@@ -107,7 +107,7 @@ export default function Landing() {
                 <i className="fas fa-calendar text-fc-red text-xl"></i>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Smart Scheduling</h3>
-              <p className="text-sm text-gray-600">Practice sessions, matches, and excuse management</p>
+              <p className="text-sm text-gray-600">Practice sessions, matches, and event coordination</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-fc-red/10 rounded-xl flex items-center justify-center mx-auto mb-4">
