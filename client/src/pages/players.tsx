@@ -34,8 +34,7 @@ export default function Players() {
 
   const { user, isAdmin } = useAuth();
   
-  // Debug log to check user data and admin status
-  console.log('Players page - User:', user, 'isAdmin:', isAdmin);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -151,102 +150,102 @@ export default function Players() {
                     Add Player
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Add New Player</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleAddPlayer} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add New Player</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleAddPlayer} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input
+                            id="firstName"
+                            value={newPlayer.firstName}
+                            onChange={(e) => setNewPlayer(prev => ({ ...prev, firstName: e.target.value }))}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input
+                            id="lastName"
+                            value={newPlayer.lastName}
+                            onChange={(e) => setNewPlayer(prev => ({ ...prev, lastName: e.target.value }))}
+                            required
+                          />
+                        </div>
+                      </div>
                       <div>
-                        <Label htmlFor="firstName">First Name</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
-                          id="firstName"
-                          value={newPlayer.firstName}
-                          onChange={(e) => setNewPlayer(prev => ({ ...prev, firstName: e.target.value }))}
+                          id="email"
+                          type="email"
+                          value={newPlayer.email}
+                          onChange={(e) => setNewPlayer(prev => ({ ...prev, email: e.target.value }))}
                           required
                         />
                       </div>
                       <div>
-                        <Label htmlFor="lastName">Last Name</Label>
+                        <Label htmlFor="dateOfBirth">Date of Birth</Label>
                         <Input
-                          id="lastName"
-                          value={newPlayer.lastName}
-                          onChange={(e) => setNewPlayer(prev => ({ ...prev, lastName: e.target.value }))}
+                          id="dateOfBirth"
+                          type="date"
+                          value={newPlayer.dateOfBirth}
+                          onChange={(e) => setNewPlayer(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                           required
                         />
                       </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={newPlayer.email}
-                        onChange={(e) => setNewPlayer(prev => ({ ...prev, email: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                      <Input
-                        id="dateOfBirth"
-                        type="date"
-                        value={newPlayer.dateOfBirth}
-                        onChange={(e) => setNewPlayer(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="profileImage">Profile Picture URL</Label>
-                      <Input
-                        id="profileImage"
-                        type="url"
-                        placeholder="https://example.com/photo.jpg"
-                        value={newPlayer.profileImage}
-                        onChange={(e) => setNewPlayer(prev => ({ ...prev, profileImage: e.target.value }))}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Optional: Enter a URL to a profile picture</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="nationality">Nationality</Label>
-                        <Select value={newPlayer.nationality} onValueChange={(value) => setNewPlayer(prev => ({ ...prev, nationality: value }))}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select nationality" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {nationalities.map(nationality => (
-                              <SelectItem key={nationality} value={nationality}>{nationality}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="profileImage">Profile Picture URL</Label>
+                        <Input
+                          id="profileImage"
+                          type="url"
+                          placeholder="https://example.com/photo.jpg"
+                          value={newPlayer.profileImage}
+                          onChange={(e) => setNewPlayer(prev => ({ ...prev, profileImage: e.target.value }))}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Optional: Enter a URL to a profile picture</p>
                       </div>
-                      <div>
-                        <Label htmlFor="position">Position</Label>
-                        <Select value={newPlayer.position} onValueChange={(value) => setNewPlayer(prev => ({ ...prev, position: value }))}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select position" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {positions.map(position => (
-                              <SelectItem key={position} value={position}>{position}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="nationality">Nationality</Label>
+                          <Select value={newPlayer.nationality} onValueChange={(value) => setNewPlayer(prev => ({ ...prev, nationality: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select nationality" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {nationalities.map(nationality => (
+                                <SelectItem key={nationality} value={nationality}>{nationality}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="position">Position</Label>
+                          <Select value={newPlayer.position} onValueChange={(value) => setNewPlayer(prev => ({ ...prev, position: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select position" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {positions.map(position => (
+                                <SelectItem key={position} value={position}>{position}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button type="button" variant="outline" onClick={() => setIsAddPlayerOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={addPlayerMutation.isPending} className="bg-fc-red hover:bg-fc-red/90 text-white">
-                        Add Player
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            )}
+                      <div className="flex justify-end space-x-2">
+                        <Button type="button" variant="outline" onClick={() => setIsAddPlayerOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={addPlayerMutation.isPending} className="bg-fc-red hover:bg-fc-red/90 text-white">
+                          Add Player
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              )}
           </div>
         </div>
 
