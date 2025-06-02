@@ -25,7 +25,8 @@ export default function Players() {
     nationality: "",
     position: "",
     status: "active",
-    notes: ""
+    notes: "",
+    profileImage: ""
   });
 
   const { user, isAdmin } = useAuth();
@@ -62,7 +63,8 @@ export default function Players() {
         nationality: "",
         position: "",
         status: "active",
-        notes: ""
+        notes: "",
+        profileImage: ""
       });
       toast({
         title: "Player added",
@@ -161,6 +163,17 @@ export default function Players() {
                         onChange={(e) => setNewPlayer(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                         required
                       />
+                    </div>
+                    <div>
+                      <Label htmlFor="profileImage">Profile Picture URL</Label>
+                      <Input
+                        id="profileImage"
+                        type="url"
+                        placeholder="https://example.com/photo.jpg"
+                        value={newPlayer.profileImage}
+                        onChange={(e) => setNewPlayer(prev => ({ ...prev, profileImage: e.target.value }))}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Optional: Enter a URL to a profile picture</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -270,9 +283,24 @@ export default function Players() {
               <Card key={player.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{player.firstName} {player.lastName}</CardTitle>
-                      <p className="text-sm text-gray-600">{player.email}</p>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden">
+                        {player.profileImageUrl ? (
+                          <img 
+                            src={player.profileImageUrl} 
+                            alt={`${player.firstName} ${player.lastName}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-fc-red flex items-center justify-center">
+                            <i className="fas fa-user text-white text-sm"></i>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{player.firstName} {player.lastName}</CardTitle>
+                        <p className="text-sm text-gray-600">{player.email}</p>
+                      </div>
                     </div>
                     <Badge className={getStatusColor(player.status)}>
                       {player.status.replace('_', ' ')}

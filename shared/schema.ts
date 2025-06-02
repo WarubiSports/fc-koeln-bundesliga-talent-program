@@ -12,6 +12,7 @@ export const players = pgTable("players", {
   position: text("position").notNull(), // goalkeeper, defender, midfielder, forward
   // ageGroup removed - single Bundesliga Talent Program
   status: text("status").notNull().default("active"), // active, on_trial, inactive
+  profileImageUrl: text("profile_image_url"),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -28,6 +29,7 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   position: z.enum(["goalkeeper", "defender", "midfielder", "forward"]),
   // ageGroup removed - single team structure
   status: z.enum(["active", "on_trial", "inactive"]).default("active"),
+  profileImageUrl: z.string().url("Invalid URL format").optional().or(z.literal("")),
   notes: z.string().optional(),
 });
 
