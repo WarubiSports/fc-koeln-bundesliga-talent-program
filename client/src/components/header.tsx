@@ -27,7 +27,7 @@ export default function Header() {
             </div>
           </div>
           
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-4">
             <a 
               href="/" 
               className={`transition-all duration-200 pb-4 px-2 ${
@@ -59,16 +59,6 @@ export default function Header() {
               Houses
             </a>
             <a 
-              href="/calendar" 
-              className={`transition-all duration-200 pb-4 px-2 ${
-                location === "/calendar" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
-              }`}
-            >
-              Calendar
-            </a>
-            <a 
               href="/food-orders" 
               className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/food-orders" 
@@ -87,6 +77,16 @@ export default function Header() {
               }`}
             >
               Messages
+            </a>
+            <a 
+              href="/calendar" 
+              className={`transition-all duration-200 pb-4 px-2 ${
+                location === "/calendar" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
+              Calendar
             </a>
           </nav>
           
@@ -182,17 +182,6 @@ export default function Header() {
                 Houses
               </a>
               <a
-                href="/calendar"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/calendar" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Calendar
-              </a>
-              <a
                 href="/food-orders"
                 className={`block px-3 py-2 rounded-md transition-all duration-200 ${
                   location === "/food-orders" 
@@ -213,6 +202,17 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Messages
+              </a>
+              <a
+                href="/calendar"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/calendar" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Calendar
               </a>
             </div>
           </div>
