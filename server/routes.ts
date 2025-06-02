@@ -50,6 +50,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return;
       }
       
+      // Check if authenticated via simple auth (Bearer token)
+      if (req.user) {
+        const userId = req.user.id;
+        const user = await storage.getUser(userId);
+        if (user) {
+          res.json(user);
+        } else {
+          // Return the user data from login if not in database yet
+          res.json(req.user);
+        }
+        return;
+      }
+      
       // Check if authenticated via OpenID Connect
       const userId = req.user?.claims?.sub;
       if (userId) {

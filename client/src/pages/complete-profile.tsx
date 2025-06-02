@@ -22,8 +22,7 @@ const positions = [
   "Right Winger",
   "Left Winger", 
   "Centre-forward",
-  "Striker",
-  "Staff"
+  "Striker"
 ];
 
 const countries = [

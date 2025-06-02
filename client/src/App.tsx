@@ -37,7 +37,7 @@ function Router() {
           <Route path="/login" component={LoginForm} />
           <Route path="/simple-login" component={SimpleLogin} />
         </>
-      ) : !hasCompletedProfile ? (
+      ) : !hasCompletedProfile && !isAdmin ? (
         <>
           <Route path="/complete-profile" component={CompleteProfile} />
           <Route component={() => {
