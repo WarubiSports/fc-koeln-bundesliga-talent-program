@@ -17,11 +17,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    // Check if user is authenticated
+    // Check if user is authenticated or has dev session
     console.log('Auth check - isAuthenticated:', req.isAuthenticated());
     console.log('Auth check - session exists:', !!req.session);
+    console.log('Auth check - session.devLoggedIn:', req.session?.devLoggedIn);
     
-    if (!req.isAuthenticated()) {
+    const isAuthenticated = req.isAuthenticated() || req.session?.devLoggedIn;
+    
+    if (!isAuthenticated) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -53,24 +56,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Simple login endpoint for development
   app.post('/api/auth/login', async (req: any, res) => {
-    // Simulate authentication by creating a mock user object
-    const mockUser = {
-      claims: {
-        sub: "test-admin",
-        email: "admin@warubi-sports.com",
-        first_name: "Admin",
-        last_name: "User"
-      }
-    };
-    
-    // Log the user in using Passport
-    req.logIn(mockUser, (err: any) => {
-      if (err) {
-        console.error('Login error:', err);
-        return res.status(500).json({ message: "Login failed" });
-      }
+    // Set development login flag in session
+    if (req.session) {
+      req.session.devLoggedIn = true;
+      req.session.save((err: any) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: "Login failed" });
+        }
+        res.json({ message: "Login successful" });
+      });
+    } else {
       res.json({ message: "Login successful" });
-    });
+    }
   });
 
   // Admin routes for user management
