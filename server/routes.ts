@@ -17,19 +17,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    // Check for logout flag in session or localStorage simulation
+    // Check if user is authenticated
+    console.log('Auth check - isAuthenticated:', req.isAuthenticated());
     console.log('Auth check - session exists:', !!req.session);
-    console.log('Auth check - logout flag:', req.session?.loggedOut);
-    if (req.session && req.session.loggedOut) {
-      console.log('Logout flag detected, returning 401');
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    // For development - simulate authentication state
-    // In production, this would check actual OpenID Connect authentication
-    const isDevAuthenticated = req.isAuthenticated() || (!req.session?.loggedOut);
     
-    if (!isDevAuthenticated) {
+    if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 

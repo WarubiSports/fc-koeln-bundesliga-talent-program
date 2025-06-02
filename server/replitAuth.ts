@@ -143,44 +143,22 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
-    console.log('Logout requested, setting logout flag');
-    // Set logout flag before destroying session
-    if (req.session) {
-      (req.session as any).loggedOut = true;
-      console.log('Logout flag set, saving session');
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-        } else {
-          console.log('Session saved with logout flag');
-        }
-        req.logout(() => {
-          console.log('Passport logout complete, redirecting');
-          // Send HTML that clears cache and redirects
-          res.send(`
-            <html>
-              <head>
-                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-                <meta http-equiv="Pragma" content="no-cache">
-                <meta http-equiv="Expires" content="0">
-              </head>
-              <body>
-                <script>
-                  // Clear all storage
-                  if (typeof localStorage !== 'undefined') localStorage.clear();
-                  if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
-                  // Force reload and redirect
-                  window.location.replace('/');
-                </script>
-              </body>
-            </html>
-          `);
+    console.log('Logout requested');
+    req.logout(() => {
+      if (req.session) {
+        req.session.destroy((err) => {
+          if (err) {
+            console.error('Session destruction error:', err);
+          }
+          console.log('Session destroyed, clearing cookie and redirecting');
+          res.clearCookie('connect.sid');
+          res.redirect('/');
         });
-      });
-    } else {
-      console.log('No session found, redirecting');
-      res.redirect('/');
-    }
+      } else {
+        console.log('No session found, redirecting');
+        res.redirect('/');
+      }
+    });
   });
 }
 
