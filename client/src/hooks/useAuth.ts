@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
 
 interface User {
   id: string;
@@ -37,7 +38,11 @@ export function useAuth() {
         console.error('Error parsing user data:', error);
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
+        setUser(null);
       }
+    } else {
+      // Clear any existing authentication state
+      setUser(null);
     }
     
     setIsLoading(false);
