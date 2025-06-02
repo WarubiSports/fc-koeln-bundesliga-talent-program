@@ -68,6 +68,16 @@ export default function Header() {
             >
               Food Orders
             </a>
+            <a 
+              href="/communications" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/communications" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
+              Messages
+            </a>
           </nav>
           
           <div className="flex items-center space-x-4">

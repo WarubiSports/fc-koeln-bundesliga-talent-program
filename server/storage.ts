@@ -594,6 +594,119 @@ export class DatabaseStorage implements IStorage {
       .orderBy(events.date, events.startTime);
     return eventList;
   }
+
+  // Communication methods - temporary implementation
+  async getAllMessages(): Promise<any[]> {
+    // Return mock data for now
+    return [];
+  }
+
+  async getMessage(id: number): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async createMessage(messageData: any): Promise<any> {
+    // Mock creation - return the data with an ID
+    return {
+      id: Date.now(),
+      ...messageData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isRead: false
+    };
+  }
+
+  async updateMessage(id: number, updates: any): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async deleteMessage(id: number): Promise<boolean> {
+    return true;
+  }
+
+  async getMessagesByUser(userId: string): Promise<any[]> {
+    return [];
+  }
+
+  async markMessageAsRead(messageId: number): Promise<void> {
+    // Mock implementation
+    return;
+  }
+
+  // Medical records methods - temporary implementation
+  async getAllMedicalRecords(): Promise<any[]> {
+    return [];
+  }
+
+  async getMedicalRecord(id: number): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async createMedicalRecord(recordData: any): Promise<any> {
+    return { id: Date.now(), ...recordData, createdAt: new Date() };
+  }
+
+  async updateMedicalRecord(id: number, updates: any): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async deleteMedicalRecord(id: number): Promise<boolean> {
+    return true;
+  }
+
+  async getMedicalRecordsByPlayer(playerId: number): Promise<any[]> {
+    return [];
+  }
+
+  // Performance metrics methods - temporary implementation
+  async getAllPerformanceMetrics(): Promise<any[]> {
+    return [];
+  }
+
+  async getPerformanceMetric(id: number): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async createPerformanceMetric(metricData: any): Promise<any> {
+    return { id: Date.now(), ...metricData, createdAt: new Date() };
+  }
+
+  async updatePerformanceMetric(id: number, updates: any): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async deletePerformanceMetric(id: number): Promise<boolean> {
+    return true;
+  }
+
+  async getPerformanceMetricsByPlayer(playerId: number): Promise<any[]> {
+    return [];
+  }
+
+  // Document management methods - temporary implementation
+  async getAllDocuments(): Promise<any[]> {
+    return [];
+  }
+
+  async getDocument(id: number): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async createDocument(documentData: any): Promise<any> {
+    return { id: Date.now(), ...documentData, createdAt: new Date() };
+  }
+
+  async updateDocument(id: number, updates: any): Promise<any | undefined> {
+    return undefined;
+  }
+
+  async deleteDocument(id: number): Promise<boolean> {
+    return true;
+  }
+
+  async getDocumentsByPlayer(playerId: number): Promise<any[]> {
+    return [];
+  }
 }
 
 export const storage = new DatabaseStorage();

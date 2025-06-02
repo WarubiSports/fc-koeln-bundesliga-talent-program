@@ -37,10 +37,16 @@ export default function Communications() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data: InsertMessage) => {
-      return await apiRequest('/api/messages', {
+      const response = await fetch('/api/messages', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
+      if (!response.ok) throw new Error('Failed to send message');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
@@ -67,9 +73,12 @@ export default function Communications() {
 
   const markAsReadMutation = useMutation({
     mutationFn: async (messageId: number) => {
-      return await apiRequest(`/api/messages/${messageId}/read`, {
-        method: 'PATCH'
+      const response = await fetch(`/api/messages/${messageId}/read`, {
+        method: 'PATCH',
+        credentials: 'include',
       });
+      if (!response.ok) throw new Error('Failed to mark message as read');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
@@ -89,7 +98,11 @@ export default function Communications() {
     sendMessageMutation.mutate({
       ...newMessage,
       fromUserId: user?.id || "",
-    } as InsertMessage);
+      subject: newMessage.subject,
+      content: newMessage.content,
+      priority: newMessage.priority || "normal",
+      messageType: newMessage.messageType || "direct"
+    });
   };
 
   const formatDate = (dateString: string) => {
