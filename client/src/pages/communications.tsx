@@ -3,12 +3,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Communications() {
   const [messageText, setMessageText] = useState("");
   const [selectedChat, setSelectedChat] = useState<string>("team");
+  const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
+  const [newMessageRecipient, setNewMessageRecipient] = useState("");
+  const [newMessageText, setNewMessageText] = useState("");
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -68,6 +74,26 @@ export default function Communications() {
     sendMessageMutation.mutate(messageData);
   };
 
+  const handleNewMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessageText.trim() || !newMessageRecipient) return;
+
+    const messageData = {
+      fromUserId: user?.id || "guest",
+      toUserId: newMessageRecipient === "team" ? null : newMessageRecipient,
+      subject: "New Message",
+      content: newMessageText.trim(),
+      priority: "normal",
+      messageType: newMessageRecipient === "team" ? "broadcast" : "direct"
+    };
+
+    sendMessageMutation.mutate(messageData);
+    setIsNewMessageOpen(false);
+    setNewMessageRecipient("");
+    setNewMessageText("");
+    setSelectedChat(newMessageRecipient);
+  };
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,8 +125,65 @@ export default function Communications() {
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}
         <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
+            <Dialog open={isNewMessageOpen} onOpenChange={setIsNewMessageOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-fc-red hover:bg-fc-red/90 text-white">
+                  <i className="fas fa-plus mr-1"></i>
+                  New
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Send New Message</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleNewMessage} className="space-y-4">
+                  <div>
+                    <Label htmlFor="recipient">Send to</Label>
+                    <Select value={newMessageRecipient} onValueChange={setNewMessageRecipient}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select recipient" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="team">Team Chat (Everyone)</SelectItem>
+                        {players.map((player: any) => (
+                          <SelectItem key={player.id} value={player.id.toString()}>
+                            {player.firstName} {player.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="message">Message</Label>
+                    <Input
+                      id="message"
+                      value={newMessageText}
+                      onChange={(e) => setNewMessageText(e.target.value)}
+                      placeholder="Type your message..."
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setIsNewMessageOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      disabled={!newMessageText.trim() || !newMessageRecipient}
+                      className="bg-fc-red hover:bg-fc-red/90 text-white"
+                    >
+                      Send Message
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
           
           <div className="flex-1 overflow-y-auto">

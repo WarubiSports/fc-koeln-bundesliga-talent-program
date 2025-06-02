@@ -26,6 +26,7 @@ function Router() {
           <Route path="/login" component={LoginForm} />
           <Route path="/simple-login" component={SimpleLogin} />
           <Route path="/communications" component={Communications} />
+          <Route path="/food-orders" component={FoodOrders} />
         </>
       ) : (
         <>
