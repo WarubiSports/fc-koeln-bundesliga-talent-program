@@ -33,6 +33,9 @@ export default function Players() {
   });
 
   const { user, isAdmin } = useAuth();
+  
+  // Debug log to check user data and admin status
+  console.log('Players page - User:', user, 'isAdmin:', isAdmin);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
