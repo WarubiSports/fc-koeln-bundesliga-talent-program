@@ -118,7 +118,16 @@ export async function setupAuth(app: Express) {
     passport.authenticate(`replitauth:${req.hostname}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
-    })(req, res, next);
+    })((req as any), res, (err: any) => {
+      if (err) {
+        return next(err);
+      }
+      // Clear logout flag on successful login
+      if (req.session) {
+        delete (req.session as any).loggedOut;
+      }
+      next();
+    });
   });
 
   app.get("/api/logout", (req, res) => {

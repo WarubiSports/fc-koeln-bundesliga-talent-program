@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    // Check for logout flag
+    // Check for logout flag first
     if (req.session && req.session.loggedOut) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -32,12 +32,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (userId) {
         const user = await storage.getUser(userId);
         if (user) {
+          // Clear logout flag on successful auth
+          if (req.session) {
+            delete req.session.loggedOut;
+          }
           res.json(user);
         } else {
           res.status(401).json({ message: "User not found" });
         }
       } else {
         // For development/testing - return a mock admin user
+        // Clear logout flag on successful auth
+        if (req.session) {
+          delete req.session.loggedOut;
+        }
         res.json({
           id: "test-admin",
           email: "admin@warubi-sports.com",
