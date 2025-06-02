@@ -47,12 +47,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // Fallback for development
+        // Return logged in user for development access
         res.json({
-          id: "test-admin",
-          email: "admin@warubi-sports.com",
-          firstName: "Admin",
-          lastName: "User",
+          id: "dev-admin",
+          email: "max.bisinger@warubi-sports.com",
+          firstName: "Max",
+          lastName: "Bisinger",
           role: "admin",
           profileImageUrl: null
         });
