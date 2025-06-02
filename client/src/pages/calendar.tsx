@@ -640,14 +640,15 @@ export default function CalendarPage() {
               <FileText className="w-4 h-4 mr-2" />
               Request Excuse
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-fc-red hover:bg-fc-red/90 text-white w-full sm:w-auto">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Event
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
+            {isAdmin && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-fc-red hover:bg-fc-red/90 text-white w-full sm:w-auto">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Event
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={() => handleAddEvent('team-practice')}>
                   <Users className="w-4 h-4 mr-2" />
@@ -678,7 +679,8 @@ export default function CalendarPage() {
                   Trial
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 

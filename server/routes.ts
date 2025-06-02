@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema, insertFoodOrderSchema, updateFoodOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
-import { simpleAuth, createUserToken, removeUserToken } from "./auth-simple";
+import { simpleAuth, simpleAdminAuth, createUserToken, removeUserToken } from "./auth-simple";
 
 
 
@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes for user management
-  app.get('/api/admin/pending-users', isAdmin, async (req, res) => {
+  app.get('/api/admin/pending-users', simpleAdminAuth, async (req, res) => {
     try {
       const pendingUsers = await storage.getPendingUsers();
       res.json(pendingUsers);
@@ -108,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/approve-user/:userId', isAdmin, async (req, res) => {
+  app.put('/api/admin/approve-user/:userId', simpleAdminAuth, async (req, res) => {
     try {
       const { userId } = req.params;
       await storage.approveUser(userId);
