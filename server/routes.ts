@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema, insertFoodOrderSchema, updateFoodOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
+import { simpleAuth, createUserToken, removeUserToken } from "./auth-simple";
 
 
 
@@ -75,7 +76,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const isAdmin = email.endsWith('@fckoeln.de') || email.endsWith('@warubi-sports.com');
     const role = isAdmin ? 'admin' : 'player';
     
-    // Create user session
+    // Create user data
     const userData = {
       id: isAdmin ? 'admin-user' : 'player-user',
       email,
@@ -85,27 +86,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       profileImageUrl: null
     };
     
-    // Create a mock authenticated user for the session
-    const mockUser = {
-      claims: {
-        sub: userData.id,
-        email: userData.email,
-        first_name: userData.firstName,
-        last_name: userData.lastName
-      }
-    };
+    // Create authentication token
+    const token = createUserToken(userData);
     
-    // Store user data in session
-    if (req.session) {
-      (req.session as any).userData = userData;
-      (req.session as any).devLoggedIn = true;
-      
-      console.log('Session data set:', { userData, devLoggedIn: true });
-      console.log('Login successful for:', email, 'Role:', role);
-      res.json({ message: "Login successful", user: userData });
-    } else {
-      res.status(500).json({ message: "Session not available" });
-    }
+    console.log('Login successful for:', email, 'Role:', role, 'Token:', token);
+    res.json({ 
+      message: "Login successful", 
+      user: userData,
+      token: token
+    });
   });
 
   // Admin routes for user management

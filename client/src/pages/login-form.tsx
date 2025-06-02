@@ -32,15 +32,19 @@ export default function LoginForm() {
       if (response.ok) {
         const result = await response.json();
         
+        // Store authentication token
+        localStorage.setItem('authToken', result.token);
+        localStorage.setItem('userData', JSON.stringify(result.user));
+        
         toast({
           title: "Sign Up Successful",
           description: "Welcome to the FC Köln management system!",
         });
         
-        // Force a full page reload to ensure session is recognized
+        // Redirect to dashboard
         setTimeout(() => {
           window.location.replace('/');
-        }, 1000);
+        }, 500);
       } else {
         toast({
           title: "Login Failed",

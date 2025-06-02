@@ -38,6 +38,10 @@ export default function SimpleLogin() {
       if (response.ok) {
         const result = await response.json();
         
+        // Store authentication token
+        localStorage.setItem('authToken', result.token);
+        localStorage.setItem('userData', JSON.stringify(result.user));
+        
         toast({
           title: "Welcome Back!",
           description: "You've been logged in successfully.",
@@ -45,7 +49,7 @@ export default function SimpleLogin() {
         
         setTimeout(() => {
           window.location.replace('/');
-        }, 1000);
+        }, 500);
       } else {
         toast({
           title: "Login Failed",
