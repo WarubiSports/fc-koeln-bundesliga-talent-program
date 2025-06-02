@@ -9,6 +9,7 @@ import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
 import AdminEvents from "@/pages/admin-events";
+import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
 import SimpleLogin from "@/pages/simple-login";
 import LoginForm from "@/pages/login-form";
@@ -33,6 +34,7 @@ function Router() {
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/admin-events" component={AdminEvents} />
+          <Route path="/communications" component={Communications} />
         </>
       )}
       <Route component={NotFound} />

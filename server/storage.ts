@@ -129,6 +129,39 @@ export interface IStorage {
   deleteEvent(id: number): Promise<boolean>;
   getEventsByDate(date: string): Promise<Event[]>;
   getEventsByDateRange(startDate: string, endDate: string): Promise<Event[]>;
+
+  // Communication methods
+  getAllMessages(): Promise<Message[]>;
+  getMessage(id: number): Promise<Message | undefined>;
+  createMessage(message: InsertMessage): Promise<Message>;
+  updateMessage(id: number, updates: UpdateMessage): Promise<Message | undefined>;
+  deleteMessage(id: number): Promise<boolean>;
+  getMessagesByUser(userId: string): Promise<Message[]>;
+  markMessageAsRead(messageId: number): Promise<void>;
+
+  // Medical records methods (admin-only)
+  getAllMedicalRecords(): Promise<MedicalRecord[]>;
+  getMedicalRecord(id: number): Promise<MedicalRecord | undefined>;
+  createMedicalRecord(record: InsertMedicalRecord): Promise<MedicalRecord>;
+  updateMedicalRecord(id: number, updates: UpdateMedicalRecord): Promise<MedicalRecord | undefined>;
+  deleteMedicalRecord(id: number): Promise<boolean>;
+  getMedicalRecordsByPlayer(playerId: number): Promise<MedicalRecord[]>;
+
+  // Performance metrics methods
+  getAllPerformanceMetrics(): Promise<PerformanceMetric[]>;
+  getPerformanceMetric(id: number): Promise<PerformanceMetric | undefined>;
+  createPerformanceMetric(metric: InsertPerformanceMetric): Promise<PerformanceMetric>;
+  updatePerformanceMetric(id: number, updates: UpdatePerformanceMetric): Promise<PerformanceMetric | undefined>;
+  deletePerformanceMetric(id: number): Promise<boolean>;
+  getPerformanceMetricsByPlayer(playerId: number): Promise<PerformanceMetric[]>;
+
+  // Document management methods (admin-only)
+  getAllDocuments(): Promise<Document[]>;
+  getDocument(id: number): Promise<Document | undefined>;
+  createDocument(document: InsertDocument): Promise<Document>;
+  updateDocument(id: number, updates: UpdateDocument): Promise<Document | undefined>;
+  deleteDocument(id: number): Promise<boolean>;
+  getDocumentsByPlayer(playerId: number): Promise<Document[]>;
 }
 
 export class DatabaseStorage implements IStorage {

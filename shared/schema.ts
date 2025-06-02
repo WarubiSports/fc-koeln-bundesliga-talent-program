@@ -200,3 +200,106 @@ export const updateEventSchema = insertEventSchema.partial();
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type UpdateEvent = z.infer<typeof updateEventSchema>;
 export type Event = typeof events.$inferSelect;
+
+// Communication System
+export const messages = pgTable("messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  fromUserId: varchar("from_user_id").notNull(),
+  toUserId: varchar("to_user_id"), // null for broadcasts
+  subject: varchar("subject").notNull(),
+  content: text("content").notNull(),
+  isRead: boolean("is_read").default(false),
+  priority: varchar("priority").default("normal"), // low, normal, high, urgent
+  messageType: varchar("message_type").default("direct"), // direct, broadcast, announcement
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertMessageSchema = createInsertSchema(messages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const updateMessageSchema = insertMessageSchema.partial();
+
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type UpdateMessage = z.infer<typeof updateMessageSchema>;
+export type Message = typeof messages.$inferSelect;
+
+// Medical & Health Management
+export const medicalRecords = pgTable("medical_records", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  playerId: integer("player_id").references(() => players.id).notNull(),
+  recordType: varchar("record_type").notNull(), // injury, medical_clearance, fitness_assessment
+  title: varchar("title").notNull(),
+  description: text("description"),
+  status: varchar("status").default("active"), // active, resolved, ongoing
+  severity: varchar("severity"), // minor, moderate, severe
+  dateRecorded: timestamp("date_recorded").defaultNow(),
+  dateResolved: timestamp("date_resolved"),
+  doctorNotes: text("doctor_notes"),
+  restrictions: text("restrictions"),
+  createdBy: varchar("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertMedicalRecordSchema = createInsertSchema(medicalRecords).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const updateMedicalRecordSchema = insertMedicalRecordSchema.partial();
+
+export type InsertMedicalRecord = z.infer<typeof insertMedicalRecordSchema>;
+export type UpdateMedicalRecord = z.infer<typeof updateMedicalRecordSchema>;
+export type MedicalRecord = typeof medicalRecords.$inferSelect;
+
+// Performance Analytics
+export const performanceMetrics = pgTable("performance_metrics", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  playerId: integer("player_id").references(() => players.id).notNull(),
+  metricType: varchar("metric_type").notNull(), // training_attendance, match_performance, fitness_score
+  value: varchar("value").notNull(),
+  unit: varchar("unit"),
+  notes: text("notes"),
+  recordedDate: timestamp("recorded_date").defaultNow(),
+  recordedBy: varchar("recorded_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPerformanceMetricSchema = createInsertSchema(performanceMetrics).omit({
+  id: true,
+  createdAt: true,
+});
+export const updatePerformanceMetricSchema = insertPerformanceMetricSchema.partial();
+
+export type InsertPerformanceMetric = z.infer<typeof insertPerformanceMetricSchema>;
+export type UpdatePerformanceMetric = z.infer<typeof updatePerformanceMetricSchema>;
+export type PerformanceMetric = typeof performanceMetrics.$inferSelect;
+
+// Document Management (Admin Only)
+export const documents = pgTable("documents", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  playerId: integer("player_id").references(() => players.id),
+  documentType: varchar("document_type").notNull(), // contract, medical_form, consent, insurance
+  title: varchar("title").notNull(),
+  fileName: varchar("file_name"),
+  fileUrl: varchar("file_url"),
+  status: varchar("status").default("pending"), // pending, approved, expired, rejected
+  expiryDate: timestamp("expiry_date"),
+  uploadedBy: varchar("uploaded_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertDocumentSchema = createInsertSchema(documents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const updateDocumentSchema = insertDocumentSchema.partial();
+
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type UpdateDocument = z.infer<typeof updateDocumentSchema>;
+export type Document = typeof documents.$inferSelect;
