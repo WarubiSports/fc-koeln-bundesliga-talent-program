@@ -84,15 +84,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const isAdmin = email.endsWith('@fckoeln.de') || email.endsWith('@warubi-sports.com');
     const role = isAdmin ? 'admin' : 'player';
     
-    // Create user data
+    // Generate unique user ID
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Create or update user in database
     const userData = {
-      id: isAdmin ? 'admin-user' : 'player-user',
+      id: userId,
       email,
       firstName,
       lastName,
       role,
+      approved: isAdmin ? 'true' : 'false',
       profileImageUrl: null
     };
+    
+    // Upsert user in database
+    await storage.upsertUser(userData);
     
     // Create authentication token
     const token = createUserToken(userData);
@@ -103,6 +110,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       user: userData,
       token: token
     });
+  });
+
+  // Profile completion endpoint
+  app.post('/api/complete-profile', simpleAuth, async (req: any, res) => {
+    try {
+      const { dateOfBirth, nationality, position } = req.body;
+      const userId = req.user.id;
+
+      if (!dateOfBirth || !nationality || !position) {
+        return res.status(400).json({ message: "All profile fields are required" });
+      }
+
+      await storage.updateUserProfile(userId, {
+        dateOfBirth,
+        nationality,
+        position
+      });
+
+      res.json({ message: "Profile completed successfully" });
+    } catch (error) {
+      console.error("Error completing profile:", error);
+      res.status(500).json({ message: "Failed to complete profile" });
+    }
   });
 
   // Admin routes for user management

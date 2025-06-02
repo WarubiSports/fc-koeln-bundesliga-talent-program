@@ -22,7 +22,8 @@ const positions = [
   "Right Winger",
   "Left Winger", 
   "Centre-forward",
-  "Striker"
+  "Striker",
+  "Staff"
 ];
 
 const countries = [
@@ -59,13 +60,7 @@ export default function CompleteProfile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
-      return await apiRequest("/api/auth/complete-profile", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return await apiRequest("/api/complete-profile", "POST", data);
     },
     onSuccess: () => {
       toast({
