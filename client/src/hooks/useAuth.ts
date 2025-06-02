@@ -7,7 +7,7 @@ export function useAuth() {
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
     staleTime: 0, // Always refetch to check current auth status
-    cacheTime: 0, // Don't cache auth data
+    gcTime: 0, // Don't cache auth data (v5 syntax)
   });
 
   return {

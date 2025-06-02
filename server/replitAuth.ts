@@ -127,9 +127,30 @@ export async function setupAuth(app: Express) {
         if (err) {
           console.error('Session destruction error:', err);
         }
-        // Clear the session cookie
-        res.clearCookie('connect.sid');
-        res.redirect("/");
+        // Clear all possible session cookies
+        res.clearCookie('connect.sid', { path: '/' });
+        res.clearCookie('connect.sid', { path: '/', domain: req.hostname });
+        res.clearCookie('session', { path: '/' });
+        
+        // Send HTML that clears cache and redirects
+        res.send(`
+          <html>
+            <head>
+              <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+              <meta http-equiv="Pragma" content="no-cache">
+              <meta http-equiv="Expires" content="0">
+            </head>
+            <body>
+              <script>
+                // Clear all storage
+                if (typeof localStorage !== 'undefined') localStorage.clear();
+                if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
+                // Force reload and redirect
+                window.location.replace('/');
+              </script>
+            </body>
+          </html>
+        `);
       });
     });
   });
