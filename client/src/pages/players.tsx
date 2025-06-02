@@ -33,7 +33,12 @@ export default function Players() {
   const queryClient = useQueryClient();
 
   const { data: players = [], isLoading } = useQuery({
-    queryKey: ["/api/players", { search: searchQuery, position: filterPosition, nationality: filterNationality, status: filterStatus }],
+    queryKey: ["/api/players", { 
+      search: searchQuery || undefined, 
+      position: filterPosition === "all" ? undefined : filterPosition, 
+      nationality: filterNationality === "all" ? undefined : filterNationality, 
+      status: filterStatus === "all" ? undefined : filterStatus 
+    }],
   });
 
   const addPlayerMutation = useMutation({
@@ -213,7 +218,7 @@ export default function Players() {
               <SelectValue placeholder="Filter by position" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Positions</SelectItem>
+              <SelectItem value="all">All Positions</SelectItem>
               {positions.map(position => (
                 <SelectItem key={position} value={position}>{position}</SelectItem>
               ))}
@@ -224,7 +229,7 @@ export default function Players() {
               <SelectValue placeholder="Filter by nationality" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Nationalities</SelectItem>
+              <SelectItem value="all">All Nationalities</SelectItem>
               {nationalities.map(nationality => (
                 <SelectItem key={nationality} value={nationality}>{nationality}</SelectItem>
               ))}
@@ -235,7 +240,7 @@ export default function Players() {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               {statuses.map(status => (
                 <SelectItem key={status} value={status}>{status.replace('_', ' ').toUpperCase()}</SelectItem>
               ))}
