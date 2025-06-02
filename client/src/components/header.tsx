@@ -27,7 +27,7 @@ export default function Header() {
             </div>
           </div>
           
-          <nav className="hidden md:flex space-x-4">
+          <nav className="hidden md:flex space-x-2">
             <a 
               href="/" 
               className={`transition-all duration-200 pb-4 px-2 ${
