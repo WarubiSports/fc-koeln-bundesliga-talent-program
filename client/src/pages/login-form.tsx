@@ -31,18 +31,16 @@ export default function LoginForm() {
 
       if (response.ok) {
         const result = await response.json();
-        // Store user data temporarily in localStorage
-        localStorage.setItem('tempUserData', JSON.stringify(result.user));
         
         toast({
-          title: "Login Successful",
+          title: "Sign Up Successful",
           description: "Welcome to the FC Köln management system!",
         });
         
         // Force a full page reload to ensure session is recognized
         setTimeout(() => {
           window.location.replace('/');
-        }, 500);
+        }, 1000);
       } else {
         toast({
           title: "Login Failed",

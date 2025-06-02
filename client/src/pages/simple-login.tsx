@@ -37,7 +37,6 @@ export default function SimpleLogin() {
 
       if (response.ok) {
         const result = await response.json();
-        localStorage.setItem('tempUserData', JSON.stringify(result.user));
         
         toast({
           title: "Welcome Back!",
@@ -46,7 +45,7 @@ export default function SimpleLogin() {
         
         setTimeout(() => {
           window.location.replace('/');
-        }, 500);
+        }, 1000);
       } else {
         toast({
           title: "Login Failed",
