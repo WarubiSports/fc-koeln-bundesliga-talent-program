@@ -4,13 +4,6 @@ import type { RequestHandler } from "express";
 const loggedInUsers = new Map<string, any>();
 
 export const simpleAuth: RequestHandler = (req: any, res, next) => {
-  console.log('Auth check - isAuthenticated:', req.isAuthenticated ? req.isAuthenticated() : false);
-  console.log('Auth check - session exists:', !!req.session);
-  console.log('Auth check - session ID:', req.sessionID);
-  console.log('Auth check - session.devLoggedIn:', req.session?.devLoggedIn);
-  console.log('Auth check - session.userData:', !!req.session?.userData);
-  console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
-
   const authHeader = req.headers.authorization;
   
   if (authHeader && authHeader.startsWith('Bearer ')) {
