@@ -19,32 +19,19 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch current user data from backend
+  // Fetch current user data from backend only if token exists
+  const token = localStorage.getItem('authToken');
   const { data: currentUser, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
-    enabled: !!localStorage.getItem('authToken'),
+    enabled: !!token,
     retry: false,
   });
 
   useEffect(() => {
-    // Check for stored authentication token
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
-    
-    if (token && userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
-        setUser(null);
-      }
-    } else {
-      // Clear any existing authentication state
-      setUser(null);
-    }
-    
+    // Clear any existing authentication state on page load
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    setUser(null);
     setIsLoading(false);
   }, []);
 
@@ -60,7 +47,7 @@ export function useAuth() {
 
   return {
     user,
-    isLoading: isLoading || userLoading,
+    isLoading: token ? (isLoading || userLoading) : isLoading,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
     isPlayer: user?.role === "player",
