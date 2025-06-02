@@ -142,18 +142,13 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/logout", (req, res) => {
+  app.get("/api/logout", (req: any, res) => {
     console.log('Logout requested');
     
-    // Clear the session data
+    // Set logout flag in session before destroying it
     if (req.session) {
-      req.session.destroy((err) => {
-        if (err) {
-          console.error('Session destruction error:', err);
-        }
-        console.log('Session destroyed, clearing cookie and redirecting');
-        res.clearCookie('connect.sid');
-        
+      req.session.loggedOut = true;
+      req.session.save(() => {
         // Force redirect to landing page
         res.writeHead(302, {
           'Location': '/',

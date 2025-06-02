@@ -9,6 +9,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
+  // Login route to clear logout flag
+  app.get('/api/login', async (req: any, res) => {
+    if (req.session) {
+      req.session.loggedOut = false;
+      req.session.save(() => {
+        res.redirect('/');
+      });
+    } else {
+      res.redirect('/');
+    }
+  });
+
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     // Set cache control headers to prevent caching
@@ -43,15 +55,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // Return logged in user for development access
-        res.json({
-          id: "dev-admin",
-          email: "max.bisinger@warubi-sports.com",
-          firstName: "Max",
-          lastName: "Bisinger",
-          role: "admin",
-          profileImageUrl: null
-        });
+        // Check if user has explicitly logged out
+        if (req.session?.loggedOut) {
+          res.status(401).json({ message: "Unauthorized" });
+        } else {
+          // Return logged in user for development access
+          res.json({
+            id: "dev-admin",
+            email: "max.bisinger@warubi-sports.com",
+            firstName: "Max",
+            lastName: "Bisinger",
+            role: "admin",
+            profileImageUrl: null
+          });
+        }
       }
     } catch (error) {
       console.error("Error fetching user:", error);
