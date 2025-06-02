@@ -522,11 +522,20 @@ export default function CalendarPage() {
                 {format(day, 'd')}
               </div>
               <div className="space-y-1">
-                {dayEvents.slice(0, 3).map(event => (
-                  <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded truncate">
-                    {event.title}
-                  </div>
-                ))}
+                {dayEvents.slice(0, 3).map(event => {
+                  const startTime = event.time || event.startTime;
+                  const endTime = event.endTime;
+                  const timeDisplay = endTime ? `${startTime}-${endTime}` : startTime;
+                  
+                  return (
+                    <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded">
+                      <div className="font-medium truncate">{event.title}</div>
+                      {timeDisplay && (
+                        <div className="text-gray-600 text-[10px] mt-0.5">{timeDisplay}</div>
+                      )}
+                    </div>
+                  );
+                })}
                 {dayEvents.length > 3 && (
                   <div className="text-xs text-gray-500">+{dayEvents.length - 3} more</div>
                 )}

@@ -216,8 +216,12 @@ export default function AdminEvents() {
       </main>
 
       <AddEventModal 
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        isOpen={isAddModalOpen || !!editingEvent}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingEvent(null);
+        }}
+        editingEvent={editingEvent}
       />
     </div>
   );

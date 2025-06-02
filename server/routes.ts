@@ -688,6 +688,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/events/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const event = await storage.updateEvent(id, req.body);
+      if (!event) {
+        res.status(404).json({ message: "Event not found" });
+        return;
+      }
+      res.json(event);
+    } catch (error) {
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Failed to update event" });
+    }
+  });
+
   app.delete("/api/events/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
