@@ -57,16 +57,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Simple login endpoint for development
   app.post('/api/auth/login', async (req: any, res) => {
     // Set development login flag in session
+    console.log('Login request - session exists:', !!req.session);
     if (req.session) {
       req.session.devLoggedIn = true;
+      console.log('Setting devLoggedIn flag to true');
       req.session.save((err: any) => {
         if (err) {
           console.error('Session save error:', err);
           return res.status(500).json({ message: "Login failed" });
         }
+        console.log('Session saved successfully with devLoggedIn flag');
         res.json({ message: "Login successful" });
       });
     } else {
+      console.log('No session available for login');
       res.json({ message: "Login successful" });
     }
   });
