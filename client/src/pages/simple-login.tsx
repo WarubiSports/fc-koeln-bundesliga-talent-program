@@ -47,9 +47,8 @@ export default function SimpleLogin() {
           description: "You've been logged in successfully.",
         });
         
-        setTimeout(() => {
-          window.location.replace('/');
-        }, 500);
+        // Force immediate redirect without delay
+        window.location.href = '/';
       } else {
         toast({
           title: "Login Failed",
