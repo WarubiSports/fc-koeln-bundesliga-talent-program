@@ -29,44 +29,57 @@ function Router() {
     );
   }
 
+  // Show landing page for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <Switch>
+        <Route path="/" component={Landing} />
+        <Route path="/login" component={LoginForm} />
+        <Route path="/simple-login" component={SimpleLogin} />
+        <Route component={Landing} />
+      </Switch>
+    );
+  }
+
+  // Redirect to profile completion if needed (non-admin users only)
+  if (!hasCompletedProfile && !isAdmin) {
+    return (
+      <Switch>
+        <Route path="/complete-profile" component={CompleteProfile} />
+        <Route component={() => {
+          window.location.href = "/complete-profile";
+          return null;
+        }} />
+      </Switch>
+    );
+  }
+
+  // Show waiting approval page for users who need approval
+  if (needsApproval && !isAdmin) {
+    return (
+      <Switch>
+        <Route path="/waiting-approval" component={WaitingApproval} />
+        <Route component={() => {
+          window.location.href = "/waiting-approval";
+          return null;
+        }} />
+      </Switch>
+    );
+  }
+
+  // Show main application for authenticated users
   return (
     <Switch>
-      {!isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/login" component={LoginForm} />
-          <Route path="/simple-login" component={SimpleLogin} />
-        </>
-      ) : !hasCompletedProfile && !isAdmin ? (
-        <>
-          <Route path="/complete-profile" component={CompleteProfile} />
-          <Route component={() => {
-            window.location.href = "/complete-profile";
-            return null;
-          }} />
-        </>
-      ) : needsApproval && !isAdmin ? (
-        <>
-          <Route path="/waiting-approval" component={WaitingApproval} />
-          <Route component={() => {
-            window.location.href = "/waiting-approval";
-            return null;
-          }} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Dashboard} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/players" component={Players} />
-          <Route path="/chores" component={Chores} />
-          <Route path="/calendar" component={Calendar} />
-          <Route path="/food-orders" component={FoodOrders} />
-          <Route path="/admin-events" component={AdminEvents} />
-          <Route path="/communications" component={Communications} />
-          <Route path="/complete-profile" component={CompleteProfile} />
-          <Route path="/waiting-approval" component={WaitingApproval} />
-        </>
-      )}
+      <Route path="/" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/players" component={Players} />
+      <Route path="/chores" component={Chores} />
+      <Route path="/calendar" component={Calendar} />
+      <Route path="/food-orders" component={FoodOrders} />
+      <Route path="/communications" component={Communications} />
+      {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
+      <Route path="/complete-profile" component={CompleteProfile} />
+      <Route path="/waiting-approval" component={WaitingApproval} />
       <Route component={NotFound} />
     </Switch>
   );

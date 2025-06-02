@@ -19,25 +19,23 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Disable automatic user fetching for now
-  const currentUser = null;
-  const userLoading = false;
-
   useEffect(() => {
-    // Clear any stored authentication data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    setUser(null);
+    // Check for stored authentication data
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('userData');
+    
+    if (token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+      }
+    }
     setIsLoading(false);
   }, []);
-
-  // Update user data with fresh data from backend
-  useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser);
-      localStorage.setItem('userData', JSON.stringify(currentUser));
-    }
-  }, [currentUser]);
 
   const hasCompletedProfile = user?.dateOfBirth && user?.nationality && user?.position;
 
