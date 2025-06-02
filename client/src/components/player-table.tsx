@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import type { Player } from "@shared/schema";
 
 interface PlayerTableProps {
@@ -16,9 +17,10 @@ interface PlayerTableProps {
 export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
-
   const [countryFilter, setCountryFilter] = useState("");
   const { toast } = useToast();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   // Build query params
   const queryParams = new URLSearchParams();
@@ -138,12 +140,14 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <i className="fas fa-download mr-2"></i>
               {exportMutation.isPending ? "Exporting..." : "Export"}
             </Button>
-            <Button
-              onClick={onAddPlayer}
-              className="bg-fc-red hover:bg-red-700"
-            >
-              <i className="fas fa-plus mr-2"></i>Add Player
-            </Button>
+            {isAdmin && (
+              <Button
+                onClick={onAddPlayer}
+                className="bg-fc-red hover:bg-red-700"
+              >
+                <i className="fas fa-plus mr-2"></i>Add Player
+              </Button>
+            )}
           </div>
         </div>
       </div>
