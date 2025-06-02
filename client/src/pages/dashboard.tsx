@@ -1,5 +1,4 @@
 import Header from "@/components/header";
-import DashboardStats from "@/components/dashboard-stats";
 import PlayerTable from "@/components/player-table";
 import QuickActions from "@/components/quick-actions";
 import RecentActivity from "@/components/recent-activity";
@@ -14,8 +13,6 @@ export default function Dashboard() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <DashboardStats />
-        
         <PlayerTable 
           onAddPlayer={() => setIsAddPlayerModalOpen(true)}
         />
