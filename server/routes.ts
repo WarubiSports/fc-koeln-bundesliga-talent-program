@@ -100,16 +100,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (req.session as any).userData = userData;
       (req.session as any).devLoggedIn = true;
       
-      req.session.save((err: any) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: "Login failed" });
-        }
-        
-        console.log('Session saved successfully with userData:', userData);
-        console.log('Login successful for:', email, 'Role:', role);
-        res.json({ message: "Login successful", user: userData });
-      });
+      console.log('Session data set:', { userData, devLoggedIn: true });
+      console.log('Login successful for:', email, 'Role:', role);
+      res.json({ message: "Login successful", user: userData });
     } else {
       res.status(500).json({ message: "Session not available" });
     }
