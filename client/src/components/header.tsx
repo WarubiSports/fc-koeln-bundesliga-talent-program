@@ -12,7 +12,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-18">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12">
               <img 
@@ -27,10 +27,10 @@ export default function Header() {
             </div>
           </div>
           
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-6">
             <a 
               href="/" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
@@ -40,7 +40,7 @@ export default function Header() {
             </a>
             <a 
               href="/players" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/players" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
@@ -50,7 +50,7 @@ export default function Header() {
             </a>
             <a 
               href="/chores" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/chores" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
@@ -60,7 +60,7 @@ export default function Header() {
             </a>
             <a 
               href="/calendar" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/calendar" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
@@ -70,17 +70,17 @@ export default function Header() {
             </a>
             <a 
               href="/food-orders" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/food-orders" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
               }`}
             >
-              Food Orders
+              Groceries
             </a>
             <a 
               href="/communications" 
-              className={`transition-all duration-200 pb-4 ${
+              className={`transition-all duration-200 pb-4 px-2 ${
                 location === "/communications" 
                   ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
@@ -201,7 +201,7 @@ export default function Header() {
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Food Orders
+                Groceries
               </a>
               <a
                 href="/communications"

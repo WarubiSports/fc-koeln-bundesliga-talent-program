@@ -85,7 +85,7 @@ export default function Players() {
 
   const positions = ["Forward", "Midfielder", "Defender", "Goalkeeper"];
   const nationalities = ["Germany", "England", "France", "Spain", "Italy", "Netherlands", "Brazil", "Argentina"];
-  const statuses = ["active", "injured", "suspended", "on_loan"];
+  const statuses = ["active", "injured", "suspended"];
 
   const getStatusColor = (status: string) => {
     switch (status) {
