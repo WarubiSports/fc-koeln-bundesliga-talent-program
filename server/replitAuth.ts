@@ -144,21 +144,35 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     console.log('Logout requested');
-    req.logout(() => {
-      if (req.session) {
-        req.session.destroy((err) => {
-          if (err) {
-            console.error('Session destruction error:', err);
-          }
-          console.log('Session destroyed, clearing cookie and redirecting');
-          res.clearCookie('connect.sid');
-          res.redirect('/');
+    
+    // Clear the session data
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destruction error:', err);
+        }
+        console.log('Session destroyed, clearing cookie and redirecting');
+        res.clearCookie('connect.sid');
+        
+        // Force redirect to landing page
+        res.writeHead(302, {
+          'Location': '/',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         });
-      } else {
-        console.log('No session found, redirecting');
-        res.redirect('/');
-      }
-    });
+        res.end();
+      });
+    } else {
+      console.log('No session found, redirecting');
+      res.writeHead(302, {
+        'Location': '/',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      res.end();
+    }
   });
 }
 

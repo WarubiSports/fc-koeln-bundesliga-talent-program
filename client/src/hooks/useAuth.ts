@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 
 export function useAuth() {
   const [tempUser, setTempUser] = useState(null);
+  const queryClient = useQueryClient();
   
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/auth/user"],
@@ -13,7 +14,7 @@ export function useAuth() {
     gcTime: 0, // Don't cache auth data (v5 syntax)
   });
 
-  // Check for temporary user data immediately
+  // Check for temporary user data immediately and handle logout
   useEffect(() => {
     const tempUserData = localStorage.getItem('tempUserData');
     if (tempUserData) {
@@ -29,7 +30,18 @@ export function useAuth() {
         localStorage.removeItem('tempUserData');
       }
     }
-  }, []);
+
+    // Listen for logout events
+    const handleLogout = () => {
+      setTempUser(null);
+      localStorage.removeItem('tempUserData');
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.clear();
+    };
+
+    window.addEventListener('beforeunload', handleLogout);
+    return () => window.removeEventListener('beforeunload', handleLogout);
+  }, [queryClient]);
 
   const finalUser = user || tempUser;
 
