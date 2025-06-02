@@ -19,7 +19,7 @@ import WaitingApproval from "@/pages/waiting-approval";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, hasCompletedProfile, needsApproval, isAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -36,6 +36,22 @@ function Router() {
           <Route path="/" component={Landing} />
           <Route path="/login" component={LoginForm} />
           <Route path="/simple-login" component={SimpleLogin} />
+        </>
+      ) : !hasCompletedProfile ? (
+        <>
+          <Route path="/complete-profile" component={CompleteProfile} />
+          <Route component={() => {
+            window.location.href = "/complete-profile";
+            return null;
+          }} />
+        </>
+      ) : needsApproval && !isAdmin ? (
+        <>
+          <Route path="/waiting-approval" component={WaitingApproval} />
+          <Route component={() => {
+            window.location.href = "/waiting-approval";
+            return null;
+          }} />
         </>
       ) : (
         <>

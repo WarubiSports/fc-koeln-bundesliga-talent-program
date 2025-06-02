@@ -1,12 +1,25 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  approved: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  position?: string;
+  profileImageUrl?: string;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch current user data from backend
-  const { data: currentUser, isLoading: userLoading } = useQuery({
+  const { data: currentUser, isLoading: userLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     enabled: !!localStorage.getItem('authToken'),
     retry: false,
