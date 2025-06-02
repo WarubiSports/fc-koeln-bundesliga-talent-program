@@ -11,9 +11,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Login route to clear logout flag
   app.get('/api/login', async (req: any, res) => {
-    // Clear the logout cookie
-    res.clearCookie('dev_logged_out');
-    res.redirect('/');
+    // Clear the logout flag from session
+    if (req.session) {
+      req.session.isLoggedOut = false;
+      req.session.save(() => {
+        res.redirect('/');
+      });
+    } else {
+      res.redirect('/');
+    }
   });
 
   // Auth routes
@@ -30,6 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - session ID:', req.sessionID);
     console.log('Auth check - session.devLoggedIn:', req.session?.devLoggedIn);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
+    console.log('Auth check - session.isLoggedOut:', req.session?.isLoggedOut);
     
     // Allow access for development
 
@@ -51,9 +58,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // For development - check if logout cookie exists
-        const loggedOut = req.headers.cookie?.includes('dev_logged_out=true');
-        if (loggedOut) {
+        // Return logged in user for development access only if not explicitly logged out
+        if (req.session?.isLoggedOut === true) {
           res.status(401).json({ message: "Unauthorized" });
         } else {
           // Return logged in user for development access

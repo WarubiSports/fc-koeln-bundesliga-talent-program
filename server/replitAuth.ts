@@ -145,16 +145,11 @@ export async function setupAuth(app: Express) {
   app.get("/api/logout", (req: any, res) => {
     console.log('Logout requested');
     
-    // Set logout cookie for development
-    res.cookie('dev_logged_out', 'true', { 
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      httpOnly: true 
-    });
-    
-    // Clear session if it exists
+    // Set logout flag in existing session before destroying
     if (req.session) {
-      req.session.destroy(() => {
-        console.log('Session destroyed, redirecting to landing page');
+      req.session.isLoggedOut = true;
+      req.session.save(() => {
+        console.log('Session updated with logout flag, redirecting');
         res.writeHead(302, {
           'Location': '/',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
