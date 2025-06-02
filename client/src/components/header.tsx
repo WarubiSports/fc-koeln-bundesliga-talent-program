@@ -117,7 +117,11 @@ export default function Header() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.location.href = '/api/logout'}
+                  onClick={() => {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                    window.location.replace('/');
+                  }}
                   className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
                 >
                   <i className="fas fa-sign-out-alt mr-2"></i>
