@@ -74,17 +74,27 @@ export default function Landing() {
             <CardHeader>
               <CardTitle className="text-2xl text-fc-red mb-2">Ready to Access?</CardTitle>
               <CardDescription>
-                Sign in with your Replit account to get started
+                Sign in with your account to get started
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => window.location.href = '/login'}
                 className="w-full bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
                 size="lg"
               >
+                <i className="fas fa-user-plus mr-2"></i>
+                New User Registration
+              </Button>
+              
+              <Button 
+                onClick={() => window.location.href = '/simple-login'}
+                variant="outline"
+                className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white px-8 py-3 text-lg"
+                size="lg"
+              >
                 <i className="fas fa-sign-in-alt mr-2"></i>
-                Sign In with Replit
+                Returning User Login
               </Button>
               
               <p className="text-xs text-gray-500 mt-4 text-center">
