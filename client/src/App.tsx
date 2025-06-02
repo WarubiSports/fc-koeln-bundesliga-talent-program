@@ -34,7 +34,6 @@ function Router() {
           <Route path="/" component={Landing} />
           <Route path="/login" component={LoginForm} />
           <Route path="/simple-login" component={SimpleLogin} />
-          <Route component={NotFound} />
         </>
       ) : (
         <>
