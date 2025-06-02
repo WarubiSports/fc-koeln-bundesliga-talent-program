@@ -29,10 +29,12 @@ export function getSession() {
     secret: process.env.SESSION_SECRET!,
     resave: true,
     saveUninitialized: true,
+    name: 'connect.sid',
     cookie: {
-      httpOnly: true,
+      httpOnly: false, // Allow client-side access for debugging
       secure: false, // Set to false for development
       maxAge: sessionTtl,
+      sameSite: 'lax'
     },
   });
 }
