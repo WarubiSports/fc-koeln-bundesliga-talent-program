@@ -242,7 +242,7 @@ export class DatabaseStorage implements IStorage {
 
   // Helper method to sync a user to player database
   private async syncUserToPlayer(user: User): Promise<void> {
-    if (!user.email) return;
+    if (!user.email || user.role === "admin") return; // Skip admins
 
     // Check if player already exists
     const [existingPlayer] = await db
@@ -250,8 +250,8 @@ export class DatabaseStorage implements IStorage {
       .from(players)
       .where(eq(players.email, user.email));
 
-    // Create player record if it doesn't exist
-    if (!existingPlayer) {
+    // Create player record if it doesn't exist (only for non-admin users)
+    if (!existingPlayer && user.role === "player") {
       await db.insert(players).values({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
