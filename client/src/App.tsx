@@ -46,7 +46,6 @@ function Router() {
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/admin-events" component={AdminEvents} />
           <Route path="/communications" component={Communications} />
-          <Route component={Dashboard} />
         </>
       )}
     </Switch>
