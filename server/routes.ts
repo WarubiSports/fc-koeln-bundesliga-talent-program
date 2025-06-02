@@ -27,17 +27,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - isAuthenticated:', req.isAuthenticated());
     console.log('Auth check - session exists:', !!req.session);
     console.log('Auth check - session ID:', req.sessionID);
-    console.log('Auth check - session.devLoggedIn:', req.session?.devLoggedIn);
+    console.log('Auth check - session.devLoggedIn:', (req.session as any)?.devLoggedIn);
+    console.log('Auth check - session.userData:', !!(req.session as any)?.userData);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
-    console.log('Auth check - session.isLoggedOut:', req.session?.isLoggedOut);
     
     // Allow access for development
 
     try {
-      // Check if user data is stored in session
-      if (req.session?.userData) {
-        console.log('Returning session user data:', req.session.userData);
-        res.json(req.session.userData);
+      // Check if user data is stored in session AND devLoggedIn flag is set
+      if ((req.session as any)?.devLoggedIn && (req.session as any)?.userData) {
+        console.log('Returning session user data:', (req.session as any).userData);
+        res.json((req.session as any).userData);
         return;
       }
       
@@ -97,8 +97,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Store user data in session
     if (req.session) {
-      req.session.userData = userData;
-      req.session.devLoggedIn = true;
+      (req.session as any).userData = userData;
+      (req.session as any).devLoggedIn = true;
       
       req.session.save((err: any) => {
         if (err) {
@@ -106,14 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ message: "Login failed" });
         }
         
-        // Also authenticate with Passport
-        req.logIn(mockUser, (loginErr: any) => {
-          if (loginErr) {
-            console.log('Passport login warning:', loginErr);
-          }
-          console.log('Login successful for:', email, 'Role:', role);
-          res.json({ message: "Login successful", user: userData });
-        });
+        console.log('Session saved successfully with userData:', userData);
+        console.log('Login successful for:', email, 'Role:', role);
+        res.json({ message: "Login successful", user: userData });
       });
     } else {
       res.status(500).json({ message: "Session not available" });
