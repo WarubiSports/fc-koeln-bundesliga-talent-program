@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { ArrowLeft, Users, User } from "lucide-react";
 
 export default function Communications() {
   const [messageText, setMessageText] = useState("");
@@ -15,6 +16,7 @@ export default function Communications() {
   const [isNewMessageOpen, setIsNewMessageOpen] = useState(false);
   const [newMessageRecipient, setNewMessageRecipient] = useState("");
   const [newMessageText, setNewMessageText] = useState("");
+  const [showChatList, setShowChatList] = useState(true);
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -124,7 +126,7 @@ export default function Communications() {
       
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}
-        <div className="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col md:block hidden md:flex">
+        <div className={`${showChatList ? 'block' : 'hidden'} md:block w-full md:w-80 bg-white border-r border-gray-200 flex flex-col`}>
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
             <Dialog open={isNewMessageOpen} onOpenChange={setIsNewMessageOpen}>
@@ -189,7 +191,10 @@ export default function Communications() {
           <div className="flex-1 overflow-y-auto">
             {/* Team Chat */}
             <div 
-              onClick={() => setSelectedChat("team")}
+              onClick={() => {
+                setSelectedChat("team");
+                setShowChatList(false);
+              }}
               className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
                 selectedChat === "team" ? "bg-fc-red/10 border-r-4 border-r-fc-red" : ""
               }`}
@@ -209,7 +214,10 @@ export default function Communications() {
             {players.map((player: any) => (
               <div 
                 key={player.id}
-                onClick={() => setSelectedChat(player.id.toString())}
+                onClick={() => {
+                  setSelectedChat(player.id.toString());
+                  setShowChatList(false);
+                }}
                 className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
                   selectedChat === player.id.toString() ? "bg-fc-red/10 border-r-4 border-r-fc-red" : ""
                 }`}
@@ -231,14 +239,26 @@ export default function Communications() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
+        <div className={`${showChatList ? 'hidden' : 'flex'} md:flex flex-1 flex-col`}>
           {/* Chat Header */}
           <div className="p-4 bg-white border-b border-gray-200">
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden p-2"
+                onClick={() => setShowChatList(true)}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 selectedChat === "team" ? "bg-fc-red" : "bg-gray-300"
               }`}>
-                <i className={`fas ${selectedChat === "team" ? "fa-users" : "fa-user"} text-white text-sm`}></i>
+                {selectedChat === "team" ? (
+                  <Users className="w-5 h-5 text-white" />
+                ) : (
+                  <User className="w-5 h-5 text-white" />
+                )}
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">
