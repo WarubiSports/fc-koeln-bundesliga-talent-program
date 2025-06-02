@@ -56,7 +56,7 @@ export default function Header() {
                   : "text-gray-700 hover:text-[#DC143C] transition-colors"
               }`}
             >
-              Houses
+              Housing
             </a>
             <a 
               href="/food-orders" 
@@ -183,7 +183,7 @@ export default function Header() {
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Houses
+                Housing
               </a>
               <a
                 href="/food-orders"

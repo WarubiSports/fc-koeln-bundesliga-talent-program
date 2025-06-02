@@ -43,7 +43,7 @@ export default function Dashboard() {
           </a>
           <a href="/chores" className="flex flex-col items-center py-2 text-gray-600">
             <i className="fas fa-home text-lg mb-1"></i>
-            <span className="text-xs">Houses</span>
+            <span className="text-xs">Housing</span>
           </a>
           <a href="/food-orders" className="flex flex-col items-center py-2 text-gray-600">
             <i className="fas fa-shopping-cart text-lg mb-1"></i>
