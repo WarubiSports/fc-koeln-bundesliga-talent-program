@@ -21,7 +21,53 @@ export default function Landing() {
           </p>
         </div>
 
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <div className="w-8 h-8 bg-fc-red/10 rounded-lg flex items-center justify-center mr-3">
+                  <i className="fas fa-user-shield text-fc-red"></i>
+                </div>
+                Admin Access
+              </CardTitle>
+              <CardDescription>
+                Full administrative control for coaches and staff
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Manage player roster and information</li>
+                <li>• Schedule training sessions and matches</li>
+                <li>• Create calendar events and activities</li>
+                <li>• Oversee house management and chores</li>
+                <li>• Access analytics and reports</li>
+              </ul>
+            </CardContent>
+          </Card>
 
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <div className="w-8 h-8 bg-fc-red/10 rounded-lg flex items-center justify-center mr-3">
+                  <i className="fas fa-futbol text-fc-red"></i>
+                </div>
+                Player Access
+              </CardTitle>
+              <CardDescription>
+                Essential tools for talented players
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• View training schedule and events</li>
+                <li>• Access personal calendar</li>
+                <li>• Check assigned chores and tasks</li>
+                <li>• Order weekly groceries</li>
+                <li>• Update availability status</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="text-center">
           <Card className="inline-block">
