@@ -143,14 +143,19 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
+    console.log('Logout requested, setting logout flag');
     // Set logout flag before destroying session
     if (req.session) {
       (req.session as any).loggedOut = true;
+      console.log('Logout flag set, saving session');
       req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);
+        } else {
+          console.log('Session saved with logout flag');
         }
         req.logout(() => {
+          console.log('Passport logout complete, redirecting');
           // Send HTML that clears cache and redirects
           res.send(`
             <html>
@@ -172,6 +177,9 @@ export async function setupAuth(app: Express) {
           `);
         });
       });
+    } else {
+      console.log('No session found, redirecting');
+      res.redirect('/');
     }
   });
 }

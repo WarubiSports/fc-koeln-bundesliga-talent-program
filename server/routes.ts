@@ -18,7 +18,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Surrogate-Control', 'no-store');
 
     // Check for logout flag in session or localStorage simulation
+    console.log('Auth check - session exists:', !!req.session);
+    console.log('Auth check - logout flag:', req.session?.loggedOut);
     if (req.session && req.session.loggedOut) {
+      console.log('Logout flag detected, returning 401');
       return res.status(401).json({ message: "Unauthorized" });
     }
 
