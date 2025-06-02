@@ -11,15 +11,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
-    // For development/testing - return a mock admin user
-    res.json({
-      id: "test-admin",
-      email: "admin@warubi-sports.com",
-      firstName: "Admin",
-      lastName: "User",
-      role: "admin",
-      profileImageUrl: null
-    });
+    // Set cache control headers to prevent caching
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+
+    // Check for logout flag
+    if (req.session && req.session.loggedOut) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Check if user is authenticated
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const userId = req.user?.claims?.sub;
+      if (userId) {
+        const user = await storage.getUser(userId);
+        if (user) {
+          res.json(user);
+        } else {
+          res.status(401).json({ message: "User not found" });
+        }
+      } else {
+        // For development/testing - return a mock admin user
+        res.json({
+          id: "test-admin",
+          email: "admin@warubi-sports.com",
+          firstName: "Admin",
+          lastName: "User",
+          role: "admin",
+          profileImageUrl: null
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
   });
 
   // Admin routes for user management
