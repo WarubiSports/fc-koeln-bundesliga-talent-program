@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/dashboard";
+import Players from "@/pages/players";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
@@ -30,6 +31,7 @@ function Router() {
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/players" component={Players} />
           <Route path="/chores" component={Chores} />
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />

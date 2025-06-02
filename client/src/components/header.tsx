@@ -39,6 +39,16 @@ export default function Header() {
               Dashboard
             </a>
             <a 
+              href="/players" 
+              className={`transition-all duration-200 pb-4 ${
+                location === "/players" 
+                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+              }`}
+            >
+              Players
+            </a>
+            <a 
               href="/chores" 
               className={`transition-all duration-200 pb-4 ${
                 location === "/chores" 
@@ -150,6 +160,17 @@ export default function Header() {
                 Dashboard
               </a>
               <a
+                href="/players"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/players" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Players
+              </a>
+              <a
                 href="/chores"
                 className={`block px-3 py-2 rounded-md transition-all duration-200 ${
                   location === "/chores" 
@@ -181,6 +202,17 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Food Orders
+              </a>
+              <a
+                href="/communications"
+                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
+                  location === "/communications" 
+                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
+                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Messages
               </a>
             </div>
           </div>
