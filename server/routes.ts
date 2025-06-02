@@ -20,6 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Check if user is authenticated or has dev session
     console.log('Auth check - isAuthenticated:', req.isAuthenticated());
     console.log('Auth check - session exists:', !!req.session);
+    console.log('Auth check - session ID:', req.sessionID);
     console.log('Auth check - session.devLoggedIn:', req.session?.devLoggedIn);
     
     const isAuthenticated = req.isAuthenticated() || req.session?.devLoggedIn;
@@ -58,6 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/login', async (req: any, res) => {
     // Set development login flag in session
     console.log('Login request - session exists:', !!req.session);
+    console.log('Login request - session ID:', req.sessionID);
     if (req.session) {
       req.session.devLoggedIn = true;
       console.log('Setting devLoggedIn flag to true');
