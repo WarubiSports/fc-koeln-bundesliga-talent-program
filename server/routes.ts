@@ -554,8 +554,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Communication routes (temporarily without auth for testing)
-  app.get('/api/messages', async (req, res) => {
+  // Communication routes
+  app.get('/api/messages', isAuthenticated, async (req, res) => {
     try {
       const messages = await storage.getAllMessages();
       res.json(messages);
@@ -565,10 +565,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/messages', async (req, res) => {
+  app.post('/api/messages', isAuthenticated, async (req, res) => {
     try {
       const messageData = req.body;
-      console.log('Creating message:', messageData);
       const message = await storage.createMessage(messageData);
       res.status(201).json(message);
     } catch (error) {
@@ -577,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/messages/:id/read', async (req, res) => {
+  app.patch('/api/messages/:id/read', isAuthenticated, async (req, res) => {
     try {
       const messageId = parseInt(req.params.id);
       await storage.markMessageAsRead(messageId);
