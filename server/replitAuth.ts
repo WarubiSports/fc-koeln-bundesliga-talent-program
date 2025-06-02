@@ -122,42 +122,46 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      req.session.destroy((err) => {
+    // Set logout flag before destroying session
+    if (req.session) {
+      (req.session as any).loggedOut = true;
+      req.session.save((err) => {
         if (err) {
-          console.error('Session destruction error:', err);
+          console.error('Session save error:', err);
         }
-        // Clear all possible session cookies
-        res.clearCookie('connect.sid', { path: '/' });
-        res.clearCookie('connect.sid', { path: '/', domain: req.hostname });
-        res.clearCookie('session', { path: '/' });
-        
-        // Send HTML that clears cache and redirects
-        res.send(`
-          <html>
-            <head>
-              <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-              <meta http-equiv="Pragma" content="no-cache">
-              <meta http-equiv="Expires" content="0">
-            </head>
-            <body>
-              <script>
-                // Clear all storage
-                if (typeof localStorage !== 'undefined') localStorage.clear();
-                if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
-                // Force reload and redirect
-                window.location.replace('/');
-              </script>
-            </body>
-          </html>
-        `);
+        req.logout(() => {
+          // Send HTML that clears cache and redirects
+          res.send(`
+            <html>
+              <head>
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+                <meta http-equiv="Pragma" content="no-cache">
+                <meta http-equiv="Expires" content="0">
+              </head>
+              <body>
+                <script>
+                  // Clear all storage
+                  if (typeof localStorage !== 'undefined') localStorage.clear();
+                  if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
+                  // Force reload and redirect
+                  window.location.replace('/');
+                </script>
+              </body>
+            </html>
+          `);
+        });
       });
-    });
+    }
   });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
+
+  // Check for logout flag
+  if (req.session && (req.session as any).loggedOut) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   if (!req.isAuthenticated() || !user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
