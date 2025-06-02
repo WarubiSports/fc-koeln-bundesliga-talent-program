@@ -5,24 +5,13 @@ import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreS
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 
-// Simple in-memory logout state for development
-let isDevLoggedOut = false;
 
-// Export function to set logout state
-export function setDevLoggedOut(value: boolean) {
-  isDevLoggedOut = value;
-}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Login route to clear logout flag
-  app.get('/api/login', async (req: any, res) => {
-    // Clear the in-memory logout flag
-    isDevLoggedOut = false;
-    res.redirect('/');
-  });
+
 
 
 
@@ -62,20 +51,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // Return logged in user for development access only if not explicitly logged out
-        if (isDevLoggedOut) {
-          res.status(401).json({ message: "Unauthorized" });
-        } else {
-          // Return logged in user for development access
-          res.json({
-            id: "dev-admin",
-            email: "max.bisinger@warubi-sports.com",
-            firstName: "Max",
-            lastName: "Bisinger",
-            role: "admin",
-            profileImageUrl: null
-          });
-        }
+        // No authenticated user found
+        res.status(401).json({ message: "Unauthorized" });
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -85,9 +62,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Login endpoint with form data
   app.post('/api/auth/login', async (req: any, res) => {
-    // Clear the logout flag when user logs in
-    isDevLoggedOut = false;
-    
     const { email, password, firstName, lastName } = req.body;
     
     console.log('Login attempt with:', { email, firstName, lastName });

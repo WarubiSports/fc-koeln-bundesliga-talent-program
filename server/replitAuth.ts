@@ -142,39 +142,15 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/logout", (req: any, res) => {
-    console.log('Logout requested - setting logout flag');
-    
-    // Import and use the logout flag from routes
-    import('./routes').then(routes => {
-      if (routes.setDevLoggedOut) {
-        routes.setDevLoggedOut(true);
-        console.log('Logout flag set to true');
-      }
+  app.get("/api/logout", (req, res) => {
+    req.logout(() => {
+      res.redirect(
+        client.buildEndSessionUrl(config, {
+          client_id: process.env.REPL_ID!,
+          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+        }).href
+      );
     });
-    
-    // Clear session if it exists
-    if (req.session) {
-      req.session.destroy(() => {
-        console.log('Session destroyed, redirecting to landing page');
-        res.writeHead(302, {
-          'Location': '/',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        });
-        res.end();
-      });
-    } else {
-      console.log('No session found, redirecting');
-      res.writeHead(302, {
-        'Location': '/',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      });
-      res.end();
-    }
   });
 }
 
