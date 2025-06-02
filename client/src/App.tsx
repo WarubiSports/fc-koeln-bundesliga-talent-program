@@ -11,6 +11,7 @@ import FoodOrders from "@/pages/food-orders";
 import AdminEvents from "@/pages/admin-events";
 import Landing from "@/pages/landing";
 import SimpleLogin from "@/pages/simple-login";
+import LoginForm from "@/pages/login-form";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
+          <Route path="/login" component={LoginForm} />
           <Route path="/simple-login" component={SimpleLogin} />
         </>
       ) : (

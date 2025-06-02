@@ -30,6 +30,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      // Check if user data is stored in session
+      if (req.session?.userData) {
+        console.log('Returning session user data:', req.session.userData);
+        res.json(req.session.userData);
+        return;
+      }
+      
+      // Check if authenticated via OpenID Connect
       const userId = req.user?.claims?.sub;
       if (userId) {
         const user = await storage.getUser(userId);
@@ -39,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.status(401).json({ message: "User not found" });
         }
       } else {
-        // For development/testing - return a mock admin user when not logged out
+        // Fallback for development
         res.json({
           id: "test-admin",
           email: "admin@warubi-sports.com",
@@ -55,25 +63,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Simple login endpoint for development
+  // Login endpoint with form data
   app.post('/api/auth/login', async (req: any, res) => {
-    // Set development login flag in session
-    console.log('Login request - session exists:', !!req.session);
-    console.log('Login request - session ID:', req.sessionID);
+    const { email, password, firstName, lastName } = req.body;
+    
+    console.log('Login attempt with:', { email, firstName, lastName });
+    
+    // Basic validation
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    
+    // Determine user role based on email domain
+    const isAdmin = email.endsWith('@fckoeln.de') || email.endsWith('@warubi-sports.com');
+    const role = isAdmin ? 'admin' : 'player';
+    
+    // Create user session
+    const userData = {
+      id: isAdmin ? 'admin-user' : 'player-user',
+      email,
+      firstName,
+      lastName,
+      role,
+      profileImageUrl: null
+    };
+    
+    // Create a mock authenticated user for the session
+    const mockUser = {
+      claims: {
+        sub: userData.id,
+        email: userData.email,
+        first_name: userData.firstName,
+        last_name: userData.lastName
+      }
+    };
+    
+    // Store user data in session
     if (req.session) {
+      req.session.userData = userData;
       req.session.devLoggedIn = true;
-      console.log('Setting devLoggedIn flag to true');
+      
       req.session.save((err: any) => {
         if (err) {
           console.error('Session save error:', err);
           return res.status(500).json({ message: "Login failed" });
         }
-        console.log('Session saved successfully with devLoggedIn flag');
-        res.json({ message: "Login successful" });
+        
+        // Also authenticate with Passport
+        req.logIn(mockUser, (loginErr: any) => {
+          if (loginErr) {
+            console.log('Passport login warning:', loginErr);
+          }
+          console.log('Login successful for:', email, 'Role:', role);
+          res.json({ message: "Login successful", user: userData });
+        });
       });
     } else {
-      console.log('No session available for login');
-      res.json({ message: "Login successful" });
+      res.status(500).json({ message: "Session not available" });
     }
   });
 
