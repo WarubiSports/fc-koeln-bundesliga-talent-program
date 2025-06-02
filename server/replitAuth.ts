@@ -170,7 +170,13 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Check for development login flag in session
+  if (req.session?.devLoggedIn && req.session?.userData) {
+    console.log('Development login detected, allowing access');
+    return next();
+  }
+
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
