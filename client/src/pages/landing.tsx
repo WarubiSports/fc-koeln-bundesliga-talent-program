@@ -74,27 +74,17 @@ export default function Landing() {
             <CardHeader>
               <CardTitle className="text-2xl text-fc-red mb-2">Ready to Access?</CardTitle>
               <CardDescription>
-                Sign in with your account to get started
+                Sign in with your Replit account to get started
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Button 
-                onClick={() => window.location.href = '/login'}
+                onClick={() => window.location.href = '/api/login'}
                 className="w-full bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
                 size="lg"
               >
-                <i className="fas fa-user-plus mr-2"></i>
-                New User Registration
-              </Button>
-              
-              <Button 
-                onClick={() => window.location.href = '/simple-login'}
-                variant="outline"
-                className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white px-8 py-3 text-lg"
-                size="lg"
-              >
                 <i className="fas fa-sign-in-alt mr-2"></i>
-                Returning User Login
+                Sign In with Replit
               </Button>
               
               <p className="text-xs text-gray-500 mt-4 text-center">
@@ -102,32 +92,6 @@ export default function Landing() {
               </p>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="mt-16 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-fc-red/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-users text-fc-red text-xl"></i>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Team Management</h3>
-              <p className="text-sm text-gray-600">Comprehensive player profiles and team coordination</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-fc-red/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-calendar text-fc-red text-xl"></i>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Smart Scheduling</h3>
-              <p className="text-sm text-gray-600">Practice sessions, matches, and event coordination</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-fc-red/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-home text-fc-red text-xl"></i>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">House Coordination</h3>
-              <p className="text-sm text-gray-600">Widdersdorf housing management and task assignment</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
