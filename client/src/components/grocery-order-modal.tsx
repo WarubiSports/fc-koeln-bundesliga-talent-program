@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import {
   Dialog,
@@ -35,6 +35,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { groceryCategories, groceryData, getCategoryDisplayName, type GroceryCategory } from "@/lib/grocery-data";
 
 const groceryOrderSchema = z.object({
+  playerName: z.string().min(1, "Player name is required"),
   weekStartDate: z.string().min(1, "Week start date is required"),
   deliveryDay: z.enum(["monday", "thursday"]),
   selectedItems: z.record(z.string(), z.number()).default({}),
@@ -63,9 +64,15 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   const queryClient = useQueryClient();
   const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
 
+  // Fetch players for dropdown
+  const { data: players = [] } = useQuery({
+    queryKey: ["/api/players"],
+  });
+
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
     defaultValues: {
+      playerName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "",
       weekStartDate: selectedWeek || getMondayOfWeek(new Date()),
       deliveryDay: "monday",
       selectedItems: {},

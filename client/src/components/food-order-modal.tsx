@@ -81,11 +81,7 @@ export default function FoodOrderModal({ isOpen, onClose, selectedDate }: FoodOr
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: FoodOrderFormData) => {
-      await apiRequest("/api/food-orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      await apiRequest("POST", "/api/food-orders", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
