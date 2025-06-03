@@ -63,11 +63,13 @@ export default function CompleteProfile() {
     },
     onSuccess: () => {
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been completed. Please wait for admin approval.",
+        title: "Request Submitted Successfully",
+        description: "Your profile has been sent to the admin team. You'll receive access once approved - please check back soon!",
       });
-      // Redirect to waiting page
-      window.location.href = "/waiting-approval";
+      // Small delay to show the toast before redirect
+      setTimeout(() => {
+        window.location.href = "/waiting-approval";
+      }, 2000);
     },
     onError: (error) => {
       toast({
