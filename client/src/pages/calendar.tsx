@@ -422,12 +422,19 @@ export default function CalendarPage() {
                   <div className="flex">
                     <div className="w-20 text-gray-500 text-xs font-medium">{timeSlot}</div>
                     <div className="flex-1">
-                      {eventsAtHour.map(event => (
-                        <div key={event.id} className="mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs">
-                          <div className="font-medium">{event.title}</div>
-                          <div className="text-gray-600">{event.location}</div>
-                        </div>
-                      ))}
+                      {eventsAtHour.map(event => {
+                        const startTime = event.time || event.startTime;
+                        const endTime = event.endTime;
+                        const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+                        
+                        return (
+                          <div key={event.id} className="mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs">
+                            <div className="font-medium">{event.title}</div>
+                            <div className="text-gray-600">{timeDisplay}</div>
+                            {event.location && <div className="text-gray-500">{event.location}</div>}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -476,11 +483,18 @@ export default function CalendarPage() {
               
               return (
                 <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px]">
-                  {eventsAtHour.map(event => (
-                    <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1">
-                      {event.title}
-                    </div>
-                  ))}
+                  {eventsAtHour.map(event => {
+                    const startTime = event.time || event.startTime;
+                    const endTime = event.endTime;
+                    const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+                    
+                    return (
+                      <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1">
+                        <div className="font-medium">{event.title}</div>
+                        <div className="text-gray-600 text-[10px]">{timeDisplay}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
