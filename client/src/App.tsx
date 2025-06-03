@@ -9,6 +9,7 @@ import Players from "@/pages/players";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
+import HouseOrders from "@/pages/house-orders";
 import AdminEvents from "@/pages/admin-events";
 import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
@@ -76,6 +77,7 @@ function Router() {
       <Route path="/chores" component={Chores} />
       <Route path="/calendar" component={Calendar} />
       <Route path="/food-orders" component={FoodOrders} />
+      {isAdmin && <Route path="/house-orders" component={HouseOrders} />}
       <Route path="/communications" component={Communications} />
       {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
       <Route path="/complete-profile" component={CompleteProfile} />

@@ -68,6 +68,18 @@ export default function Header() {
             >
               Groceries
             </a>
+            {isAdmin && (
+              <a 
+                href="/house-orders" 
+                className={`transition-all duration-200 pb-4 px-2 ${
+                  location === "/house-orders" 
+                    ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
+                    : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                }`}
+              >
+                House Orders
+              </a>
+            )}
             <a 
               href="/communications" 
               className={`transition-all duration-200 pb-4 px-2 ${

@@ -127,6 +127,24 @@ export interface IStorage {
     cancelledOrders: number;
   }>;
 
+  // House order summary methods
+  getHouseOrderSummary(): Promise<{
+    [house: string]: {
+      totalOrders: number;
+      players: string[];
+      orderDetails: FoodOrder[];
+      consolidatedItems: {
+        proteins: string[];
+        vegetables: string[];
+        fruits: string[];
+        grains: string[];
+        snacks: string[];
+        beverages: string[];
+        supplements: string[];
+      };
+    };
+  }>;
+
   // Event methods (admin-only)
   getAllEvents(): Promise<Event[]>;
   getEvent(id: number): Promise<Event | undefined>;
@@ -626,6 +644,110 @@ export class DatabaseStorage implements IStorage {
       deliveredOrders: orders.filter(order => order.status === 'delivered').length,
       cancelledOrders: orders.filter(order => order.status === 'cancelled').length,
     };
+  }
+
+  async getHouseOrderSummary(): Promise<{
+    [house: string]: {
+      totalOrders: number;
+      players: string[];
+      orderDetails: FoodOrder[];
+      consolidatedItems: {
+        proteins: string[];
+        vegetables: string[];
+        fruits: string[];
+        grains: string[];
+        snacks: string[];
+        beverages: string[];
+        supplements: string[];
+      };
+    };
+  }> {
+    // Get all players and their house assignments
+    const allPlayers = await this.getAllPlayers();
+    const playerHouseMap = new Map<string, string>();
+    
+    allPlayers.forEach(player => {
+      const fullName = `${player.firstName} ${player.lastName}`;
+      playerHouseMap.set(fullName, player.house || 'Unassigned');
+    });
+
+    // Get all food orders
+    const allOrders = await this.getAllFoodOrders();
+    
+    // Group orders by house
+    const houseSummary: any = {};
+    
+    allOrders.forEach(order => {
+      const playerHouse = playerHouseMap.get(order.playerName) || 'Unassigned';
+      
+      if (!houseSummary[playerHouse]) {
+        houseSummary[playerHouse] = {
+          totalOrders: 0,
+          players: new Set<string>(),
+          orderDetails: [],
+          consolidatedItems: {
+            proteins: new Set<string>(),
+            vegetables: new Set<string>(),
+            fruits: new Set<string>(),
+            grains: new Set<string>(),
+            snacks: new Set<string>(),
+            beverages: new Set<string>(),
+            supplements: new Set<string>(),
+          }
+        };
+      }
+      
+      houseSummary[playerHouse].totalOrders++;
+      houseSummary[playerHouse].players.add(order.playerName);
+      houseSummary[playerHouse].orderDetails.push(order);
+      
+      // Consolidate items
+      if (order.proteins) {
+        order.proteins.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.proteins.add(item.trim())
+        );
+      }
+      if (order.vegetables) {
+        order.vegetables.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.vegetables.add(item.trim())
+        );
+      }
+      if (order.fruits) {
+        order.fruits.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.fruits.add(item.trim())
+        );
+      }
+      if (order.grains) {
+        order.grains.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.grains.add(item.trim())
+        );
+      }
+      if (order.snacks) {
+        order.snacks.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.snacks.add(item.trim())
+        );
+      }
+      if (order.beverages) {
+        order.beverages.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.beverages.add(item.trim())
+        );
+      }
+      if (order.supplements) {
+        order.supplements.split(', ').forEach(item => 
+          item.trim() && houseSummary[playerHouse].consolidatedItems.supplements.add(item.trim())
+        );
+      }
+    });
+    
+    // Convert Sets to Arrays for JSON serialization
+    Object.keys(houseSummary).forEach(house => {
+      houseSummary[house].players = Array.from(houseSummary[house].players);
+      Object.keys(houseSummary[house].consolidatedItems).forEach(category => {
+        houseSummary[house].consolidatedItems[category] = Array.from(houseSummary[house].consolidatedItems[category]);
+      });
+    });
+    
+    return houseSummary;
   }
 
   // Event methods (admin-only)
