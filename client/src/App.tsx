@@ -44,11 +44,17 @@ function Router() {
     );
   }
 
+  // Always allow logout route
+  if (window.location.pathname === '/logout') {
+    return <Logout />;
+  }
+
   // Redirect to profile completion if needed (non-admin users only)
   if (!hasCompletedProfile && !isAdmin) {
     return (
       <Switch>
         <Route path="/complete-profile" component={CompleteProfile} />
+        <Route path="/logout" component={Logout} />
         <Route component={() => {
           window.location.href = "/complete-profile";
           return null;
@@ -62,6 +68,7 @@ function Router() {
     return (
       <Switch>
         <Route path="/waiting-approval" component={WaitingApproval} />
+        <Route path="/logout" component={Logout} />
         <Route component={() => {
           window.location.href = "/waiting-approval";
           return null;
@@ -84,6 +91,7 @@ function Router() {
       {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
       <Route path="/complete-profile" component={CompleteProfile} />
       <Route path="/waiting-approval" component={WaitingApproval} />
+      <Route path="/logout" component={Logout} />
       <Route component={NotFound} />
     </Switch>
   );
