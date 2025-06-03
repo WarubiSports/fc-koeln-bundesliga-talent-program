@@ -48,7 +48,7 @@ export default function Players() {
   });
 
   // Fetch pending users (admin only)
-  const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery({
+  const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/pending-users"],
     enabled: isAdmin,
   });
@@ -58,7 +58,10 @@ export default function Players() {
       await apiRequest("PUT", `/api/admin/approve-user/${userId}`);
     },
     onSuccess: () => {
+      // Invalidate multiple related queries to ensure proper refresh
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/pending-users"] });
       toast({
         title: "User approved",
         description: "User has been approved and can now access the system.",
