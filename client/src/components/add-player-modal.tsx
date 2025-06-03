@@ -163,6 +163,28 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="house"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>House</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select house" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Widdersdorf 1">Widdersdorf 1</SelectItem>
+                        <SelectItem value="Widdersdorf 2">Widdersdorf 2</SelectItem>
+                        <SelectItem value="Widdersdorf 3">Widdersdorf 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
             </div>
 

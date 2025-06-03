@@ -10,7 +10,7 @@ export const players = pgTable("players", {
   dateOfBirth: text("date_of_birth").notNull(),
   nationality: text("nationality").notNull(),
   position: text("position").notNull(), // goalkeeper, defender, midfielder, forward
-  // ageGroup removed - single Bundesliga Talent Program
+  house: text("house").default("Widdersdorf 1"), // Widdersdorf 1, Widdersdorf 2, Widdersdorf 3
   status: text("status").notNull().default("active"), // active, on_trial, inactive
   profileImageUrl: text("profile_image_url"),
   notes: text("notes"),
@@ -27,7 +27,7 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   position: z.enum(["goalkeeper", "defender", "midfielder", "forward"]),
-  // ageGroup removed - single team structure
+  house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).default("Widdersdorf 1"),
   status: z.enum(["active", "on_trial", "inactive"]).default("active"),
   profileImageUrl: z.string().url("Invalid URL format").optional().or(z.literal("")),
   notes: z.string().optional(),

@@ -590,6 +590,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/house-order-summary", async (req, res) => {
+    try {
+      const summary = await storage.getHouseOrderSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching house order summary:", error);
+      res.status(500).json({ message: "Failed to fetch house order summary" });
+    }
+  });
+
   app.put("/api/food-orders/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

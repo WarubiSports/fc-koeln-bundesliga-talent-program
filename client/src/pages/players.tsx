@@ -381,6 +381,10 @@ export default function Players() {
                       <span className="font-medium">{player.position}</span>
                     </div>
                     <div className="flex justify-between">
+                      <span className="text-gray-600">House:</span>
+                      <span className="font-medium">{player.house || 'Not assigned'}</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span className="text-gray-600">Nationality:</span>
                       <span className="font-medium">{player.nationality}</span>
                     </div>
