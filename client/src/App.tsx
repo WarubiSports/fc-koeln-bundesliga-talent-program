@@ -38,6 +38,7 @@ function Router() {
         <Route path="/" component={Landing} />
         <Route path="/login" component={LoginForm} />
         <Route path="/simple-login" component={SimpleLogin} />
+        <Route path="/logout" component={Logout} />
         <Route component={Landing} />
       </Switch>
     );
