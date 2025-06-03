@@ -220,7 +220,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Unassigned</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {players.map((player: any) => (
                           <SelectItem 
                             key={player.id} 

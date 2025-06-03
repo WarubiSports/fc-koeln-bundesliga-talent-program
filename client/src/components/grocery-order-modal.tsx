@@ -140,14 +140,9 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     mutationFn: async (data: GroceryOrderFormData) => {
       const formattedItems = formatSelectedItemsForSubmission();
       
-      // Automatically use logged-in user's name
-      const playerName = (user as any)?.firstName && (user as any)?.lastName 
-        ? `${(user as any).firstName} ${(user as any).lastName}` 
-        : (user as any)?.email || "Unknown Player";
-      
       // Format the data to match the existing grocery order schema
       const orderData = {
-        playerName,
+        playerName: data.playerName,
         weekStartDate: data.weekStartDate,
         deliveryDay: data.deliveryDay,
         proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
@@ -220,7 +215,35 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="playerName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Player Name</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select player" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {players.map((player: any) => (
+                          <SelectItem 
+                            key={player.id} 
+                            value={`${player.firstName} ${player.lastName}`}
+                          >
+                            {player.firstName} {player.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="weekStartDate"
