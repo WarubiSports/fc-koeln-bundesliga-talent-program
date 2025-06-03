@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import {
   Dialog,
@@ -57,6 +57,11 @@ export default function FoodOrderModal({ isOpen, onClose, selectedDate }: FoodOr
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch players for dropdown
+  const { data: players = [] } = useQuery({
+    queryKey: ["/api/players"],
+  });
 
   const form = useForm<FoodOrderFormData>({
     resolver: zodResolver(foodOrderSchema),
@@ -163,9 +168,23 @@ export default function FoodOrderModal({ isOpen, onClose, selectedDate }: FoodOr
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Player Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Enter player name" />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select player" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {players.map((player: any) => (
+                          <SelectItem 
+                            key={player.id} 
+                            value={`${player.firstName} ${player.lastName}`}
+                          >
+                            {player.firstName} {player.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

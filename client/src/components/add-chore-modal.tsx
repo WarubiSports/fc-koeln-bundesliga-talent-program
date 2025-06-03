@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,11 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch players for assignment dropdown
+  const { data: players = [] } = useQuery({
+    queryKey: ["/api/players"],
+  });
+
   const form = useForm<InsertChore>({
     resolver: zodResolver(insertChoreSchema),
     defaultValues: {
@@ -38,11 +43,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertChore) => {
-      return apiRequest("/api/chores", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("POST", "/api/chores", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
@@ -212,9 +213,24 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Assigned To</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter assignee name" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select player" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="">Unassigned</SelectItem>
+                        {players.map((player: any) => (
+                          <SelectItem 
+                            key={player.id} 
+                            value={`${player.firstName} ${player.lastName}`}
+                          >
+                            {player.firstName} {player.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
