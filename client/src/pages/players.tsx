@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { UserCheck, UserX, Clock } from "lucide-react";
+import { UserCheck, UserX, Clock, X } from "lucide-react";
 
 export default function Players() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,6 +62,26 @@ export default function Players() {
       toast({
         title: "User approved",
         description: "User has been approved and can now access the system.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await apiRequest("DELETE", `/api/admin/reject-user/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      toast({
+        title: "User rejected",
+        description: "User registration has been rejected and removed.",
       });
     },
     onError: (error: Error) => {
@@ -432,11 +452,25 @@ export default function Players() {
                             <Button
                               size="sm"
                               onClick={() => approveUserMutation.mutate(user.id)}
-                              disabled={approveUserMutation.isPending}
+                              disabled={approveUserMutation.isPending || rejectUserMutation.isPending}
                               className="bg-green-600 hover:bg-green-700 text-white"
                             >
                               <UserCheck className="w-4 h-4 mr-1" />
                               Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to reject ${user.firstName ? `${user.firstName} ${user.lastName}` : user.email}? This will permanently delete their registration.`)) {
+                                  rejectUserMutation.mutate(user.id);
+                                }
+                              }}
+                              disabled={approveUserMutation.isPending || rejectUserMutation.isPending}
+                              className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              Reject
                             </Button>
                           </div>
                         </div>

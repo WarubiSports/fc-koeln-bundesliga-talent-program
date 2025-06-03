@@ -170,6 +170,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/reject-user/:userId', simpleAdminAuth, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      await storage.rejectUser(userId);
+      res.json({ message: "User rejected successfully" });
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+      res.status(500).json({ message: "Failed to reject user" });
+    }
+  });
+
   // Profile completion endpoint
   app.post('/api/auth/complete-profile', isAuthenticated, async (req: any, res) => {
     try {
