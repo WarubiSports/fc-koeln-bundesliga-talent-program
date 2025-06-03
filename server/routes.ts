@@ -125,6 +125,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Logout endpoint
+  app.post('/api/auth/logout', (req, res) => {
+    res.json({ message: "Logged out successfully" });
+  });
+
   // Profile completion endpoint
   app.post('/api/complete-profile', simpleAuth, async (req: any, res) => {
     try {
