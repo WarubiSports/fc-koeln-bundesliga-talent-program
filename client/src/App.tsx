@@ -17,6 +17,7 @@ import SimpleLogin from "@/pages/simple-login";
 import LoginForm from "@/pages/login-form";
 import CompleteProfile from "@/pages/complete-profile";
 import WaitingApproval from "@/pages/waiting-approval";
+import Logout from "@/pages/logout";
 import NotFound from "@/pages/not-found";
 
 function Router() {
