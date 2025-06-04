@@ -81,7 +81,10 @@ export default function Players() {
       await apiRequest("DELETE", `/api/admin/reject-user/${userId}`);
     },
     onSuccess: () => {
+      // Invalidate multiple related queries to ensure proper refresh
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      queryClient.refetchQueries({ queryKey: ["/api/admin/pending-users"] });
       toast({
         title: "User rejected",
         description: "User registration has been rejected and removed.",
