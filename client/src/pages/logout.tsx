@@ -7,10 +7,8 @@ export default function Logout() {
   useEffect(() => {
     const performLogout = async () => {
       try {
-        // Call development logout endpoint to clear session
-        await apiRequest("/api/auth/dev-logout", {
-          method: "POST"
-        });
+        // Call simple logout endpoint to clear session
+        await apiRequest("POST", "/api/auth/simple-logout");
         
         // Redirect to landing page
         window.location.href = "/";

@@ -56,6 +56,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Simple logout endpoint
+  app.post('/api/auth/simple-logout', async (req: any, res) => {
+    // Destroy the entire session to ensure clean logout
+    req.session.destroy((err: any) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+        res.status(500).json({ message: 'Logout failed' });
+        return;
+      }
+      // Clear the cookie as well
+      res.clearCookie('connect.sid');
+      res.json({ message: 'Logged out successfully' });
+    });
+  });
+
   // Simple login endpoint for multiple users
   app.post('/api/auth/simple-login', async (req: any, res) => {
     const { username, password } = req.body;
@@ -85,6 +100,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       status: 'approved'
     };
     
+    console.log('Login successful - session ID:', req.sessionID);
+    console.log('Login successful - session data:', req.session);
+    
     res.json({ message: 'Login successful', user: (req.session as any).userData });
   });
 
@@ -106,23 +124,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - isAuthenticated:', req.isAuthenticated());
     console.log('Auth check - session exists:', !!req.session);
     console.log('Auth check - session ID:', req.sessionID);
+    console.log('Auth check - session.simpleAuth:', (req.session as any)?.simpleAuth);
     console.log('Auth check - session.devLoggedIn:', (req.session as any)?.devLoggedIn);
     console.log('Auth check - session.userData:', !!(req.session as any)?.userData);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
-    
-    // Only auto-login if there's no session at all (first time visitor)
-    if (!req.session || Object.keys(req.session).length === 0) {
-      console.log('No session found, auto-logging in for development');
-      (req.session as any).devLoggedIn = true;
-      (req.session as any).userData = {
-        id: 'dev-admin',
-        firstName: 'Admin',
-        lastName: 'User',
-        email: 'admin@fckoeln.dev',
-        role: 'admin',
-        status: 'approved'
-      };
-    }
+    console.log('Auth check - full session:', req.session);
 
     try {
       // Check if user explicitly logged out first
