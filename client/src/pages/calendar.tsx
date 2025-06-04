@@ -352,42 +352,60 @@ export default function Calendar() {
           </div>
           
           {/* Time slots */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto relative">
             {hours.map(hour => (
               <div key={hour} className="grid grid-cols-8 border-b">
                 <div className="p-2 text-xs text-gray-500 border-r bg-gray-50">
                   {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}
                 </div>
                 {weekDays.map(day => {
-                  const dayEvents = getEventsForDay(day).filter(event => {
+                  // Find events that start in this hour
+                  const startingEvents = getEventsForDay(day).filter(event => {
                     if (!event.startTime) return false;
                     const eventHour = parseInt(event.startTime.split(':')[0]);
                     return eventHour === hour;
                   });
                   
                   return (
-                    <div key={`${day.toISOString()}-${hour}`} className="p-1 border-r last:border-r-0 min-h-12">
-                      {dayEvents.map((event: Event) => (
-                        <div
-                          key={event.id}
-                          className={`text-xs p-1 rounded cursor-pointer mb-1 ${
-                            event.eventType === "match" ? "bg-red-100 text-red-800" :
-                            event.eventType === "team_practice" ? "bg-blue-100 text-blue-800" :
-                            event.eventType === "group_practice" ? "bg-green-100 text-green-800" :
-                            event.eventType === "individual_training" ? "bg-purple-100 text-purple-800" :
-                            event.eventType === "fitness_session" ? "bg-orange-100 text-orange-800" :
-                            event.eventType === "tactical_training" ? "bg-yellow-100 text-yellow-800" :
-                            event.eventType === "medical_checkup" ? "bg-pink-100 text-pink-800" :
-                            event.eventType === "team_meeting" ? "bg-indigo-100 text-indigo-800" :
-                            event.eventType === "travel" ? "bg-teal-100 text-teal-800" :
-                            "bg-gray-100 text-gray-800"
-                          }`}
-                          onClick={() => setSelectedEvent(event)}
-                        >
-                          <div className="font-medium">{event.startTime}</div>
-                          <div className="truncate">{event.title}</div>
-                        </div>
-                      ))}
+                    <div key={`${day.toISOString()}-${hour}`} className="border-r last:border-r-0 min-h-12 relative">
+                      {/* Render starting events with full height calculation */}
+                      {startingEvents.map((event: Event) => {
+                        const startHour = parseInt(event.startTime.split(':')[0]);
+                        const startMinute = parseInt(event.startTime.split(':')[1]);
+                        const endHour = event.endTime ? parseInt(event.endTime.split(':')[0]) : startHour;
+                        const endMinute = event.endTime ? parseInt(event.endTime.split(':')[1]) : startMinute + 30;
+                        
+                        // Calculate duration in hours
+                        const durationHours = endHour - startHour + (endMinute - startMinute) / 60;
+                        const heightMultiplier = Math.max(1, durationHours);
+                        
+                        return (
+                          <div
+                            key={event.id}
+                            className={`absolute left-1 right-1 p-1 rounded cursor-pointer border-l-2 text-xs ${
+                              event.eventType === "match" ? "bg-red-50 text-red-800 border-red-500" :
+                              event.eventType === "team_practice" ? "bg-blue-50 text-blue-800 border-blue-500" :
+                              event.eventType === "group_practice" ? "bg-green-50 text-green-800 border-green-500" :
+                              event.eventType === "individual_training" ? "bg-purple-50 text-purple-800 border-purple-500" :
+                              event.eventType === "fitness_session" ? "bg-orange-50 text-orange-800 border-orange-500" :
+                              event.eventType === "tactical_training" ? "bg-yellow-50 text-yellow-800 border-yellow-500" :
+                              event.eventType === "medical_checkup" ? "bg-pink-50 text-pink-800 border-pink-500" :
+                              event.eventType === "team_meeting" ? "bg-indigo-50 text-indigo-800 border-indigo-500" :
+                              event.eventType === "travel" ? "bg-teal-50 text-teal-800 border-teal-500" :
+                              "bg-gray-50 text-gray-800 border-gray-500"
+                            }`}
+                            style={{
+                              height: `${Math.max(48, heightMultiplier * 48)}px`,
+                              top: `${(startMinute / 60) * 48}px`,
+                              zIndex: 10
+                            }}
+                            onClick={() => setSelectedEvent(event)}
+                          >
+                            <div className="font-medium truncate">{event.startTime}</div>
+                            <div className="truncate">{event.title}</div>
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
