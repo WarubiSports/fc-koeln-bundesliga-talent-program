@@ -269,13 +269,14 @@ export type Notification = typeof notifications.$inferSelect;
 // Communication System
 export const messages = pgTable("messages", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  fromUserId: varchar("from_user_id").notNull(),
-  toUserId: varchar("to_user_id"), // null for broadcasts
-  subject: varchar("subject").notNull(),
+  senderId: varchar("sender_id").notNull(),
+  senderName: varchar("sender_name").notNull(),
+  recipientId: varchar("recipient_id"), // null for team messages
+  recipientName: varchar("recipient_name"), // null for team messages
   content: text("content").notNull(),
+  messageType: varchar("message_type").default("team"), // team, private
   isRead: boolean("is_read").default(false),
   priority: varchar("priority").default("normal"), // low, normal, high, urgent
-  messageType: varchar("message_type").default("direct"), // direct, broadcast, announcement
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
