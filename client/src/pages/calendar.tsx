@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus, Calendar as CalendarIcon, Clock, MapPin, Users, Trash2, Edit, ChevronLeft, ChevronRight, Check, ChevronsUpDown, X } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Clock, MapPin, Users, Trash2, Edit, ChevronLeft, ChevronRight, Check, ChevronsUpDown, X, Bookmark } from "lucide-react";
 import { 
   format, 
   startOfMonth, 
@@ -48,13 +48,14 @@ export default function Calendar() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
   const [participantsPopoverOpen, setParticipantsPopoverOpen] = useState(false);
-  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
+  const [showTemplates, setShowTemplates] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const isAdmin = user?.role === "admin";
 
   const { data: events = [] } = useQuery({
     queryKey: ["/api/events"]
@@ -135,6 +136,68 @@ export default function Calendar() {
       });
     }
   });
+
+  // Bulk operations mutations
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ eventIds, updates }: { eventIds: number[], updates: Partial<InsertEvent> }) => {
+      return apiRequest("/api/events/bulk-update", "PATCH", { eventIds, updates });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      setSelectedEvents([]);
+      setIsSelectionMode(false);
+      toast({
+        title: "Success",
+        description: "Events updated successfully",
+      });
+    }
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (eventIds: number[]) => {
+      return apiRequest("/api/events/bulk-delete", "DELETE", { eventIds });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      setSelectedEvents([]);
+      setIsSelectionMode(false);
+      toast({
+        title: "Success",
+        description: "Events deleted successfully",
+      });
+    }
+  });
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, event: Event) => {
+    e.dataTransfer.setData("text/plain", event.id.toString());
+    setDraggedEvent(event);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetDate: string) => {
+    e.preventDefault();
+    const eventId = e.dataTransfer.getData("text/plain");
+    if (eventId && draggedEvent) {
+      updateMutation.mutate({
+        id: parseInt(eventId),
+        date: targetDate
+      });
+      setDraggedEvent(null);
+    }
+  };
+
+  // Bulk selection handlers
+  const handleEventSelection = (eventId: number) => {
+    setSelectedEvents(prev => 
+      prev.includes(eventId) 
+        ? prev.filter(id => id !== eventId)
+        : [...prev, eventId]
+    );
+  };
 
   const form = useForm({
     resolver: zodResolver(insertEventSchema),
@@ -290,6 +353,8 @@ export default function Calendar() {
                   className={`min-h-28 p-2 border-r border-b last:border-r-0 ${
                     !isSameMonth(day, currentDate) ? "bg-gray-50 text-gray-400" : ""
                   } ${isToday(day) ? "bg-red-50" : ""}`}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, dateStr)}
                 >
                   <div className={`text-sm mb-1 ${isToday(day) ? "font-bold text-red-600" : ""}`}>
                     {format(day, "d")}
@@ -298,7 +363,15 @@ export default function Calendar() {
                     {dayEvents.slice(0, 3).map((event: Event) => (
                       <div
                         key={event.id}
+                        draggable={isAdmin}
+                        onDragStart={(e) => handleDragStart(e, event)}
                         className={`text-xs p-1 rounded cursor-pointer truncate ${
+                          isAdmin ? "cursor-move" : "cursor-pointer"
+                        } ${
+                          isSelectionMode ? "cursor-pointer" : ""
+                        } ${
+                          selectedEvents.includes(event.id) ? "ring-2 ring-blue-500" : ""
+                        } ${
                           event.eventType === "match" ? "bg-red-100 text-red-800" :
                           event.eventType === "team_practice" ? "bg-blue-100 text-blue-800" :
                           event.eventType === "group_practice" ? "bg-green-100 text-green-800" :
@@ -317,7 +390,14 @@ export default function Calendar() {
                           event.eventType === "physiotherapy" ? "bg-rose-100 text-rose-800" :
                           "bg-gray-100 text-gray-800"
                         }`}
-                        onClick={() => setSelectedEvent(event)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isSelectionMode) {
+                            handleEventSelection(event.id);
+                          } else {
+                            setSelectedEvent(event);
+                          }
+                        }}
                       >
                         {event.startTime && (
                           <div className="font-medium">{event.startTime}</div>
@@ -528,8 +608,6 @@ export default function Calendar() {
       </Card>
     );
   };
-
-  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
