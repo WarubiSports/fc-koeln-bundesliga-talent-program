@@ -813,18 +813,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/events/:id", async (req: any, res) => {
+    console.log('Event deletion request received');
+    console.log('Session data:', req.session);
+    
     // Check session-based authentication or allow for development
     const sessionUser = (req.session as any)?.userData;
     const devLoggedIn = (req.session as any)?.devLoggedIn;
     
+    console.log('sessionUser:', sessionUser);
+    console.log('devLoggedIn:', devLoggedIn);
+    
     // Allow if properly authenticated session OR if in development mode
     if (!sessionUser && !devLoggedIn) {
+      console.log('Authentication failed - no session user or dev login');
       return res.status(401).json({ message: "Authentication required" });
     }
     
     if (sessionUser && sessionUser.role !== 'admin') {
+      console.log('Authorization failed - user role:', sessionUser.role);
       return res.status(403).json({ message: "Admin access required" });
     }
+    
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteEvent(id);
