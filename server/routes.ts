@@ -73,6 +73,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/simple-login', async (req: any, res) => {
     const { username, password } = req.body;
     
+    console.log('Login attempt:', { username, password });
+    
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
       { username: 'max.bisinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
@@ -86,6 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const user = validCredentials.find(u => u.username === username && u.password === password);
     
     if (!user) {
+      console.log('No matching user found for:', { username, password });
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
