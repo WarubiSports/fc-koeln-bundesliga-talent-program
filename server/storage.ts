@@ -39,7 +39,7 @@ import {
   type UpdateNotification,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, sql, desc, count, and, inArray } from "drizzle-orm";
+import { eq, ilike, sql, desc, count, and, or, inArray } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -423,6 +423,18 @@ export class DatabaseStorage implements IStorage {
       .insert(chores)
       .values(insertChore)
       .returning();
+    
+    // Create notifications for assigned players
+    if (chore.assignedTo) {
+      await this.createNotificationsForAssignees(
+        chore.assignedTo,
+        `New Chore Assigned: ${chore.title}`,
+        `You have been assigned a new chore in ${chore.house}. Due: ${chore.dueDate}`,
+        'chore',
+        '/chores'
+      );
+    }
+    
     return chore;
   }
 
@@ -1056,6 +1068,66 @@ export class DatabaseStorage implements IStorage {
   async bulkDeleteEvents(eventIds: number[]): Promise<boolean> {
     const result = await db.delete(events).where(inArray(events.id, eventIds));
     return result.rowCount > 0;
+  }
+
+  // Helper method to create notifications for assigned players
+  private async createNotificationsForAssignees(
+    assignedTo: string | null, 
+    title: string, 
+    message: string, 
+    type: string,
+    actionUrl?: string
+  ): Promise<void> {
+    if (!assignedTo) return;
+
+    try {
+      // Try to parse as JSON array first
+      const assignedPlayers = JSON.parse(assignedTo);
+      
+      if (Array.isArray(assignedPlayers)) {
+        for (const playerName of assignedPlayers) {
+          // Find user by matching player name to their first/last name
+          const matchedUsers = await db.select().from(users).where(
+            or(
+              sql`CONCAT(${users.firstName}, ' ', ${users.lastName}) = ${playerName}`,
+              eq(users.firstName, playerName)
+            )
+          );
+          
+          if (matchedUsers.length > 0) {
+            await this.createNotification({
+              userId: matchedUsers[0].id,
+              title,
+              message,
+              type,
+              actionUrl
+            });
+          }
+        }
+      }
+    } catch {
+      // Fallback to string parsing
+      const assigneeNames = assignedTo.split(',').map(name => name.trim());
+      
+      for (const playerName of assigneeNames) {
+        const foundUsers = await db.select().from(users).where(
+          or(
+            sql`CONCAT(${users.firstName}, ' ', ${users.lastName}) = ${playerName}`,
+            eq(users.firstName, playerName)
+          )
+        );
+        
+        if (foundUsers.length > 0) {
+          await this.createNotification({
+            userId: foundUsers[0].id,
+            title,
+            message,
+            type,
+            actionUrl
+          });
+        }
+      }
+    }
   }
 }
 
