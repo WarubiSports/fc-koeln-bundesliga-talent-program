@@ -18,6 +18,7 @@ import SimpleLogin from "@/pages/simple-login";
 import LoginForm from "@/pages/login-form";
 import CompleteProfile from "@/pages/complete-profile";
 import WaitingApproval from "@/pages/waiting-approval";
+import PlayerRegistration from "@/pages/player-registration";
 import Logout from "@/pages/logout";
 import NotFound from "@/pages/not-found";
 
@@ -39,6 +40,7 @@ function Router() {
         <Route path="/" component={Landing} />
         <Route path="/login" component={LoginForm} />
         <Route path="/simple-login" component={SimpleLogin} />
+        <Route path="/register" component={PlayerRegistration} />
         <Route path="/logout" component={Logout} />
         <Route component={Landing} />
       </Switch>

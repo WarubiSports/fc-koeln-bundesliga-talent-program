@@ -9,19 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Mail, Trophy } from "lucide-react";
+import { User, Mail, Trophy, Phone, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { getCountryFlag, COUNTRIES, POSITION_DISPLAY_NAMES } from "@/lib/country-flags";
 import { z } from "zod";
 
-// Simplified registration schema with core player information
+// Registration schema with all player categories except status and house
 const registrationSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().min(10, "Phone number is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
@@ -29,18 +27,15 @@ const registrationSchema = z.object({
   position: z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"]),
   positions: z.array(z.string()).min(1, "Select at least one position"),
   preferredFoot: z.enum(["left", "right", "both"]).default("right"),
-  height: z.number().optional(),
-  weight: z.number().optional(),
-  jerseyNumber: z.number().optional(),
+  height: z.string().optional(),
+  weight: z.string().optional(),
+  jerseyNumber: z.string().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
   emergencyContactName: z.string().min(2, "Emergency contact name is required"),
   emergencyContactPhone: z.string().min(10, "Emergency contact phone is required"),
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -56,31 +51,28 @@ export default function PlayerRegistration() {
       firstName: "",
       lastName: "",
       email: "",
-      password: "",
-      confirmPassword: "",
       phone: "",
       dateOfBirth: "",
       nationality: "",
       nationalityCode: "",
       position: "midfielder",
       positions: [],
+      preferredFoot: "right",
+      height: "",
+      weight: "",
+      jerseyNumber: "",
+      previousClub: "",
       profileImageUrl: "",
       emergencyContactName: "",
       emergencyContactPhone: "",
       medicalConditions: "",
       allergies: "",
-      previousClub: "",
-      jerseyNumber: undefined,
-      height: undefined,
-      weight: undefined,
-      preferredFoot: "right",
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegistrationFormData) => {
-      const { confirmPassword, ...playerData } = data;
-      return await apiRequest("/api/players/register", "POST", playerData);
+      return await apiRequest("/api/players/register", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -110,8 +102,8 @@ export default function PlayerRegistration() {
     form.setValue("positions", newPositions);
     
     // Set primary position to first selected
-    if (newPositions.length > 0) {
-      form.setValue("position", newPositions[0]);
+    if (newPositions.length > 0 && Object.keys(POSITION_DISPLAY_NAMES).includes(newPositions[0])) {
+      form.setValue("position", newPositions[0] as any);
     }
   };
 
@@ -252,26 +244,16 @@ export default function PlayerRegistration() {
                     
                     <FormField
                       control={form.control}
-                      name="password"
+                      name="profileImageUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>Profile Image URL (Optional)</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Create a secure password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Confirm your password" {...field} />
+                            <Input 
+                              type="url" 
+                              placeholder="https://example.com/your-photo.jpg"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -358,7 +340,7 @@ export default function PlayerRegistration() {
                           <FormItem>
                             <FormLabel>Height (cm)</FormLabel>
                             <FormControl>
-                              <Input type="number" placeholder="175" {...field} />
+                              <Input placeholder="175" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -372,7 +354,7 @@ export default function PlayerRegistration() {
                           <FormItem>
                             <FormLabel>Weight (kg)</FormLabel>
                             <FormControl>
-                              <Input type="number" placeholder="70" {...field} />
+                              <Input placeholder="70" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -386,7 +368,7 @@ export default function PlayerRegistration() {
                           <FormItem>
                             <FormLabel>Preferred Jersey Number (Optional)</FormLabel>
                             <FormControl>
-                              <Input type="number" min="1" max="99" placeholder="10" {...field} />
+                              <Input placeholder="10" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -395,8 +377,6 @@ export default function PlayerRegistration() {
                     </div>
                   </div>
                 </div>
-
-
 
                 {/* Emergency Contact & Medical Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -437,7 +417,7 @@ export default function PlayerRegistration() {
                   
                   <div className="space-y-4">
                     <h3 className="flex items-center gap-2 font-semibold text-lg">
-                      <MapPin className="h-5 w-5" />
+                      <Heart className="h-5 w-5" />
                       Medical Information
                     </h3>
                     
@@ -475,27 +455,6 @@ export default function PlayerRegistration() {
                       )}
                     />
                   </div>
-                </div>
-
-                {/* Profile Image URL */}
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="profileImageUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Profile Image URL (Optional)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="url" 
-                            placeholder="https://example.com/your-photo.jpg"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 <div className="flex justify-center pt-6">
