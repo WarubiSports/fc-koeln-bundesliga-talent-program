@@ -281,12 +281,12 @@ export default function Register() {
                 <div className="space-y-2">
                   <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
                   <div className="flex items-start gap-4">
-                    <Input
+                    <input
                       id="profileImage"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      className="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 file:cursor-pointer cursor-pointer"
                     />
                     {formData.profileImageUrl && (
                       <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
