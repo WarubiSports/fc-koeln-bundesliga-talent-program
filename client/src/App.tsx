@@ -82,21 +82,27 @@ function Router() {
 
   // Show main application for authenticated users
   return (
-    <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/players" component={Players} />
-      <Route path="/chores" component={Chores} />
-      <Route path="/calendar" component={Calendar} />
-      <Route path="/food-orders" component={FoodOrders} />
-      {isAdmin && <Route path="/house-orders" component={HouseOrders} />}
-      <Route path="/communications" component={Communications} />
-      {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
-      <Route path="/complete-profile" component={CompleteProfile} />
-      <Route path="/waiting-approval" component={WaitingApproval} />
-      <Route path="/logout" component={Logout} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="pb-20">
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/players" component={Players} />
+          <Route path="/chores" component={Chores} />
+          <Route path="/calendar" component={Calendar} />
+          <Route path="/food-orders" component={FoodOrders} />
+          {isAdmin && <Route path="/house-orders" component={HouseOrders} />}
+          <Route path="/communications" component={Communications} />
+          {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
+          <Route path="/complete-profile" component={CompleteProfile} />
+          <Route path="/waiting-approval" component={WaitingApproval} />
+          <Route path="/logout" component={Logout} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+      <SectionOverview />
+    </div>
   );
 }
 
