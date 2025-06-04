@@ -20,11 +20,28 @@ export default function Landing() {
           <p className="text-xl text-gray-600 mb-8">
             Managing excellence in football development
           </p>
-          <Button size="lg" asChild>
-            <a href="/api/login">
-              Sign In to Continue
-            </a>
-          </Button>
+          <div className="flex gap-4 justify-center">
+            <Button size="lg" asChild>
+              <a href="/api/login">
+                Sign In to Continue
+              </a>
+            </Button>
+            <Button size="lg" variant="outline" onClick={async () => {
+              try {
+                const response = await fetch('/api/auth/dev-login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                  window.location.href = '/';
+                }
+              } catch (error) {
+                console.error('Development login failed:', error);
+              }
+            }}>
+              Dev Login (Testing)
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
