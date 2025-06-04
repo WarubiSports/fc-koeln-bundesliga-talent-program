@@ -15,6 +15,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Database initialization complete
   console.log("Database storage initialized successfully");
+  
+  // Create admin account if it doesn't exist
+  try {
+    const existingAdmin = await storage.getUserByUsername("max.bisinger@warubi-sports");
+    if (!existingAdmin) {
+      const adminUser = await storage.createUser({
+        id: "admin-max-bisinger",
+        username: "max.bisinger@warubi-sports",
+        password: "ITP2024", // In production, this should be hashed
+        firstName: "Max",
+        lastName: "Bisinger",
+        email: "max.bisinger@warubi-sports.com",
+        role: "admin",
+        status: "approved",
+        dateOfBirth: "1990-01-01",
+        nationality: "German",
+        phoneNumber: "+49 221 12345678",
+        emergencyContact: "Warubi Sports Admin",
+        emergencyPhone: "+49 221 87654321",
+        profileImageUrl: null
+      });
+      console.log("Admin account created for max.bisinger@warubi-sports");
+    } else {
+      console.log("Admin account already exists for max.bisinger@warubi-sports");
+    }
+  } catch (error) {
+    console.error("Error creating admin account:", error);
+  }
 
 
 
@@ -72,6 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
+      { username: 'max.bisinger@warubi-sports', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
       { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
       { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
       { username: 'staff', password: 'staff123', role: 'staff', name: 'Staff Member' },
