@@ -24,11 +24,7 @@ const roles = [
   { value: "manager", label: "Team Manager" }
 ];
 
-const houses = [
-  "House A - Widdersdorf East",
-  "House B - Widdersdorf Central", 
-  "House C - Widdersdorf West"
-];
+
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -43,7 +39,6 @@ export default function Register() {
     nationalityCode: "",
     positions: [] as string[],
     role: "",
-    house: "",
     phoneNumber: "",
     emergencyContact: "",
     emergencyPhone: "",
@@ -125,7 +120,6 @@ export default function Register() {
         nationalityCode: formData.nationalityCode,
         positions: formData.positions,
         role: formData.role,
-        house: formData.house,
         phoneNumber: formData.phoneNumber,
         emergencyContact: formData.emergencyContact,
         emergencyPhone: formData.emergencyPhone,
@@ -152,7 +146,6 @@ export default function Register() {
         nationalityCode: "",
         positions: [] as string[],
         role: "",
-        house: "",
         phoneNumber: "",
         emergencyContact: "",
         emergencyPhone: "",
@@ -282,20 +275,22 @@ export default function Register() {
                       placeholder="e.g. German, Brazilian"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
-                    <div className="flex items-start gap-4">
-                      <Input
-                        id="profileImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
-                      />
-                      {formData.profileImageUrl && (
-                        <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
-                      )}
-                    </div>
+                </div>
+                
+                {/* Profile Picture Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
+                  <div className="flex items-start gap-4">
+                    <Input
+                      id="profileImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                    />
+                    {formData.profileImageUrl && (
+                      <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -338,21 +333,6 @@ export default function Register() {
                       </div>
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <Label htmlFor="house" className="text-gray-700">Housing Assignment</Label>
-                    <Select value={formData.house} onValueChange={(value) => handleInputChange("house", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select housing preference" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {houses.map((house) => (
-                          <SelectItem key={house} value={house}>
-                            {house}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
               </div>
 
