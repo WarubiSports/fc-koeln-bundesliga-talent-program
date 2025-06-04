@@ -56,6 +56,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Simple login endpoint for multiple users
+  app.post('/api/auth/simple-login', async (req: any, res) => {
+    const { username, password } = req.body;
+    
+    // Simple credential validation - you can modify these as needed
+    const validCredentials = [
+      { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
+      { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
+      { username: 'staff', password: 'staff123', role: 'staff', name: 'Staff Member' },
+      { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' }
+    ];
+    
+    const user = validCredentials.find(u => u.username === username && u.password === password);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Set session data
+    (req.session as any).simpleAuth = true;
+    (req.session as any).userData = {
+      id: user.username,
+      firstName: user.name.split(' ')[0],
+      lastName: user.name.split(' ')[1] || '',
+      email: `${user.username}@fckoeln.dev`,
+      role: user.role,
+      status: 'approved'
+    };
+    
+    res.json({ message: 'Login successful', user: (req.session as any).userData });
+  });
+
   // Clear logout flag endpoint (for testing landing page)
   app.post('/api/auth/clear-logout', async (req: any, res) => {
     delete (req.session as any).loggedOut;
@@ -97,6 +129,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if ((req.session as any)?.loggedOut) {
         console.log('User explicitly logged out, returning 401');
         res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      // Check if user is authenticated via simple auth
+      if ((req.session as any)?.simpleAuth && (req.session as any)?.userData) {
+        console.log('Returning simple auth user data:', (req.session as any).userData);
+        res.json((req.session as any).userData);
         return;
       }
 

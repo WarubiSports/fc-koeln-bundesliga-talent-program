@@ -1,8 +1,99 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Users, Calendar, Home, MessageSquare } from "lucide-react";
 
 export default function Landing() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/simple-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (response.ok) {
+        window.location.href = '/';
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (showLogin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-white flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <img 
+                src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png" 
+                alt="FC Köln Football School" 
+                className="w-16 h-16 object-contain"
+              />
+            </div>
+            <CardTitle className="text-2xl">FC Köln ITP Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-red-600">{error}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Signing In...' : 'Sign In'}
+              </Button>
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => setShowLogin(false)}
+              >
+                Back to Home
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -20,28 +111,9 @@ export default function Landing() {
           <p className="text-xl text-gray-600 mb-8">
             Managing excellence in football development
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" asChild>
-              <a href="/api/login">
-                Sign In to Continue
-              </a>
-            </Button>
-            <Button size="lg" variant="outline" onClick={async () => {
-              try {
-                const response = await fetch('/api/auth/dev-login', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' }
-                });
-                if (response.ok) {
-                  window.location.href = '/';
-                }
-              } catch (error) {
-                console.error('Development login failed:', error);
-              }
-            }}>
-              Dev Login (Testing)
-            </Button>
-          </div>
+          <Button size="lg" onClick={() => setShowLogin(true)}>
+            Sign In to Continue
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
