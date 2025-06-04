@@ -177,7 +177,7 @@ const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additio
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuth();
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date('2025-06-01'));
   const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('month');
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
@@ -189,7 +189,7 @@ export default function CalendarPage() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Fetch admin events from database
-  const { data: adminEvents = [] } = useQuery({
+  const { data: adminEvents = [] } = useQuery<Event[]>({
     queryKey: ["/api/events"],
     enabled: isAuthenticated,
   });
@@ -492,7 +492,7 @@ export default function CalendarPage() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       // Find the actual Event object from adminEvents
-                                      const actualEvent = adminEvents.find((ae: any) => ae.id === event.adminEventId);
+                                      const actualEvent = (adminEvents as Event[]).find((ae: Event) => ae.id === event.adminEventId);
                                       if (actualEvent) {
                                         handleEditEvent(actualEvent);
                                       }
