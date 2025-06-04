@@ -699,7 +699,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/events/:id", simpleAdminAuth, async (req, res) => {
+  app.put("/api/events/:id", async (req: any, res) => {
+    // Check session-based authentication first
+    const sessionUser = (req.session as any)?.userData;
+    if (!sessionUser || sessionUser.role !== 'admin') {
+      return res.status(401).json({ message: "Admin access required" });
+    }
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);
@@ -714,7 +719,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/events/:id", simpleAdminAuth, async (req, res) => {
+  app.patch("/api/events/:id", async (req: any, res) => {
+    // Check session-based authentication first
+    const sessionUser = (req.session as any)?.userData;
+    if (!sessionUser || sessionUser.role !== 'admin') {
+      return res.status(401).json({ message: "Admin access required" });
+    }
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);
@@ -729,7 +739,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/events/:id", simpleAdminAuth, async (req, res) => {
+  app.delete("/api/events/:id", async (req: any, res) => {
+    // Check session-based authentication first
+    const sessionUser = (req.session as any)?.userData;
+    if (!sessionUser || sessionUser.role !== 'admin') {
+      return res.status(401).json({ message: "Admin access required" });
+    }
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteEvent(id);
