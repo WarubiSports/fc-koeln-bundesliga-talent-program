@@ -21,7 +21,7 @@ export default function Players() {
   const [filterPosition, setFilterPosition] = useState("");
   const [filterNationality, setFilterNationality] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterAvailability, setFilterAvailability] = useState("");
+
   const [filterAgeRange, setFilterAgeRange] = useState("");
   const [filterHouse, setFilterHouse] = useState("");
 
@@ -59,13 +59,10 @@ export default function Players() {
       // Status filter
       if (filterStatus && filterStatus !== 'all' && player.status !== filterStatus) return false;
 
-      // Availability filter
-      if (filterAvailability && filterAvailability !== 'all' && player.availability !== filterAvailability) return false;
-
-      // Age range filter
+      // Age filter (individual ages 15-21)
       if (filterAgeRange && filterAgeRange !== 'all') {
-        const [minAge, maxAge] = filterAgeRange.split('-').map(Number);
-        if (playerAge < minAge || playerAge > maxAge) return false;
+        const targetAge = parseInt(filterAgeRange);
+        if (playerAge !== targetAge) return false;
       }
 
       // House filter
@@ -73,7 +70,7 @@ export default function Players() {
 
       return true;
     });
-  }, [players, searchQuery, filterPosition, filterNationality, filterStatus, filterAvailability, filterAgeRange, filterHouse]);
+  }, [players, searchQuery, filterPosition, filterNationality, filterStatus, filterAgeRange, filterHouse]);
 
   // Fetch pending users (admin only)
   const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery<any[]>({
@@ -197,31 +194,22 @@ export default function Players() {
                   </SelectContent>
                 </Select>
 
-                {/* Availability Filter */}
-                <Select value={filterAvailability} onValueChange={setFilterAvailability}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Availability" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Availability</SelectItem>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="unavailable">Unavailable</SelectItem>
-                    <SelectItem value="injured">Injured</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
 
-                {/* Age Range Filter */}
+
+                {/* Age Filter */}
                 <Select value={filterAgeRange} onValueChange={setFilterAgeRange}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Ages" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Ages</SelectItem>
-                    <SelectItem value="16-18">16-18 years</SelectItem>
-                    <SelectItem value="19-21">19-21 years</SelectItem>
-                    <SelectItem value="22-25">22-25 years</SelectItem>
-                    <SelectItem value="26-30">26-30 years</SelectItem>
+                    <SelectItem value="15">15 years</SelectItem>
+                    <SelectItem value="16">16 years</SelectItem>
+                    <SelectItem value="17">17 years</SelectItem>
+                    <SelectItem value="18">18 years</SelectItem>
+                    <SelectItem value="19">19 years</SelectItem>
+                    <SelectItem value="20">20 years</SelectItem>
+                    <SelectItem value="21">21 years</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -274,7 +262,7 @@ export default function Players() {
                     setFilterPosition("all");
                     setFilterNationality("all");
                     setFilterStatus("all");
-                    setFilterAvailability("all");
+
                     setFilterAgeRange("all");
                     setFilterHouse("all");
                   }}
@@ -316,7 +304,7 @@ export default function Players() {
                       (Array.isArray(player.positions) ? player.positions : [player.position]) : 
                       [player.position];
                     const countryFlag = player.nationalityCode ? getCountryFlag(player.nationalityCode) : getCountryFlag('');
-                    const availabilityColor = AVAILABILITY_COLORS[player.availability as keyof typeof AVAILABILITY_COLORS] || AVAILABILITY_COLORS.available;
+                    // Remove availability color reference
                     
                     return (
                       <Card key={player.id} className="hover:shadow-lg transition-shadow">
@@ -347,12 +335,8 @@ export default function Players() {
                                 </p>
                               </div>
                             </div>
-                            <Badge className={`text-xs ${availabilityColor}`}>
-                              {player.availability === 'available' && <Users className="h-3 w-3 mr-1" />}
-                              {player.availability === 'unavailable' && <UserX className="h-3 w-3 mr-1" />}
-                              {player.availability === 'injured' && <AlertTriangle className="h-3 w-3 mr-1" />}
-                              {player.availability === 'suspended' && <XCircle className="h-3 w-3 mr-1" />}
-                              {player.availability}
+                            <Badge variant="outline" className="text-xs">
+                              {player.status}
                             </Badge>
                           </div>
                         </CardHeader>
@@ -385,11 +369,7 @@ export default function Players() {
                                 </div>
                               </div>
                             )}
-                            {player.availability !== 'available' && player.availabilityReason && (
-                              <div className="text-xs text-gray-500 mt-2">
-                                <span className="font-medium">Reason:</span> {player.availabilityReason}
-                              </div>
-                            )}
+
                           </div>
                         </CardContent>
                       </Card>
