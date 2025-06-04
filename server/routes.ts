@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema, insertFoodOrderSchema, updateFoodOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
-import { simpleAuth, simpleAdminAuth, createUserToken, removeUserToken } from "./auth-simple";
+import { simpleAuth, simpleAdminAuth, createUserToken, getUserFromToken, removeUserToken } from "./auth-simple";
 import { devAuth } from "./auth-bypass";
 
 
@@ -89,9 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
-    // Set session data
-    (req.session as any).simpleAuth = true;
-    (req.session as any).userData = {
+    const userData = {
       id: user.username,
       firstName: user.name.split(' ')[0],
       lastName: user.name.split(' ')[1] || '',
@@ -100,26 +98,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       status: 'approved'
     };
     
-    console.log('Login successful - session ID:', req.sessionID);
-    console.log('Login successful - session data:', req.session);
+    // Create a simple token and store user data
+    const token = createUserToken(userData);
     
-    // Force session save
-    req.session.save((err: any) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ message: 'Session save failed' });
-      }
-      
-      // Set explicit cookie header for debugging
-      res.cookie('connect.sid', req.sessionID, {
-        httpOnly: false,
-        secure: false,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-        sameSite: 'lax',
-        path: '/'
-      });
-      
-      res.json({ message: 'Login successful', user: (req.session as any).userData });
+    console.log('Login successful - token created:', token);
+    
+    res.json({ 
+      message: 'Login successful', 
+      user: userData,
+      token: token
     });
   });
 
@@ -148,6 +135,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - full session:', req.session);
 
     try {
+      // Check for Bearer token in Authorization header first
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        const userData = getUserFromToken(token);
+        
+        if (userData) {
+          console.log('Token auth successful for user:', userData.id);
+          res.json(userData);
+          return;
+        }
+      }
+
       // Check if user explicitly logged out first
       if ((req.session as any)?.loggedOut) {
         console.log('User explicitly logged out, returning 401');
@@ -155,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return;
       }
 
-      // Check if user is authenticated via simple auth
+      // Check if user is authenticated via simple auth (session fallback)
       if ((req.session as any)?.simpleAuth && (req.session as any)?.userData) {
         console.log('Returning simple auth user data:', (req.session as any).userData);
         res.json((req.session as any).userData);

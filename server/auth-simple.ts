@@ -41,6 +41,10 @@ export function createUserToken(userData: any): string {
   return token;
 }
 
+export function getUserFromToken(token: string): any | null {
+  return loggedInUsers.get(token) || null;
+}
+
 export function removeUserToken(token: string): void {
   loggedInUsers.delete(token);
 }
