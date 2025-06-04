@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import SectionOverview from "@/components/section-overview";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, AuthProvider } from "@/hooks/use-token-auth";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
 import Chores from "@/pages/chores";
@@ -14,8 +14,7 @@ import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
 import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
-import SimpleLogin from "@/pages/simple-login";
-import LoginForm from "@/pages/login-form";
+import TokenLogin from "@/pages/token-login";
 import CompleteProfile from "@/pages/complete-profile";
 import WaitingApproval from "@/pages/waiting-approval";
 import PlayerRegistration from "@/pages/player-registration";
@@ -23,7 +22,7 @@ import Logout from "@/pages/logout";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading, hasCompletedProfile, needsApproval, isAdmin } = useAuth();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -33,49 +32,14 @@ function Router() {
     );
   }
 
-  // Show landing page for unauthenticated users
-  if (!isAuthenticated) {
+  // Show login page for unauthenticated users
+  if (!user) {
     return (
       <Switch>
-        <Route path="/" component={Landing} />
-        <Route path="/login" component={LoginForm} />
-        <Route path="/simple-login" component={SimpleLogin} />
-        <Route path="/register" component={PlayerRegistration} />
+        <Route path="/" component={TokenLogin} />
+        <Route path="/login" component={TokenLogin} />
         <Route path="/logout" component={Logout} />
-        <Route component={Landing} />
-      </Switch>
-    );
-  }
-
-  // Always allow logout route
-  if (window.location.pathname === '/logout') {
-    return <Logout />;
-  }
-
-  // Redirect to profile completion if needed (non-admin users only)
-  if (!hasCompletedProfile && !isAdmin) {
-    return (
-      <Switch>
-        <Route path="/complete-profile" component={CompleteProfile} />
-        <Route path="/logout" component={Logout} />
-        <Route component={() => {
-          window.location.href = "/complete-profile";
-          return null;
-        }} />
-      </Switch>
-    );
-  }
-
-  // Show waiting approval page for users who need approval
-  if (needsApproval && !isAdmin) {
-    return (
-      <Switch>
-        <Route path="/waiting-approval" component={WaitingApproval} />
-        <Route path="/logout" component={Logout} />
-        <Route component={() => {
-          window.location.href = "/waiting-approval";
-          return null;
-        }} />
+        <Route component={TokenLogin} />
       </Switch>
     );
   }
@@ -93,8 +57,6 @@ function Router() {
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/communications" component={Communications} />
-          <Route path="/complete-profile" component={CompleteProfile} />
-          <Route path="/waiting-approval" component={WaitingApproval} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
@@ -107,10 +69,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
