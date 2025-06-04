@@ -701,24 +701,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/events", async (req: any, res) => {
+    console.log('Event creation request received');
+    console.log('Session data:', req.session);
+    
     // Check session-based authentication or allow for development
     const sessionUser = (req.session as any)?.userData;
     const devLoggedIn = (req.session as any)?.devLoggedIn;
     
+    console.log('sessionUser:', sessionUser);
+    console.log('devLoggedIn:', devLoggedIn);
+    
     // Allow if properly authenticated session OR if in development mode
     if (!sessionUser && !devLoggedIn) {
+      console.log('Authentication failed - no session user or dev login');
       return res.status(401).json({ message: "Authentication required" });
     }
     
     if (sessionUser && sessionUser.role !== 'admin') {
+      console.log('Authorization failed - user role:', sessionUser.role);
       return res.status(403).json({ message: "Admin access required" });
     }
     
     try {
+      console.log('Original request body:', req.body);
+      
       const eventData = {
-        ...req.body,
+        title: req.body.title,
+        eventType: req.body.type || req.body.eventType, // Map 'type' to 'eventType'
+        date: req.body.date,
+        startTime: req.body.time || req.body.startTime, // Map 'time' to 'startTime'
+        endTime: req.body.endTime || req.body.time, // Default endTime to same as startTime if not provided
+        location: req.body.location,
+        notes: req.body.description || req.body.notes, // Map 'description' to 'notes'
         createdBy: sessionUser ? sessionUser.firstName + ' ' + sessionUser.lastName : "Admin User",
       };
+      
+      console.log('Mapped event data:', eventData);
 
       const event = await storage.createEvent(eventData);
       res.status(201).json(event);
