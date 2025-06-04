@@ -41,6 +41,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: 'Development login successful', user: (req.session as any).userData });
   });
 
+  // Development logout endpoint
+  app.post('/api/auth/dev-logout', async (req: any, res) => {
+    // Clear session data and set logout flag
+    delete (req.session as any).devLoggedIn;
+    delete (req.session as any).userData;
+    (req.session as any).loggedOut = true;
+    
+    res.json({ message: 'Logged out successfully' });
+  });
+
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     // Set cache control headers to prevent caching
@@ -57,8 +67,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - session.userData:', !!(req.session as any)?.userData);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
     
-    // Auto-login for development mode when no session exists
-    if (!((req.session as any)?.devLoggedIn) && !((req.session as any)?.userData)) {
+    // Auto-login for development mode when no session exists (but not if user explicitly logged out)
+    if (!((req.session as any)?.devLoggedIn) && !((req.session as any)?.userData) && !((req.session as any)?.loggedOut)) {
       console.log('No session found, auto-logging in for development');
       (req.session as any).devLoggedIn = true;
       (req.session as any).userData = {

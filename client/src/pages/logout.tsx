@@ -1,11 +1,26 @@
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Logout() {
   useEffect(() => {
-    // Redirect to logout endpoint
-    window.location.href = "/api/logout";
+    const performLogout = async () => {
+      try {
+        // Call development logout endpoint to clear session
+        await apiRequest("/api/auth/dev-logout", {
+          method: "POST"
+        });
+        
+        // Redirect to landing page
+        window.location.href = "/";
+      } catch (error) {
+        // Fallback - redirect to root
+        window.location.href = "/";
+      }
+    };
+
+    performLogout();
   }, []);
 
   return (
