@@ -71,6 +71,7 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   dateOfBirth: varchar("date_of_birth"),
   nationality: varchar("nationality"),
+  nationalityCode: varchar("nationality_code"),
   position: varchar("position"),
   role: text("role").notNull().default("player"), // admin, player, coach, staff, manager
   status: text("status").notNull().default("pending"), // pending, approved, rejected

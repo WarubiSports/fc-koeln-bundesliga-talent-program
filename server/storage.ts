@@ -270,7 +270,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPendingUsers(): Promise<User[]> {
-    return await db.select().from(users).where(eq(users.approved, "false"));
+    return await db.select().from(users).where(eq(users.status, "pending"));
   }
 
   async approveUser(userId: string): Promise<void> {
