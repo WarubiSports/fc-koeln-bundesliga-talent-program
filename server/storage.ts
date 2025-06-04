@@ -1029,7 +1029,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEventTemplate(id: number): Promise<boolean> {
     const result = await db.delete(eventTemplates).where(eq(eventTemplates.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getEventTemplatesByUser(userId: string): Promise<EventTemplate[]> {
@@ -1069,7 +1069,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNotification(id: number): Promise<boolean> {
     const result = await db.delete(notifications).where(eq(notifications.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getNotificationsByUser(userId: string): Promise<Notification[]> {
@@ -1104,7 +1104,7 @@ export class DatabaseStorage implements IStorage {
 
   async bulkDeleteEvents(eventIds: number[]): Promise<boolean> {
     const result = await db.delete(events).where(inArray(events.id, eventIds));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Helper method to create notifications for assigned players
