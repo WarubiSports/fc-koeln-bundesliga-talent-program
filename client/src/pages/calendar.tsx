@@ -453,7 +453,7 @@ export default function Calendar() {
                       return (
                         <div
                           key={event.id}
-                          className={`absolute left-2 right-2 p-2 rounded cursor-pointer shadow-sm border-l-4 ${
+                          className={`absolute left-2 right-2 p-2 rounded cursor-pointer border-l-4 ${
                             event.eventType === "match" ? "bg-red-50 text-red-800 border-red-500" :
                             event.eventType === "team_practice" ? "bg-blue-50 text-blue-800 border-blue-500" :
                             event.eventType === "group_practice" ? "bg-green-50 text-green-800 border-green-500" :
@@ -484,34 +484,7 @@ export default function Calendar() {
                       );
                     })}
                     
-                    {/* Render continuation bars for spanning events */}
-                    {spanningEvents.map((event) => (
-                      <div
-                        key={`span-${event.id}-${hour}`}
-                        className={`absolute left-2 right-2 rounded cursor-pointer opacity-60 border-l-4 ${
-                          event.eventType === "match" ? "bg-red-100 border-red-500" :
-                          event.eventType === "team_practice" ? "bg-blue-100 border-blue-500" :
-                          event.eventType === "group_practice" ? "bg-green-100 border-green-500" :
-                          event.eventType === "individual_training" ? "bg-purple-100 border-purple-500" :
-                          event.eventType === "fitness_session" ? "bg-orange-100 border-orange-500" :
-                          event.eventType === "tactical_training" ? "bg-yellow-100 border-yellow-500" :
-                          event.eventType === "medical_checkup" ? "bg-pink-100 border-pink-500" :
-                          event.eventType === "team_meeting" ? "bg-indigo-100 border-indigo-500" :
-                          event.eventType === "travel" ? "bg-teal-100 border-teal-500" :
-                          "bg-gray-100 border-gray-500"
-                        }`}
-                        style={{
-                          height: '48px',
-                          top: '0px',
-                          zIndex: 5
-                        }}
-                        onClick={() => setSelectedEvent(event)}
-                      >
-                        <div className="p-2 text-xs opacity-75">
-                          {event.title} (continues)
-                        </div>
-                      </div>
-                    ))}
+
                     
                     {startingEvents.length === 0 && spanningEvents.length === 0 && (
                       <div className="text-gray-300 text-xs">No events</div>
