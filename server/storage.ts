@@ -29,9 +29,17 @@ import {
   type Event,
   type InsertEvent,
   type UpdateEvent,
+  eventTemplates,
+  type EventTemplate,
+  type InsertEventTemplate,
+  type UpdateEventTemplate,
+  notifications,
+  type Notification,
+  type InsertNotification,
+  type UpdateNotification,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, sql, desc } from "drizzle-orm";
+import { eq, ilike, sql, desc, count, and, inArray } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {

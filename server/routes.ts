@@ -698,6 +698,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Event Templates routes
+  app.get("/api/event-templates", async (req, res) => {
+    try {
+      const templates = await storage.getAllEventTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching event templates:", error);
+      res.status(500).json({ message: "Failed to fetch event templates" });
+    }
+  });
+
+  app.post("/api/event-templates", simpleAdminAuth, async (req: any, res) => {
+    try {
+      const templateData = {
+        ...req.body,
+        createdBy: req.user.id
+      };
+      const template = await storage.createEventTemplate(templateData);
+      res.status(201).json(template);
+    } catch (error) {
+      console.error("Error creating event template:", error);
+      res.status(500).json({ message: "Failed to create event template" });
+    }
+  });
+
+  app.delete("/api/event-templates/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteEventTemplate(id);
+      res.json({ message: "Event template deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting event template:", error);
+      res.status(500).json({ message: "Failed to delete event template" });
+    }
+  });
+
+  // Notifications routes
+  app.get("/api/notifications", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || 'dev-admin';
+      const notifications = await storage.getNotificationsByUser(userId);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/notifications", async (req, res) => {
+    try {
+      const notification = await storage.createNotification(req.body);
+      res.status(201).json(notification);
+    } catch (error) {
+      console.error("Error creating notification:", error);
+      res.status(500).json({ message: "Failed to create notification" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.markNotificationAsRead(id);
+      res.json({ message: "Notification marked as read" });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  // Bulk operations routes
+  app.patch("/api/events/bulk", simpleAdminAuth, async (req, res) => {
+    try {
+      const { eventIds, updates } = req.body;
+      const events = await storage.bulkUpdateEvents(eventIds, updates);
+      res.json(events);
+    } catch (error) {
+      console.error("Error bulk updating events:", error);
+      res.status(500).json({ message: "Failed to bulk update events" });
+    }
+  });
+
+  app.delete("/api/events/bulk", simpleAdminAuth, async (req, res) => {
+    try {
+      const { eventIds } = req.body;
+      await storage.bulkDeleteEvents(eventIds);
+      res.json({ message: "Events deleted successfully" });
+    } catch (error) {
+      console.error("Error bulk deleting events:", error);
+      res.status(500).json({ message: "Failed to bulk delete events" });
+    }
+  });
+
   app.get("/api/events/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);

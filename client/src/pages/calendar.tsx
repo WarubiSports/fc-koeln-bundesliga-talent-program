@@ -48,6 +48,10 @@ export default function Calendar() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
   const [participantsPopoverOpen, setParticipantsPopoverOpen] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -58,6 +62,14 @@ export default function Calendar() {
 
   const { data: players = [] } = useQuery({
     queryKey: ["/api/players"]
+  });
+
+  const { data: eventTemplates = [] } = useQuery({
+    queryKey: ["/api/event-templates"]
+  });
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["/api/notifications"]
   });
 
   // Filter events based on selected player
