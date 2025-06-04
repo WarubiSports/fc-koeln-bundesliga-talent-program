@@ -15,6 +15,7 @@ import FoodOrders from "@/pages/food-orders";
 import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
+import Register from "@/pages/register";
 import CompleteProfile from "@/pages/complete-profile";
 import WaitingApproval from "@/pages/waiting-approval";
 import PlayerRegistration from "@/pages/player-registration";
@@ -38,6 +39,7 @@ function Router() {
       <Switch>
         <Route path="/" component={TokenLogin} />
         <Route path="/login" component={TokenLogin} />
+        <Route path="/register" component={Register} />
         <Route path="/logout" component={Logout} />
         <Route component={TokenLogin} />
       </Switch>

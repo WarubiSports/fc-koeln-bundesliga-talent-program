@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
 
 export default function TokenLogin() {
   const [username, setUsername] = useState("");
@@ -103,10 +104,16 @@ export default function TokenLogin() {
               </Button>
             </form>
             
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-3">
               <p className="text-xs text-gray-500">
                 For access issues, contact your program administrator
               </p>
+              <div className="border-t pt-4">
+                <p className="text-sm text-gray-600 mb-2">New to FC Köln?</p>
+                <Link href="/register" className="text-red-600 hover:text-red-700 font-medium text-sm">
+                  Apply for the International Talent Program
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>

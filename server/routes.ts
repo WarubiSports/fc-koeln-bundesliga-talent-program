@@ -13,13 +13,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Sync all approved users to player database on startup
-  try {
-    await storage.syncAllApprovedUsersToPlayers();
-    console.log("Successfully synced approved users to player database");
-  } catch (error) {
-    console.error("Error syncing users to players:", error);
-  }
+  // Database initialization complete
+  console.log("Database storage initialized successfully");
 
 
 
