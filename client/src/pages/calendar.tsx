@@ -598,16 +598,22 @@ export default function CalendarPage() {
     // Parse start time (handle both "10:00" and "10" formats)
     const startParts = startTime.split(':');
     const startHour = parseInt(startParts[0]);
+    const startMinute = startParts[1] ? parseInt(startParts[1]) : 0;
     
     if (endTime) {
       // Parse end time
       const endParts = endTime.split(':');
       const endHour = parseInt(endParts[0]);
       const endMinute = endParts[1] ? parseInt(endParts[1]) : 0;
-      const endHourFloat = endHour + endMinute / 60;
       
-      // Event spans this hour if it starts before or at this hour and ends after this hour
-      return startHour <= hour && endHourFloat > hour;
+      // Convert times to minutes for easier comparison
+      const startTimeMinutes = startHour * 60 + startMinute;
+      const endTimeMinutes = endHour * 60 + endMinute;
+      const hourStart = hour * 60;
+      const hourEnd = (hour + 1) * 60;
+      
+      // Event spans this hour if it overlaps with the hour timeframe
+      return startTimeMinutes < hourEnd && endTimeMinutes > hourStart;
     } else {
       // No end time, only show at start hour
       return startHour === hour;
