@@ -1014,6 +1014,56 @@ export default function Calendar() {
         </div>
       </div>
 
+      {/* Event Templates Section */}
+      {showTemplates && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bookmark className="w-5 h-5" />
+              Event Templates
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {eventTemplates.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No templates available</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(eventTemplates as any[]).map((template: any) => (
+                  <div
+                    key={template.id}
+                    className="border rounded-lg p-3 hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => {
+                      // Pre-fill form with template data
+                      form.reset({
+                        title: template.title,
+                        eventType: template.eventType,
+                        startTime: template.startTime,
+                        endTime: template.endTime,
+                        location: template.location || "",
+                        notes: template.notes || "",
+                        participants: template.participants || "",
+                        date: format(new Date(), "yyyy-MM-dd"),
+                        createdBy: user?.firstName + " " + user?.lastName || "Unknown"
+                      });
+                      setIsCreateModalOpen(true);
+                      setShowTemplates(false);
+                    }}
+                  >
+                    <h4 className="font-medium text-sm">{template.title}</h4>
+                    <p className="text-xs text-gray-600 capitalize">
+                      {template.eventType.replace('_', ' ')}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {template.startTime} - {template.endTime}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Calendar Controls */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
