@@ -411,14 +411,19 @@ export default function CalendarPage() {
     return (
       <div className="grid grid-cols-1 gap-4">
         <div className="border rounded-lg p-4">
-          <div className="relative">
+          <div className="relative border-l border-gray-200">
             {hours.map(hour => {
               const timeSlot = formatTime12Hour(hour);
               
               return (
-                <div key={hour} className="flex border-b py-2 min-h-[60px] relative">
-                  <div className="w-20 text-gray-500 text-xs font-medium">{timeSlot}</div>
-                  <div className="flex-1 relative">
+                <div key={hour} className="relative min-h-[68px] border-b border-gray-100">
+                  {/* Time label positioned to the left of the timeline */}
+                  <div className="absolute -left-16 top-0 w-14 text-right text-xs text-gray-500 font-medium">
+                    {timeSlot}
+                  </div>
+                  
+                  {/* Event container */}
+                  <div className="ml-4 relative h-full">
                     {/* Events that start at this hour */}
                     {dayEvents
                       .filter(event => {
@@ -443,22 +448,22 @@ export default function CalendarPage() {
                           const endTotalMinutes = endHour * 60 + endMinute;
                           const durationMinutes = endTotalMinutes - startTotalMinutes;
                           
-                          // Each hour slot is 60px + 8px padding = 68px
+                          // Each hour slot is 68px total
                           eventHeight = Math.max(60, (durationMinutes / 60) * 68 - 8);
                         }
                         
                         return (
                           <div 
                             key={event.id} 
-                            className="absolute left-0 right-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-2 z-10"
+                            className="absolute left-0 right-4 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-3 z-10 flex flex-col justify-center"
                             style={{ 
                               height: `${eventHeight}px`,
                               top: '4px'
                             }}
                           >
-                            <div className="font-medium">{event.title}</div>
-                            <div className="text-gray-600">{timeDisplay}</div>
-                            {event.location && <div className="text-gray-500">{event.location}</div>}
+                            <div className="font-medium text-center">{event.title}</div>
+                            <div className="text-gray-600 text-center mt-1">{timeDisplay}</div>
+                            {event.location && <div className="text-gray-500 text-center text-[10px] mt-1">{event.location}</div>}
                           </div>
                         );
                       })}
@@ -498,14 +503,14 @@ export default function CalendarPage() {
         
         {hours.map(hour => (
           <div key={hour} className="contents">
-            <div className="p-2 text-xs text-gray-500 border-t">
+            <div className="p-2 text-xs text-gray-500 border-t font-medium">
               {formatTime12Hour(hour)}
             </div>
             {weekDays.map(day => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
               
               return (
-                <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px] relative">
+                <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[48px] relative">
                   {/* Events that start at this hour */}
                   {dayEvents
                     .filter(event => {
@@ -530,21 +535,21 @@ export default function CalendarPage() {
                         const endTotalMinutes = endHour * 60 + endMinute;
                         const durationMinutes = endTotalMinutes - startTotalMinutes;
                         
-                        // Each hour slot is 40px + 8px padding = 48px in week view
+                        // Each hour slot is 48px total in week view
                         eventHeight = Math.max(40, (durationMinutes / 60) * 48 - 8);
                       }
                       
                       return (
                         <div 
                           key={event.id} 
-                          className="absolute left-1 right-1 bg-fc-red/10 border-l-2 border-fc-red rounded text-xs p-1 z-10"
+                          className="absolute left-1 right-1 bg-fc-red/10 border-l-2 border-fc-red rounded text-xs p-1 z-10 flex flex-col justify-center"
                           style={{ 
                             height: `${eventHeight}px`,
                             top: '4px'
                           }}
                         >
-                          <div className="font-medium truncate">{event.title}</div>
-                          <div className="text-gray-600 text-[10px]">{timeDisplay}</div>
+                          <div className="font-medium truncate text-center">{event.title}</div>
+                          <div className="text-gray-600 text-[10px] text-center">{timeDisplay}</div>
                         </div>
                       );
                     })}
