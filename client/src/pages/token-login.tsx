@@ -109,9 +109,9 @@ export default function TokenLogin() {
                 For access issues, contact your program administrator
               </p>
               <div className="border-t pt-4">
-                <p className="text-sm text-gray-600 mb-2">New to FC Köln?</p>
+                <p className="text-sm text-gray-600 mb-2">New to the FC Köln ITP?</p>
                 <Link href="/register" className="text-red-600 hover:text-red-700 font-medium text-sm">
-                  Apply for the International Talent Program
+                  Join the Bundesliga Talent Program Management System
                 </Link>
               </div>
             </div>
