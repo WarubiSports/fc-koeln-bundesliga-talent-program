@@ -812,6 +812,18 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .returning();
+    
+    // Create notifications for participants (exclude "all players" events to avoid spam)
+    if (event.participants && !event.participants.toLowerCase().includes('all players') && !event.participants.toLowerCase().includes('entire team')) {
+      await this.createNotificationsForAssignees(
+        event.participants,
+        `New Event: ${event.title}`,
+        `You have been assigned to "${event.title}" on ${event.date} at ${event.startTime}. Location: ${event.location || 'TBD'}`,
+        'event',
+        '/calendar'
+      );
+    }
+    
     return event;
   }
 
