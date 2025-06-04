@@ -15,11 +15,11 @@ interface User {
 
 export function useAuth() {
   const { data: user, isLoading } = useQuery<User>({
-    queryKey: ["/api/auth/user", Date.now()],
+    queryKey: ["/api/auth/user"],
     retry: false,
     refetchOnWindowFocus: false,
-    staleTime: 0,
-    cacheTime: 0,
+    staleTime: 30000, // 30 seconds
+    gcTime: 60000, // 1 minute (renamed from cacheTime in v5)
   });
 
   const hasCompletedProfile = user?.dateOfBirth && user?.nationality && user?.position;
