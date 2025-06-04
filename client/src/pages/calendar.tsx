@@ -428,7 +428,7 @@ export default function CalendarPage() {
                         const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                         
                         // Only show full details at start hour, abbreviated for continuation hours
-                        const [startHour] = startTime.split(':').map(Number);
+                        const startHour = parseInt(startTime.split(':')[0]);
                         const isStartHour = startHour === hour;
                         
                         return (
@@ -493,7 +493,7 @@ export default function CalendarPage() {
                     const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                     
                     // Only show full details at start hour, abbreviated for continuation hours
-                    const [startHour] = startTime.split(':').map(Number);
+                    const startHour = parseInt(startTime.split(':')[0]);
                     const isStartHour = startHour === hour;
                     
                     return (
@@ -596,7 +596,7 @@ export default function CalendarPage() {
     const endTime = event.endTime;
     
     // Debug logging for troubleshooting
-    if (event.title === "Team Practice Session") {
+    if (event.title === "Team Practice Session" && hour >= 9 && hour <= 13) {
       console.log(`Checking hour ${hour} for event:`, {
         title: event.title,
         startTime,
