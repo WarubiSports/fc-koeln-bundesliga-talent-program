@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { NotificationBell } from "@/components/notification-bell";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,11 +29,16 @@ export default function Header() {
           </div>
           
           <div className="flex items-center space-x-4">
-            {isAuthenticated && user && (
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-                <p className="text-xs text-gray-500">{user.role}</p>
-              </div>
+            {isAuthenticated && (
+              <>
+                <NotificationBell />
+                {user && (
+                  <div className="hidden sm:block text-right">
+                    <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+                    <p className="text-xs text-gray-500">{user.role}</p>
+                  </div>
+                )}
+              </>
             )}
             
             <Button
