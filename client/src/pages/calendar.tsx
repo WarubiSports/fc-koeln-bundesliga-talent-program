@@ -62,6 +62,10 @@ export default function Calendar() {
     queryKey: ["/api/events"]
   });
 
+  const { data: chores = [] } = useQuery({
+    queryKey: ["/api/chores"]
+  });
+
   const { data: players = [] } = useQuery({
     queryKey: ["/api/players"]
   });
@@ -71,6 +75,52 @@ export default function Calendar() {
     player.email === user?.email || 
     player.firstName === user?.firstName && player.lastName === user?.lastName
   );
+
+  // Filter chores for current user
+  const filterChoresForUser = (choresList: any[]) => {
+    if (!currentUserPlayer) {
+      return [];
+    }
+    
+    return choresList.filter((chore: any) => {
+      if (!chore.assignedTo) return false;
+      
+      try {
+        const assignedPlayers = JSON.parse(chore.assignedTo || "[]");
+        const userName = `${currentUserPlayer.firstName} ${currentUserPlayer.lastName}`;
+        
+        return assignedPlayers.includes(userName) || 
+               assignedPlayers.includes(currentUserPlayer.firstName) ||
+               assignedPlayers.includes(currentUserPlayer.lastName);
+      } catch {
+        // Fallback to string matching if not JSON
+        const assignedTo = chore.assignedTo.toLowerCase();
+        const userName = `${currentUserPlayer.firstName} ${currentUserPlayer.lastName}`.toLowerCase();
+        
+        return assignedTo.includes(userName) ||
+               assignedTo.includes(currentUserPlayer.firstName.toLowerCase()) ||
+               assignedTo.includes(currentUserPlayer.lastName.toLowerCase());
+      }
+    });
+  };
+
+  // Convert chores to calendar event format
+  const convertChoresToEvents = (choresList: any[]) => {
+    return choresList.map((chore: any) => ({
+      id: `chore-${chore.id}`,
+      title: `🏠 ${chore.title}`,
+      eventType: "chore",
+      date: chore.dueDate || format(new Date(), "yyyy-MM-dd"),
+      startTime: chore.startTime || "09:00",
+      endTime: chore.endTime || "10:00",
+      location: chore.house,
+      notes: `${chore.description || ""}\nCategory: ${chore.category}\nPriority: ${chore.priority}`,
+      participants: chore.assignedTo,
+      isRecurring: chore.isRecurring,
+      createdBy: chore.createdBy,
+      choreData: chore // Keep original chore data
+    }));
+  };
 
   // Filter events based on user role and player profile
   const filterEventsForUser = (eventList: any[]) => {
@@ -155,17 +205,24 @@ export default function Calendar() {
 
   // Filter events based on user role and player profile
   const filteredEvents = useMemo(() => {
-    if (!Array.isArray(events)) return [];
+    if (!Array.isArray(events) || !Array.isArray(chores)) return [];
     
     // First apply user-specific filtering based on role and player profile
     const userFilteredEvents = filterEventsForUser(events as Event[]);
     
+    // Get user's assigned chores and convert to calendar events
+    const userChores = isAdmin ? [] : filterChoresForUser(chores as any[]);
+    const choreEvents = convertChoresToEvents(userChores);
+    
+    // Combine events and chores
+    const combinedEvents = [...userFilteredEvents, ...choreEvents];
+    
     // Then apply additional player filter if selected (admin only feature)
     if (selectedPlayer === "all" || !isAdmin) {
-      return userFilteredEvents;
+      return combinedEvents;
     }
     
-    return userFilteredEvents.filter((event: Event) => {
+    return combinedEvents.filter((event: any) => {
       if (!event.participants) return false;
       
       // Check if event is for all players
@@ -176,7 +233,7 @@ export default function Calendar() {
       return participantList.includes(selectedPlayer.toLowerCase()) ||
              participantList.some(p => p.includes(selectedPlayer.toLowerCase()));
     });
-  }, [events, selectedPlayer, isAdmin, currentUserPlayer]);
+  }, [events, chores, selectedPlayer, isAdmin, currentUserPlayer]);
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertEvent) => {
@@ -489,6 +546,7 @@ export default function Calendar() {
                         } ${
                           selectedEvents.includes(event.id) ? "ring-2 ring-blue-500" : ""
                         } ${
+                          event.eventType === "chore" ? "bg-amber-100 text-amber-800 border-l-2 border-amber-500" :
                           event.eventType === "match" ? "bg-red-100 text-red-800" :
                           event.eventType === "team_practice" ? "bg-blue-100 text-blue-800" :
                           event.eventType === "group_practice" ? "bg-green-100 text-green-800" :

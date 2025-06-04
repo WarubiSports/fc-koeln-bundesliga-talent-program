@@ -76,10 +76,15 @@ export const chores = pgTable("chores", {
   category: text("category").notNull(), // cleaning, trash, maintenance, other
   frequency: text("frequency").notNull(), // daily, weekly, monthly
   house: text("house").notNull().default("Widdersdorf 1"), // Widdersdorf 1, Widdersdorf 2, Widdersdorf 3
-  assignedTo: text("assigned_to"),
+  assignedTo: text("assigned_to"), // JSON string array of player IDs/names
   dueDate: text("due_date"),
+  startTime: text("start_time"), // for calendar integration
+  endTime: text("end_time"), // for calendar integration
+  isRecurring: boolean("is_recurring").default(false),
+  recurringPattern: text("recurring_pattern"), // daily, weekly, monthly
   status: text("status").notNull().default("pending"), // pending, in_progress, completed
   priority: text("priority").notNull().default("medium"), // low, medium, high
+  createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   completedAt: timestamp("completed_at"),
 });
@@ -94,10 +99,15 @@ export const insertChoreSchema = createInsertSchema(chores).omit({
   category: z.enum(["cleaning", "trash", "maintenance", "other"]),
   frequency: z.enum(["daily", "weekly", "monthly"]),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).default("Widdersdorf 1"),
-  assignedTo: z.string().optional(),
+  assignedTo: z.string().optional(), // JSON string array of player names/IDs
   dueDate: z.string().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  isRecurring: z.boolean().default(false),
+  recurringPattern: z.string().optional(),
   status: z.enum(["pending", "in_progress", "completed"]).default("pending"),
   priority: z.enum(["low", "medium", "high"]).default("medium"),
+  createdBy: z.string().min(1, "Creator is required"),
 });
 
 export const updateChoreSchema = insertChoreSchema.partial();
