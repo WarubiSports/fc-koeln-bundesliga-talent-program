@@ -411,66 +411,76 @@ export default function CalendarPage() {
     return (
       <div className="grid grid-cols-1 gap-4">
         <div className="border rounded-lg p-4">
-          <div className="relative border-l border-gray-200">
-            {hours.map(hour => {
-              const timeSlot = formatTime12Hour(hour);
-              
-              return (
-                <div key={hour} className="relative min-h-[68px] border-b border-gray-100">
-                  {/* Time label positioned to the left of the timeline */}
-                  <div className="absolute -left-16 top-0 w-14 text-right text-xs text-gray-500 font-medium">
-                    {timeSlot}
+          <div className="flex">
+            {/* Time labels column */}
+            <div className="w-20 flex-shrink-0">
+              {hours.map(hour => {
+                const timeSlot = formatTime12Hour(hour);
+                return (
+                  <div key={hour} className="min-h-[68px] border-b border-gray-100 flex items-start pt-1">
+                    <div className="text-xs text-gray-500 font-medium w-full text-right pr-3">
+                      {timeSlot}
+                    </div>
                   </div>
-                  
-                  {/* Event container */}
-                  <div className="ml-4 relative h-full">
-                    {/* Events that start at this hour */}
-                    {dayEvents
-                      .filter(event => {
-                        const startTime = event.time || event.startTime;
-                        const startHour = parseInt(startTime.split(':')[0]);
-                        return startHour === hour;
-                      })
-                      .map(event => {
-                        const startTime = event.time || event.startTime;
-                        const endTime = event.endTime;
-                        const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
-                        
-                        // Calculate how many hours this event spans
-                        let eventHeight = 60; // Base height for 1 hour
-                        if (endTime) {
+                );
+              })}
+            </div>
+            
+            {/* Events timeline */}
+            <div className="flex-1 border-l border-gray-200 relative">
+              {hours.map(hour => {
+                return (
+                  <div key={hour} className="relative min-h-[68px] border-b border-gray-100">
+                    {/* Event container */}
+                    <div className="ml-4 relative h-full">
+                      {/* Events that start at this hour */}
+                      {dayEvents
+                        .filter(event => {
+                          const startTime = event.time || event.startTime;
                           const startHour = parseInt(startTime.split(':')[0]);
-                          const startMinute = parseInt(startTime.split(':')[1] || '0');
-                          const endHour = parseInt(endTime.split(':')[0]);
-                          const endMinute = parseInt(endTime.split(':')[1] || '0');
+                          return startHour === hour;
+                        })
+                        .map(event => {
+                          const startTime = event.time || event.startTime;
+                          const endTime = event.endTime;
+                          const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                           
-                          const startTotalMinutes = startHour * 60 + startMinute;
-                          const endTotalMinutes = endHour * 60 + endMinute;
-                          const durationMinutes = endTotalMinutes - startTotalMinutes;
+                          // Calculate how many hours this event spans
+                          let eventHeight = 60; // Base height for 1 hour
+                          if (endTime) {
+                            const startHour = parseInt(startTime.split(':')[0]);
+                            const startMinute = parseInt(startTime.split(':')[1] || '0');
+                            const endHour = parseInt(endTime.split(':')[0]);
+                            const endMinute = parseInt(endTime.split(':')[1] || '0');
+                            
+                            const startTotalMinutes = startHour * 60 + startMinute;
+                            const endTotalMinutes = endHour * 60 + endMinute;
+                            const durationMinutes = endTotalMinutes - startTotalMinutes;
+                            
+                            // Each hour slot is 68px total
+                            eventHeight = Math.max(60, (durationMinutes / 60) * 68 - 8);
+                          }
                           
-                          // Each hour slot is 68px total
-                          eventHeight = Math.max(60, (durationMinutes / 60) * 68 - 8);
-                        }
-                        
-                        return (
-                          <div 
-                            key={event.id} 
-                            className="absolute left-0 right-4 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-3 z-10 flex flex-col justify-center"
-                            style={{ 
-                              height: `${eventHeight}px`,
-                              top: '4px'
-                            }}
-                          >
-                            <div className="font-medium text-center">{event.title}</div>
-                            <div className="text-gray-600 text-center mt-1">{timeDisplay}</div>
-                            {event.location && <div className="text-gray-500 text-center text-[10px] mt-1">{event.location}</div>}
-                          </div>
-                        );
-                      })}
+                          return (
+                            <div 
+                              key={event.id} 
+                              className="absolute left-0 right-4 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-3 z-10 flex flex-col justify-center"
+                              style={{ 
+                                height: `${eventHeight}px`,
+                                top: '4px'
+                              }}
+                            >
+                              <div className="font-medium text-center">{event.title}</div>
+                              <div className="text-gray-600 text-center mt-1">{timeDisplay}</div>
+                              {event.location && <div className="text-gray-500 text-center text-[10px] mt-1">{event.location}</div>}
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
