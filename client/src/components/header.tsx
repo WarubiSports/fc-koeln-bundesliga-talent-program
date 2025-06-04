@@ -12,7 +12,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-18">
+        <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12">
               <img 
@@ -27,208 +27,130 @@ export default function Header() {
             </div>
           </div>
           
-          <nav className="hidden md:flex space-x-2">
+          <div className="flex items-center space-x-4">
+            {isAuthenticated && user && (
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+                <p className="text-xs text-gray-500">{user.role}</p>
+              </div>
+            )}
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-gray-600" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-600" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {isMobileMenuOpen && (
+          <div className="border-t border-gray-200 py-3 space-y-1">
             <a 
               href="/" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Dashboard
             </a>
             <a 
               href="/players" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/players" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Players
             </a>
             <a 
               href="/chores" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/chores" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Housing
             </a>
             <a 
               href="/food-orders" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/food-orders" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Groceries
             </a>
-            {isAdmin && (
-              <a 
-                href="/house-orders" 
-                className={`transition-all duration-200 pb-4 px-2 ${
-                  location === "/house-orders" 
-                    ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                    : "text-gray-700 hover:text-[#DC143C] transition-colors"
-                }`}
-              >
-                House Orders
-              </a>
-            )}
             <a 
               href="/communications" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/communications" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Messages
             </a>
             <a 
               href="/calendar" 
-              className={`transition-all duration-200 pb-4 px-2 ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                 location === "/calendar" 
-                  ? "text-[#DC143C] font-medium border-b-2 border-[#DC143C] shadow-sm" 
-                  : "text-gray-700 hover:text-[#DC143C] transition-colors"
+                  ? "text-[#DC143C] bg-red-50" 
+                  : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
               }`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Calendar
             </a>
-          </nav>
-          
-          <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
+            {isAdmin && (
               <>
-                <div className="hidden md:flex items-center space-x-3">
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">
-                      {user?.firstName || user?.email || "User"}
-                    </p>
-                    <p className="text-xs text-gray-500 capitalize">
-                      {isAdmin ? "Admin" : "Player"}
-                    </p>
-                  </div>
-                  <div className="w-8 h-8 bg-fc-red rounded-full flex items-center justify-center">
-                    {user?.profileImageUrl ? (
-                      <img 
-                        src={user.profileImageUrl} 
-                        alt="Profile" 
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <i className="fas fa-user text-white text-sm"></i>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('userData');
-                    window.location.replace('/');
-                  }}
-                  className="border-fc-red text-fc-red hover:bg-fc-red hover:text-white"
+                <a 
+                  href="/house-orders" 
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    location === "/house-orders" 
+                      ? "text-[#DC143C] bg-red-50" 
+                      : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <i className="fas fa-sign-out-alt mr-2"></i>
-                  Logout
-                </Button>
+                  House Orders
+                </a>
+                <a 
+                  href="/admin-events" 
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    location === "/admin-events" 
+                      ? "text-[#DC143C] bg-red-50" 
+                      : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Admin Events
+                </a>
               </>
-            ) : (
-              <Button
-                onClick={() => window.location.href = '/api/login'}
-                className="bg-fc-red hover:bg-fc-red/90 text-white"
-              >
-                <i className="fas fa-sign-in-alt mr-2"></i>
-                Login
-              </Button>
             )}
-            
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden text-gray-600 hover:text-fc-red"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a
-                href="/"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
+            <div className="border-t border-gray-200 pt-3 mt-3">
+              <a 
+                href="/logout" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Dashboard
-              </a>
-              <a
-                href="/players"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/players" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Players
-              </a>
-              <a
-                href="/chores"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/chores" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Housing
-              </a>
-              <a
-                href="/food-orders"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/food-orders" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Groceries
-              </a>
-              <a
-                href="/communications"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/communications" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Messages
-              </a>
-              <a
-                href="/calendar"
-                className={`block px-3 py-2 rounded-md transition-all duration-200 ${
-                  location === "/calendar" 
-                    ? "text-[#DC143C] font-medium bg-red-50 shadow-sm border-l-4 border-[#DC143C]" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Calendar
+                Sign Out
               </a>
             </div>
           </div>
