@@ -417,6 +417,15 @@ export default function CalendarPage() {
               // Check if any event spans this hour
               const eventsAtHour = dayEvents.filter(event => eventSpansHour(event, hour));
               
+              // Debug logging for hours 10 and 11
+              if (hour === 10 || hour === 11) {
+                console.log(`Hour ${hour}:`, {
+                  eventsAtHour: eventsAtHour.length,
+                  dayEvents: dayEvents.length,
+                  eventTitles: eventsAtHour.map(e => e.title)
+                });
+              }
+              
               return (
                 <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
                   <div className="flex">
