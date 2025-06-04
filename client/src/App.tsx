@@ -5,15 +5,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
-import SectionOverview from "@/components/section-overview";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
-import HouseOrders from "@/pages/house-orders";
-import AdminEvents from "@/pages/admin-events";
 import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";
 import SimpleLogin from "@/pages/simple-login";
@@ -84,7 +81,7 @@ function Router() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="pb-20">
+      <main>
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
@@ -92,16 +89,13 @@ function Router() {
           <Route path="/chores" component={Chores} />
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />
-          {isAdmin && <Route path="/house-orders" component={HouseOrders} />}
           <Route path="/communications" component={Communications} />
-          {isAdmin && <Route path="/admin-events" component={AdminEvents} />}
           <Route path="/complete-profile" component={CompleteProfile} />
           <Route path="/waiting-approval" component={WaitingApproval} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
       </main>
-      <SectionOverview />
     </div>
   );
 }

@@ -118,32 +118,7 @@ export default function Header() {
             >
               Calendar
             </a>
-            {isAdmin && (
-              <>
-                <a 
-                  href="/house-orders" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                    location === "/house-orders" 
-                      ? "text-[#DC143C] bg-red-50" 
-                      : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  House Orders
-                </a>
-                <a 
-                  href="/admin-events" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                    location === "/admin-events" 
-                      ? "text-[#DC143C] bg-red-50" 
-                      : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Admin Events
-                </a>
-              </>
-            )}
+
             <div className="border-t border-gray-200 pt-3 mt-3">
               <a 
                 href="/logout" 
