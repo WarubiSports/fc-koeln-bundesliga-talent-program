@@ -14,22 +14,24 @@ interface User {
 }
 
 export function useAuth() {
-  const { data: user, isLoading } = useQuery<User>({
+  const { data: user, isLoading, error } = useQuery<User>({
     queryKey: ["/api/auth/user"],
-    retry: false,
+    retry: 1,
     refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
-    gcTime: 60000, // 1 minute (renamed from cacheTime in v5)
+    staleTime: 5000,
+    gcTime: 10000,
   });
 
+  // If there's an error, assume not authenticated
+  const isAuthenticated = !!user && !error;
   const hasCompletedProfile = user?.dateOfBirth && user?.nationality && user?.position;
 
   return {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated,
     isAdmin: user?.role === "admin",
-    isPlayer: user?.role === "player",
+    isPlayer: user?.role === "player", 
     hasCompletedProfile,
     needsApproval: user && hasCompletedProfile && user?.status === "pending",
   };
