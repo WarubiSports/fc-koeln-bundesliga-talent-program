@@ -184,9 +184,19 @@ export default function Calendar() {
     if (eventId && draggedEvent) {
       updateMutation.mutate({
         id: parseInt(eventId),
-        date: targetDate
+        date: targetDate,
+        title: draggedEvent.title,
+        eventType: draggedEvent.eventType,
+        startTime: draggedEvent.startTime,
+        endTime: draggedEvent.endTime,
+        createdBy: draggedEvent.createdBy
       });
       setDraggedEvent(null);
+      
+      toast({
+        title: "Event Moved",
+        description: `"${draggedEvent.title}" moved to ${targetDate}`,
+      });
     }
   };
 
