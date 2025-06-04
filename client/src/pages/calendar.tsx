@@ -635,16 +635,59 @@ export default function Calendar() {
             </Select>
           </div>
         </div>
-        {isAdmin && (
-          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Event
+        
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <>
+              <Button
+                variant={isSelectionMode ? "default" : "outline"}
+                onClick={() => {
+                  setIsSelectionMode(!isSelectionMode);
+                  setSelectedEvents([]);
+                }}
+              >
+                {isSelectionMode ? "Exit Selection" : "Select Multiple"}
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
+              
+              {isSelectionMode && selectedEvents.length > 0 && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const updates = { eventType: "team_practice" }; // Example bulk update
+                      bulkUpdateMutation.mutate({ eventIds: selectedEvents, updates });
+                    }}
+                  >
+                    Bulk Update ({selectedEvents.length})
+                  </Button>
+                  
+                  <Button
+                    variant="destructive"
+                    onClick={() => bulkDeleteMutation.mutate(selectedEvents)}
+                  >
+                    Delete Selected ({selectedEvents.length})
+                  </Button>
+                </>
+              )}
+              
+              <Button
+                variant="outline"
+                onClick={() => setShowTemplates(!showTemplates)}
+              >
+                <Bookmark className="w-4 h-4 mr-2" />
+                Templates
+              </Button>
+              
+              <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Event
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
                 <DialogTitle>Create New Event</DialogTitle>
                 <DialogDescription>
                   Schedule a new event for the team calendar
@@ -952,9 +995,11 @@ export default function Calendar() {
                   </div>
                 </form>
               </Form>
-            </DialogContent>
-          </Dialog>
-        )}
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Calendar Controls */}
