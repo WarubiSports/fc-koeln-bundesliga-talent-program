@@ -8,10 +8,15 @@ export const players = pgTable("players", {
   lastName: text("last_name").notNull(),
   email: text("email").notNull().unique(),
   dateOfBirth: text("date_of_birth").notNull(),
+  age: integer("age"), // calculated field for easy filtering
   nationality: text("nationality").notNull(),
-  position: text("position").notNull(), // goalkeeper, defender, midfielder, forward
+  nationalityCode: text("nationality_code"), // ISO country code for flag display (e.g., "DE", "BR", "FR")
+  positions: jsonb("positions"), // JSON array for multiple positions: ["goalkeeper", "defender"]
+  position: text("position").notNull(), // primary position for backward compatibility
   house: text("house").default("Widdersdorf 1"), // Widdersdorf 1, Widdersdorf 2, Widdersdorf 3
   status: text("status").notNull().default("active"), // active, on_trial, inactive
+  availability: text("availability").notNull().default("available"), // available, unavailable, injured, suspended
+  availabilityReason: text("availability_reason"), // reason for unavailability
   profileImageUrl: text("profile_image_url"),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -25,10 +30,15 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
+  age: z.number().min(16).max(30).optional(),
   nationality: z.string().min(1, "Nationality is required"),
-  position: z.enum(["goalkeeper", "defender", "midfielder", "forward"]),
+  nationalityCode: z.string().length(2, "Country code must be 2 characters").optional(),
+  positions: z.array(z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"])).optional(),
+  position: z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"]),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).default("Widdersdorf 1"),
   status: z.enum(["active", "on_trial", "inactive"]).default("active"),
+  availability: z.enum(["available", "unavailable", "injured", "suspended"]).default("available"),
+  availabilityReason: z.string().optional(),
   profileImageUrl: z.string().url("Invalid URL format").optional().or(z.literal("")),
   notes: z.string().optional(),
 });

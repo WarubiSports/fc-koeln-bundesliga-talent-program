@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Filter, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getCountryFlag, calculateAge, COUNTRIES, POSITION_DISPLAY_NAMES, AVAILABILITY_COLORS } from "@/lib/country-flags";
 import type { Player } from "@shared/schema";
 
 export default function Players() {
@@ -20,6 +21,9 @@ export default function Players() {
   const [filterPosition, setFilterPosition] = useState("");
   const [filterNationality, setFilterNationality] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [filterAvailability, setFilterAvailability] = useState("");
+  const [filterAgeRange, setFilterAgeRange] = useState("");
+  const [filterHouse, setFilterHouse] = useState("");
 
   // Fetch players
   const { data: players = [], isLoading: playersLoading } = useQuery<Player[]>({
