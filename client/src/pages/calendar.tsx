@@ -426,7 +426,7 @@ export default function Calendar() {
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (isSelectionMode) {
+                          if (isAdmin && isSelectionMode) {
                             handleEventSelection(event.id);
                           } else {
                             setSelectedEvent(event);
@@ -653,10 +653,9 @@ export default function Calendar() {
             <h1 className="text-3xl font-bold">Calendar</h1>
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2">
-            {isAdmin && (
-            <>
+          {/* Action Buttons - Admin Only */}
+          {isAdmin && (
+            <div className="flex items-center gap-2">
               <Button
                 variant={isSelectionMode ? "default" : "outline"}
                 onClick={() => {
@@ -1014,9 +1013,8 @@ export default function Calendar() {
               </Form>
                 </DialogContent>
               </Dialog>
-            </>
+            </div>
           )}
-          </div>
         </div>
         
         {/* Player Filter Section - Moved to second row */}
@@ -1038,8 +1036,8 @@ export default function Calendar() {
         </div>
       </div>
 
-      {/* Event Templates Section */}
-      {showTemplates && (
+      {/* Event Templates Section - Admin Only */}
+      {isAdmin && showTemplates && (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
