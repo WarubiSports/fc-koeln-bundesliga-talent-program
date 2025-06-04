@@ -413,9 +413,29 @@ export default function CalendarPage() {
           <div className="grid grid-cols-12 gap-2 text-sm">
             {hours.map(hour => {
               const timeSlot = formatTime12Hour(hour);
-              const eventsAtHour = dayEvents.filter(event => 
-                event.time && event.time.startsWith(hour.toString().padStart(2, '0'))
-              );
+              
+              // Check if any event spans this hour
+              const eventsAtHour = dayEvents.filter(event => {
+                if (!event.time && !event.startTime) return false;
+                
+                const startTime = event.time || event.startTime;
+                const endTime = event.endTime;
+                
+                // Parse start time
+                const [startHour] = startTime.split(':').map(Number);
+                
+                if (endTime) {
+                  // Parse end time
+                  const [endHour, endMinute] = endTime.split(':').map(Number);
+                  const endHourFloat = endHour + endMinute / 60;
+                  
+                  // Event spans this hour if it starts before or at this hour and ends after this hour
+                  return startHour <= hour && endHourFloat > hour;
+                } else {
+                  // No end time, only show at start hour
+                  return startHour === hour;
+                }
+              });
               
               return (
                 <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
@@ -427,11 +447,15 @@ export default function CalendarPage() {
                         const endTime = event.endTime;
                         const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                         
+                        // Only show full details at start hour, abbreviated for continuation hours
+                        const [startHour] = startTime.split(':').map(Number);
+                        const isStartHour = startHour === hour;
+                        
                         return (
-                          <div key={event.id} className="mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs">
-                            <div className="font-medium">{event.title}</div>
-                            <div className="text-gray-600">{timeDisplay}</div>
-                            {event.location && <div className="text-gray-500">{event.location}</div>}
+                          <div key={event.id} className={`mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs ${!isStartHour ? 'opacity-60' : ''}`}>
+                            <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
+                            {isStartHour && <div className="text-gray-600">{timeDisplay}</div>}
+                            {isStartHour && event.location && <div className="text-gray-500">{event.location}</div>}
                           </div>
                         );
                       })}
@@ -477,9 +501,29 @@ export default function CalendarPage() {
             </div>
             {weekDays.map(day => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
-              const eventsAtHour = dayEvents.filter(event => 
-                event.time && event.time.startsWith(hour.toString().padStart(2, '0'))
-              );
+              
+              // Check if any event spans this hour
+              const eventsAtHour = dayEvents.filter(event => {
+                if (!event.time && !event.startTime) return false;
+                
+                const startTime = event.time || event.startTime;
+                const endTime = event.endTime;
+                
+                // Parse start time
+                const [startHour] = startTime.split(':').map(Number);
+                
+                if (endTime) {
+                  // Parse end time
+                  const [endHour, endMinute] = endTime.split(':').map(Number);
+                  const endHourFloat = endHour + endMinute / 60;
+                  
+                  // Event spans this hour if it starts before or at this hour and ends after this hour
+                  return startHour <= hour && endHourFloat > hour;
+                } else {
+                  // No end time, only show at start hour
+                  return startHour === hour;
+                }
+              });
               
               return (
                 <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px]">
@@ -488,10 +532,14 @@ export default function CalendarPage() {
                     const endTime = event.endTime;
                     const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                     
+                    // Only show full details at start hour, abbreviated for continuation hours
+                    const [startHour] = startTime.split(':').map(Number);
+                    const isStartHour = startHour === hour;
+                    
                     return (
-                      <div key={event.id} className="text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1">
-                        <div className="font-medium">{event.title}</div>
-                        <div className="text-gray-600 text-[10px]">{timeDisplay}</div>
+                      <div key={event.id} className={`text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1 ${!isStartHour ? 'opacity-60' : ''}`}>
+                        <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
+                        {isStartHour && <div className="text-gray-600 text-[10px]">{timeDisplay}</div>}
                       </div>
                     );
                   })}
