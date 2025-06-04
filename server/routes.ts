@@ -308,11 +308,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Create or update user in database
     const userData = {
       id: userId,
+      username: email, // Use email as username for compatibility
+      password: 'oauth_placeholder', // OAuth users don't have passwords
       email,
       firstName,
       lastName,
       role,
-      approved: isAdmin ? 'true' : 'false',
+      status: isAdmin ? 'approved' : 'pending',
       profileImageUrl: null
     };
     
@@ -606,7 +608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `"${player.dateOfBirth}"`,
           `"${player.nationality}"`,
           `"${player.position}"`,
-          `"${player.ageGroup}"`,
+          `"${player.age || ""}"`,
           `"${player.status}"`,
           `"${player.notes || ""}"`
         ].join(","))
