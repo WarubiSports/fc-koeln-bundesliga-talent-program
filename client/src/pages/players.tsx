@@ -30,6 +30,51 @@ export default function Players() {
     queryKey: ["/api/players"],
   });
 
+  // Enhanced filtering logic
+  const filteredPlayers = useMemo(() => {
+    return players.filter((player: Player) => {
+      // Calculate age for filtering
+      const playerAge = player.dateOfBirth ? calculateAge(player.dateOfBirth) : 0;
+      
+      // Search query filter
+      if (searchQuery) {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesName = `${player.firstName} ${player.lastName}`.toLowerCase().includes(searchLower);
+        const matchesEmail = player.email.toLowerCase().includes(searchLower);
+        const matchesNationality = player.nationality.toLowerCase().includes(searchLower);
+        if (!matchesName && !matchesEmail && !matchesNationality) return false;
+      }
+
+      // Position filter
+      if (filterPosition) {
+        const playerPositions = player.positions ? 
+          (Array.isArray(player.positions) ? player.positions : [player.position]) : 
+          [player.position];
+        if (!playerPositions.includes(filterPosition)) return false;
+      }
+
+      // Nationality filter
+      if (filterNationality && player.nationality !== filterNationality) return false;
+
+      // Status filter
+      if (filterStatus && player.status !== filterStatus) return false;
+
+      // Availability filter
+      if (filterAvailability && player.availability !== filterAvailability) return false;
+
+      // Age range filter
+      if (filterAgeRange) {
+        const [minAge, maxAge] = filterAgeRange.split('-').map(Number);
+        if (playerAge < minAge || playerAge > maxAge) return false;
+      }
+
+      // House filter
+      if (filterHouse && player.house !== filterHouse) return false;
+
+      return true;
+    });
+  }, [players, searchQuery, filterPosition, filterNationality, filterStatus, filterAvailability, filterAgeRange, filterHouse]);
+
   // Fetch pending users (admin only)
   const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/pending-users"],
@@ -118,9 +163,143 @@ export default function Players() {
         )}
 
         <TabsContent value="players" className="space-y-6">
+          {/* Enhanced Filter Interface */}
           <Card>
             <CardHeader>
-              <CardTitle>Players Directory</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filter Players
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search players..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Position Filter */}
+                <Select value={filterPosition} onValueChange={setFilterPosition}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Positions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Positions</SelectItem>
+                    {Object.entries(POSITION_DISPLAY_NAMES).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Availability Filter */}
+                <Select value={filterAvailability} onValueChange={setFilterAvailability}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Availability" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Availability</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                    <SelectItem value="injured">Injured</SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Age Range Filter */}
+                <Select value={filterAgeRange} onValueChange={setFilterAgeRange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Ages" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Ages</SelectItem>
+                    <SelectItem value="16-18">16-18 years</SelectItem>
+                    <SelectItem value="19-21">19-21 years</SelectItem>
+                    <SelectItem value="22-25">22-25 years</SelectItem>
+                    <SelectItem value="26-30">26-30 years</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* House Filter */}
+                <Select value={filterHouse} onValueChange={setFilterHouse}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Houses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Houses</SelectItem>
+                    <SelectItem value="Widdersdorf 1">Widdersdorf 1</SelectItem>
+                    <SelectItem value="Widdersdorf 2">Widdersdorf 2</SelectItem>
+                    <SelectItem value="Widdersdorf 3">Widdersdorf 3</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Status Filter */}
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="on_trial">On Trial</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Nationality Filter */}
+                <Select value={filterNationality} onValueChange={setFilterNationality}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Nationalities" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Nationalities</SelectItem>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country.code} value={country.name}>
+                        {getCountryFlag(country.code)} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Clear Filters */}
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setFilterPosition("");
+                    setFilterNationality("");
+                    setFilterStatus("");
+                    setFilterAvailability("");
+                    setFilterAgeRange("");
+                    setFilterHouse("");
+                  }}
+                  className="col-span-1"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Players Directory ({filteredPlayers.length})
+                </span>
+                {isAdmin && (
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Player
+                  </Button>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {playersLoading ? (
@@ -131,51 +310,91 @@ export default function Players() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {players.map((player: any) => (
-                    <Card key={player.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-start space-x-3">
-                            <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0">
-                              {player.profileImageUrl ? (
-                                <img 
-                                  src={player.profileImageUrl} 
-                                  alt={`${player.name}`}
-                                  className="w-full h-full rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full rounded-full bg-red-100 flex items-center justify-center">
-                                  <span className="text-red-600 font-semibold text-lg">
-                                    {player.name?.charAt(0) || 'P'}
-                                  </span>
+                  {filteredPlayers.map((player: any) => {
+                    const playerAge = player.dateOfBirth ? calculateAge(player.dateOfBirth) : player.age || 'N/A';
+                    const playerPositions = player.positions ? 
+                      (Array.isArray(player.positions) ? player.positions : [player.position]) : 
+                      [player.position];
+                    const countryFlag = player.nationalityCode ? getCountryFlag(player.nationalityCode) : getCountryFlag('');
+                    const availabilityColor = AVAILABILITY_COLORS[player.availability as keyof typeof AVAILABILITY_COLORS] || AVAILABILITY_COLORS.available;
+                    
+                    return (
+                      <Card key={player.id} className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-start space-x-3">
+                              <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0">
+                                {player.profileImageUrl ? (
+                                  <img 
+                                    src={player.profileImageUrl} 
+                                    alt={`${player.firstName} ${player.lastName}`}
+                                    className="w-full h-full rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full rounded-full bg-red-100 flex items-center justify-center">
+                                    <span className="text-red-600 font-semibold text-lg">
+                                      {player.firstName?.charAt(0) || 'P'}{player.lastName?.charAt(0) || ''}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {player.firstName} {player.lastName}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {POSITION_DISPLAY_NAMES[player.position as keyof typeof POSITION_DISPLAY_NAMES] || player.position}
+                                </p>
+                              </div>
+                            </div>
+                            <Badge className={`text-xs ${availabilityColor}`}>
+                              {player.availability === 'available' && <Users className="h-3 w-3 mr-1" />}
+                              {player.availability === 'unavailable' && <UserX className="h-3 w-3 mr-1" />}
+                              {player.availability === 'injured' && <AlertTriangle className="h-3 w-3 mr-1" />}
+                              {player.availability === 'suspended' && <XCircle className="h-3 w-3 mr-1" />}
+                              {player.availability}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">Age:</span>
+                              <span>{playerAge}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">Nationality:</span>
+                              <span className="flex items-center gap-1">
+                                <span className="text-lg">{countryFlag}</span>
+                                {player.nationality}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">House:</span>
+                              <span>{player.house}</span>
+                            </div>
+                            {playerPositions.length > 1 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Positions:</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {playerPositions.map((pos: string, idx: number) => (
+                                    <Badge key={idx} variant="secondary" className="text-xs">
+                                      {POSITION_DISPLAY_NAMES[pos as keyof typeof POSITION_DISPLAY_NAMES] || pos}
+                                    </Badge>
+                                  ))}
                                 </div>
-                              )}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {player.name}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {player.position}
-                              </p>
-                            </div>
+                              </div>
+                            )}
+                            {player.availability !== 'available' && player.availabilityReason && (
+                              <div className="text-xs text-gray-500 mt-2">
+                                <span className="font-medium">Reason:</span> {player.availabilityReason}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Age:</span>
-                            <span>{player.age}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">Nationality:</span>
-                            <span>{player.nationality}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
