@@ -186,6 +186,28 @@ export interface IStorage {
   updateDocument(id: number, updates: UpdateDocument): Promise<Document | undefined>;
   deleteDocument(id: number): Promise<boolean>;
   getDocumentsByPlayer(playerId: number): Promise<Document[]>;
+
+  // Event Templates
+  getAllEventTemplates(): Promise<EventTemplate[]>;
+  getEventTemplate(id: number): Promise<EventTemplate | undefined>;
+  createEventTemplate(template: InsertEventTemplate): Promise<EventTemplate>;
+  updateEventTemplate(id: number, updates: UpdateEventTemplate): Promise<EventTemplate | undefined>;
+  deleteEventTemplate(id: number): Promise<boolean>;
+  getEventTemplatesByUser(userId: string): Promise<EventTemplate[]>;
+
+  // Notifications
+  getAllNotifications(): Promise<Notification[]>;
+  getNotification(id: number): Promise<Notification | undefined>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  updateNotification(id: number, updates: UpdateNotification): Promise<Notification | undefined>;
+  deleteNotification(id: number): Promise<boolean>;
+  getNotificationsByUser(userId: string): Promise<Notification[]>;
+  markNotificationAsRead(notificationId: number): Promise<void>;
+  getUnreadNotificationCount(userId: string): Promise<number>;
+
+  // Bulk operations
+  bulkUpdateEvents(eventIds: number[], updates: UpdateEvent): Promise<Event[]>;
+  bulkDeleteEvents(eventIds: number[]): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -918,6 +940,114 @@ export class DatabaseStorage implements IStorage {
 
   async getDocumentsByPlayer(playerId: number): Promise<any[]> {
     return [];
+  }
+
+  // Event Templates implementation
+  async getAllEventTemplates(): Promise<EventTemplate[]> {
+    const results = await db.select().from(eventTemplates).orderBy(eventTemplates.name);
+    return results;
+  }
+
+  async getEventTemplate(id: number): Promise<EventTemplate | undefined> {
+    const [template] = await db.select().from(eventTemplates).where(eq(eventTemplates.id, id));
+    return template;
+  }
+
+  async createEventTemplate(insertTemplate: InsertEventTemplate): Promise<EventTemplate> {
+    const [template] = await db
+      .insert(eventTemplates)
+      .values(insertTemplate)
+      .returning();
+    return template;
+  }
+
+  async updateEventTemplate(id: number, updates: UpdateEventTemplate): Promise<EventTemplate | undefined> {
+    const [template] = await db
+      .update(eventTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(eventTemplates.id, id))
+      .returning();
+    return template;
+  }
+
+  async deleteEventTemplate(id: number): Promise<boolean> {
+    const result = await db.delete(eventTemplates).where(eq(eventTemplates.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getEventTemplatesByUser(userId: string): Promise<EventTemplate[]> {
+    const results = await db.select().from(eventTemplates)
+      .where(eq(eventTemplates.createdBy, userId))
+      .orderBy(eventTemplates.name);
+    return results;
+  }
+
+  // Notifications implementation
+  async getAllNotifications(): Promise<Notification[]> {
+    const results = await db.select().from(notifications).orderBy(desc(notifications.createdAt));
+    return results;
+  }
+
+  async getNotification(id: number): Promise<Notification | undefined> {
+    const [notification] = await db.select().from(notifications).where(eq(notifications.id, id));
+    return notification;
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const [notification] = await db
+      .insert(notifications)
+      .values(insertNotification)
+      .returning();
+    return notification;
+  }
+
+  async updateNotification(id: number, updates: UpdateNotification): Promise<Notification | undefined> {
+    const [notification] = await db
+      .update(notifications)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(notifications.id, id))
+      .returning();
+    return notification;
+  }
+
+  async deleteNotification(id: number): Promise<boolean> {
+    const result = await db.delete(notifications).where(eq(notifications.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getNotificationsByUser(userId: string): Promise<Notification[]> {
+    const results = await db.select().from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+    return results;
+  }
+
+  async markNotificationAsRead(notificationId: number): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true, updatedAt: new Date() })
+      .where(eq(notifications.id, notificationId));
+  }
+
+  async getUnreadNotificationCount(userId: string): Promise<number> {
+    const result = await db.select({ count: count() }).from(notifications)
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
+    return result[0]?.count || 0;
+  }
+
+  // Bulk operations implementation
+  async bulkUpdateEvents(eventIds: number[], updates: UpdateEvent): Promise<Event[]> {
+    const results = await db
+      .update(events)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(inArray(events.id, eventIds))
+      .returning();
+    return results;
+  }
+
+  async bulkDeleteEvents(eventIds: number[]): Promise<boolean> {
+    const result = await db.delete(events).where(inArray(events.id, eventIds));
+    return result.rowCount > 0;
   }
 }
 

@@ -212,6 +212,60 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type UpdateEvent = z.infer<typeof updateEventSchema>;
 export type Event = typeof events.$inferSelect;
 
+// Event Templates
+export const eventTemplates = pgTable("event_templates", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name").notNull(),
+  title: varchar("title").notNull(),
+  eventType: varchar("event_type").notNull(),
+  duration: integer("duration"), // duration in minutes
+  location: varchar("location"),
+  notes: text("notes"),
+  participants: text("participants"), // JSON string
+  createdBy: varchar("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEventTemplateSchema = createInsertSchema(eventTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateEventTemplateSchema = insertEventTemplateSchema.partial();
+
+export type InsertEventTemplate = z.infer<typeof insertEventTemplateSchema>;
+export type UpdateEventTemplate = z.infer<typeof updateEventTemplateSchema>;
+export type EventTemplate = typeof eventTemplates.$inferSelect;
+
+// Notifications
+export const notifications = pgTable("notifications", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: varchar("user_id").notNull(),
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  type: varchar("type").notNull(), // event_reminder, schedule_change, announcement
+  isRead: boolean("is_read").default(false),
+  actionUrl: varchar("action_url"), // URL to navigate to
+  relatedEventId: integer("related_event_id").references(() => events.id),
+  scheduledFor: timestamp("scheduled_for"), // for future notifications
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateNotificationSchema = insertNotificationSchema.partial();
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type UpdateNotification = z.infer<typeof updateNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
+
 // Communication System
 export const messages = pgTable("messages", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
