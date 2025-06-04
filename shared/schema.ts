@@ -63,6 +63,8 @@ export const sessions = pgTable(
 // Users table with role-based authentication
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
+  username: varchar("username").unique().notNull(),
+  password: varchar("password").notNull(),
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -70,8 +72,12 @@ export const users = pgTable("users", {
   dateOfBirth: varchar("date_of_birth"),
   nationality: varchar("nationality"),
   position: varchar("position"),
-  role: text("role").notNull().default("player"), // admin, player
-  approved: text("approved").notNull().default("false"),
+  role: text("role").notNull().default("player"), // admin, player, coach, staff, manager
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
+  house: varchar("house"),
+  phoneNumber: varchar("phone_number"),
+  emergencyContact: varchar("emergency_contact"),
+  emergencyPhone: varchar("emergency_phone"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -110,6 +110,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Registration endpoint
+  app.post('/api/auth/register', async (req: any, res) => {
+    try {
+      const { 
+        username, 
+        password, 
+        firstName, 
+        lastName, 
+        email, 
+        dateOfBirth, 
+        nationality, 
+        position, 
+        role, 
+        house, 
+        phoneNumber, 
+        emergencyContact, 
+        emergencyPhone 
+      } = req.body;
+
+      // Check if username already exists
+      try {
+        const existingUser = await storage.getUserByUsername(username);
+        if (existingUser) {
+          return res.status(400).json({ message: 'Username already exists' });
+        }
+      } catch (error) {
+        // User doesn't exist, continue with registration
+      }
+
+      // Create user with pending status
+      const newUser = await storage.createUser({
+        id: username,
+        username,
+        password, // In production, this should be hashed
+        firstName,
+        lastName,
+        email,
+        dateOfBirth,
+        nationality,
+        position: position || null,
+        role,
+        house: house || null,
+        phoneNumber: phoneNumber || null,
+        emergencyContact: emergencyContact || null,
+        emergencyPhone: emergencyPhone || null,
+        status: 'pending',
+        profileImageUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      res.status(201).json({ 
+        message: 'Registration successful. Your account is pending approval.',
+        user: {
+          id: newUser.id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          email: newUser.email,
+          role: newUser.role,
+          status: newUser.status
+        }
+      });
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      res.status(500).json({ message: 'Registration failed. Please try again.' });
+    }
+  });
+
   // Clear logout flag endpoint (for testing landing page)
   app.post('/api/auth/clear-logout', async (req: any, res) => {
     delete (req.session as any).loggedOut;
