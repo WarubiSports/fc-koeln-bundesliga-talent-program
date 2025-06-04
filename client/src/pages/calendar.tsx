@@ -413,48 +413,107 @@ export default function Calendar() {
             </h3>
           </div>
           
-          <div className="max-h-96 overflow-y-auto">
-            {hours.map(hour => {
-              const hourEvents = dayEvents.filter(event => {
+          <div className="max-h-96 overflow-y-auto relative">
+            {hours.map((hour, hourIndex) => {
+              // Find events that start in this hour
+              const startingEvents = dayEvents.filter(event => {
                 if (!event.startTime) return false;
                 const eventHour = parseInt(event.startTime.split(':')[0]);
                 return eventHour === hour;
               });
               
+              // Find events that span through this hour (but don't start here)
+              const spanningEvents = dayEvents.filter(event => {
+                if (!event.startTime || !event.endTime) return false;
+                const startHour = parseInt(event.startTime.split(':')[0]);
+                const endHour = parseInt(event.endTime.split(':')[0]);
+                const endMinute = parseInt(event.endTime.split(':')[1]);
+                
+                // Event spans this hour if it starts before and ends after (or at) this hour
+                return startHour < hour && (endHour > hour || (endHour === hour && endMinute > 0));
+              });
+              
               return (
-                <div key={hour} className="flex border-b">
+                <div key={hour} className="flex border-b relative">
                   <div className="w-20 p-2 text-xs text-gray-500 border-r bg-gray-50">
                     {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}
                   </div>
-                  <div className="flex-1 p-2 min-h-12">
-                    {hourEvents.map((event) => (
+                  <div className="flex-1 p-2 min-h-12 relative">
+                    {/* Render starting events with full height calculation */}
+                    {startingEvents.map((event) => {
+                      const startHour = parseInt(event.startTime.split(':')[0]);
+                      const startMinute = parseInt(event.startTime.split(':')[1]);
+                      const endHour = event.endTime ? parseInt(event.endTime.split(':')[0]) : startHour;
+                      const endMinute = event.endTime ? parseInt(event.endTime.split(':')[1]) : startMinute + 30;
+                      
+                      // Calculate duration in hours
+                      const durationHours = endHour - startHour + (endMinute - startMinute) / 60;
+                      const heightMultiplier = Math.max(1, durationHours);
+                      
+                      return (
+                        <div
+                          key={event.id}
+                          className={`absolute left-2 right-2 p-2 rounded cursor-pointer shadow-sm border-l-4 ${
+                            event.eventType === "match" ? "bg-red-50 text-red-800 border-red-500" :
+                            event.eventType === "team_practice" ? "bg-blue-50 text-blue-800 border-blue-500" :
+                            event.eventType === "group_practice" ? "bg-green-50 text-green-800 border-green-500" :
+                            event.eventType === "individual_training" ? "bg-purple-50 text-purple-800 border-purple-500" :
+                            event.eventType === "fitness_session" ? "bg-orange-50 text-orange-800 border-orange-500" :
+                            event.eventType === "tactical_training" ? "bg-yellow-50 text-yellow-800 border-yellow-500" :
+                            event.eventType === "medical_checkup" ? "bg-pink-50 text-pink-800 border-pink-500" :
+                            event.eventType === "team_meeting" ? "bg-indigo-50 text-indigo-800 border-indigo-500" :
+                            event.eventType === "travel" ? "bg-teal-50 text-teal-800 border-teal-500" :
+                            "bg-gray-50 text-gray-800 border-gray-500"
+                          }`}
+                          style={{
+                            height: `${Math.max(48, heightMultiplier * 48)}px`,
+                            top: `${(startMinute / 60) * 48}px`,
+                            zIndex: 10
+                          }}
+                          onClick={() => setSelectedEvent(event)}
+                        >
+                          <div className="font-medium text-sm">
+                            {event.startTime}
+                            {event.endTime && ` - ${event.endTime}`}
+                          </div>
+                          <div className="font-medium text-sm">{event.title}</div>
+                          {event.location && (
+                            <div className="text-xs opacity-75">📍 {event.location}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Render continuation bars for spanning events */}
+                    {spanningEvents.map((event) => (
                       <div
-                        key={event.id}
-                        className={`p-2 rounded cursor-pointer mb-2 ${
-                          event.eventType === "match" ? "bg-red-100 text-red-800" :
-                          event.eventType === "team_practice" ? "bg-blue-100 text-blue-800" :
-                          event.eventType === "group_practice" ? "bg-green-100 text-green-800" :
-                          event.eventType === "individual_training" ? "bg-purple-100 text-purple-800" :
-                          event.eventType === "fitness_session" ? "bg-orange-100 text-orange-800" :
-                          event.eventType === "tactical_training" ? "bg-yellow-100 text-yellow-800" :
-                          event.eventType === "medical_checkup" ? "bg-pink-100 text-pink-800" :
-                          event.eventType === "team_meeting" ? "bg-indigo-100 text-indigo-800" :
-                          event.eventType === "travel" ? "bg-teal-100 text-teal-800" :
-                          "bg-gray-100 text-gray-800"
+                        key={`span-${event.id}-${hour}`}
+                        className={`absolute left-2 right-2 rounded cursor-pointer opacity-60 border-l-4 ${
+                          event.eventType === "match" ? "bg-red-100 border-red-500" :
+                          event.eventType === "team_practice" ? "bg-blue-100 border-blue-500" :
+                          event.eventType === "group_practice" ? "bg-green-100 border-green-500" :
+                          event.eventType === "individual_training" ? "bg-purple-100 border-purple-500" :
+                          event.eventType === "fitness_session" ? "bg-orange-100 border-orange-500" :
+                          event.eventType === "tactical_training" ? "bg-yellow-100 border-yellow-500" :
+                          event.eventType === "medical_checkup" ? "bg-pink-100 border-pink-500" :
+                          event.eventType === "team_meeting" ? "bg-indigo-100 border-indigo-500" :
+                          event.eventType === "travel" ? "bg-teal-100 border-teal-500" :
+                          "bg-gray-100 border-gray-500"
                         }`}
+                        style={{
+                          height: '48px',
+                          top: '0px',
+                          zIndex: 5
+                        }}
                         onClick={() => setSelectedEvent(event)}
                       >
-                        <div className="font-medium text-sm">
-                          {event.startTime}
-                          {event.endTime && ` - ${event.endTime}`}
+                        <div className="p-2 text-xs opacity-75">
+                          {event.title} (continues)
                         </div>
-                        <div className="font-medium">{event.title}</div>
-                        {event.location && (
-                          <div className="text-xs opacity-75">📍 {event.location}</div>
-                        )}
                       </div>
                     ))}
-                    {hourEvents.length === 0 && (
+                    
+                    {startingEvents.length === 0 && spanningEvents.length === 0 && (
                       <div className="text-gray-300 text-xs">No events</div>
                     )}
                   </div>
