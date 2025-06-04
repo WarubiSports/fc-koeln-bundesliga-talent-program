@@ -5,6 +5,7 @@ import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreS
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 import { simpleAuth, simpleAdminAuth, createUserToken, removeUserToken } from "./auth-simple";
+import { devAuth } from "./auth-bypass";
 
 
 
@@ -712,27 +713,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", async (req: any, res) => {
-    console.log('Event creation request received');
-    console.log('Session data:', req.session);
-    
-    // Check session-based authentication or allow for development
-    const sessionUser = (req.session as any)?.userData;
-    const devLoggedIn = (req.session as any)?.devLoggedIn;
-    
-    console.log('sessionUser:', sessionUser);
-    console.log('devLoggedIn:', devLoggedIn);
-    
-    // Allow if properly authenticated session OR if in development mode
-    if (!sessionUser && !devLoggedIn) {
-      console.log('Authentication failed - no session user or dev login');
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    
-    if (sessionUser && sessionUser.role !== 'admin') {
-      console.log('Authorization failed - user role:', sessionUser.role);
-      return res.status(403).json({ message: "Admin access required" });
-    }
+  app.post("/api/events", devAuth, async (req: any, res) => {
     
     try {
       console.log('Original request body:', req.body);
@@ -745,7 +726,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         endTime: req.body.endTime || req.body.time, // Default endTime to same as startTime if not provided
         location: req.body.location,
         notes: req.body.description || req.body.notes, // Map 'description' to 'notes'
-        createdBy: sessionUser ? sessionUser.firstName + ' ' + sessionUser.lastName : "Admin User",
+        createdBy: "Admin User",
       };
       
       console.log('Mapped event data:', eventData);
@@ -758,19 +739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/events/:id", async (req: any, res) => {
-    // Check session-based authentication or allow for development
-    const sessionUser = (req.session as any)?.userData;
-    const devLoggedIn = (req.session as any)?.devLoggedIn;
-    
-    // Allow if properly authenticated session OR if in development mode
-    if (!sessionUser && !devLoggedIn) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    
-    if (sessionUser && sessionUser.role !== 'admin') {
-      return res.status(403).json({ message: "Admin access required" });
-    }
+  app.put("/api/events/:id", devAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);
