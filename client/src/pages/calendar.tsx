@@ -1252,7 +1252,6 @@ export default function Calendar() {
         </Dialog>
       )}
 
-      <SectionOverview />
     </div>
   );
 }
