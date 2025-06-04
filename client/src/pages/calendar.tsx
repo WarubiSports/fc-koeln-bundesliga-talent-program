@@ -422,7 +422,13 @@ export default function CalendarPage() {
                 console.log(`Hour ${hour}:`, {
                   eventsAtHour: eventsAtHour.length,
                   dayEvents: dayEvents.length,
-                  eventTitles: eventsAtHour.map(e => e.title)
+                  eventTitles: eventsAtHour.map(e => e.title),
+                  allEvents: dayEvents.map(e => ({
+                    title: e.title,
+                    startTime: e.time || e.startTime,
+                    endTime: e.endTime,
+                    spanCheck: eventSpansHour(e, hour)
+                  }))
                 });
               }
               
