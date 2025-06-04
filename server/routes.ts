@@ -88,6 +88,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      // Check if user explicitly logged out first
+      if ((req.session as any)?.loggedOut) {
+        console.log('User explicitly logged out, returning 401');
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
       // Check if user data is stored in session AND devLoggedIn flag is set
       if ((req.session as any)?.devLoggedIn && (req.session as any)?.userData) {
         console.log('Returning session user data:', (req.session as any).userData);
