@@ -59,6 +59,7 @@ const generatePracticeSessions = () => {
         title: "Daily Practice Session",
         date: date.toISOString().split('T')[0],
         time: "10:00",
+        endTime: "11:45",
         location: "FC Köln Training Ground",
         type: "training",
         description: "Daily training session - 10:00 AM to 11:45 AM",
