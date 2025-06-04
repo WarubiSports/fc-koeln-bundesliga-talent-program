@@ -113,26 +113,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', async (req: any, res) => {
     try {
       const { 
-        username, 
         password, 
         firstName, 
         lastName, 
         email, 
         dateOfBirth, 
         nationality, 
-        position, 
+        nationalityCode,
+        positions, 
         role, 
         house, 
         phoneNumber, 
         emergencyContact, 
-        emergencyPhone 
+        emergencyPhone,
+        profileImageUrl 
       } = req.body;
 
-      // Check if username already exists
+      // Check if email already exists
       try {
-        const existingUser = await storage.getUserByUsername(username);
+        const existingUser = await storage.getUserByUsername(email);
         if (existingUser) {
-          return res.status(400).json({ message: 'Username already exists' });
+          return res.status(400).json({ message: 'Email already exists' });
         }
       } catch (error) {
         // User doesn't exist, continue with registration
@@ -140,22 +141,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create user with pending status
       const newUser = await storage.createUser({
-        id: username,
-        username,
+        id: email,
+        username: email, // Use email as username
         password, // In production, this should be hashed
         firstName,
         lastName,
         email,
         dateOfBirth,
         nationality,
-        position: position || null,
+        nationalityCode,
+        position: Array.isArray(positions) ? positions.join(', ') : positions || null,
         role,
         house: house || null,
         phoneNumber: phoneNumber || null,
         emergencyContact: emergencyContact || null,
         emergencyPhone: emergencyPhone || null,
         status: 'pending',
-        profileImageUrl: null,
+        profileImageUrl: profileImageUrl || null,
         createdAt: new Date(),
         updatedAt: new Date()
       });

@@ -28,7 +28,6 @@ const roles = [
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    username: "",
     password: "",
     confirmPassword: "",
     firstName: "",
@@ -110,7 +109,6 @@ export default function Register() {
 
     try {
       const response = await apiRequest("/api/auth/register", "POST", {
-        username: formData.username,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -135,7 +133,6 @@ export default function Register() {
 
       // Clear form on success
       setFormData({
-        username: "",
         password: "",
         confirmPassword: "",
         firstName: "",
@@ -181,17 +178,6 @@ export default function Register() {
               <div className="space-y-4">
                 <h3 className="font-semibold text-gray-800 border-b pb-2">Account Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username" className="text-gray-700">Username *</Label>
-                    <Input
-                      id="username"
-                      type="text"
-                      value={formData.username}
-                      onChange={(e) => handleInputChange("username", e.target.value)}
-                      required
-                      placeholder="Choose a username"
-                    />
-                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-gray-700">Email *</Label>
                     <Input
