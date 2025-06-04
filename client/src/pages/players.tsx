@@ -190,7 +190,7 @@ export default function Players() {
                     <SelectValue placeholder="All Positions" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Positions</SelectItem>
+                    <SelectItem value="all">All Positions</SelectItem>
                     {Object.entries(POSITION_DISPLAY_NAMES).map(([value, label]) => (
                       <SelectItem key={value} value={value}>{label}</SelectItem>
                     ))}
@@ -203,7 +203,7 @@ export default function Players() {
                     <SelectValue placeholder="All Availability" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Availability</SelectItem>
+                    <SelectItem value="all">All Availability</SelectItem>
                     <SelectItem value="available">Available</SelectItem>
                     <SelectItem value="unavailable">Unavailable</SelectItem>
                     <SelectItem value="injured">Injured</SelectItem>
@@ -217,7 +217,7 @@ export default function Players() {
                     <SelectValue placeholder="All Ages" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Ages</SelectItem>
+                    <SelectItem value="all">All Ages</SelectItem>
                     <SelectItem value="16-18">16-18 years</SelectItem>
                     <SelectItem value="19-21">19-21 years</SelectItem>
                     <SelectItem value="22-25">22-25 years</SelectItem>
@@ -231,7 +231,7 @@ export default function Players() {
                     <SelectValue placeholder="All Houses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Houses</SelectItem>
+                    <SelectItem value="all">All Houses</SelectItem>
                     <SelectItem value="Widdersdorf 1">Widdersdorf 1</SelectItem>
                     <SelectItem value="Widdersdorf 2">Widdersdorf 2</SelectItem>
                     <SelectItem value="Widdersdorf 3">Widdersdorf 3</SelectItem>
@@ -244,7 +244,7 @@ export default function Players() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="on_trial">On Trial</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
@@ -257,7 +257,7 @@ export default function Players() {
                     <SelectValue placeholder="All Nationalities" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Nationalities</SelectItem>
+                    <SelectItem value="all">All Nationalities</SelectItem>
                     {COUNTRIES.map((country) => (
                       <SelectItem key={country.code} value={country.name}>
                         {getCountryFlag(country.code)} {country.name}

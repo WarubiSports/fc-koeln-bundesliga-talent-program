@@ -80,7 +80,7 @@ export const calculateAge = (dateOfBirth: string): number => {
 };
 
 // Position display names
-export const POSITION_DISPLAY_NAMES = {
+export const POSITION_DISPLAY_NAMES: Record<string, string> = {
   "goalkeeper": "Goalkeeper",
   "defender": "Defender",
   "midfielder": "Midfielder",
