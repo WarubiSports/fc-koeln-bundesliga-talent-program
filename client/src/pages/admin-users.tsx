@@ -142,7 +142,7 @@ export default function AdminUsers() {
             <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{userStats?.activePlayers || 0}</div>
+            <div className="text-2xl font-bold text-green-600">{userStats.activePlayers || 0}</div>
             <p className="text-xs text-muted-foreground">Approved and active</p>
           </CardContent>
         </Card>
