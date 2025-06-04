@@ -183,12 +183,18 @@ export type FoodOrder = GroceryOrder;
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  eventType: text("event_type").notNull(), // "team_practice", "group_practice", etc.
+  eventType: text("event_type").notNull(), // "team_practice", "cryotherapy", "language_school", etc.
   date: text("date").notNull(), // YYYY-MM-DD format
   startTime: text("start_time").notNull(), // HH:MM format
   endTime: text("end_time").notNull(), // HH:MM format
   location: text("location"),
   notes: text("notes"),
+  participants: text("participants"), // JSON array of player names or "all" for team events
+  isRecurring: boolean("is_recurring").default(false),
+  recurringPattern: text("recurring_pattern"), // "daily", "weekly", "monthly"
+  recurringEndDate: text("recurring_end_date"), // YYYY-MM-DD format
+  recurringDays: text("recurring_days"), // JSON array for weekly: ["monday", "wednesday"]
+  parentEventId: integer("parent_event_id"), // For recurring event instances
   createdBy: text("created_by").notNull(), // Admin who created the event
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

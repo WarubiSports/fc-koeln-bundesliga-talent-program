@@ -111,6 +111,11 @@ export default function Calendar() {
       endTime: "",
       location: "",
       notes: "",
+      participants: "",
+      isRecurring: false,
+      recurringPattern: "",
+      recurringEndDate: "",
+      recurringDays: "",
       createdBy: user?.id || "dev-admin"
     }
   });
@@ -125,6 +130,11 @@ export default function Calendar() {
       endTime: "",
       location: "",
       notes: "",
+      participants: "",
+      isRecurring: false,
+      recurringPattern: "",
+      recurringEndDate: "",
+      recurringDays: "",
       createdBy: user?.id || "dev-admin"
     }
   });
@@ -149,6 +159,11 @@ export default function Calendar() {
       endTime: event.endTime,
       location: event.location || "",
       notes: event.notes || "",
+      participants: event.participants || "",
+      isRecurring: event.isRecurring || false,
+      recurringPattern: event.recurringPattern || "",
+      recurringEndDate: event.recurringEndDate || "",
+      recurringDays: event.recurringDays || "",
       createdBy: event.createdBy
     });
     setIsEditModalOpen(true);
@@ -230,9 +245,16 @@ export default function Calendar() {
                           event.eventType === "individual_training" ? "bg-purple-100 text-purple-800" :
                           event.eventType === "fitness_session" ? "bg-orange-100 text-orange-800" :
                           event.eventType === "tactical_training" ? "bg-yellow-100 text-yellow-800" :
+                          event.eventType === "weight_lifting" ? "bg-stone-100 text-stone-800" :
+                          event.eventType === "cryotherapy" ? "bg-cyan-100 text-cyan-800" :
+                          event.eventType === "language_school" ? "bg-emerald-100 text-emerald-800" :
+                          event.eventType === "video_session" ? "bg-violet-100 text-violet-800" :
                           event.eventType === "medical_checkup" ? "bg-pink-100 text-pink-800" :
                           event.eventType === "team_meeting" ? "bg-indigo-100 text-indigo-800" :
                           event.eventType === "travel" ? "bg-teal-100 text-teal-800" :
+                          event.eventType === "nutrition_consultation" ? "bg-lime-100 text-lime-800" :
+                          event.eventType === "mental_coaching" ? "bg-sky-100 text-sky-800" :
+                          event.eventType === "physiotherapy" ? "bg-rose-100 text-rose-800" :
                           "bg-gray-100 text-gray-800"
                         }`}
                         onClick={() => setSelectedEvent(event)}
@@ -452,10 +474,17 @@ export default function Calendar() {
                             <SelectItem value="individual_training">Individual Training</SelectItem>
                             <SelectItem value="fitness_session">Fitness Session</SelectItem>
                             <SelectItem value="tactical_training">Tactical Training</SelectItem>
+                            <SelectItem value="weight_lifting">Weight Lifting</SelectItem>
+                            <SelectItem value="cryotherapy">Cryotherapy</SelectItem>
+                            <SelectItem value="language_school">Language School</SelectItem>
+                            <SelectItem value="video_session">Video Session</SelectItem>
                             <SelectItem value="match">Match</SelectItem>
                             <SelectItem value="medical_checkup">Medical Checkup</SelectItem>
                             <SelectItem value="team_meeting">Team Meeting</SelectItem>
                             <SelectItem value="travel">Travel</SelectItem>
+                            <SelectItem value="nutrition_consultation">Nutrition Consultation</SelectItem>
+                            <SelectItem value="mental_coaching">Mental Coaching</SelectItem>
+                            <SelectItem value="physiotherapy">Physiotherapy</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
@@ -524,6 +553,20 @@ export default function Calendar() {
 
                   <FormField
                     control={form.control}
+                    name="participants"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Participants</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Player names (comma-separated) or 'all' for team events" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
@@ -535,6 +578,86 @@ export default function Calendar() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="isRecurring"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Recurring Event</FormLabel>
+                          <div className="text-sm text-muted-foreground">
+                            Create a repeating event
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input 
+                            type="checkbox" 
+                            checked={field.value} 
+                            onChange={field.onChange}
+                            className="w-4 h-4"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("isRecurring") && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="recurringPattern"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Repeat Pattern</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select repeat pattern" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="daily">Daily</SelectItem>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="recurringEndDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>End Date</FormLabel>
+                            <FormControl>
+                              <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {form.watch("recurringPattern") === "weekly" && (
+                        <FormField
+                          control={form.control}
+                          name="recurringDays"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Repeat on Days</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g., monday,wednesday,friday" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </>
+                  )}
 
                   <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
