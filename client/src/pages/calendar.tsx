@@ -66,6 +66,85 @@ export default function Calendar() {
     queryKey: ["/api/players"]
   });
 
+  // Get current user's player profile
+  const currentUserPlayer = (players as any[]).find((player: any) => 
+    player.email === user?.email || 
+    player.firstName === user?.firstName && player.lastName === user?.lastName
+  );
+
+  // Filter events based on user role and player profile
+  const filterEventsForUser = (eventList: any[]) => {
+    if (isAdmin) {
+      // Admins see all events
+      return eventList;
+    }
+    
+    if (!currentUserPlayer) {
+      // If user has no player profile, show no events
+      return [];
+    }
+    
+    return eventList.filter((event: any) => {
+      const participants = event.participants || "";
+      const eventType = event.eventType;
+      
+      // Check if event is for entire team
+      if (participants.toLowerCase().includes("all players") || 
+          participants.toLowerCase().includes("entire team") ||
+          participants.toLowerCase().includes("full team")) {
+        return true;
+      }
+      
+      // Check if user is specifically mentioned by name
+      const userName = `${currentUserPlayer.firstName} ${currentUserPlayer.lastName}`.toLowerCase();
+      if (participants.toLowerCase().includes(userName) ||
+          participants.toLowerCase().includes(currentUserPlayer.firstName.toLowerCase()) ||
+          participants.toLowerCase().includes(currentUserPlayer.lastName.toLowerCase())) {
+        return true;
+      }
+      
+      // Check if event is for user's position
+      if (currentUserPlayer.position && 
+          participants.toLowerCase().includes(currentUserPlayer.position.toLowerCase())) {
+        return true;
+      }
+      
+      // Check if event is for user's house
+      if (currentUserPlayer.house && 
+          participants.toLowerCase().includes(currentUserPlayer.house.toLowerCase())) {
+        return true;
+      }
+      
+      // Check if event is for user's age group
+      if (currentUserPlayer.ageGroup && 
+          participants.toLowerCase().includes(currentUserPlayer.ageGroup.toLowerCase())) {
+        return true;
+      }
+      
+      // Check if event is for user's nationality group
+      if (currentUserPlayer.nationality && 
+          participants.toLowerCase().includes(currentUserPlayer.nationality.toLowerCase())) {
+        return true;
+      }
+      
+      // Default team events that should be visible to all players
+      const generalEvents = [
+        "team_practice", 
+        "team_meeting", 
+        "match",
+        "travel",
+        "nutrition_consultation",
+        "medical_checkup"
+      ];
+      
+      if (generalEvents.includes(eventType) && !participants) {
+        return true;
+      }
+      
+      return false;
+    });
+  };
+
   const { data: eventTemplates = [] } = useQuery({
     queryKey: ["/api/event-templates"]
   });
@@ -74,15 +153,19 @@ export default function Calendar() {
     queryKey: ["/api/notifications"]
   });
 
-  // Filter events based on selected player
+  // Filter events based on user role and player profile
   const filteredEvents = useMemo(() => {
     if (!Array.isArray(events)) return [];
     
-    if (selectedPlayer === "all") {
-      return events as Event[];
+    // First apply user-specific filtering based on role and player profile
+    const userFilteredEvents = filterEventsForUser(events as Event[]);
+    
+    // Then apply additional player filter if selected (admin only feature)
+    if (selectedPlayer === "all" || !isAdmin) {
+      return userFilteredEvents;
     }
     
-    return (events as Event[]).filter((event: Event) => {
+    return userFilteredEvents.filter((event: Event) => {
       if (!event.participants) return false;
       
       // Check if event is for all players
@@ -93,7 +176,7 @@ export default function Calendar() {
       return participantList.includes(selectedPlayer.toLowerCase()) ||
              participantList.some(p => p.includes(selectedPlayer.toLowerCase()));
     });
-  }, [events, selectedPlayer]);
+  }, [events, selectedPlayer, isAdmin, currentUserPlayer]);
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertEvent) => {
