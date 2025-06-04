@@ -595,6 +595,16 @@ export default function CalendarPage() {
     const startTime = event.time || event.startTime;
     const endTime = event.endTime;
     
+    // Debug logging for troubleshooting
+    if (event.title === "Team Practice Session") {
+      console.log(`Checking hour ${hour} for event:`, {
+        title: event.title,
+        startTime,
+        endTime,
+        eventData: event
+      });
+    }
+    
     // Parse start time (handle both "10:00" and "10" formats)
     const startParts = startTime.split(':');
     const startHour = parseInt(startParts[0]);
@@ -613,7 +623,19 @@ export default function CalendarPage() {
       const hourEnd = (hour + 1) * 60;
       
       // Event spans this hour if it overlaps with the hour timeframe
-      return startTimeMinutes < hourEnd && endTimeMinutes > hourStart;
+      const spans = startTimeMinutes < hourEnd && endTimeMinutes > hourStart;
+      
+      if (event.title === "Team Practice Session") {
+        console.log(`Hour ${hour} span check:`, {
+          startTimeMinutes,
+          endTimeMinutes,
+          hourStart,
+          hourEnd,
+          spans
+        });
+      }
+      
+      return spans;
     } else {
       // No end time, only show at start hour
       return startHour === hour;
