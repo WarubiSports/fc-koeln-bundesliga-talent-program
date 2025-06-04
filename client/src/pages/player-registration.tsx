@@ -29,7 +29,6 @@ const registrationSchema = z.object({
   preferredFoot: z.enum(["left", "right", "both"]).default("right"),
   height: z.string().optional(),
   weight: z.string().optional(),
-  jerseyNumber: z.string().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
   emergencyContactName: z.string().min(2, "Emergency contact name is required"),
@@ -60,7 +59,6 @@ export default function PlayerRegistration() {
       preferredFoot: "right",
       height: "",
       weight: "",
-      jerseyNumber: "",
       previousClub: "",
       profileImageUrl: "",
       emergencyContactName: "",
@@ -355,20 +353,6 @@ export default function PlayerRegistration() {
                             <FormLabel>Weight (kg)</FormLabel>
                             <FormControl>
                               <Input placeholder="70" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="jerseyNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Preferred Jersey Number (Optional)</FormLabel>
-                            <FormControl>
-                              <Input placeholder="10" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
