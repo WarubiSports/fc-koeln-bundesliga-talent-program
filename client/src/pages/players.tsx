@@ -6,12 +6,46 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle, Edit3 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { getCountryFlag, calculateAge, COUNTRIES, POSITION_DISPLAY_NAMES, AVAILABILITY_COLORS } from "@/lib/country-flags";
 import type { Player } from "@shared/schema";
+
+// Player edit form schema
+const playerEditSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(10, "Phone number is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  nationality: z.string().min(1, "Nationality is required"),
+  nationalityCode: z.string().optional(),
+  position: z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"]),
+  positions: z.array(z.string()).min(1, "Select at least one position"),
+  preferredFoot: z.enum(["left", "right", "both"]).default("right"),
+  height: z.string().optional(),
+  weight: z.string().optional(),
+  previousClub: z.string().optional(),
+  profileImageUrl: z.string().optional(),
+  emergencyContactName: z.string().min(2, "Emergency contact name is required"),
+  emergencyContactPhone: z.string().min(10, "Emergency contact phone is required"),
+  medicalConditions: z.string().optional(),
+  allergies: z.string().optional(),
+  status: z.enum(["active", "on_trial", "inactive", "pending"]),
+  house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
+  jerseyNumber: z.string().optional(),
+});
+
+type PlayerEditFormData = z.infer<typeof playerEditSchema>;
 
 export default function Players() {
   const { isAdmin } = useAuth();
@@ -21,6 +55,8 @@ export default function Players() {
   const [filterPosition, setFilterPosition] = useState("");
   const [filterNationality, setFilterNationality] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
 
   const [filterAgeRange, setFilterAgeRange] = useState("");
   const [filterHouse, setFilterHouse] = useState("");
@@ -98,6 +134,112 @@ export default function Players() {
       });
     },
   });
+
+  const rejectUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await apiRequest(`/api/admin/reject-user/${userId}`, "DELETE");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      toast({
+        title: "User rejected",
+        description: "User has been rejected and removed from the system.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Player edit form
+  const editForm = useForm<PlayerEditFormData>({
+    resolver: zodResolver(playerEditSchema),
+  });
+
+  const updatePlayerMutation = useMutation({
+    mutationFn: async (data: PlayerEditFormData & { id: number }) => {
+      return await apiRequest(`/api/players/${data.id}`, "PUT", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      toast({
+        title: "Player Updated",
+        description: "Player profile has been successfully updated.",
+      });
+      setEditingPlayer(null);
+      editForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditPlayer = (player: Player) => {
+    setEditingPlayer(player);
+    const playerPositions = player.positions ? 
+      (Array.isArray(player.positions) ? player.positions : [player.position]) : 
+      [player.position];
+    setSelectedPositions(playerPositions);
+    
+    editForm.reset({
+      firstName: player.firstName,
+      lastName: player.lastName,
+      email: player.email,
+      phone: player.phone || "",
+      dateOfBirth: player.dateOfBirth,
+      nationality: player.nationality,
+      nationalityCode: player.nationalityCode || "",
+      position: player.position as any,
+      positions: playerPositions,
+      preferredFoot: (player.preferredFoot as any) || "right",
+      height: player.height?.toString() || "",
+      weight: player.weight?.toString() || "",
+      previousClub: player.previousClub || "",
+      profileImageUrl: player.profileImageUrl || "",
+      emergencyContactName: player.emergencyContactName || "",
+      emergencyContactPhone: player.emergencyContactPhone || "",
+      medicalConditions: player.medicalConditions || "",
+      allergies: player.allergies || "",
+      status: player.status as any,
+      house: player.house as any,
+      jerseyNumber: player.jerseyNumber?.toString() || "",
+    });
+  };
+
+  const handlePositionChange = (position: string, checked: boolean) => {
+    let newPositions = [...selectedPositions];
+    if (checked) {
+      newPositions.push(position);
+    } else {
+      newPositions = newPositions.filter(p => p !== position);
+    }
+    setSelectedPositions(newPositions);
+    editForm.setValue("positions", newPositions);
+    
+    if (newPositions.length > 0 && Object.keys(POSITION_DISPLAY_NAMES).includes(newPositions[0])) {
+      editForm.setValue("position", newPositions[0] as any);
+    }
+  };
+
+  const handleNationalityChange = (nationality: string) => {
+    const country = COUNTRIES.find(c => c.name === nationality);
+    editForm.setValue("nationality", nationality);
+    editForm.setValue("nationalityCode", country?.code || "");
+  };
+
+  const onEditSubmit = (data: PlayerEditFormData) => {
+    if (editingPlayer) {
+      updatePlayerMutation.mutate({ ...data, id: editingPlayer.id });
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -276,17 +418,9 @@ export default function Players() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Players Directory ({filteredPlayers.length})
-                </span>
-                {isAdmin && (
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Player
-                  </Button>
-                )}
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Players Directory ({filteredPlayers.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -335,9 +469,21 @@ export default function Players() {
                                 </p>
                               </div>
                             </div>
-                            <Badge variant="outline" className="text-xs">
-                              {player.status}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
+                                {player.status}
+                              </Badge>
+                              {isAdmin && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleEditPlayer(player)}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <Edit3 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">
@@ -381,6 +527,369 @@ export default function Players() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Player Edit Modal */}
+      <Dialog open={!!editingPlayer} onOpenChange={() => setEditingPlayer(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Player Profile</DialogTitle>
+          </DialogHeader>
+          
+          {editingPlayer && (
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-6">
+                
+                {/* Personal Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="nationality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nationality</FormLabel>
+                        <Select value={field.value} onValueChange={handleNationalityChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {COUNTRIES.map((country) => (
+                              <SelectItem key={country.code} value={country.name}>
+                                {getCountryFlag(country.code)} {country.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Admin Controls */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="on_trial">On Trial</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="house"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>House Assignment</FormLabel>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select house" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Widdersdorf 1">Widdersdorf 1</SelectItem>
+                            <SelectItem value="Widdersdorf 2">Widdersdorf 2</SelectItem>
+                            <SelectItem value="Widdersdorf 3">Widdersdorf 3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="jerseyNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Jersey Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="10" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Football Information */}
+                <div className="space-y-4">
+                  <FormField
+                    control={editForm.control}
+                    name="positions"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Playing Positions</FormLabel>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {Object.entries(POSITION_DISPLAY_NAMES).map(([value, label]) => (
+                            <div key={value} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`edit-${value}`}
+                                checked={selectedPositions.includes(value)}
+                                onCheckedChange={(checked) => handlePositionChange(value, !!checked)}
+                              />
+                              <label htmlFor={`edit-${value}`} className="text-sm">{label}</label>
+                            </div>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="preferredFoot"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred Foot</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="left">Left</SelectItem>
+                              <SelectItem value="right">Right</SelectItem>
+                              <SelectItem value="both">Both</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={editForm.control}
+                      name="height"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Height (cm)</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={editForm.control}
+                      name="weight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Weight (kg)</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Additional Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="previousClub"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Previous Club</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="profileImageUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Profile Image URL</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="emergencyContactName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Emergency Contact Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="emergencyContactPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Emergency Contact Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Medical Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="medicalConditions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Medical Conditions</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="allergies"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Allergies</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setEditingPlayer(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={updatePlayerMutation.isPending}
+                  >
+                    {updatePlayerMutation.isPending ? "Updating..." : "Update Player"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
