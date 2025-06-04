@@ -472,7 +472,7 @@ export default function CalendarPage() {
                           return (
                             <div 
                               key={event.id} 
-                              className="absolute left-0 right-4 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-3 z-10 flex flex-col justify-center"
+                              className="absolute left-0 right-4 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-3 z-10 flex flex-col justify-center group hover:bg-fc-red/20 transition-colors"
                               style={{ 
                                 height: `${eventHeight}px`,
                                 top: '4px'
@@ -481,6 +481,40 @@ export default function CalendarPage() {
                               <div className="font-medium text-center">{event.title}</div>
                               <div className="text-gray-600 text-center mt-1">{timeDisplay}</div>
                               {event.location && <div className="text-gray-500 text-center text-[10px] mt-1">{event.location}</div>}
+                              
+                              {/* Admin edit buttons - only show for database events */}
+                              {isAdmin && event.isAdminEvent && (
+                                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0 text-gray-600 hover:text-fc-red hover:bg-white/50"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Find the actual Event object from adminEvents
+                                      const actualEvent = adminEvents.find((ae: any) => ae.id === event.adminEventId);
+                                      if (actualEvent) {
+                                        handleEditEvent(actualEvent);
+                                      }
+                                    }}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0 text-gray-600 hover:text-red-600 hover:bg-white/50"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (event.adminEventId) {
+                                        deleteEventMutation.mutate(event.adminEventId);
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -1085,6 +1119,12 @@ export default function CalendarPage() {
           onSubmit={handleEventSubmit}
           initialEventType={selectedEventType}
           initialDate={selectedDate}
+        />
+
+        <EditEventModal
+          isOpen={isEditEventModalOpen}
+          onClose={() => setIsEditEventModalOpen(false)}
+          event={editingEvent}
         />
 
       </main>
