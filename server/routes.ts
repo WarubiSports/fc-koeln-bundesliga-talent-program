@@ -103,7 +103,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Login successful - session ID:', req.sessionID);
     console.log('Login successful - session data:', req.session);
     
-    res.json({ message: 'Login successful', user: (req.session as any).userData });
+    // Force session save
+    req.session.save((err: any) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Session save failed' });
+      }
+      
+      // Set explicit cookie header for debugging
+      res.cookie('connect.sid', req.sessionID, {
+        httpOnly: false,
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+        sameSite: 'lax',
+        path: '/'
+      });
+      
+      res.json({ message: 'Login successful', user: (req.session as any).userData });
+    });
   });
 
   // Clear logout flag endpoint (for testing landing page)
