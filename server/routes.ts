@@ -718,21 +718,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Original request body:', req.body);
       
-      const eventData = {
+      const baseEventData = {
         title: req.body.title,
-        eventType: req.body.type || req.body.eventType, // Map 'type' to 'eventType'
+        eventType: req.body.type || req.body.eventType,
         date: req.body.date,
-        startTime: req.body.time || req.body.startTime, // Map 'time' to 'startTime'
-        endTime: req.body.endTime || req.body.time, // Default endTime to same as startTime if not provided
+        startTime: req.body.time || req.body.startTime,
+        endTime: req.body.endTime || req.body.time,
         location: req.body.location,
-        notes: req.body.description || req.body.notes, // Map 'description' to 'notes'
+        notes: req.body.description || req.body.notes,
+        participants: req.body.participants,
         createdBy: "Admin User",
       };
       
-      console.log('Mapped event data:', eventData);
+      console.log('Mapped event data:', baseEventData);
 
-      const event = await storage.createEvent(eventData);
-      res.status(201).json(event);
+      // Handle recurring events
+      if (req.body.isRecurring && req.body.recurringPattern) {
+        const events = [];
+        const startDate = new Date(req.body.date);
+        const endDate = req.body.recurringEndDate ? new Date(req.body.recurringEndDate) : new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
+        
+        const currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+          const shouldCreateEvent = (() => {
+            switch (req.body.recurringPattern) {
+              case 'daily':
+                return true;
+              case 'weekdays':
+                const dayOfWeek = currentDate.getDay();
+                return dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
+              case 'weekly':
+                return currentDate.getDay() === startDate.getDay();
+              case 'monthly':
+                return currentDate.getDate() === startDate.getDate();
+              default:
+                return false;
+            }
+          })();
+          
+          if (shouldCreateEvent) {
+            const eventData = {
+              ...baseEventData,
+              date: currentDate.toISOString().split('T')[0],
+              isRecurring: true,
+              recurringPattern: req.body.recurringPattern
+            };
+            
+            const event = await storage.createEvent(eventData);
+            events.push(event);
+          }
+          
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        console.log(`Created ${events.length} recurring events`);
+        res.status(201).json({ message: `Created ${events.length} recurring events`, events });
+      } else {
+        // Single event
+        const event = await storage.createEvent(baseEventData);
+        res.status(201).json(event);
+      }
     } catch (error) {
       console.error("Error creating event:", error);
       res.status(500).json({ message: "Failed to create event" });
