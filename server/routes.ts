@@ -71,9 +71,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Simple login endpoint for multiple users
   app.post('/api/auth/simple-login', async (req: any, res) => {
+    console.log('Raw request body:', req.body);
+    console.log('Request headers:', req.headers);
+    
     const { username, password } = req.body;
     
-    console.log('Login attempt:', { username, password });
+    console.log('Parsed credentials:', { username, password });
+    console.log('Username type:', typeof username);
+    console.log('Password type:', typeof password);
     
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
@@ -85,10 +90,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' }
     ];
     
+    console.log('Available credentials:', validCredentials.map(c => ({ username: c.username, password: c.password })));
+    
     const user = validCredentials.find(u => u.username === username && u.password === password);
     
     if (!user) {
       console.log('No matching user found for:', { username, password });
+      console.log('Exact match check:', validCredentials.map(c => ({
+        username: c.username,
+        usernameMatch: c.username === username,
+        password: c.password, 
+        passwordMatch: c.password === password
+      })));
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
