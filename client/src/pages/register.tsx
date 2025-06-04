@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import { getCountryFlag } from "@/lib/country-flags";
 
 const positions = [
   "Goalkeeper",
@@ -38,18 +40,52 @@ export default function Register() {
     email: "",
     dateOfBirth: "",
     nationality: "",
-    position: "",
+    nationalityCode: "",
+    positions: [] as string[],
     role: "",
     house: "",
     phoneNumber: "",
     emergencyContact: "",
-    emergencyPhone: ""
+    emergencyPhone: "",
+    profileImageUrl: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const { toast } = useToast();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePositionChange = (position: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      positions: checked 
+        ? [...prev.positions, position]
+        : prev.positions.filter(p => p !== position)
+    }));
+  };
+
+  const handleNationalityChange = (nationality: string) => {
+    const nationalityCode = getCountryFlag(nationality);
+    setFormData(prev => ({
+      ...prev,
+      nationality,
+      nationalityCode
+    }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      // Create a preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, profileImageUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,23 +122,24 @@ export default function Register() {
         email: formData.email,
         dateOfBirth: formData.dateOfBirth,
         nationality: formData.nationality,
-        position: formData.position,
+        nationalityCode: formData.nationalityCode,
+        positions: formData.positions,
         role: formData.role,
         house: formData.house,
         phoneNumber: formData.phoneNumber,
         emergencyContact: formData.emergencyContact,
-        emergencyPhone: formData.emergencyPhone
+        emergencyPhone: formData.emergencyPhone,
+        profileImageUrl: formData.profileImageUrl
       });
 
       const data = await response.json();
       
       toast({
         title: "Registration successful",
-        description: "Your account has been created and is pending approval",
-        variant: "default",
+        description: "Your application has been submitted for review",
       });
 
-      // Clear form
+      // Clear form on success
       setFormData({
         username: "",
         password: "",
@@ -112,18 +149,20 @@ export default function Register() {
         email: "",
         dateOfBirth: "",
         nationality: "",
-        position: "",
+        nationalityCode: "",
+        positions: [] as string[],
         role: "",
         house: "",
         phoneNumber: "",
         emergencyContact: "",
-        emergencyPhone: ""
+        emergencyPhone: "",
+        profileImageUrl: ""
       });
-
-    } catch (error: any) {
+      
+    } catch (error) {
       toast({
         title: "Registration failed",
-        description: error.message || "Failed to create account",
+        description: error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
     } finally {
@@ -132,30 +171,19 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-600 via-red-700 to-red-800 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto mb-6">
-            <img 
-              src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png" 
-              alt="FC Köln Football School" 
-              className="w-20 h-20 object-contain mx-auto"
-            />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Join FC Köln</h1>
-          <p className="text-red-100 text-lg">International Talent Program</p>
-          <p className="text-red-200 text-sm mt-1">Create your account</p>
-        </div>
-
-        {/* Registration Card */}
-        <Card className="shadow-2xl border-0">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-xl text-gray-800">Program Registration</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">Please complete all required fields</p>
+    <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-700 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        <Card className="bg-white shadow-2xl">
+          <CardHeader className="text-center border-b bg-gray-50">
+            <CardTitle className="text-2xl font-bold text-gray-800">
+              Join the FC Köln International Talent Program
+            </CardTitle>
+            <p className="text-gray-600 mt-2">
+              Complete your application for review by program administrators
+            </p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Account Information */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-gray-800 border-b pb-2">Account Information</h3>
@@ -249,11 +277,28 @@ export default function Register() {
                       id="nationality"
                       type="text"
                       value={formData.nationality}
-                      onChange={(e) => handleInputChange("nationality", e.target.value)}
+                      onChange={(e) => handleNationalityChange(e.target.value)}
                       required
                       placeholder="e.g. German, Brazilian"
                     />
                   </div>
+                </div>
+                
+                {/* Profile Picture Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
+                  <Input
+                    id="profileImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                  />
+                  {formData.profileImageUrl && (
+                    <div className="mt-2">
+                      <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -278,26 +323,28 @@ export default function Register() {
                   </div>
                   {formData.role === "player" && (
                     <div className="space-y-2">
-                      <Label htmlFor="position" className="text-gray-700">Position *</Label>
-                      <Select value={formData.position} onValueChange={(value) => handleInputChange("position", value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select position" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {positions.map((position) => (
-                            <SelectItem key={position} value={position}>
+                      <Label className="text-gray-700">Positions * (Select all that apply)</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {positions.map((position) => (
+                          <div key={position} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={position}
+                              checked={formData.positions.includes(position)}
+                              onCheckedChange={(checked) => handlePositionChange(position, checked as boolean)}
+                            />
+                            <Label htmlFor={position} className="text-sm font-normal">
                               {position}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                   <div className="space-y-2">
                     <Label htmlFor="house" className="text-gray-700">Housing Assignment</Label>
                     <Select value={formData.house} onValueChange={(value) => handleInputChange("house", value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select housing (if applicable)" />
+                        <SelectValue placeholder="Select housing preference" />
                       </SelectTrigger>
                       <SelectContent>
                         {houses.map((house) => (
@@ -322,39 +369,40 @@ export default function Register() {
                       type="tel"
                       value={formData.phoneNumber}
                       onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-                      placeholder="+49 xxx xxx xxxx"
+                      placeholder="+49 123 456 7890"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="emergencyContact" className="text-gray-700">Emergency Contact</Label>
+                    <Label htmlFor="emergencyContact" className="text-gray-700">Emergency Contact Name</Label>
                     <Input
                       id="emergencyContact"
                       type="text"
                       value={formData.emergencyContact}
                       onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
-                      placeholder="Contact person name"
+                      placeholder="Full name of emergency contact"
                     />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="emergencyPhone" className="text-gray-700">Emergency Phone</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyPhone" className="text-gray-700">Emergency Contact Phone</Label>
                     <Input
                       id="emergencyPhone"
                       type="tel"
                       value={formData.emergencyPhone}
                       onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
-                      placeholder="+49 xxx xxx xxxx"
+                      placeholder="+49 123 456 7890"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              {/* Submit Button */}
+              <div className="flex gap-4 pt-6">
                 <Button 
                   type="submit" 
-                  className="flex-1 h-11 bg-red-600 hover:bg-red-700 text-white font-medium" 
                   disabled={isLoading}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white h-11"
                 >
-                  {isLoading ? "Creating Account..." : "Create Account"}
+                  {isLoading ? "Submitting Application..." : "Submit Application"}
                 </Button>
                 <Button 
                   type="button" 
