@@ -52,10 +52,7 @@ export default function Calendar() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertEvent) => {
-      return apiRequest("/api/events", {
-        method: "POST",
-        body: data
-      });
+      return apiRequest("/api/events", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -69,10 +66,7 @@ export default function Calendar() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...data }: { id: number } & Partial<InsertEvent>) => {
-      return apiRequest(`/api/events/${id}`, {
-        method: "PATCH",
-        body: data
-      });
+      return apiRequest(`/api/events/${id}`, "PATCH", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -87,9 +81,7 @@ export default function Calendar() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/events/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest(`/api/events/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
