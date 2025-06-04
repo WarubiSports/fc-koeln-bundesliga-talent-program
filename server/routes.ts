@@ -56,7 +56,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - session.userData:', !!(req.session as any)?.userData);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
     
-    // Allow access for development
+    // Auto-login for development mode when no session exists
+    if (!((req.session as any)?.devLoggedIn) && !((req.session as any)?.userData)) {
+      console.log('No session found, auto-logging in for development');
+      (req.session as any).devLoggedIn = true;
+      (req.session as any).userData = {
+        id: 'dev-admin',
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@fckoeln.dev',
+        role: 'admin',
+        status: 'approved'
+      };
+    }
 
     try {
       // Check if user data is stored in session AND devLoggedIn flag is set
