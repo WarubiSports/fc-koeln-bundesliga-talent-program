@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
+import SectionOverview from "@/components/section-overview";
 import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
@@ -81,7 +82,7 @@ function Router() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main>
+      <main className="pb-20">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
@@ -96,6 +97,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
+      <SectionOverview />
     </div>
   );
 }
