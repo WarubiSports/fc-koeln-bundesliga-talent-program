@@ -622,33 +622,16 @@ export default function Calendar() {
   return (
     <div className="p-4 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <CalendarIcon className="h-8 w-8 text-red-600" />
-          <h1 className="text-3xl font-bold">Calendar</h1>
-          
-          {/* Player Filter Dropdown */}
-          <div className="flex items-center gap-2 ml-6">
-            <span className="text-sm text-gray-600">View:</span>
-            <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Select player" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Events</SelectItem>
-                {(players as any[]).map((player: any) => (
-                  <SelectItem key={player.id} value={`${player.firstName} ${player.lastName}`}>
-                    {player.firstName} {player.lastName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="mb-6">
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-3">
+            <CalendarIcon className="h-8 w-8 text-red-600" />
+            <h1 className="text-3xl font-bold">Calendar</h1>
           </div>
-        </div>
-        
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          {isAdmin && (
+          
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            {isAdmin && (
             <>
               <Button
                 variant={isSelectionMode ? "default" : "outline"}
@@ -1009,6 +992,25 @@ export default function Calendar() {
               </Dialog>
             </>
           )}
+          </div>
+        </div>
+        
+        {/* Player Filter Section - Moved to second row */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">View:</span>
+          <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Select player" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Events</SelectItem>
+              {(players as any[]).map((player: any) => (
+                <SelectItem key={player.id} value={`${player.firstName} ${player.lastName}`}>
+                  {player.firstName} {player.lastName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
