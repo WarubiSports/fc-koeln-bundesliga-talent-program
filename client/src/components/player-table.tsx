@@ -10,11 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import type { Player } from "@shared/schema";
 
-interface PlayerTableProps {
-  onAddPlayer: () => void;
-}
-
-export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
+export default function PlayerTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
@@ -140,14 +136,6 @@ export default function PlayerTable({ onAddPlayer }: PlayerTableProps) {
               <i className="fas fa-download mr-2"></i>
               {exportMutation.isPending ? "Exporting..." : "Export"}
             </Button>
-            {isAdmin && (
-              <Button
-                onClick={onAddPlayer}
-                className="bg-fc-red hover:bg-red-700"
-              >
-                <i className="fas fa-plus mr-2"></i>Add Player
-              </Button>
-            )}
           </div>
         </div>
       </div>
