@@ -51,6 +51,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: 'Logged out successfully' });
   });
 
+  // Clear logout flag endpoint (for testing landing page)
+  app.post('/api/auth/clear-logout', async (req: any, res) => {
+    delete (req.session as any).loggedOut;
+    res.json({ message: 'Logout flag cleared' });
+  });
+
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     // Set cache control headers to prevent caching
