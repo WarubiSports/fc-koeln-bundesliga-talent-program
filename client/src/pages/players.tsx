@@ -46,7 +46,7 @@ export default function Players() {
       }
 
       // Position filter
-      if (filterPosition) {
+      if (filterPosition && filterPosition !== 'all') {
         const playerPositions = player.positions ? 
           (Array.isArray(player.positions) ? player.positions : [player.position]) : 
           [player.position];
@@ -54,22 +54,22 @@ export default function Players() {
       }
 
       // Nationality filter
-      if (filterNationality && player.nationality !== filterNationality) return false;
+      if (filterNationality && filterNationality !== 'all' && player.nationality !== filterNationality) return false;
 
       // Status filter
-      if (filterStatus && player.status !== filterStatus) return false;
+      if (filterStatus && filterStatus !== 'all' && player.status !== filterStatus) return false;
 
       // Availability filter
-      if (filterAvailability && player.availability !== filterAvailability) return false;
+      if (filterAvailability && filterAvailability !== 'all' && player.availability !== filterAvailability) return false;
 
       // Age range filter
-      if (filterAgeRange) {
+      if (filterAgeRange && filterAgeRange !== 'all') {
         const [minAge, maxAge] = filterAgeRange.split('-').map(Number);
         if (playerAge < minAge || playerAge > maxAge) return false;
       }
 
       // House filter
-      if (filterHouse && player.house !== filterHouse) return false;
+      if (filterHouse && filterHouse !== 'all' && player.house !== filterHouse) return false;
 
       return true;
     });
@@ -271,12 +271,12 @@ export default function Players() {
                   variant="outline" 
                   onClick={() => {
                     setSearchQuery("");
-                    setFilterPosition("");
-                    setFilterNationality("");
-                    setFilterStatus("");
-                    setFilterAvailability("");
-                    setFilterAgeRange("");
-                    setFilterHouse("");
+                    setFilterPosition("all");
+                    setFilterNationality("all");
+                    setFilterStatus("all");
+                    setFilterAvailability("all");
+                    setFilterAgeRange("all");
+                    setFilterHouse("all");
                   }}
                   className="col-span-1"
                 >
