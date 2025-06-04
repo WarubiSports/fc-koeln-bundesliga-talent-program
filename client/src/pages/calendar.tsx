@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus, Calendar as CalendarIcon, Clock, MapPin, Users, Trash2, Edit, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Clock, MapPin, Users, Trash2, Edit, ChevronLeft, ChevronRight, Check, ChevronsUpDown, X } from "lucide-react";
 import { 
   format, 
   startOfMonth, 
@@ -43,6 +46,8 @@ export default function Calendar() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [view, setView] = useState<CalendarView>("month");
   const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [participantsPopoverOpen, setParticipantsPopoverOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -596,7 +601,93 @@ export default function Calendar() {
                       <FormItem>
                         <FormLabel>Participants</FormLabel>
                         <FormControl>
-                          <Input placeholder="Player names (comma-separated) or 'all' for team events" {...field} />
+                          <Popover open={participantsPopoverOpen} onOpenChange={setParticipantsPopoverOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={participantsPopoverOpen}
+                                className="w-full justify-between min-h-10"
+                              >
+                                {selectedParticipants.length === 0 ? (
+                                  "Select participants..."
+                                ) : selectedParticipants.includes("all") ? (
+                                  "Entire Team"
+                                ) : (
+                                  <div className="flex flex-wrap gap-1">
+                                    {selectedParticipants.slice(0, 2).map((participant) => (
+                                      <Badge key={participant} variant="secondary" className="text-xs">
+                                        {participant}
+                                      </Badge>
+                                    ))}
+                                    {selectedParticipants.length > 2 && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        +{selectedParticipants.length - 2} more
+                                      </Badge>
+                                    )}
+                                  </div>
+                                )}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                              <Command>
+                                <CommandInput placeholder="Search participants..." />
+                                <CommandEmpty>No participants found.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem
+                                    value="all"
+                                    onSelect={() => {
+                                      const newSelection = selectedParticipants.includes("all") 
+                                        ? selectedParticipants.filter(p => p !== "all")
+                                        : ["all"];
+                                      setSelectedParticipants(newSelection);
+                                      field.onChange(newSelection.join(", "));
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        selectedParticipants.includes("all") ? "opacity-100" : "opacity-0"
+                                      }`}
+                                    />
+                                    Entire Team
+                                  </CommandItem>
+                                  {(players as any[]).map((player: any) => {
+                                    const playerName = `${player.firstName} ${player.lastName}`;
+                                    return (
+                                      <CommandItem
+                                        key={player.id}
+                                        value={playerName}
+                                        onSelect={() => {
+                                          const isSelected = selectedParticipants.includes(playerName);
+                                          let newSelection;
+                                          
+                                          if (isSelected) {
+                                            newSelection = selectedParticipants.filter(p => p !== playerName);
+                                          } else {
+                                            newSelection = selectedParticipants.includes("all")
+                                              ? [playerName]
+                                              : [...selectedParticipants.filter(p => p !== "all"), playerName];
+                                          }
+                                          
+                                          setSelectedParticipants(newSelection);
+                                          field.onChange(newSelection.join(", "));
+                                        }}
+                                        disabled={selectedParticipants.includes("all")}
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            selectedParticipants.includes(playerName) ? "opacity-100" : "opacity-0"
+                                          }`}
+                                        />
+                                        {playerName}
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
