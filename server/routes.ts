@@ -684,11 +684,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/events", async (req, res) => {
+  app.post("/api/events", async (req: any, res) => {
+    // Check session-based authentication first
+    const sessionUser = (req.session as any)?.userData;
+    if (!sessionUser || sessionUser.role !== 'admin') {
+      return res.status(401).json({ message: "Admin access required" });
+    }
+    
     try {
       const eventData = {
         ...req.body,
-        createdBy: "Admin User",
+        createdBy: sessionUser.firstName + ' ' + sessionUser.lastName,
       };
 
       const event = await storage.createEvent(eventData);
