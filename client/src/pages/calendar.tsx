@@ -238,7 +238,7 @@ export default function CalendarPage() {
 
   const handleAddEvent = (eventType: string) => {
     const eventTitles = {
-      'team-practice': 'Team Practice Session',
+      'team-practice': 'Daily Practice Session',
       'group-practice': 'Group Practice Session', 
       'cryotherapy': 'Cryotherapy Session',
       'language-school': 'Language School',
@@ -410,51 +410,57 @@ export default function CalendarPage() {
     return (
       <div className="grid grid-cols-1 gap-4">
         <div className="border rounded-lg p-4">
-          <div className="grid grid-cols-12 gap-2 text-sm">
+          <div className="relative">
             {hours.map(hour => {
               const timeSlot = formatTime12Hour(hour);
               
-              // Check if any event spans this hour
-              const eventsAtHour = dayEvents.filter(event => eventSpansHour(event, hour));
-              
-              // Debug logging for hours 10 and 11
-              if (hour === 10 || hour === 11) {
-                console.log(`Hour ${hour}:`, {
-                  eventsAtHour: eventsAtHour.length,
-                  dayEvents: dayEvents.length,
-                  eventTitles: eventsAtHour.map(e => e.title),
-                  allEvents: dayEvents.map(e => ({
-                    title: e.title,
-                    startTime: e.time || e.startTime,
-                    endTime: e.endTime,
-                    spanCheck: eventSpansHour(e, hour)
-                  }))
-                });
-              }
-              
               return (
-                <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
-                  <div className="flex">
-                    <div className="w-20 text-gray-500 text-xs font-medium">{timeSlot}</div>
-                    <div className="flex-1">
-                      {eventsAtHour.map(event => {
+                <div key={hour} className="flex border-b py-2 min-h-[60px] relative">
+                  <div className="w-20 text-gray-500 text-xs font-medium">{timeSlot}</div>
+                  <div className="flex-1 relative">
+                    {/* Events that start at this hour */}
+                    {dayEvents
+                      .filter(event => {
+                        const startTime = event.time || event.startTime;
+                        const startHour = parseInt(startTime.split(':')[0]);
+                        return startHour === hour;
+                      })
+                      .map(event => {
                         const startTime = event.time || event.startTime;
                         const endTime = event.endTime;
                         const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
                         
-                        // Only show full details at start hour, abbreviated for continuation hours
-                        const startHour = parseInt(startTime.split(':')[0]);
-                        const isStartHour = startHour === hour;
+                        // Calculate how many hours this event spans
+                        let eventHeight = 60; // Base height for 1 hour
+                        if (endTime) {
+                          const startHour = parseInt(startTime.split(':')[0]);
+                          const startMinute = parseInt(startTime.split(':')[1] || '0');
+                          const endHour = parseInt(endTime.split(':')[0]);
+                          const endMinute = parseInt(endTime.split(':')[1] || '0');
+                          
+                          const startTotalMinutes = startHour * 60 + startMinute;
+                          const endTotalMinutes = endHour * 60 + endMinute;
+                          const durationMinutes = endTotalMinutes - startTotalMinutes;
+                          
+                          // Each hour slot is 60px + 8px padding = 68px
+                          eventHeight = Math.max(60, (durationMinutes / 60) * 68 - 8);
+                        }
                         
                         return (
-                          <div key={`${event.id}-${hour}`} className={`mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs ${!isStartHour ? 'opacity-60' : ''}`}>
-                            <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
-                            {isStartHour && <div className="text-gray-600">{timeDisplay}</div>}
-                            {isStartHour && event.location && <div className="text-gray-500">{event.location}</div>}
+                          <div 
+                            key={event.id} 
+                            className="absolute left-0 right-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs p-2 z-10"
+                            style={{ 
+                              height: `${eventHeight}px`,
+                              top: '4px'
+                            }}
+                          >
+                            <div className="font-medium">{event.title}</div>
+                            <div className="text-gray-600">{timeDisplay}</div>
+                            {event.location && <div className="text-gray-500">{event.location}</div>}
                           </div>
                         );
                       })}
-                    </div>
                   </div>
                 </div>
               );
@@ -497,27 +503,50 @@ export default function CalendarPage() {
             {weekDays.map(day => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
               
-              // Check if any event spans this hour
-              const eventsAtHour = dayEvents.filter(event => eventSpansHour(event, hour));
-              
               return (
-                <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px]">
-                  {eventsAtHour.map(event => {
-                    const startTime = event.time || event.startTime;
-                    const endTime = event.endTime;
-                    const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
-                    
-                    // Only show full details at start hour, abbreviated for continuation hours
-                    const startHour = parseInt(startTime.split(':')[0]);
-                    const isStartHour = startHour === hour;
-                    
-                    return (
-                      <div key={`${event.id}-${hour}`} className={`text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1 ${!isStartHour ? 'opacity-60' : ''}`}>
-                        <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
-                        {isStartHour && <div className="text-gray-600 text-[10px]">{timeDisplay}</div>}
-                      </div>
-                    );
-                  })}
+                <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px] relative">
+                  {/* Events that start at this hour */}
+                  {dayEvents
+                    .filter(event => {
+                      const startTime = event.time || event.startTime;
+                      const startHour = parseInt(startTime.split(':')[0]);
+                      return startHour === hour;
+                    })
+                    .map(event => {
+                      const startTime = event.time || event.startTime;
+                      const endTime = event.endTime;
+                      const timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+                      
+                      // Calculate how many hours this event spans for week view
+                      let eventHeight = 40; // Base height for 1 hour in week view
+                      if (endTime) {
+                        const startHour = parseInt(startTime.split(':')[0]);
+                        const startMinute = parseInt(startTime.split(':')[1] || '0');
+                        const endHour = parseInt(endTime.split(':')[0]);
+                        const endMinute = parseInt(endTime.split(':')[1] || '0');
+                        
+                        const startTotalMinutes = startHour * 60 + startMinute;
+                        const endTotalMinutes = endHour * 60 + endMinute;
+                        const durationMinutes = endTotalMinutes - startTotalMinutes;
+                        
+                        // Each hour slot is 40px + 8px padding = 48px in week view
+                        eventHeight = Math.max(40, (durationMinutes / 60) * 48 - 8);
+                      }
+                      
+                      return (
+                        <div 
+                          key={event.id} 
+                          className="absolute left-1 right-1 bg-fc-red/10 border-l-2 border-fc-red rounded text-xs p-1 z-10"
+                          style={{ 
+                            height: `${eventHeight}px`,
+                            top: '4px'
+                          }}
+                        >
+                          <div className="font-medium truncate">{event.title}</div>
+                          <div className="text-gray-600 text-[10px]">{timeDisplay}</div>
+                        </div>
+                      );
+                    })}
                 </div>
               );
             })}
@@ -730,7 +759,7 @@ export default function CalendarPage() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={() => handleAddEvent('team-practice')}>
                   <Users className="w-4 h-4 mr-2" />
-                  Team Practice Session
+                  Daily Practice Session
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleAddEvent('group-practice')}>
                   <UserCheck className="w-4 h-4 mr-2" />
