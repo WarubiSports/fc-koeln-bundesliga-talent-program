@@ -371,7 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/approve-user/:userId', simpleAdminAuth, async (req, res) => {
+  app.post('/api/admin/approve-user/:userId', simpleAdminAuth, async (req, res) => {
     try {
       const { userId } = req.params;
       await storage.approveUser(userId);
@@ -379,6 +379,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error approving user:", error);
       res.status(500).json({ message: "Failed to approve user" });
+    }
+  });
+
+  app.post('/api/admin/reject-user/:userId', simpleAdminAuth, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      await storage.rejectUser(userId);
+      res.json({ message: "User rejected successfully" });
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+      res.status(500).json({ message: "Failed to reject user" });
+    }
+  });
+
+  app.get('/api/admin/user-stats', simpleAdminAuth, async (req, res) => {
+    try {
+      const allUsers = await db.select().from(users);
+      const players = await storage.getAllPlayers();
+      
+      const stats = {
+        totalUsers: allUsers.length,
+        pendingUsers: allUsers.filter(u => u.status === 'pending').length,
+        approvedUsers: allUsers.filter(u => u.status === 'approved').length,
+        activePlayers: players.filter(p => p.status === 'active').length,
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ message: "Failed to fetch user stats" });
     }
   });
 

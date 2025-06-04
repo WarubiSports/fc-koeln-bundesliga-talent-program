@@ -13,6 +13,7 @@ import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
 import Communications from "@/pages/communications";
+import AdminUsers from "@/pages/admin-users";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
@@ -59,6 +60,7 @@ function Router() {
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/communications" component={Communications} />
+          <Route path="/admin/users" component={AdminUsers} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
