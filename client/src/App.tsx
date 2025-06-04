@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
 import Chores from "@/pages/chores";
-import Calendar from "@/pages/calendar-fixed";
+import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
 import Communications from "@/pages/communications";
 import Landing from "@/pages/landing";

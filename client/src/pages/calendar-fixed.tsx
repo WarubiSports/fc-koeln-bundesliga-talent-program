@@ -166,8 +166,7 @@ export default function Calendar() {
   const getEventsForDay = (day: Date) => {
     const dayStr = format(day, "yyyy-MM-dd");
     return Array.isArray(events) ? events.filter((event: Event) => 
-      event.startDate === dayStr || 
-      (event.endDate && event.startDate <= dayStr && event.endDate >= dayStr)
+      event.date === dayStr
     ) : [];
   };
 
@@ -259,7 +258,7 @@ export default function Calendar() {
   const renderWeekView = () => {
     const weekStart = startOfWeek(currentDate);
     const weekDays = eachDayOfInterval({ start: weekStart, end: endOfWeek(currentDate) });
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6am to 11pm
 
     return (
       <Card>
@@ -323,7 +322,7 @@ export default function Calendar() {
 
   const renderDayView = () => {
     const dayEvents = getEventsForDay(currentDate);
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6am to 11pm
 
     return (
       <Card>
