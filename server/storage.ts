@@ -165,37 +165,37 @@ export interface IStorage {
   getEventsByDateRange(startDate: string, endDate: string): Promise<Event[]>;
 
   // Communication methods
-  getAllMessages(): Promise<Message[]>;
-  getMessage(id: number): Promise<Message | undefined>;
-  createMessage(message: InsertMessage): Promise<Message>;
-  updateMessage(id: number, updates: UpdateMessage): Promise<Message | undefined>;
+  getAllMessages(): Promise<any[]>;
+  getMessage(id: number): Promise<any | undefined>;
+  createMessage(message: any): Promise<any>;
+  updateMessage(id: number, updates: any): Promise<any | undefined>;
   deleteMessage(id: number): Promise<boolean>;
-  getMessagesByUser(userId: string): Promise<Message[]>;
+  getMessagesByUser(userId: string): Promise<any[]>;
   markMessageAsRead(messageId: number): Promise<void>;
 
   // Medical records methods (admin-only)
-  getAllMedicalRecords(): Promise<MedicalRecord[]>;
-  getMedicalRecord(id: number): Promise<MedicalRecord | undefined>;
-  createMedicalRecord(record: InsertMedicalRecord): Promise<MedicalRecord>;
-  updateMedicalRecord(id: number, updates: UpdateMedicalRecord): Promise<MedicalRecord | undefined>;
+  getAllMedicalRecords(): Promise<any[]>;
+  getMedicalRecord(id: number): Promise<any | undefined>;
+  createMedicalRecord(record: any): Promise<any>;
+  updateMedicalRecord(id: number, updates: any): Promise<any | undefined>;
   deleteMedicalRecord(id: number): Promise<boolean>;
-  getMedicalRecordsByPlayer(playerId: number): Promise<MedicalRecord[]>;
+  getMedicalRecordsByPlayer(playerId: number): Promise<any[]>;
 
   // Performance metrics methods
-  getAllPerformanceMetrics(): Promise<PerformanceMetric[]>;
-  getPerformanceMetric(id: number): Promise<PerformanceMetric | undefined>;
-  createPerformanceMetric(metric: InsertPerformanceMetric): Promise<PerformanceMetric>;
-  updatePerformanceMetric(id: number, updates: UpdatePerformanceMetric): Promise<PerformanceMetric | undefined>;
+  getAllPerformanceMetrics(): Promise<any[]>;
+  getPerformanceMetric(id: number): Promise<any | undefined>;
+  createPerformanceMetric(metric: any): Promise<any>;
+  updatePerformanceMetric(id: number, updates: any): Promise<any | undefined>;
   deletePerformanceMetric(id: number): Promise<boolean>;
-  getPerformanceMetricsByPlayer(playerId: number): Promise<PerformanceMetric[]>;
+  getPerformanceMetricsByPlayer(playerId: number): Promise<any[]>;
 
   // Document management methods (admin-only)
-  getAllDocuments(): Promise<Document[]>;
-  getDocument(id: number): Promise<Document | undefined>;
-  createDocument(document: InsertDocument): Promise<Document>;
-  updateDocument(id: number, updates: UpdateDocument): Promise<Document | undefined>;
+  getAllDocuments(): Promise<any[]>;
+  getDocument(id: number): Promise<any | undefined>;
+  createDocument(document: any): Promise<any>;
+  updateDocument(id: number, updates: any): Promise<any | undefined>;
   deleteDocument(id: number): Promise<boolean>;
-  getDocumentsByPlayer(playerId: number): Promise<Document[]>;
+  getDocumentsByPlayer(playerId: number): Promise<any[]>;
 
   // Event Templates
   getAllEventTemplates(): Promise<EventTemplate[]>;
@@ -253,7 +253,7 @@ export class DatabaseStorage implements IStorage {
           lastName: userData.lastName,
           profileImageUrl: userData.profileImageUrl,
           role: userData.role,
-          approved: userData.approved,
+          status: userData.status || "pending",
           updatedAt: new Date(),
         })
         .where(eq(users.email, userData.email!))
@@ -283,7 +283,7 @@ export class DatabaseStorage implements IStorage {
     // Approve the user
     await db
       .update(users)
-      .set({ approved: "true", updatedAt: new Date() })
+      .set({ status: "approved", updatedAt: new Date() })
       .where(eq(users.id, userId));
 
     // Create player record automatically
@@ -348,7 +348,7 @@ export class DatabaseStorage implements IStorage {
     const approvedUsers = await db
       .select()
       .from(users)
-      .where(eq(users.approved, "true"));
+      .where(eq(users.status, "approved"));
 
     for (const user of approvedUsers) {
       await this.syncUserToPlayer(user);
@@ -404,22 +404,32 @@ export class DatabaseStorage implements IStorage {
     nationality?: string;
     status?: string;
   }): Promise<Player[]> {
-    let query = db.select().from(players);
+    const conditions = [];
     
     if (filters.position) {
-      query = query.where(eq(players.position, filters.position));
+      conditions.push(eq(players.position, filters.position));
+    }
+    if (filters.nationality) {
+      conditions.push(eq(players.nationality, filters.nationality));
+    }
+    if (filters.status) {
+      conditions.push(eq(players.status, filters.status));
     }
     
-    return await query;
+    if (conditions.length === 0) {
+      return await db.select().from(players);
+    }
+    
+    return await db.select().from(players).where(and(...conditions));
   }
 
   async getPlayerStats(): Promise<{ totalPlayers: number; countries: number }> {
-    const totalPlayers = await db.select({ count: sql<number>`count(*)` }).from(players);
-    const countries = await db.select({ count: sql<number>`count(DISTINCT ${players.nationality})` }).from(players);
+    const allPlayers = await db.select().from(players);
+    const uniqueCountries = new Set(allPlayers.map(p => p.nationality));
     
     return {
-      totalPlayers: totalPlayers[0]?.count || 0,
-      countries: countries[0]?.count || 0,
+      totalPlayers: allPlayers.length,
+      countries: uniqueCountries.size,
     };
   }
 
