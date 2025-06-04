@@ -29,6 +29,12 @@ export default function GroceryOrdersPage() {
     queryKey: ["/api/players"],
   });
 
+  // Query for house order summaries (admin only)
+  const { data: houseOrderSummary = {} } = useQuery({
+    queryKey: ["/api/house-order-summary"],
+    enabled: isAdmin,
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
@@ -86,6 +92,95 @@ export default function GroceryOrdersPage() {
         </Card>
       </div>
 
+      {/* House Order Summary - Admin Only */}
+      {isAdmin && Object.keys(houseOrderSummary).length > 0 && (
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>House Order Summary</CardTitle>
+              <p className="text-sm text-gray-600">Consolidated grocery orders by house</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(houseOrderSummary).map(([houseName, houseData]: [string, any]) => (
+                  <Card key={houseName} className="border-l-4 border-l-blue-500">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center justify-between">
+                        <span>{houseName}</span>
+                        <Badge variant="outline">
+                          {houseData.totalOrders} orders
+                        </Badge>
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">
+                        {houseData.players?.length || 0} players
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Players in this house */}
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Players:</h4>
+                        <div className="flex flex-wrap gap-1">
+                          {houseData.players?.map((player: string, index: number) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {player}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Consolidated Items */}
+                      {houseData.consolidatedItems && (
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-sm">Consolidated Items:</h4>
+                          
+                          {Object.entries(houseData.consolidatedItems).map(([category, items]: [string, any]) => (
+                            items?.length > 0 && (
+                              <div key={category} className="space-y-1">
+                                <h5 className="text-xs font-medium text-gray-600 capitalize">
+                                  {category}:
+                                </h5>
+                                <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
+                                  {Array.isArray(items) ? items.join(', ') : items}
+                                </div>
+                              </div>
+                            )
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Recent Orders for this house */}
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">Recent Orders:</h4>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {houseData.orderDetails?.slice(0, 3).map((order: any, index: number) => (
+                            <div key={index} className="text-xs p-2 bg-gray-50 rounded">
+                              <div className="flex justify-between items-center">
+                                <span className="font-medium">{order.playerName}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {order.status}
+                                </Badge>
+                              </div>
+                              <div className="text-gray-600 mt-1">
+                                {new Date(order.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                          ))}
+                          {houseData.orderDetails?.length > 3 && (
+                            <div className="text-xs text-gray-500 text-center">
+                              +{houseData.orderDetails.length - 3} more orders
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Recent Orders</CardTitle>
@@ -105,7 +200,7 @@ export default function GroceryOrdersPage() {
                     <div className="flex items-center gap-3">
                       <div>
                         <p className="font-medium">{order.playerName}</p>
-                        <p className="text-sm text-gray-500">House: {order.house}</p>
+                        <p className="text-sm text-gray-500">Week: {order.weekStartDate}</p>
                       </div>
                     </div>
                   </div>
