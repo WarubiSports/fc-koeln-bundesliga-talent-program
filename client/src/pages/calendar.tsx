@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import ExcuseModal from "@/components/excuse-modal";
 import ExcuseStats from "@/components/excuse-stats";
+import EditEventModal from "@/components/edit-event-modal";
 import EventCreationModal from "@/components/event-creation-modal";
 import type { Event } from "@shared/schema";
 
@@ -181,9 +182,11 @@ export default function CalendarPage() {
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
   const [isEventCreationModalOpen, setIsEventCreationModalOpen] = useState(false);
+  const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState("");
   const [selectedPlayer, setSelectedPlayer] = useState<string>("All Players");
   const [selectedGroup, setSelectedGroup] = useState<string>("All Groups");
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Fetch admin events from database
   const { data: adminEvents = [] } = useQuery({
@@ -256,6 +259,11 @@ export default function CalendarPage() {
       // For players, this opens the excuse modal for the selected activity
       setIsExcuseModalOpen(true);
     }
+  }
+
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent(event);
+    setIsEditEventModalOpen(true);
   };
 
   const handleEventSubmit = (eventData: any) => {
