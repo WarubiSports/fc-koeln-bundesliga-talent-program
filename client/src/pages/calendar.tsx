@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +42,7 @@ export default function Calendar() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [view, setView] = useState<CalendarView>("month");
+  const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -49,6 +50,29 @@ export default function Calendar() {
   const { data: events = [] } = useQuery({
     queryKey: ["/api/events"]
   });
+
+  const { data: players = [] } = useQuery({
+    queryKey: ["/api/players"]
+  });
+
+  // Filter events based on selected player
+  const filteredEvents = useMemo(() => {
+    if (selectedPlayer === "all") {
+      return events;
+    }
+    
+    return events.filter((event: Event) => {
+      if (!event.participants) return false;
+      
+      // Check if event is for all players
+      if (event.participants.toLowerCase().includes("all")) return true;
+      
+      // Check if specific player is in participants list
+      const participantList = event.participants.toLowerCase().split(",").map(p => p.trim());
+      return participantList.includes(selectedPlayer.toLowerCase()) ||
+             participantList.some(p => p.includes(selectedPlayer.toLowerCase()));
+    });
+  }, [events, selectedPlayer]);
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertEvent) => {
@@ -215,7 +239,8 @@ export default function Calendar() {
           </div>
           <div className="grid grid-cols-7">
             {days.map(day => {
-              const dayEvents = getEventsForDay(day);
+              const dateStr = format(day, "yyyy-MM-dd");
+              const dayEvents = filteredEvents.filter((event: Event) => event.date === dateStr);
               return (
                 <div
                   key={day.toISOString()}
