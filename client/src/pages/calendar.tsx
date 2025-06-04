@@ -162,13 +162,37 @@ export default function Calendar() {
     }
   });
 
+  const getEventTitle = (eventType: string) => {
+    const titles = {
+      "match": "Match",
+      "team_practice": "Team Practice",
+      "group_practice": "Group Practice", 
+      "individual_training": "Individual Training",
+      "fitness_session": "Fitness Session",
+      "tactical_training": "Tactical Training",
+      "medical_checkup": "Medical Checkup",
+      "team_meeting": "Team Meeting",
+      "travel": "Travel"
+    };
+    return titles[eventType as keyof typeof titles] || eventType;
+  };
+
   const onSubmit = (data: InsertEvent) => {
-    createMutation.mutate(data);
+    createMutation.mutate({
+      ...data,
+      title: getEventTitle(data.eventType),
+      date: format(currentDate, "yyyy-MM-dd"),
+      createdBy: user?.id || "system"
+    });
   };
 
   const onEditSubmit = (data: InsertEvent) => {
     if (selectedEvent) {
-      updateMutation.mutate({ id: selectedEvent.id, ...data });
+      updateMutation.mutate({ 
+        id: selectedEvent.id, 
+        ...data,
+        title: getEventTitle(data.eventType)
+      });
     }
   };
 
@@ -485,20 +509,6 @@ export default function Calendar() {
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Event title" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="eventType"
