@@ -1,105 +1,78 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, Calendar, Home, MessageSquare } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-fc-red/5 to-gray-50">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <div className="flex justify-center items-center mb-6">
+          <div className="flex justify-center mb-6">
             <img 
-              src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png"
+              src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png" 
               alt="FC Köln Football School" 
-              className="w-20 h-20 object-contain"
+              className="w-24 h-24 object-contain"
             />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             1.FC Köln International Talent Program
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Professional player management and team coordination system
+            Managing excellence in football development
           </p>
+          <Button size="lg" asChild>
+            <a href="/api/login">
+              Sign In to Continue
+            </a>
+          </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <div className="w-8 h-8 bg-fc-red/10 rounded-lg flex items-center justify-center mr-3">
-                  <i className="fas fa-user-shield text-fc-red"></i>
-                </div>
-                Admin Access
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-red-600" />
+                Player Management
               </CardTitle>
-              <CardDescription>
-                Full administrative control for coaches and staff
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>• Manage player roster and information</li>
-                <li>• Schedule training sessions and matches</li>
-                <li>• Create calendar events and activities</li>
-                <li>• Oversee house management and chores</li>
-                <li>• Access analytics and reports</li>
-              </ul>
+              <p className="text-gray-600">Track player profiles, performance, and development progress.</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <div className="w-8 h-8 bg-fc-red/10 rounded-lg flex items-center justify-center mr-3">
-                  <i className="fas fa-futbol text-fc-red"></i>
-                </div>
-                Player Access
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-red-600" />
+                Training Schedule
               </CardTitle>
-              <CardDescription>
-                Essential tools for talented players
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>• View training schedule and events</li>
-                <li>• Access personal calendar</li>
-                <li>• Check assigned chores and tasks</li>
-                <li>• Order weekly groceries</li>
-                <li>• Update availability status</li>
-              </ul>
+              <p className="text-gray-600">Manage training sessions, matches, and team events.</p>
             </CardContent>
           </Card>
-        </div>
 
-        <div className="text-center">
-          <Card className="inline-block">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl text-fc-red mb-2">Ready to Access?</CardTitle>
-              <CardDescription>
-                Sign in with your account to get started
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Home className="h-5 w-5 text-red-600" />
+                Housing Management
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={() => window.location.href = '/login'}
-                className="w-full bg-fc-red hover:bg-fc-red/90 text-white px-8 py-3 text-lg"
-                size="lg"
-              >
-                <i className="fas fa-user-plus mr-2"></i>
-                New User Registration
-              </Button>
-              
-              <Button 
-                onClick={() => window.location.href = '/simple-login'}
-                variant="outline"
-                className="w-full border-fc-red text-fc-red hover:bg-fc-red hover:text-white px-8 py-3 text-lg"
-                size="lg"
-              >
-                <i className="fas fa-sign-in-alt mr-2"></i>
-                Returning User Login
-              </Button>
-              
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Your access level will be automatically determined based on your account
-              </p>
+            <CardContent>
+              <p className="text-gray-600">Coordinate housing arrangements and facilities.</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-red-600" />
+                Communication
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">Stay connected with team updates and announcements.</p>
             </CardContent>
           </Card>
         </div>
