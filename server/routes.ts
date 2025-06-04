@@ -43,12 +43,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Development logout endpoint
   app.post('/api/auth/dev-logout', async (req: any, res) => {
-    // Clear session data and set logout flag
-    delete (req.session as any).devLoggedIn;
-    delete (req.session as any).userData;
-    (req.session as any).loggedOut = true;
-    
-    res.json({ message: 'Logged out successfully' });
+    // Destroy the entire session to ensure clean logout
+    req.session.destroy((err: any) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+        res.status(500).json({ message: 'Logout failed' });
+        return;
+      }
+      // Clear the cookie as well
+      res.clearCookie('connect.sid');
+      res.json({ message: 'Logged out successfully' });
+    });
   });
 
   // Clear logout flag endpoint (for testing landing page)
@@ -73,8 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Auth check - session.userData:', !!(req.session as any)?.userData);
     console.log('Auth check - session.loggedOut:', req.session?.loggedOut);
     
-    // Auto-login for development mode when no session exists (but not if user explicitly logged out)
-    if (!((req.session as any)?.devLoggedIn) && !((req.session as any)?.userData) && !((req.session as any)?.loggedOut)) {
+    // Only auto-login if there's no session at all (first time visitor)
+    if (!req.session || Object.keys(req.session).length === 0) {
       console.log('No session found, auto-logging in for development');
       (req.session as any).devLoggedIn = true;
       (req.session as any).userData = {
