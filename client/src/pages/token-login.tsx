@@ -46,56 +46,81 @@ export default function TokenLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-600 via-red-700 to-red-800 flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        {/* Hero Section */}
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-6">
             <img 
               src="https://germany-socceracademy.com/wp-content/uploads/2023/09/NewCologneLogo.png" 
               alt="FC Köln Football School" 
-              className="w-16 h-16 object-contain mx-auto"
+              className="w-20 h-20 object-contain mx-auto"
             />
           </div>
-          <CardTitle className="text-2xl">Sign in to FC Köln</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                placeholder="Enter your username"
-              />
+          <h1 className="text-3xl font-bold text-white mb-2">FC Köln</h1>
+          <p className="text-red-100 text-lg">International Talent Program</p>
+          <p className="text-red-200 text-sm mt-1">Management System</p>
+        </div>
+
+        {/* Login Card */}
+        <Card className="shadow-2xl border-0">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-xl text-gray-800">Team Access</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">Sign in to access your dashboard</p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-gray-700">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  placeholder="Enter your username"
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-700">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter your password"
+                  className="h-11"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-medium" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+            
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-500">
+                For access issues, contact your program administrator
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-sm text-gray-600 space-y-1">
-            <p><strong>Test Accounts:</strong></p>
-            <p>Admin: admin / admin123</p>
-            <p>Coach: coach / coach123</p>
-            <p>Staff: staff / staff123</p>
-            <p>Manager: manager / manager123</p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-red-100 text-sm">
+            © 2024 FC Köln International Talent Program
+          </p>
+          <p className="text-red-200 text-xs mt-1">
+            Widdersdorf Training Facility
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
