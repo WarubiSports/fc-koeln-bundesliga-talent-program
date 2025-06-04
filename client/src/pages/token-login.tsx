@@ -17,7 +17,7 @@ export default function TokenLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/api/auth/simple-login", {
+      const response = await apiRequest("/api/auth/simple-login", "POST", {
         username,
         password
       });
