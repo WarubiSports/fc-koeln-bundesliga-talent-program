@@ -177,7 +177,7 @@ const sampleEvents: CalendarEvent[] = [...generatePracticeSessions(), ...additio
 export default function CalendarPage() {
   const { user, isAuthenticated } = useAuth();
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [currentDate, setCurrentDate] = useState(new Date('2025-06-01'));
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('month');
   const [events] = useState<CalendarEvent[]>(sampleEvents);
   const [isExcuseModalOpen, setIsExcuseModalOpen] = useState(false);
@@ -482,8 +482,8 @@ export default function CalendarPage() {
                               <div className="text-gray-600 text-center mt-1">{timeDisplay}</div>
                               {event.location && <div className="text-gray-500 text-center text-[10px] mt-1">{event.location}</div>}
                               
-                              {/* Admin edit buttons - only show for database events */}
-                              {isAdmin && event.isAdminEvent && (
+                              {/* Admin edit buttons - show for all events when user is admin */}
+                              {isAdmin && (
                                 <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                   <Button
                                     size="sm"
@@ -491,10 +491,30 @@ export default function CalendarPage() {
                                     className="h-6 w-6 p-0 text-gray-600 hover:text-fc-red hover:bg-white/50"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      // Find the actual Event object from adminEvents
-                                      const actualEvent = (adminEvents as Event[]).find((ae: Event) => ae.id === event.adminEventId);
-                                      if (actualEvent) {
-                                        handleEditEvent(actualEvent);
+                                      if (event.isAdminEvent && event.adminEventId) {
+                                        // Find the actual Event object from adminEvents
+                                        const actualEvent = (adminEvents as Event[]).find((ae: Event) => ae.id === event.adminEventId);
+                                        if (actualEvent) {
+                                          handleEditEvent(actualEvent);
+                                        }
+                                      } else {
+                                        // Convert sample event to Event format for editing
+                                        const sampleEvent: Event = {
+                                          id: event.id,
+                                          title: event.title,
+                                          eventType: event.type === 'training' ? 'Team Practice Session' :
+                                                   event.type === 'match' ? 'Match' :
+                                                   event.type === 'meeting' ? 'Meeting' : 'Other',
+                                          date: event.date,
+                                          startTime: event.time,
+                                          endTime: event.endTime || '',
+                                          location: event.location,
+                                          notes: event.description || '',
+                                          createdBy: 'Sample Event',
+                                          createdAt: new Date(),
+                                          updatedAt: new Date()
+                                        };
+                                        handleEditEvent(sampleEvent);
                                       }
                                     }}
                                   >
@@ -506,8 +526,11 @@ export default function CalendarPage() {
                                     className="h-6 w-6 p-0 text-gray-600 hover:text-red-600 hover:bg-white/50"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (event.adminEventId) {
+                                      if (event.isAdminEvent && event.adminEventId) {
                                         deleteEventMutation.mutate(event.adminEventId);
+                                      } else {
+                                        // For sample events, just show a message that they can't be deleted
+                                        alert('Sample events cannot be deleted. Only database events can be deleted.');
                                       }
                                     }}
                                   >
@@ -594,7 +617,7 @@ export default function CalendarPage() {
                       return (
                         <div 
                           key={event.id} 
-                          className="absolute left-1 right-1 bg-fc-red/10 border-l-2 border-fc-red rounded text-xs p-1 z-10 flex flex-col justify-center"
+                          className="absolute left-1 right-1 bg-fc-red/10 border-l-2 border-fc-red rounded text-xs p-1 z-10 flex flex-col justify-center group hover:bg-fc-red/20 transition-colors"
                           style={{ 
                             height: `${eventHeight}px`,
                             top: '4px'
@@ -602,6 +625,46 @@ export default function CalendarPage() {
                         >
                           <div className="font-medium truncate text-center">{event.title}</div>
                           <div className="text-gray-600 text-[10px] text-center">{timeDisplay}</div>
+                          
+                          {/* Admin edit buttons - show for all events when user is admin */}
+                          {isAdmin && (
+                            <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-4 w-4 p-0 text-gray-600 hover:text-fc-red hover:bg-white/50"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (event.isAdminEvent && event.adminEventId) {
+                                    const actualEvent = (adminEvents as Event[]).find((ae: Event) => ae.id === event.adminEventId);
+                                    if (actualEvent) {
+                                      handleEditEvent(actualEvent);
+                                    }
+                                  } else {
+                                    // Convert sample event to Event format for editing
+                                    const sampleEvent: Event = {
+                                      id: event.id,
+                                      title: event.title,
+                                      eventType: event.type === 'training' ? 'Team Practice Session' :
+                                               event.type === 'match' ? 'Match' :
+                                               event.type === 'meeting' ? 'Meeting' : 'Other',
+                                      date: event.date,
+                                      startTime: event.time,
+                                      endTime: event.endTime || '',
+                                      location: event.location,
+                                      notes: event.description || '',
+                                      createdBy: 'Sample Event',
+                                      createdAt: new Date(),
+                                      updatedAt: new Date()
+                                    };
+                                    handleEditEvent(sampleEvent);
+                                  }
+                                }}
+                              >
+                                <Edit className="h-2 w-2" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
