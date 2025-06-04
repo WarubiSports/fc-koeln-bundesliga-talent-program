@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Header from "@/components/header";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -122,7 +122,7 @@ export default function Communications() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <Header />
+      
       
       <div className="flex flex-1 overflow-hidden">
         {/* Chat List Sidebar */}

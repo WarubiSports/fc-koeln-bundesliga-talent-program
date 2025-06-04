@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+
 import HouseRules from "@/components/house-rules";
 import ChoresList from "@/components/chores-list";
 import ChoreStats from "@/components/chore-stats";
@@ -9,10 +9,7 @@ export default function Chores() {
   const [isAddChoreModalOpen, setIsAddChoreModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <HouseRules />
         
         <ChoreStats />
