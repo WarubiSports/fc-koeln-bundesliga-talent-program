@@ -121,10 +121,7 @@ export default function TokenLogin() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-red-100 text-sm">
-            © 2024 FC Köln International Talent Program
-          </p>
-          <p className="text-red-200 text-xs mt-1">
-            Widdersdorf Training Facility
+            © 2025 Warubi Sports
           </p>
         </div>
       </div>
