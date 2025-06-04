@@ -276,7 +276,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new player
+  // Player registration endpoint (public)
+  app.post("/api/players/register", async (req, res) => {
+    try {
+      const { 
+        firstName, lastName, email, password, phone, dateOfBirth, 
+        nationality, nationalityCode, position, positions, preferredFoot,
+        height, weight, jerseyNumber, previousClub, profileImageUrl,
+        emergencyContactName, emergencyContactPhone, medicalConditions, allergies
+      } = req.body;
+
+      // Calculate age from date of birth
+      const birthDate = new Date(dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      // Create player data with default status and house assignment
+      const playerData = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        dateOfBirth,
+        age,
+        nationality,
+        nationalityCode,
+        position,
+        positions,
+        preferredFoot: preferredFoot || "right",
+        height: height ? parseInt(height) : undefined,
+        weight: weight ? parseInt(weight) : undefined,
+        jerseyNumber: jerseyNumber ? parseInt(jerseyNumber) : undefined,
+        previousClub,
+        profileImageUrl,
+        emergencyContactName,
+        emergencyContactPhone,
+        medicalConditions,
+        allergies,
+        status: "pending", // Default status for new registrations
+        house: null, // Admin will assign house later
+        availability: "available",
+        availabilityReason: null
+      };
+
+      const validatedData = insertPlayerSchema.parse(playerData);
+      const player = await storage.createPlayer(validatedData);
+      
+      res.status(201).json({ 
+        message: "Registration submitted successfully. Your profile is pending approval.",
+        player: player 
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation failed", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to register player" });
+    }
+  });
+
+  // Create new player (admin only)
   app.post("/api/players", async (req, res) => {
     try {
       const validatedData = insertPlayerSchema.parse(req.body);
