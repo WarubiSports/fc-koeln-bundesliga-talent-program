@@ -892,19 +892,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/events/:id", async (req: any, res) => {
-    // Check session-based authentication or allow for development
-    const sessionUser = (req.session as any)?.userData;
-    const devLoggedIn = (req.session as any)?.devLoggedIn;
-    
-    // Allow if properly authenticated session OR if in development mode
-    if (!sessionUser && !devLoggedIn) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-    
-    if (sessionUser && sessionUser.role !== 'admin') {
-      return res.status(403).json({ message: "Admin access required" });
-    }
+  app.patch("/api/events/:id", devAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);
