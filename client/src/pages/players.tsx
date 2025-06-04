@@ -55,7 +55,7 @@ export default function Players() {
 
   const approveUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      await apiRequest("PUT", `/api/admin/approve-user/${userId}`);
+      await apiRequest(`/api/admin/approve-user/${userId}`, "PUT");
     },
     onSuccess: () => {
       // Invalidate multiple related queries to ensure proper refresh
@@ -78,7 +78,7 @@ export default function Players() {
 
   const rejectUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      await apiRequest("DELETE", `/api/admin/reject-user/${userId}`);
+      await apiRequest(`/api/admin/reject-user/${userId}`, "DELETE");
     },
     onSuccess: () => {
       // Invalidate multiple related queries to ensure proper refresh
