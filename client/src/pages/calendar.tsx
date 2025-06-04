@@ -415,27 +415,7 @@ export default function CalendarPage() {
               const timeSlot = formatTime12Hour(hour);
               
               // Check if any event spans this hour
-              const eventsAtHour = dayEvents.filter(event => {
-                if (!event.time && !event.startTime) return false;
-                
-                const startTime = event.time || event.startTime;
-                const endTime = event.endTime;
-                
-                // Parse start time
-                const [startHour] = startTime.split(':').map(Number);
-                
-                if (endTime) {
-                  // Parse end time
-                  const [endHour, endMinute] = endTime.split(':').map(Number);
-                  const endHourFloat = endHour + endMinute / 60;
-                  
-                  // Event spans this hour if it starts before or at this hour and ends after this hour
-                  return startHour <= hour && endHourFloat > hour;
-                } else {
-                  // No end time, only show at start hour
-                  return startHour === hour;
-                }
-              });
+              const eventsAtHour = dayEvents.filter(event => eventSpansHour(event, hour));
               
               return (
                 <div key={hour} className="col-span-12 border-b py-2 min-h-[60px]">
@@ -503,27 +483,7 @@ export default function CalendarPage() {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
               
               // Check if any event spans this hour
-              const eventsAtHour = dayEvents.filter(event => {
-                if (!event.time && !event.startTime) return false;
-                
-                const startTime = event.time || event.startTime;
-                const endTime = event.endTime;
-                
-                // Parse start time
-                const [startHour] = startTime.split(':').map(Number);
-                
-                if (endTime) {
-                  // Parse end time
-                  const [endHour, endMinute] = endTime.split(':').map(Number);
-                  const endHourFloat = endHour + endMinute / 60;
-                  
-                  // Event spans this hour if it starts before or at this hour and ends after this hour
-                  return startHour <= hour && endHourFloat > hour;
-                } else {
-                  // No end time, only show at start hour
-                  return startHour === hour;
-                }
-              });
+              const eventsAtHour = dayEvents.filter(event => eventSpansHour(event, hour));
               
               return (
                 <div key={`${day.toISOString()}-${hour}`} className="p-1 border-t min-h-[40px]">
@@ -625,6 +585,32 @@ export default function CalendarPage() {
         return "bg-purple-500 text-white";
       default:
         return "bg-gray-500 text-white";
+    }
+  };
+
+  // Helper function to check if an event spans a given hour
+  const eventSpansHour = (event: any, hour: number) => {
+    if (!event.time && !event.startTime) return false;
+    
+    const startTime = event.time || event.startTime;
+    const endTime = event.endTime;
+    
+    // Parse start time (handle both "10:00" and "10" formats)
+    const startParts = startTime.split(':');
+    const startHour = parseInt(startParts[0]);
+    
+    if (endTime) {
+      // Parse end time
+      const endParts = endTime.split(':');
+      const endHour = parseInt(endParts[0]);
+      const endMinute = endParts[1] ? parseInt(endParts[1]) : 0;
+      const endHourFloat = endHour + endMinute / 60;
+      
+      // Event spans this hour if it starts before or at this hour and ends after this hour
+      return startHour <= hour && endHourFloat > hour;
+    } else {
+      // No end time, only show at start hour
+      return startHour === hour;
     }
   };
 
