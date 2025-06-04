@@ -432,7 +432,7 @@ export default function CalendarPage() {
                         const isStartHour = startHour === hour;
                         
                         return (
-                          <div key={event.id} className={`mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs ${!isStartHour ? 'opacity-60' : ''}`}>
+                          <div key={`${event.id}-${hour}`} className={`mb-1 p-2 bg-fc-red/10 border-l-4 border-fc-red rounded text-xs ${!isStartHour ? 'opacity-60' : ''}`}>
                             <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
                             {isStartHour && <div className="text-gray-600">{timeDisplay}</div>}
                             {isStartHour && event.location && <div className="text-gray-500">{event.location}</div>}
@@ -497,7 +497,7 @@ export default function CalendarPage() {
                     const isStartHour = startHour === hour;
                     
                     return (
-                      <div key={event.id} className={`text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1 ${!isStartHour ? 'opacity-60' : ''}`}>
+                      <div key={`${event.id}-${hour}`} className={`text-xs p-1 bg-fc-red/10 border-l-2 border-fc-red rounded mb-1 ${!isStartHour ? 'opacity-60' : ''}`}>
                         <div className="font-medium">{isStartHour ? event.title : `${event.title} (continued)`}</div>
                         {isStartHour && <div className="text-gray-600 text-[10px]">{timeDisplay}</div>}
                       </div>
@@ -595,16 +595,6 @@ export default function CalendarPage() {
     const startTime = event.time || event.startTime;
     const endTime = event.endTime;
     
-    // Debug logging for troubleshooting
-    if (event.title === "Team Practice Session" && hour >= 9 && hour <= 13) {
-      console.log(`Checking hour ${hour} for event:`, {
-        title: event.title,
-        startTime,
-        endTime,
-        eventData: event
-      });
-    }
-    
     // Parse start time (handle both "10:00" and "10" formats)
     const startParts = startTime.split(':');
     const startHour = parseInt(startParts[0]);
@@ -623,19 +613,7 @@ export default function CalendarPage() {
       const hourEnd = (hour + 1) * 60;
       
       // Event spans this hour if it overlaps with the hour timeframe
-      const spans = startTimeMinutes < hourEnd && endTimeMinutes > hourStart;
-      
-      if (event.title === "Team Practice Session") {
-        console.log(`Hour ${hour} span check:`, {
-          startTimeMinutes,
-          endTimeMinutes,
-          hourStart,
-          hourEnd,
-          spans
-        });
-      }
-      
-      return spans;
+      return startTimeMinutes < hourEnd && endTimeMinutes > hourStart;
     } else {
       // No end time, only show at start hour
       return startHour === hour;
