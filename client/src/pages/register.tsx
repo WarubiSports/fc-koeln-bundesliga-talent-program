@@ -282,7 +282,7 @@ export default function Register() {
                       placeholder="e.g. German, Brazilian"
                     />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2">
                     <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
                     <div className="flex items-start gap-4">
                       <Input
