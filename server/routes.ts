@@ -395,13 +395,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/admin/user-stats', simpleAdminAuth, async (req, res) => {
     try {
-      const allUsers = await db.select().from(users);
+      const allUsers = await storage.getAllUsers();
       const players = await storage.getAllPlayers();
       
       const stats = {
         totalUsers: allUsers.length,
-        pendingUsers: allUsers.filter(u => u.status === 'pending').length,
-        approvedUsers: allUsers.filter(u => u.status === 'approved').length,
+        pendingUsers: allUsers.filter((u: any) => u.status === 'pending').length,
+        approvedUsers: allUsers.filter((u: any) => u.status === 'approved').length,
         activePlayers: players.filter(p => p.status === 'active').length,
       };
       

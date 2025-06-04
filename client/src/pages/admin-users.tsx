@@ -27,12 +27,17 @@ export default function AdminUsers() {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<PendingUser | null>(null);
 
-  const { data: pendingUsers = [], isLoading } = useQuery({
+  const { data: pendingUsers = [], isLoading } = useQuery<PendingUser[]>({
     queryKey: ["/api/admin/pending-users"],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  const { data: userStats } = useQuery({
+  const { data: userStats = {} } = useQuery<{
+    totalUsers: number;
+    pendingUsers: number;
+    approvedUsers: number;
+    activePlayers: number;
+  }>({
     queryKey: ["/api/admin/user-stats"],
   });
 
@@ -45,7 +50,7 @@ export default function AdminUsers() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/user-stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/players"] });
       
-      const user = pendingUsers.find((u: PendingUser) => u.id === userId);
+      const user = pendingUsers.find(u => u.id === userId);
       toast({
         title: "User Approved",
         description: `${user?.firstName} ${user?.lastName} has been approved and can now access the application.`,
@@ -126,7 +131,7 @@ export default function AdminUsers() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{userStats?.totalUsers || 0}</div>
+            <div className="text-2xl font-bold text-blue-600">{userStats.totalUsers || 0}</div>
             <p className="text-xs text-muted-foreground">All registered users</p>
           </CardContent>
         </Card>

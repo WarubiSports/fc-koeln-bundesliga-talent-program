@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-token-auth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { NotificationBell } from "@/components/notification-bell";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
+  const isAdmin = user?.role === 'admin';
   const [location] = useLocation();
 
   return (
@@ -124,6 +126,27 @@ export default function Header() {
             >
               Calendar
             </a>
+
+            {isAdmin && (
+              <>
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Admin
+                  </p>
+                  <a 
+                    href="/admin/users" 
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      location === "/admin/users" 
+                        ? "text-[#DC143C] bg-red-50" 
+                        : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    User Management
+                  </a>
+                </div>
+              </>
+            )}
 
             <div className="border-t border-gray-200 pt-3 mt-3">
               <a 
