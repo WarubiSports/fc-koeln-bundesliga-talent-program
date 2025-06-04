@@ -57,11 +57,13 @@ export default function Calendar() {
 
   // Filter events based on selected player
   const filteredEvents = useMemo(() => {
+    if (!Array.isArray(events)) return [];
+    
     if (selectedPlayer === "all") {
-      return events;
+      return events as Event[];
     }
     
-    return events.filter((event: Event) => {
+    return (events as Event[]).filter((event: Event) => {
       if (!event.participants) return false;
       
       // Check if event is for all players
@@ -369,7 +371,8 @@ export default function Calendar() {
   };
 
   const renderDayView = () => {
-    const dayEvents = getEventsForDay(currentDate);
+    const dateStr = format(currentDate, "yyyy-MM-dd");
+    const dayEvents = filteredEvents.filter((event: Event) => event.date === dateStr);
     const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6am to 11pm
 
     return (
@@ -395,7 +398,7 @@ export default function Calendar() {
                     {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}
                   </div>
                   <div className="flex-1 p-2 min-h-12">
-                    {hourEvents.map((event: Event) => (
+                    {hourEvents.map((event) => (
                       <div
                         key={event.id}
                         className={`p-2 rounded cursor-pointer mb-2 ${
@@ -444,6 +447,24 @@ export default function Calendar() {
         <div className="flex items-center gap-3">
           <CalendarIcon className="h-8 w-8 text-red-600" />
           <h1 className="text-3xl font-bold">Calendar</h1>
+          
+          {/* Player Filter Dropdown */}
+          <div className="flex items-center gap-2 ml-6">
+            <span className="text-sm text-gray-600">View:</span>
+            <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Select player" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Events</SelectItem>
+                {(players as any[]).map((player: any) => (
+                  <SelectItem key={player.id} value={`${player.firstName} ${player.lastName}`}>
+                    {player.firstName} {player.lastName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         {isAdmin && (
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
