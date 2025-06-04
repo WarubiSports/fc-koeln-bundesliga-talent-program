@@ -52,6 +52,7 @@ export default function Calendar() {
   const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [isCreateTemplateModalOpen, setIsCreateTemplateModalOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -133,6 +134,21 @@ export default function Calendar() {
       toast({
         title: "Success",
         description: "Event deleted successfully",
+      });
+    }
+  });
+
+  // Template creation mutation
+  const createTemplateMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest("/api/event-templates", "POST", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/event-templates"] });
+      setIsCreateTemplateModalOpen(false);
+      toast({
+        title: "Success",
+        description: "Template created successfully",
       });
     }
   });
@@ -279,6 +295,14 @@ export default function Calendar() {
         title: getEventTitle(data.eventType)
       });
     }
+  };
+
+  const onTemplateSubmit = (data: any) => {
+    createTemplateMutation.mutate({
+      ...data,
+      title: getEventTitle(data.eventType),
+      createdBy: user?.id || "system"
+    });
   };
 
   const handleEdit = (event: Event) => {
@@ -1018,9 +1042,19 @@ export default function Calendar() {
       {showTemplates && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bookmark className="w-5 h-5" />
-              Event Templates
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bookmark className="w-5 h-5" />
+                Event Templates
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsCreateTemplateModalOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Template
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -1313,6 +1347,83 @@ export default function Calendar() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Create Template Modal */}
+      <Dialog open={isCreateTemplateModalOpen} onOpenChange={setIsCreateTemplateModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Create Event Template</DialogTitle>
+            <DialogDescription>
+              Create a reusable template for events
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData);
+            onTemplateSubmit(data);
+          }} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Event Type</label>
+                <select name="eventType" className="w-full mt-1 p-2 border rounded" required>
+                  <option value="team_practice">Team Practice</option>
+                  <option value="group_practice">Group Practice</option>
+                  <option value="individual_training">Individual Training</option>
+                  <option value="fitness_session">Fitness Session</option>
+                  <option value="tactical_training">Tactical Training</option>
+                  <option value="weight_lifting">Weight Lifting</option>
+                  <option value="cryotherapy">Cryotherapy</option>
+                  <option value="language_school">Language School</option>
+                  <option value="video_session">Video Session</option>
+                  <option value="match">Match</option>
+                  <option value="medical_checkup">Medical Checkup</option>
+                  <option value="team_meeting">Team Meeting</option>
+                  <option value="travel">Travel</option>
+                  <option value="nutrition_consultation">Nutrition Consultation</option>
+                  <option value="mental_coaching">Mental Coaching</option>
+                  <option value="physiotherapy">Physiotherapy</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Location</label>
+                <input name="location" type="text" className="w-full mt-1 p-2 border rounded" />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Start Time</label>
+                <input name="startTime" type="time" className="w-full mt-1 p-2 border rounded" defaultValue="09:00" required />
+              </div>
+              <div>
+                <label className="text-sm font-medium">End Time</label>
+                <input name="endTime" type="time" className="w-full mt-1 p-2 border rounded" defaultValue="10:00" required />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Participants</label>
+              <input name="participants" type="text" className="w-full mt-1 p-2 border rounded" placeholder="e.g., All Players, Team A, etc." />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Notes</label>
+              <textarea name="notes" className="w-full mt-1 p-2 border rounded" rows={3} placeholder="Additional notes for this template"></textarea>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsCreateTemplateModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createTemplateMutation.isPending}>
+                {createTemplateMutation.isPending ? "Creating..." : "Create Template"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
