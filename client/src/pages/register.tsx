@@ -282,23 +282,21 @@ export default function Register() {
                       placeholder="e.g. German, Brazilian"
                     />
                   </div>
-                </div>
-                
-                {/* Profile Picture Upload */}
-                <div className="space-y-2">
-                  <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
-                  <Input
-                    id="profileImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
-                  />
-                  {formData.profileImageUrl && (
-                    <div className="mt-2">
-                      <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="profileImage" className="text-gray-700">Profile Picture</Label>
+                    <div className="flex items-start gap-4">
+                      <Input
+                        id="profileImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                      />
+                      {formData.profileImageUrl && (
+                        <img src={formData.profileImageUrl} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-gray-200" />
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
