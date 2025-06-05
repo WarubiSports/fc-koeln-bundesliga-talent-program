@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle, Edit3 } from "lucide-react";
+import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle, Edit3, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -176,6 +176,29 @@ export default function Players() {
     onError: (error: Error) => {
       toast({
         title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deletePlayerMutation = useMutation({
+    mutationFn: async (playerId: number) => {
+      await apiRequest(`/api/admin/delete-player/${playerId}`, "DELETE");
+    },
+    onSuccess: (_, playerId) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      
+      const player = players.find(p => p.id === playerId);
+      toast({
+        title: "Player Deleted",
+        description: `${player?.firstName} ${player?.lastName} has been permanently deleted.`,
+        variant: "destructive",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Deletion Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -474,14 +497,29 @@ export default function Players() {
                                 {player.status}
                               </Badge>
                               {isAdmin && (
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => handleEditPlayer(player)}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <Edit3 className="h-3 w-3" />
-                                </Button>
+                                <>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleEditPlayer(player)}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <Edit3 className="h-3 w-3" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="destructive"
+                                    onClick={() => {
+                                      if (window.confirm(`⚠️ DELETE ${player.firstName} ${player.lastName}?\n\nThis will permanently remove:\n• Player profile\n• All associated data\n\nCannot be undone!`)) {
+                                        deletePlayerMutation.mutate(player.id);
+                                      }
+                                    }}
+                                    disabled={deletePlayerMutation.isPending}
+                                    className="h-6 w-6 p-0 bg-red-800 hover:bg-red-900"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </>
                               )}
                             </div>
                           </div>
