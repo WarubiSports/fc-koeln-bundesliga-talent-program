@@ -144,6 +144,17 @@ export default function Header() {
                   >
                     User Management
                   </a>
+                  <a 
+                    href="/admin/members" 
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      location === "/admin/members" 
+                        ? "text-[#DC143C] bg-red-50" 
+                        : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Member Management
+                  </a>
                 </div>
               </>
             )}

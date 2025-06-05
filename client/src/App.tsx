@@ -14,6 +14,7 @@ import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
 import Communications from "@/pages/communications";
 import AdminUsers from "@/pages/admin-users";
+import AdminMembers from "@/pages/admin-members";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
@@ -61,6 +62,7 @@ function Router() {
           <Route path="/food-orders" component={FoodOrders} />
           <Route path="/communications" component={Communications} />
           <Route path="/admin/users" component={AdminUsers} />
+        <Route path="/admin/members" component={AdminMembers} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>

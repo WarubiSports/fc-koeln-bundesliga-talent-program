@@ -425,6 +425,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all approved users and players for deletion management
+  app.get('/api/admin/approved-users', simpleAdminAuth, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      const approvedUsers = allUsers.filter((u: any) => u.status === 'approved');
+      res.json(approvedUsers);
+    } catch (error) {
+      console.error("Error fetching approved users:", error);
+      res.status(500).json({ message: "Failed to fetch approved users" });
+    }
+  });
+
   // Admin deletion endpoints - only for Max Bisinger
   app.delete('/api/admin/delete-user/:userId', simpleAdminAuth, async (req: any, res) => {
     try {
