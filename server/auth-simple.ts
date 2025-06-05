@@ -27,7 +27,7 @@ export const simpleAdminAuth: RequestHandler = (req: any, res, next) => {
     const userData = loggedInUsers.get(token);
     
     if (userData && userData.role === 'admin') {
-      req.user = { userData };
+      req.user = userData;
       return next();
     }
   }
@@ -44,7 +44,7 @@ export const simpleAdminOrCoachAuth: RequestHandler = (req: any, res, next) => {
     const userData = loggedInUsers.get(token);
     
     if (userData && (userData.role === 'admin' || userData.role === 'coach')) {
-      req.user = { userData };
+      req.user = userData;
       return next();
     }
   }
