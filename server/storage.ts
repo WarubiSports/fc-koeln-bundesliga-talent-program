@@ -6,6 +6,9 @@ import {
   practiceExcuses,
   groceryOrders,
   events,
+  messages,
+  notifications,
+  eventTemplates,
   type User,
   type UpsertUser,
   type Player,
@@ -29,14 +32,15 @@ import {
   type Event,
   type InsertEvent,
   type UpdateEvent,
-  eventTemplates,
   type EventTemplate,
   type InsertEventTemplate,
   type UpdateEventTemplate,
-  notifications,
   type Notification,
   type InsertNotification,
   type UpdateNotification,
+  type Message,
+  type InsertMessage,
+  type UpdateMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql, desc, count, and, or, inArray } from "drizzle-orm";
@@ -912,7 +916,7 @@ export class DatabaseStorage implements IStorage {
     return eventList;
   }
 
-  // Communication methods - temporary implementation
+  // Communication methods
   async getAllMessages(): Promise<any[]> {
     return await db.select().from(messages).orderBy(desc(messages.createdAt));
   }
