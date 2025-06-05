@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { insertChoreSchema, type InsertChore } from "../../../shared/schema";
 
@@ -19,6 +20,7 @@ interface AddChoreModalProps {
 
 export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch players for assignment dropdown
@@ -38,6 +40,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
       dueDate: "",
       status: "pending",
       priority: "medium",
+      createdBy: user?.id || "",
     },
   });
 
