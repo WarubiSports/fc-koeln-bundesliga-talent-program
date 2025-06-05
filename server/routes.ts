@@ -563,6 +563,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all users for messaging (includes admins, staff, and players)
+  app.get("/api/users", simpleAuth, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      
+      // Filter to show only approved users and exclude the current user
+      const currentUserId = (req as any).user?.id;
+      const availableUsers = allUsers
+        .filter((user: any) => user.status === 'approved' && user.id !== currentUserId)
+        .map((user: any) => ({
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+          profileImageUrl: user.profileImageUrl,
+          house: user.house,
+          position: user.position,
+          nationality: user.nationality
+        }));
+      
+      res.json(availableUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   // Get player by ID
   app.get("/api/players/:id", async (req, res) => {
     try {

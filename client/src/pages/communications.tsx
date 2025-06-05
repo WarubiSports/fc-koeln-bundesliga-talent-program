@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Send, Search, Phone, Video, MoreVertical, ArrowLeft, Users } from "lucide-react";
+import { MessageSquare, Send, Search, Phone, Video, MoreVertical, ArrowLeft, Users, Plus, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Conversation {
   id: string;
@@ -24,6 +25,8 @@ export default function Communications() {
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showConversationList, setShowConversationList] = useState(true);
+  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -35,6 +38,11 @@ export default function Communications() {
 
   const { data: players = [] } = useQuery({
     queryKey: ["/api/players"],
+  });
+
+  // Fetch all users for messaging (admins, staff, players)
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ["/api/users"],
   });
 
   // Send message mutation
@@ -116,19 +124,36 @@ export default function Communications() {
     );
   };
 
-  const startNewChat = (player: any) => {
+  const startNewChat = (targetUser: any) => {
     const conversation: Conversation = {
-      id: `private-${player.id}`,
+      id: `private-${targetUser.id}`,
       type: "private",
-      participant: player,
-      name: `${player.firstName} ${player.lastName}`,
+      participant: targetUser,
+      name: `${targetUser.firstName} ${targetUser.lastName}`,
       lastMessage: "",
       lastMessageTime: "",
       unreadCount: 0,
-      avatar: player.firstName?.charAt(0) || "U"
+      avatar: targetUser.firstName?.charAt(0) || "U"
     };
     setSelectedConversation(conversation);
     setShowConversationList(false);
+    setIsNewChatModalOpen(false);
+    setUserSearchQuery("");
+  };
+
+  // Get available users for messaging (filtered by search)
+  const getAvailableUsers = () => {
+    return (allUsers as any[])
+      .filter(user => 
+        !userSearchQuery || 
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+        user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        // Sort by role: admins first, then staff, then players
+        const roleOrder = { admin: 0, staff: 1, player: 2 };
+        return (roleOrder[a.role as keyof typeof roleOrder] || 3) - (roleOrder[b.role as keyof typeof roleOrder] || 3);
+      });
   };
 
   const getConversationMessages = () => {
@@ -175,9 +200,55 @@ export default function Communications() {
         <div className="p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
-            <Button variant="ghost" size="sm">
-              <MoreVertical className="h-5 w-5" />
-            </Button>
+            <Dialog open={isNewChatModalOpen} onOpenChange={setIsNewChatModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <UserPlus className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Start New Conversation</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search users..."
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="max-h-64 overflow-y-auto space-y-1">
+                    {getAvailableUsers().map((user: any) => (
+                      <div
+                        key={user.id}
+                        onClick={() => startNewChat(user)}
+                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer rounded-lg"
+                      >
+                        <div className="flex-shrink-0 mr-3">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            {user.firstName?.charAt(0) || "U"}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <p className="text-xs text-gray-500 capitalize">
+                            {user.role} {user.house && `• ${user.house}`}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {getAvailableUsers().length === 0 && (
+                      <p className="text-center text-gray-500 py-4">No users found</p>
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
           
           {/* Search */}
