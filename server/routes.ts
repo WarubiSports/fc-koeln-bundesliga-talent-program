@@ -970,19 +970,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/food-orders", async (req, res) => {
     try {
-      console.log("Food order submission request body:", JSON.stringify(req.body, null, 2));
+      console.log("=== FOOD ORDER SUBMISSION START ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      console.log("Request body type:", typeof req.body);
+      console.log("Request body keys:", Object.keys(req.body || {}));
+      
       const validatedData = insertFoodOrderSchema.parse(req.body);
-      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
+      console.log("Validation successful, data:", JSON.stringify(validatedData, null, 2));
+      
       const order = await storage.createFoodOrder(validatedData);
+      console.log("Order created successfully:", JSON.stringify(order, null, 2));
+      console.log("=== FOOD ORDER SUBMISSION SUCCESS ===");
+      
       res.status(201).json(order);
     } catch (error) {
+      console.log("=== FOOD ORDER SUBMISSION ERROR ===");
       if (error instanceof z.ZodError) {
-        console.error("Validation errors:", JSON.stringify(error.errors, null, 2));
+        console.error("Zod validation errors:", JSON.stringify(error.errors, null, 2));
+        console.error("Error details:", error.errors.map(e => `${e.path.join('.')}: ${e.message}`));
         res.status(400).json({ message: "Invalid data", errors: error.errors });
       } else {
-        console.error("Error creating food order:", error);
+        console.error("Non-validation error:", error);
+        console.error("Error type:", typeof error);
+        console.error("Error constructor:", error?.constructor?.name);
         res.status(500).json({ message: "Failed to create food order" });
       }
+      console.log("=== FOOD ORDER SUBMISSION ERROR END ===");
     }
   });
 
