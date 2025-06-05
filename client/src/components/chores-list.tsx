@@ -16,13 +16,18 @@ interface ChoresListProps {
 export default function ChoresList({ onAddChore }: ChoresListProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'coach';
   const [selectedHouse, setSelectedHouse] = useState<string>("Widdersdorf 1");
 
   const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
 
+  // For admins/coaches, use house filtering; for players, get their assigned chores
+  const queryKey = isAdmin 
+    ? [`/api/chores?house=${encodeURIComponent(selectedHouse)}`]
+    : ['/api/chores'];
+
   const { data: chores, isLoading } = useQuery<Chore[]>({
-    queryKey: [`/api/chores?house=${encodeURIComponent(selectedHouse)}`],
+    queryKey,
   });
 
   const updateChoreMutation = useMutation({

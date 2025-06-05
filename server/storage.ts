@@ -92,6 +92,7 @@ export interface IStorage {
   updateChore(id: number, updates: UpdateChore): Promise<Chore | undefined>;
   deleteChore(id: number): Promise<boolean>;
   getChoresByHouse(house: string): Promise<Chore[]>;
+  getChoresForUser(username: string): Promise<Chore[]>;
   getChoreStats(): Promise<{
     totalChores: number;
     pendingChores: number;
