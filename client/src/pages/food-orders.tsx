@@ -385,9 +385,15 @@ export default function GroceryOrdersPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => {
+                                  console.log('Cancel All clicked for house:', houseName);
+                                  console.log('House data orders:', houseData.orderDetails);
                                   const weekStartDate = houseData.orderDetails.find((order: any) => ['pending', 'confirmed'].includes(order.status))?.weekStartDate;
+                                  console.log('Found weekStartDate:', weekStartDate);
                                   if (weekStartDate) {
+                                    console.log('Calling bulk cancel mutation with:', { houseName, weekStartDate, reason: 'Bulk cancelled by admin' });
                                     bulkCancelHouseMutation.mutate({ houseName, weekStartDate, reason: 'Bulk cancelled by admin' });
+                                  } else {
+                                    console.error('No weekStartDate found for cancellable orders');
                                   }
                                 }}
                                 disabled={bulkCancelHouseMutation.isPending}
