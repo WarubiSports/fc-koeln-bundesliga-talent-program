@@ -47,7 +47,7 @@ import {
   type UpdateMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, sql, desc, count, and, or, inArray } from "drizzle-orm";
+import { eq, ilike, sql, desc, count, and, or, inArray, gte, lte } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -1266,7 +1266,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteDeliveredOrder(id: number): Promise<boolean> {
     const result = await db.delete(deliveredOrders).where(eq(deliveredOrders.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getDeliveredOrdersByPlayer(playerName: string): Promise<DeliveredOrder[]> {

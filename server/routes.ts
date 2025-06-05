@@ -1083,12 +1083,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Extract delivery details from request body
+      const {
+        deliveredItems = {},
+        actualCost,
+        deliveryNotes,
+        storageLocation,
+        receivedBy,
+        itemCondition = 'good'
+      } = req.body;
+
+      // Create delivered order record
+      const deliveredOrder = await storage.createDeliveredOrder({
+        originalOrderId: order.id,
+        playerName: order.playerName,
+        weekStartDate: order.weekStartDate,
+        deliveryDay: order.deliveryDay,
+        
+        // What was actually delivered
+        deliveredProteins: deliveredItems.proteins || order.proteins,
+        deliveredVegetables: deliveredItems.vegetables || order.vegetables,
+        deliveredFruits: deliveredItems.fruits || order.fruits,
+        deliveredGrains: deliveredItems.grains || order.grains,
+        deliveredSnacks: deliveredItems.snacks || order.snacks,
+        deliveredBeverages: deliveredItems.beverages || order.beverages,
+        deliveredSupplements: deliveredItems.supplements || order.supplements,
+        
+        // Original order for comparison
+        orderedProteins: order.proteins,
+        orderedVegetables: order.vegetables,
+        orderedFruits: order.fruits,
+        orderedGrains: order.grains,
+        orderedSnacks: order.snacks,
+        orderedBeverages: order.beverages,
+        orderedSupplements: order.supplements,
+        
+        actualCost: actualCost || order.estimatedCost,
+        estimatedCost: order.estimatedCost,
+        deliveryNotes: deliveryNotes || `Delivered by ${req.user?.firstName || 'staff'}`,
+        storageLocation,
+        deliveredBy: `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim() || 'Staff',
+        receivedBy,
+        itemCondition
+      });
+
+      // Update original order status
       const updatedOrder = await storage.updateFoodOrder(id, { 
         status: 'delivered',
-        adminNotes: `Marked as delivered by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}`
+        adminNotes: `Marked as delivered by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}. Stored in delivery record #${deliveredOrder.id}`
       });
       
-      res.json(updatedOrder);
+      res.json({
+        order: updatedOrder,
+        deliveredOrder: deliveredOrder
+      });
     } catch (error) {
       console.error("Error completing order:", error);
       res.status(500).json({ message: "Failed to complete order" });
