@@ -129,6 +129,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Registration endpoint
   app.post('/api/auth/register', async (req: any, res) => {
     try {
+      console.log('Registration request received:', req.body);
+      
       const { 
         password, 
         firstName, 
@@ -146,6 +148,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         profileImageUrl 
       } = req.body;
 
+      // Validate required fields
+      if (!email || !password || !firstName || !lastName || !role) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+
       // Check if email already exists
       try {
         const existingUser = await storage.getUserByUsername(email);
@@ -153,31 +160,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: 'Email already exists' });
         }
       } catch (error) {
-        // User doesn't exist, continue with registration
+        console.log('User does not exist, proceeding with registration');
       }
 
       // Create user with pending status
-      const newUser = await storage.createUser({
+      const userData = {
         id: email,
-        username: email, // Use email as username
-        password, // In production, this should be hashed
-        firstName,
-        lastName,
-        email,
-        dateOfBirth,
-        nationality,
-        nationalityCode,
-        position: Array.isArray(positions) ? positions.join(', ') : positions || null,
-        role,
+        username: email,
+        password: password, // In production, this should be hashed
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        dateOfBirth: dateOfBirth || null,
+        nationality: nationality || null,
+        nationalityCode: nationalityCode || null,
+        position: Array.isArray(positions) ? positions.join(', ') : (positions || null),
+        role: role,
         house: house || null,
         phoneNumber: phoneNumber || null,
         emergencyContact: emergencyContact || null,
         emergencyPhone: emergencyPhone || null,
         status: 'pending',
-        profileImageUrl: profileImageUrl || null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
+        profileImageUrl: profileImageUrl || null
+      };
+
+      console.log('Creating user with data:', userData);
+      
+      const newUser = await storage.createUser(userData);
+
+      console.log('User created successfully:', newUser);
 
       res.status(201).json({ 
         message: 'Registration successful. Your account is pending approval.',
@@ -191,7 +202,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
     } catch (error: any) {
-      console.error('Registration error:', error);
+      console.error('Registration error details:', error);
+      console.error('Error stack:', error.stack);
       res.status(500).json({ message: 'Registration failed. Please try again.' });
     }
   });
