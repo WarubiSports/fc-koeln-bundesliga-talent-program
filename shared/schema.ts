@@ -79,6 +79,17 @@ export const users = pgTable("users", {
   phoneNumber: varchar("phone_number"),
   emergencyContact: varchar("emergency_contact"),
   emergencyPhone: varchar("emergency_phone"),
+  // Additional player fields
+  phone: varchar("phone"),
+  preferredFoot: varchar("preferred_foot"),
+  height: integer("height"), // in cm
+  weight: integer("weight"), // in kg
+  previousClub: varchar("previous_club"),
+  emergencyContactName: varchar("emergency_contact_name"),
+  emergencyContactPhone: varchar("emergency_contact_phone"),
+  medicalConditions: text("medical_conditions"),
+  allergies: text("allergies"),
+  jerseyNumber: integer("jersey_number"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
