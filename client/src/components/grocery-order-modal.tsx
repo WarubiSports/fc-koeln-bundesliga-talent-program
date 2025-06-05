@@ -138,26 +138,34 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: GroceryOrderFormData) => {
-      const formattedItems = formatSelectedItemsForSubmission();
-      
-      // Format the data to match the existing grocery order schema
-      const orderData = {
-        playerName: data.playerName,
-        weekStartDate: data.weekStartDate,
-        deliveryDay: data.deliveryDay,
-        proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
-        vegetables: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
-        fruits: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
-        grains: formattedItems["Carbohydrates"]?.join(", ") || "",
-        snacks: formattedItems["Carbohydrates"]?.join(", ") || "",
-        beverages: formattedItems["Drinks & Beverages"]?.join(", ") || "",
-        supplements: formattedItems["Spices & Sauces"]?.join(", ") || "",
-        specialRequests: "",
-        dietaryRestrictions: "",
-        estimatedCost: totalCost.toFixed(2),
-      };
+      try {
+        const formattedItems = formatSelectedItemsForSubmission();
+        
+        // Format the data to match the existing grocery order schema
+        const orderData = {
+          playerName: data.playerName,
+          weekStartDate: data.weekStartDate,
+          deliveryDay: data.deliveryDay,
+          proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
+          vegetables: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
+          fruits: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
+          grains: formattedItems["Carbohydrates"]?.join(", ") || "",
+          snacks: formattedItems["Carbohydrates"]?.join(", ") || "",
+          beverages: formattedItems["Drinks & Beverages"]?.join(", ") || "",
+          supplements: formattedItems["Spices & Sauces"]?.join(", ") || "",
+          specialRequests: "",
+          dietaryRestrictions: "",
+          estimatedCost: totalCost.toFixed(2),
+        };
 
-      return await apiRequest("POST", "/api/food-orders", orderData);
+        console.log("Submitting grocery order:", orderData);
+        const result = await apiRequest("POST", "/api/food-orders", orderData);
+        console.log("Grocery order submission result:", result);
+        return result;
+      } catch (error) {
+        console.error("Grocery order submission error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
@@ -170,10 +178,11 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
       setSelectedItems({});
       onClose();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Mutation error:", error);
       toast({
         title: "Error",
-        description: "Failed to submit grocery order",
+        description: error?.message || "Failed to submit grocery order",
         variant: "destructive",
       });
     },
