@@ -1060,7 +1060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark order as delivered/completed (admin/staff only)
-  app.patch("/api/food-orders/:id/complete", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/food-orders/:id/complete", simpleAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const userRole = req.user?.role;
@@ -1096,7 +1096,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark order as confirmed (admin/staff only)
-  app.patch("/api/food-orders/:id/confirm", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/food-orders/:id/confirm", simpleAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const userRole = req.user?.role;
@@ -1132,7 +1132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cancel order (admin/staff only)
-  app.patch("/api/food-orders/:id/cancel", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/food-orders/:id/cancel", simpleAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const userRole = req.user?.role;
