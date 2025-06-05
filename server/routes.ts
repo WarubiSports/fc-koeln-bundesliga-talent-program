@@ -1030,6 +1030,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/messages', async (req, res) => {
     try {
       const messages = await storage.getAllMessages();
+      console.log("Fetched", messages.length, "messages");
       res.json(messages);
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -1039,8 +1040,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/messages', async (req, res) => {
     try {
+      console.log("Creating message with data:", JSON.stringify(req.body, null, 2));
       const messageData = req.body;
       const message = await storage.createMessage(messageData);
+      console.log("Created message:", JSON.stringify(message, null, 2));
       res.status(201).json(message);
     } catch (error) {
       console.error("Error creating message:", error);

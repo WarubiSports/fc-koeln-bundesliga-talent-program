@@ -914,40 +914,47 @@ export class DatabaseStorage implements IStorage {
 
   // Communication methods - temporary implementation
   async getAllMessages(): Promise<any[]> {
-    // Return mock data for now
-    return [];
+    return await db.select().from(messages).orderBy(desc(messages.createdAt));
   }
 
   async getMessage(id: number): Promise<any | undefined> {
-    return undefined;
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
+    return message;
   }
 
   async createMessage(messageData: any): Promise<any> {
-    // Mock creation - return the data with an ID
-    return {
-      id: Date.now(),
-      ...messageData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isRead: false
-    };
+    const [message] = await db
+      .insert(messages)
+      .values(messageData)
+      .returning();
+    return message;
   }
 
   async updateMessage(id: number, updates: any): Promise<any | undefined> {
-    return undefined;
+    const [message] = await db
+      .update(messages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(messages.id, id))
+      .returning();
+    return message;
   }
 
   async deleteMessage(id: number): Promise<boolean> {
-    return true;
+    const result = await db.delete(messages).where(eq(messages.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   async getMessagesByUser(userId: string): Promise<any[]> {
-    return [];
+    return await db.select().from(messages)
+      .where(or(eq(messages.senderId, userId), eq(messages.recipientId, userId)))
+      .orderBy(desc(messages.createdAt));
   }
 
   async markMessageAsRead(messageId: number): Promise<void> {
-    // Mock implementation
-    return;
+    await db
+      .update(messages)
+      .set({ isRead: true, updatedAt: new Date() })
+      .where(eq(messages.id, messageId));
   }
 
   // Medical records methods - temporary implementation
