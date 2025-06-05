@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Calendar, User, Clock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import type { Chore } from "../../../shared/schema";
 
 interface ChoresListProps {
@@ -16,6 +17,7 @@ interface ChoresListProps {
 export default function ChoresList({ onAddChore }: ChoresListProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { toast } = useToast();
   const isAdmin = user?.role === 'admin' || user?.role === 'coach';
   const [selectedHouse, setSelectedHouse] = useState<string>("Widdersdorf 1");
 
@@ -34,21 +36,43 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
 
   const updateChoreMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      return apiRequest("PUT", `/api/chores/${id}`, { status });
+      return apiRequest(`/api/chores/${id}`, "PUT", { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
       queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
+      toast({
+        title: "Success",
+        description: "Chore status updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update chore",
+        variant: "destructive",
+      });
     },
   });
 
   const deleteChoreMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/chores/${id}`);
+      return apiRequest(`/api/chores/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
       queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
+      toast({
+        title: "Success",
+        description: "Chore deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete chore",
+        variant: "destructive",
+      });
     },
   });
 
