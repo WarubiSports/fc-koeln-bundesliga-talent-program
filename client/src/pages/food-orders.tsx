@@ -9,9 +9,12 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { FoodOrder } from "@shared/schema";
 import GroceryOrderModal from "@/components/grocery-order-modal";
+import { DeliveryModal } from "@/components/delivery-modal";
 
 export default function GroceryOrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
+  const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState<FoodOrder | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<string>();
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -57,26 +60,47 @@ export default function GroceryOrdersPage() {
     },
   });
 
+  // Mutation to mark order as completed/delivered with delivery details
   const completeOrderMutation = useMutation({
-    mutationFn: async (orderId: number) => {
-      return apiRequest(`/api/food-orders/${orderId}/complete`, "PATCH");
+    mutationFn: async ({ orderId, deliveryData }: { orderId: number; deliveryData: any }) => {
+      const response = await apiRequest("PATCH", `/api/food-orders/${orderId}/complete`, deliveryData);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/house-order-summary"] });
+      setIsDeliveryModalOpen(false);
+      setSelectedOrderForDelivery(null);
       toast({
-        title: "Success",
-        description: "Order marked as delivered",
+        title: "Delivery Completed",
+        description: "Order has been marked as delivered and stored in delivery records.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error?.message || "Failed to complete order",
+        description: error.message || "Failed to complete delivery",
         variant: "destructive",
       });
     },
   });
+
+  // Function to open delivery modal
+  const handleOpenDeliveryModal = (order: FoodOrder) => {
+    setSelectedOrderForDelivery(order);
+    setIsDeliveryModalOpen(true);
+  };
+
+  // Function to handle delivery confirmation
+  const handleDeliveryConfirm = (deliveryData: any) => {
+    if (selectedOrderForDelivery) {
+      completeOrderMutation.mutate({ 
+        orderId: selectedOrderForDelivery.id, 
+        deliveryData 
+      });
+    }
+  };
 
   const cancelOrderMutation = useMutation({
     mutationFn: async (orderId: number) => {
@@ -381,7 +405,7 @@ export default function GroceryOrdersPage() {
                                       <Button
                                         size="sm"
                                         variant="default"
-                                        onClick={() => completeOrderMutation.mutate(order.id)}
+                                        onClick={() => handleOpenDeliveryModal(order)}
                                         disabled={completeOrderMutation.isPending}
                                         className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-xs px-2 py-1"
                                       >
@@ -424,6 +448,17 @@ export default function GroceryOrdersPage() {
         onClose={() => setIsModalOpen(false)}
         players={players}
         selectedWeek={selectedWeek}
+      />
+
+      <DeliveryModal
+        isOpen={isDeliveryModalOpen}
+        onClose={() => {
+          setIsDeliveryModalOpen(false);
+          setSelectedOrderForDelivery(null);
+        }}
+        order={selectedOrderForDelivery}
+        onConfirm={handleDeliveryConfirm}
+        isLoading={completeOrderMutation.isPending}
       />
     </div>
   );
