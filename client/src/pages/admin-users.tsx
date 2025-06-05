@@ -299,6 +299,20 @@ export default function AdminUsers() {
                                   <X className="h-4 w-4 mr-2" />
                                   Reject
                                 </Button>
+                                {/* Delete button - only visible for Max Bisinger */}
+                                <Button
+                                  onClick={() => {
+                                    if (window.confirm(`Are you sure you want to permanently delete ${selectedUser.firstName} ${selectedUser.lastName}? This action cannot be undone.`)) {
+                                      deleteMutation.mutate(selectedUser.id);
+                                    }
+                                  }}
+                                  disabled={deleteMutation.isPending}
+                                  variant="destructive"
+                                  className="bg-red-800 hover:bg-red-900"
+                                  size="sm"
+                                >
+                                  🗑️ Delete
+                                </Button>
                               </div>
                             </div>
                           )}
@@ -322,6 +336,20 @@ export default function AdminUsers() {
                       >
                         <X className="h-4 w-4 mr-1" />
                         Reject
+                      </Button>
+                      {/* Delete button - only for Max Bisinger */}
+                      <Button
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to permanently delete ${user.firstName} ${user.lastName}? This action cannot be undone.`)) {
+                            deleteMutation.mutate(user.id);
+                          }
+                        }}
+                        disabled={deleteMutation.isPending}
+                        variant="destructive"
+                        size="sm"
+                        className="bg-red-800 hover:bg-red-900"
+                      >
+                        🗑️
                       </Button>
                     </div>
                   </div>
