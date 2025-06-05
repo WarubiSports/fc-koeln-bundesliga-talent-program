@@ -129,7 +129,7 @@ export default function Communications() {
                       {(players as any[]).map((player: any) => (
                         <SelectItem key={player.id} value={player.id.toString()}>
                           <div className="flex items-center gap-2">
-                            <span>{player.name}</span>
+                            <span>{player.firstName} {player.lastName}</span>
                             <Badge variant="outline" className="text-xs">
                               {player.position}
                             </Badge>
