@@ -790,7 +790,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json(chores);
       } else {
         // If user is a player, show chores assigned to them
-        const chores = await storage.getChoresForUser(user.username);
+        // Try both username and full name for matching
+        const userName = user.username || user.id;
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        
+        console.log("Player chore search - userName:", userName);
+        console.log("Player chore search - fullName:", fullName);
+        
+        let chores = await storage.getChoresForUser(userName);
+        
+        // If no chores found with username/email, try with full name
+        if (chores.length === 0 && fullName) {
+          chores = await storage.getChoresForUser(fullName);
+        }
+        
+        console.log("Player chores found:", chores.length);
         res.json(chores);
       }
     } catch (error) {
