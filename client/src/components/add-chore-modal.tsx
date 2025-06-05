@@ -43,9 +43,11 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertChore) => {
+      console.log("AddChoreModal - Mutation starting with data:", data);
       return apiRequest("POST", "/api/chores", data);
     },
     onSuccess: () => {
+      console.log("AddChoreModal - Mutation successful");
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
       queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
       toast({
@@ -56,6 +58,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
       onClose();
     },
     onError: (error: any) => {
+      console.log("AddChoreModal - Mutation error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to create chore",
@@ -263,6 +266,11 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
                 type="submit" 
                 disabled={mutation.isPending}
                 className="bg-fc-red hover:bg-fc-red/90 text-white"
+                onClick={() => {
+                  console.log("AddChoreModal - Create Chore button clicked");
+                  console.log("AddChoreModal - Form errors:", form.formState.errors);
+                  console.log("AddChoreModal - Form valid:", form.formState.isValid);
+                }}
               >
                 {mutation.isPending ? "Creating..." : "Create Chore"}
               </Button>
