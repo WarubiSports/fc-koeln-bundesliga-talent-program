@@ -531,6 +531,12 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(chores).where(eq(chores.house, house));
   }
 
+  async getChoresForUser(username: string): Promise<Chore[]> {
+    return await db.select().from(chores).where(
+      sql`${chores.assignedTo} LIKE ${`%${username}%`}`
+    );
+  }
+
   async getChoreStats(): Promise<{
     totalChores: number;
     pendingChores: number;

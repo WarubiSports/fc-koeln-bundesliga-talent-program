@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Send, Search, Phone, Video, MoreVertical, ArrowLeft, Users, Plus, UserPlus } from "lucide-react";
+import { MessageSquare, Send, Search, MoreVertical, ArrowLeft, Users, Plus, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -360,16 +360,6 @@ export default function Communications() {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  {selectedConversation.type === "private" && (
-                    <>
-                      <Button variant="ghost" size="sm">
-                        <Phone className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Video className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
                   <Button variant="ghost" size="sm">
                     <MoreVertical className="h-4 w-4" />
                   </Button>

@@ -777,14 +777,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Chore routes
   // Get all chores
-  app.get("/api/chores", async (req, res) => {
+  app.get("/api/chores", simpleAuth, async (req: any, res) => {
     try {
+      const user = req.user;
       const house = req.query.house as string;
-      const chores = house 
-        ? await storage.getChoresByHouse(house)
-        : await storage.getAllChores();
-      res.json(chores);
+      
+      // If user is admin or coach, show all chores for the house
+      if (user.role === 'admin' || user.role === 'coach') {
+        const chores = house 
+          ? await storage.getChoresByHouse(house)
+          : await storage.getAllChores();
+        res.json(chores);
+      } else {
+        // If user is a player, show chores assigned to them
+        const chores = await storage.getChoresForUser(user.username);
+        res.json(chores);
+      }
     } catch (error) {
+      console.error("Error fetching chores:", error);
       res.status(500).json({ message: "Failed to fetch chores" });
     }
   });
