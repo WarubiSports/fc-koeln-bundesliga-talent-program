@@ -473,7 +473,7 @@ export default function Calendar() {
 
   const getEventsForDay = (day: Date) => {
     const dayStr = format(day, "yyyy-MM-dd");
-    return Array.isArray(events) ? events.filter((event: Event) => 
+    return Array.isArray(filteredEvents) ? filteredEvents.filter((event: Event) => 
       event.date === dayStr
     ) : [];
   };
