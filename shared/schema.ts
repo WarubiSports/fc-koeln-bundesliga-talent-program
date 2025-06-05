@@ -192,7 +192,11 @@ export const groceryOrders = pgTable("grocery_orders", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertGroceryOrderSchema = createInsertSchema(groceryOrders);
+export const insertGroceryOrderSchema = createInsertSchema(groceryOrders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 export const updateGroceryOrderSchema = insertGroceryOrderSchema.partial();
 
 export type InsertGroceryOrder = z.infer<typeof insertGroceryOrderSchema>;
