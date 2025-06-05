@@ -65,6 +65,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
   });
 
   const onSubmit = (data: InsertChore) => {
+    console.log("AddChoreModal - Form submitted with data:", data);
     mutation.mutate(data);
   };
 

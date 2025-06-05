@@ -110,7 +110,10 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
           </CardTitle>
           {isAdmin && (
             <Button 
-              onClick={onAddChore}
+              onClick={() => {
+                console.log("ChoresList - Add Chore button clicked");
+                onAddChore();
+              }}
               className="bg-fc-red hover:bg-fc-red/90 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
