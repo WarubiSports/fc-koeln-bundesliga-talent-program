@@ -19,10 +19,7 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
   const isAdmin = user?.role === 'admin' || user?.role === 'coach';
   const [selectedHouse, setSelectedHouse] = useState<string>("Widdersdorf 1");
 
-  // Debug logging
-  console.log("ChoresList - User:", user);
-  console.log("ChoresList - User role:", user?.role);
-  console.log("ChoresList - isAdmin:", isAdmin);
+
 
   const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
 
