@@ -970,11 +970,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/food-orders", async (req, res) => {
     try {
+      console.log("Food order submission request body:", JSON.stringify(req.body, null, 2));
       const validatedData = insertFoodOrderSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
       const order = await storage.createFoodOrder(validatedData);
       res.status(201).json(order);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", JSON.stringify(error.errors, null, 2));
         res.status(400).json({ message: "Invalid data", errors: error.errors });
       } else {
         console.error("Error creating food order:", error);
