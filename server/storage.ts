@@ -918,7 +918,7 @@ export class DatabaseStorage implements IStorage {
 
   // Communication methods
   async getAllMessages(): Promise<any[]> {
-    return await db.select().from(messages).orderBy(desc(messages.createdAt));
+    return await db.select().from(messages).orderBy(desc(messages.created_at));
   }
 
   async getMessage(id: number): Promise<any | undefined> {
@@ -927,9 +927,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMessage(messageData: any): Promise<any> {
+    // Map new schema to existing table structure
+    const dbData = {
+      from_user_id: messageData.senderId || messageData.from_user_id,
+      to_user_id: messageData.recipientId || messageData.to_user_id,
+      subject: messageData.senderName || messageData.subject || 'Message',
+      content: messageData.content,
+      message_type: messageData.messageType || messageData.message_type || 'team',
+      is_read: messageData.isRead || false,
+      priority: messageData.priority || 'normal',
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+    
     const [message] = await db
       .insert(messages)
-      .values(messageData)
+      .values(dbData)
       .returning();
     return message;
   }
@@ -937,7 +950,7 @@ export class DatabaseStorage implements IStorage {
   async updateMessage(id: number, updates: any): Promise<any | undefined> {
     const [message] = await db
       .update(messages)
-      .set({ ...updates, updatedAt: new Date() })
+      .set({ ...updates, updated_at: new Date() })
       .where(eq(messages.id, id))
       .returning();
     return message;
@@ -950,14 +963,14 @@ export class DatabaseStorage implements IStorage {
 
   async getMessagesByUser(userId: string): Promise<any[]> {
     return await db.select().from(messages)
-      .where(or(eq(messages.senderId, userId), eq(messages.recipientId, userId)))
-      .orderBy(desc(messages.createdAt));
+      .where(or(eq(messages.from_user_id, userId), eq(messages.to_user_id, userId)))
+      .orderBy(desc(messages.created_at));
   }
 
   async markMessageAsRead(messageId: number): Promise<void> {
     await db
       .update(messages)
-      .set({ isRead: true, updatedAt: new Date() })
+      .set({ is_read: true, updated_at: new Date() })
       .where(eq(messages.id, messageId));
   }
 

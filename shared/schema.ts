@@ -296,22 +296,21 @@ export type Notification = typeof notifications.$inferSelect;
 // Communication System
 export const messages = pgTable("messages", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  senderId: varchar("sender_id").notNull(),
-  senderName: varchar("sender_name").notNull(),
-  recipientId: varchar("recipient_id"), // null for team messages
-  recipientName: varchar("recipient_name"), // null for team messages
+  from_user_id: varchar("from_user_id").notNull(),
+  to_user_id: varchar("to_user_id"), // null for team messages
+  subject: varchar("subject").notNull(),
   content: text("content").notNull(),
-  messageType: varchar("message_type").default("team"), // team, private
-  isRead: boolean("is_read").default(false),
+  message_type: varchar("message_type").default("team"), // team, private
+  is_read: boolean("is_read").default(false),
   priority: varchar("priority").default("normal"), // low, normal, high, urgent
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
 });
 
 export const insertMessageSchema = createInsertSchema(messages).omit({
   id: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 });
 export const updateMessageSchema = insertMessageSchema.partial();
 
