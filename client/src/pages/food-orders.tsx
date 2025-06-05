@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ShoppingCart, TrendingUp } from "lucide-react";
+import { Plus, ShoppingCart, TrendingUp, Check, X, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -33,6 +33,70 @@ export default function GroceryOrdersPage() {
   const { data: houseOrderSummary = {} } = useQuery({
     queryKey: ["/api/house-order-summary"],
     enabled: isAdmin,
+  });
+
+  // Order status management mutations (admin/staff only)
+  const confirmOrderMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      return apiRequest(`/api/food-orders/${orderId}/confirm`, "PATCH");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      toast({
+        title: "Success",
+        description: "Order confirmed successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to confirm order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const completeOrderMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      return apiRequest(`/api/food-orders/${orderId}/complete`, "PATCH");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      toast({
+        title: "Success",
+        description: "Order marked as delivered",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to complete order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const cancelOrderMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      return apiRequest(`/api/food-orders/${orderId}/cancel`, "PATCH");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      toast({
+        title: "Success",
+        description: "Order cancelled",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to cancel order",
+        variant: "destructive",
+      });
+    },
   });
 
   return (
@@ -212,6 +276,65 @@ export default function GroceryOrdersPage() {
                     }>
                       {order.status}
                     </Badge>
+                    
+                    {/* Admin/Staff Action Buttons */}
+                    {(user?.role === 'admin' || user?.role === 'staff') && (
+                      <div className="flex items-center gap-2">
+                        {order.status === 'pending' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => confirmOrderMutation.mutate(order.id)}
+                              disabled={confirmOrderMutation.isPending}
+                              className="flex items-center gap-1"
+                            >
+                              <Clock className="h-3 w-3" />
+                              Confirm
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => cancelOrderMutation.mutate(order.id)}
+                              disabled={cancelOrderMutation.isPending}
+                              className="flex items-center gap-1"
+                            >
+                              <X className="h-3 w-3" />
+                              Cancel
+                            </Button>
+                          </>
+                        )}
+                        
+                        {order.status === 'confirmed' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => completeOrderMutation.mutate(order.id)}
+                              disabled={completeOrderMutation.isPending}
+                              className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                            >
+                              <Check className="h-3 w-3" />
+                              Mark Delivered
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => cancelOrderMutation.mutate(order.id)}
+                              disabled={cancelOrderMutation.isPending}
+                              className="flex items-center gap-1"
+                            >
+                              <X className="h-3 w-3" />
+                              Cancel
+                            </Button>
+                          </>
+                        )}
+                        
+                        {order.status === 'delivered' && (
+                          <span className="text-sm text-green-600 font-medium">✓ Completed</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

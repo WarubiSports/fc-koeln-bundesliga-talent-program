@@ -970,32 +970,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/food-orders", async (req, res) => {
     try {
-      console.log("=== FOOD ORDER SUBMISSION START ===");
-      console.log("Request body:", JSON.stringify(req.body, null, 2));
-      console.log("Request body type:", typeof req.body);
-      console.log("Request body keys:", Object.keys(req.body || {}));
-      
       const validatedData = insertFoodOrderSchema.parse(req.body);
-      console.log("Validation successful, data:", JSON.stringify(validatedData, null, 2));
+      
+      // Server-side budget validation
+      const estimatedCost = parseFloat(validatedData.estimatedCost || "0");
+      if (estimatedCost > 35) {
+        return res.status(400).json({ 
+          message: "Order exceeds budget limit of €35.00",
+          currentCost: estimatedCost 
+        });
+      }
+      
+      // Check for duplicate orders (same player, same week)
+      const existingOrders = await storage.getFoodOrdersByPlayer(validatedData.playerName);
+      const duplicateOrder = existingOrders.find(order => 
+        order.weekStartDate === validatedData.weekStartDate && 
+        order.deliveryDay === validatedData.deliveryDay &&
+        order.status !== 'cancelled'
+      );
+      
+      if (duplicateOrder) {
+        return res.status(400).json({ 
+          message: "Order already exists for this week and delivery day",
+          existingOrderId: duplicateOrder.id 
+        });
+      }
+      
+      // Validate delivery date is not in the past
+      const weekStart = new Date(validatedData.weekStartDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (weekStart < today) {
+        return res.status(400).json({ 
+          message: "Cannot place orders for past weeks" 
+        });
+      }
       
       const order = await storage.createFoodOrder(validatedData);
-      console.log("Order created successfully:", JSON.stringify(order, null, 2));
-      console.log("=== FOOD ORDER SUBMISSION SUCCESS ===");
-      
       res.status(201).json(order);
     } catch (error) {
-      console.log("=== FOOD ORDER SUBMISSION ERROR ===");
       if (error instanceof z.ZodError) {
-        console.error("Zod validation errors:", JSON.stringify(error.errors, null, 2));
-        console.error("Error details:", error.errors.map(e => `${e.path.join('.')}: ${e.message}`));
         res.status(400).json({ message: "Invalid data", errors: error.errors });
       } else {
-        console.error("Non-validation error:", error);
-        console.error("Error type:", typeof error);
-        console.error("Error constructor:", error?.constructor?.name);
+        console.error("Error creating food order:", error);
         res.status(500).json({ message: "Failed to create food order" });
       }
-      console.log("=== FOOD ORDER SUBMISSION ERROR END ===");
     }
   });
 
@@ -1036,6 +1056,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Error updating food order:", error);
         res.status(500).json({ message: "Failed to update food order" });
       }
+    }
+  });
+
+  // Mark order as delivered/completed (admin/staff only)
+  app.patch("/api/food-orders/:id/complete", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userRole = req.user?.role;
+      
+      // Check admin/staff permissions
+      if (!userRole || !['admin', 'staff'].includes(userRole)) {
+        return res.status(403).json({ message: "Insufficient permissions" });
+      }
+      
+      const order = await storage.getFoodOrder(id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Only allow completion of confirmed orders
+      if (order.status !== 'confirmed') {
+        return res.status(400).json({ 
+          message: "Can only complete confirmed orders",
+          currentStatus: order.status 
+        });
+      }
+      
+      const updatedOrder = await storage.updateFoodOrder(id, { 
+        status: 'delivered',
+        adminNotes: `Marked as delivered by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}`
+      });
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error completing order:", error);
+      res.status(500).json({ message: "Failed to complete order" });
+    }
+  });
+
+  // Mark order as confirmed (admin/staff only)
+  app.patch("/api/food-orders/:id/confirm", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userRole = req.user?.role;
+      
+      // Check admin/staff permissions
+      if (!userRole || !['admin', 'staff'].includes(userRole)) {
+        return res.status(403).json({ message: "Insufficient permissions" });
+      }
+      
+      const order = await storage.getFoodOrder(id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Only allow confirmation of pending orders
+      if (order.status !== 'pending') {
+        return res.status(400).json({ 
+          message: "Can only confirm pending orders",
+          currentStatus: order.status 
+        });
+      }
+      
+      const updatedOrder = await storage.updateFoodOrder(id, { 
+        status: 'confirmed',
+        adminNotes: `Confirmed by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}`
+      });
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      res.status(500).json({ message: "Failed to confirm order" });
+    }
+  });
+
+  // Cancel order (admin/staff only)
+  app.patch("/api/food-orders/:id/cancel", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userRole = req.user?.role;
+      
+      // Check admin/staff permissions
+      if (!userRole || !['admin', 'staff'].includes(userRole)) {
+        return res.status(403).json({ message: "Insufficient permissions" });
+      }
+      
+      const order = await storage.getFoodOrder(id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Don't allow cancellation of already delivered orders
+      if (order.status === 'delivered') {
+        return res.status(400).json({ 
+          message: "Cannot cancel delivered orders" 
+        });
+      }
+      
+      const { reason } = req.body;
+      const updatedOrder = await storage.updateFoodOrder(id, { 
+        status: 'cancelled',
+        adminNotes: `Cancelled by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}${reason ? `. Reason: ${reason}` : ''}`
+      });
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      res.status(500).json({ message: "Failed to cancel order" });
     }
   });
 
