@@ -159,7 +159,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
         };
 
         console.log("Submitting grocery order:", orderData);
-        const result = await apiRequest("POST", "/api/food-orders", orderData);
+        const result = await apiRequest("/api/food-orders", "POST", orderData);
         console.log("Grocery order submission result:", result);
         return result;
       } catch (error) {
