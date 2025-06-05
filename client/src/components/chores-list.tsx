@@ -32,11 +32,7 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
 
   const updateChoreMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      return apiRequest(`/api/chores/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ status }),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("PUT", `/api/chores/${id}`, { status });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
