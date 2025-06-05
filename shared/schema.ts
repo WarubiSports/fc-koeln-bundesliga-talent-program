@@ -210,6 +210,59 @@ export type InsertFoodOrder = InsertGroceryOrder;
 export type UpdateFoodOrder = UpdateGroceryOrder;
 export type FoodOrder = GroceryOrder;
 
+// Delivered Orders Storage Schema - For tracking and storing completed deliveries
+export const deliveredOrders = pgTable("delivered_orders", {
+  id: serial("id").primaryKey(),
+  originalOrderId: integer("original_order_id").notNull(),
+  playerName: varchar("player_name", { length: 255 }).notNull(),
+  weekStartDate: varchar("week_start_date", { length: 50 }).notNull(),
+  deliveryDay: varchar("delivery_day", { length: 20 }).notNull(),
+  
+  // Delivered items (what was actually delivered)
+  deliveredProteins: text("delivered_proteins"),
+  deliveredVegetables: text("delivered_vegetables"),
+  deliveredFruits: text("delivered_fruits"),
+  deliveredGrains: text("delivered_grains"),
+  deliveredSnacks: text("delivered_snacks"),
+  deliveredBeverages: text("delivered_beverages"),
+  deliveredSupplements: text("delivered_supplements"),
+  
+  // Original order items (for comparison)
+  orderedProteins: text("ordered_proteins"),
+  orderedVegetables: text("ordered_vegetables"),
+  orderedFruits: text("ordered_fruits"),
+  orderedGrains: text("ordered_grains"),
+  orderedSnacks: text("ordered_snacks"),
+  orderedBeverages: text("ordered_beverages"),
+  orderedSupplements: text("ordered_supplements"),
+  
+  actualCost: varchar("actual_cost", { length: 20 }),
+  estimatedCost: varchar("estimated_cost", { length: 20 }),
+  deliveryNotes: text("delivery_notes"),
+  storageLocation: varchar("storage_location", { length: 255 }), // where items are stored
+  deliveredBy: varchar("delivered_by", { length: 255 }), // staff member who delivered
+  receivedBy: varchar("received_by", { length: 255 }), // player who received
+  deliveryCompletedAt: timestamp("delivery_completed_at").defaultNow(),
+  
+  // Quality tracking
+  itemCondition: varchar("item_condition", { length: 50 }).default("good"), // good, damaged, missing_items
+  playerSatisfaction: varchar("player_satisfaction", { length: 50 }), // excellent, good, fair, poor
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertDeliveredOrderSchema = createInsertSchema(deliveredOrders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const updateDeliveredOrderSchema = insertDeliveredOrderSchema.partial();
+
+export type InsertDeliveredOrder = z.infer<typeof insertDeliveredOrderSchema>;
+export type UpdateDeliveredOrder = z.infer<typeof updateDeliveredOrderSchema>;
+export type DeliveredOrder = typeof deliveredOrders.$inferSelect;
+
 // Events table for admin-scheduled calendar events
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),

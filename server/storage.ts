@@ -5,6 +5,7 @@ import {
   excuses,
   practiceExcuses,
   groceryOrders,
+  deliveredOrders,
   events,
   messages,
   notifications,
@@ -29,6 +30,9 @@ import {
   type FoodOrder,
   type InsertFoodOrder,
   type UpdateFoodOrder,
+  type DeliveredOrder,
+  type InsertDeliveredOrder,
+  type UpdateDeliveredOrder,
   type Event,
   type InsertEvent,
   type UpdateEvent,
@@ -224,6 +228,22 @@ export interface IStorage {
   // Bulk operations
   bulkUpdateEvents(eventIds: number[], updates: UpdateEvent): Promise<Event[]>;
   bulkDeleteEvents(eventIds: number[]): Promise<boolean>;
+
+  // Delivered orders storage methods
+  getAllDeliveredOrders(): Promise<DeliveredOrder[]>;
+  getDeliveredOrder(id: number): Promise<DeliveredOrder | undefined>;
+  createDeliveredOrder(order: InsertDeliveredOrder): Promise<DeliveredOrder>;
+  updateDeliveredOrder(id: number, updates: UpdateDeliveredOrder): Promise<DeliveredOrder | undefined>;
+  deleteDeliveredOrder(id: number): Promise<boolean>;
+  getDeliveredOrdersByPlayer(playerName: string): Promise<DeliveredOrder[]>;
+  getDeliveredOrdersByDateRange(startDate: string, endDate: string): Promise<DeliveredOrder[]>;
+  getDeliveredOrderStats(): Promise<{
+    totalDeliveries: number;
+    deliveriesThisWeek: number;
+    deliveriesThisMonth: number;
+    averageCost: number;
+    topStorageLocations: string[];
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1215,6 +1235,109 @@ export class DatabaseStorage implements IStorage {
         }
       }
     }
+  }
+
+  // Delivered orders storage methods implementation
+  async getAllDeliveredOrders(): Promise<DeliveredOrder[]> {
+    return await db.select().from(deliveredOrders).orderBy(desc(deliveredOrders.deliveryCompletedAt));
+  }
+
+  async getDeliveredOrder(id: number): Promise<DeliveredOrder | undefined> {
+    const [order] = await db.select().from(deliveredOrders).where(eq(deliveredOrders.id, id));
+    return order;
+  }
+
+  async createDeliveredOrder(insertOrder: InsertDeliveredOrder): Promise<DeliveredOrder> {
+    const [order] = await db
+      .insert(deliveredOrders)
+      .values(insertOrder)
+      .returning();
+    return order;
+  }
+
+  async updateDeliveredOrder(id: number, updates: UpdateDeliveredOrder): Promise<DeliveredOrder | undefined> {
+    const [order] = await db
+      .update(deliveredOrders)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(deliveredOrders.id, id))
+      .returning();
+    return order;
+  }
+
+  async deleteDeliveredOrder(id: number): Promise<boolean> {
+    const result = await db.delete(deliveredOrders).where(eq(deliveredOrders.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getDeliveredOrdersByPlayer(playerName: string): Promise<DeliveredOrder[]> {
+    return await db
+      .select()
+      .from(deliveredOrders)
+      .where(eq(deliveredOrders.playerName, playerName))
+      .orderBy(desc(deliveredOrders.deliveryCompletedAt));
+  }
+
+  async getDeliveredOrdersByDateRange(startDate: string, endDate: string): Promise<DeliveredOrder[]> {
+    return await db
+      .select()
+      .from(deliveredOrders)
+      .where(
+        and(
+          gte(deliveredOrders.deliveryCompletedAt, new Date(startDate)),
+          lte(deliveredOrders.deliveryCompletedAt, new Date(endDate))
+        )
+      )
+      .orderBy(desc(deliveredOrders.deliveryCompletedAt));
+  }
+
+  async getDeliveredOrderStats(): Promise<{
+    totalDeliveries: number;
+    deliveriesThisWeek: number;
+    deliveriesThisMonth: number;
+    averageCost: number;
+    topStorageLocations: string[];
+  }> {
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const allDeliveries = await db.select().from(deliveredOrders);
+    const weekDeliveries = await db
+      .select()
+      .from(deliveredOrders)
+      .where(gte(deliveredOrders.deliveryCompletedAt, startOfWeek));
+    const monthDeliveries = await db
+      .select()
+      .from(deliveredOrders)
+      .where(gte(deliveredOrders.deliveryCompletedAt, startOfMonth));
+
+    const totalCosts = allDeliveries
+      .filter(order => order.actualCost)
+      .map(order => parseFloat(order.actualCost || '0'));
+    const averageCost = totalCosts.length > 0 
+      ? totalCosts.reduce((sum, cost) => sum + cost, 0) / totalCosts.length 
+      : 0;
+
+    const storageLocations = allDeliveries
+      .filter(order => order.storageLocation)
+      .reduce((acc, order) => {
+        const location = order.storageLocation!;
+        acc[location] = (acc[location] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+    const topStorageLocations = Object.entries(storageLocations)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([location]) => location);
+
+    return {
+      totalDeliveries: allDeliveries.length,
+      deliveriesThisWeek: weekDeliveries.length,
+      deliveriesThisMonth: monthDeliveries.length,
+      averageCost: Math.round(averageCost * 100) / 100,
+      topStorageLocations,
+    };
   }
 }
 
