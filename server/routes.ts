@@ -1039,6 +1039,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk confirm all orders for a house on a specific date
+  app.patch("/api/house-orders/confirm", simpleAuth, async (req: any, res) => {
+    try {
+      const userRole = req.user?.role;
+      if (!userRole || !['admin', 'staff'].includes(userRole)) {
+        return res.status(403).json({ message: "Access denied. Admin or staff role required." });
+      }
+
+      const { houseName, weekStartDate } = req.body;
+      
+      if (!houseName || !weekStartDate) {
+        return res.status(400).json({ message: "House name and week start date are required" });
+      }
+
+      // Get all pending orders for this house and week
+      const allOrders = await storage.getAllFoodOrders();
+      const houseOrders = allOrders.filter(order => 
+        order.weekStartDate === weekStartDate && 
+        order.status === 'pending'
+      );
+
+      // Filter orders by house (assuming player's house is stored in their profile)
+      const players = await storage.getAllPlayers();
+      const housePlayerNames = players
+        .filter(player => player.house === houseName)
+        .map(player => `${player.firstName} ${player.lastName}`);
+      
+      const pendingHouseOrders = houseOrders.filter(order => 
+        housePlayerNames.includes(order.playerName)
+      );
+
+      if (pendingHouseOrders.length === 0) {
+        return res.status(404).json({ message: "No pending orders found for this house and date" });
+      }
+
+      // Confirm all orders in bulk
+      const confirmedOrders = [];
+      for (const order of pendingHouseOrders) {
+        const confirmedOrder = await storage.updateFoodOrder(order.id, {
+          status: 'confirmed',
+          adminNotes: `Bulk confirmed for ${houseName} by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}`
+        });
+        if (confirmedOrder) {
+          confirmedOrders.push(confirmedOrder);
+        }
+      }
+
+      res.json({
+        message: `Confirmed ${confirmedOrders.length} orders for ${houseName}`,
+        confirmedOrders: confirmedOrders,
+        houseName,
+        weekStartDate
+      });
+    } catch (error) {
+      console.error("Error bulk confirming house orders:", error);
+      res.status(500).json({ message: "Failed to bulk confirm house orders" });
+    }
+  });
+
+  // Bulk cancel all orders for a house on a specific date
+  app.patch("/api/house-orders/cancel", simpleAuth, async (req: any, res) => {
+    try {
+      const userRole = req.user?.role;
+      if (!userRole || !['admin', 'staff'].includes(userRole)) {
+        return res.status(403).json({ message: "Access denied. Admin or staff role required." });
+      }
+
+      const { houseName, weekStartDate, reason } = req.body;
+      
+      if (!houseName || !weekStartDate) {
+        return res.status(400).json({ message: "House name and week start date are required" });
+      }
+
+      // Get all non-delivered orders for this house and week
+      const allOrders = await storage.getAllFoodOrders();
+      const houseOrders = allOrders.filter(order => 
+        order.weekStartDate === weekStartDate && 
+        ['pending', 'confirmed'].includes(order.status)
+      );
+
+      // Filter orders by house
+      const players = await storage.getAllPlayers();
+      const housePlayerNames = players
+        .filter(player => player.house === houseName)
+        .map(player => `${player.firstName} ${player.lastName}`);
+      
+      const cancellableHouseOrders = houseOrders.filter(order => 
+        housePlayerNames.includes(order.playerName)
+      );
+
+      if (cancellableHouseOrders.length === 0) {
+        return res.status(404).json({ message: "No cancellable orders found for this house and date" });
+      }
+
+      // Cancel all orders in bulk
+      const cancelledOrders = [];
+      for (const order of cancellableHouseOrders) {
+        const cancelledOrder = await storage.updateFoodOrder(order.id, {
+          status: 'cancelled',
+          adminNotes: `Bulk cancelled for ${houseName} by ${req.user?.firstName || 'admin'} on ${new Date().toLocaleDateString()}${reason ? `. Reason: ${reason}` : ''}`
+        });
+        if (cancelledOrder) {
+          cancelledOrders.push(cancelledOrder);
+        }
+      }
+
+      res.json({
+        message: `Cancelled ${cancelledOrders.length} orders for ${houseName}`,
+        cancelledOrders: cancelledOrders,
+        houseName,
+        weekStartDate
+      });
+    } catch (error) {
+      console.error("Error bulk cancelling house orders:", error);
+      res.status(500).json({ message: "Failed to bulk cancel house orders" });
+    }
+  });
+
   app.put("/api/food-orders/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -1162,7 +1280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Only allow confirmation of pending orders
       if (order.status !== 'pending') {
         return res.status(400).json({ 
-          message: "Can only confirm pending orders",
+          message: `Cannot confirm order with status '${order.status}'. Only pending orders can be confirmed.`,
           currentStatus: order.status 
         });
       }

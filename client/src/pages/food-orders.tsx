@@ -102,6 +102,53 @@ export default function GroceryOrdersPage() {
     }
   };
 
+  // Bulk house order management mutations
+  const bulkConfirmHouseMutation = useMutation({
+    mutationFn: async ({ houseName, weekStartDate }: { houseName: string; weekStartDate: string }) => {
+      const response = await apiRequest("PATCH", "/api/house-orders/confirm", { houseName, weekStartDate });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/house-order-summary"] });
+      toast({
+        title: "House Orders Confirmed",
+        description: data.message,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to confirm house orders",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const bulkCancelHouseMutation = useMutation({
+    mutationFn: async ({ houseName, weekStartDate, reason }: { houseName: string; weekStartDate: string; reason?: string }) => {
+      const response = await apiRequest("PATCH", "/api/house-orders/cancel", { houseName, weekStartDate, reason });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/house-order-summary"] });
+      toast({
+        title: "House Orders Cancelled",
+        description: data.message,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel house orders",
+        variant: "destructive",
+      });
+    },
+  });
+
   const cancelOrderMutation = useMutation({
     mutationFn: async (orderId: number) => {
       return apiRequest(`/api/food-orders/${orderId}/cancel`, "PATCH");
@@ -293,21 +340,64 @@ export default function GroceryOrdersPage() {
                           {houseData.players?.length || 0} players • {houseData.totalOrders} orders this week
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        {houseData.orderDetails?.some((order: any) => order.status === 'pending') && (
-                          <Badge variant="outline" className="text-orange-600 border-orange-600">
-                            Pending Orders
-                          </Badge>
-                        )}
-                        {houseData.orderDetails?.some((order: any) => order.status === 'confirmed') && (
-                          <Badge variant="secondary" className="text-blue-600">
-                            Confirmed Orders
-                          </Badge>
-                        )}
-                        {houseData.orderDetails?.some((order: any) => order.status === 'delivered') && (
-                          <Badge variant="default" className="bg-green-600">
-                            Delivered Orders
-                          </Badge>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          {houseData.orderDetails?.some((order: any) => order.status === 'pending') && (
+                            <Badge variant="outline" className="text-orange-600 border-orange-600">
+                              Pending Orders
+                            </Badge>
+                          )}
+                          {houseData.orderDetails?.some((order: any) => order.status === 'confirmed') && (
+                            <Badge variant="secondary" className="text-blue-600">
+                              Confirmed Orders
+                            </Badge>
+                          )}
+                          {houseData.orderDetails?.some((order: any) => order.status === 'delivered') && (
+                            <Badge variant="default" className="bg-green-600">
+                              Delivered Orders
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {/* House-level bulk actions */}
+                        {(user?.role === 'admin' || user?.role === 'staff') && houseData.orderDetails && (
+                          <div className="flex gap-2 mt-2">
+                            {houseData.orderDetails.some((order: any) => order.status === 'pending') && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const weekStartDate = houseData.orderDetails.find((order: any) => order.status === 'pending')?.weekStartDate;
+                                  if (weekStartDate) {
+                                    bulkConfirmHouseMutation.mutate({ houseName, weekStartDate });
+                                  }
+                                }}
+                                disabled={bulkConfirmHouseMutation.isPending}
+                                className="text-xs px-3 py-1 border-blue-600 text-blue-600 hover:bg-blue-50"
+                              >
+                                <Check className="h-3 w-3 mr-1" />
+                                Confirm All
+                              </Button>
+                            )}
+                            
+                            {houseData.orderDetails.some((order: any) => ['pending', 'confirmed'].includes(order.status)) && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const weekStartDate = houseData.orderDetails.find((order: any) => ['pending', 'confirmed'].includes(order.status))?.weekStartDate;
+                                  if (weekStartDate) {
+                                    bulkCancelHouseMutation.mutate({ houseName, weekStartDate, reason: 'Bulk cancelled by admin' });
+                                  }
+                                }}
+                                disabled={bulkCancelHouseMutation.isPending}
+                                className="text-xs px-3 py-1 border-red-600 text-red-600 hover:bg-red-50"
+                              >
+                                <X className="h-3 w-3 mr-1" />
+                                Cancel All
+                              </Button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
