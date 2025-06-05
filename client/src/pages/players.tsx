@@ -334,7 +334,7 @@ export default function Players() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {/* Search */}
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -359,7 +359,20 @@ export default function Players() {
                   </SelectContent>
                 </Select>
 
-
+                {/* Nationality Filter */}
+                <Select value={filterNationality} onValueChange={setFilterNationality}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Nationalities" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Nationalities</SelectItem>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country.code} value={country.name}>
+                        {getCountryFlag(country.code)} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
                 {/* Age Filter */}
                 <Select value={filterAgeRange} onValueChange={setFilterAgeRange}>
