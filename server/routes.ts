@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertPlayerSchema, updatePlayerSchema, insertChoreSchema, updateChoreSchema, insertFoodOrderSchema, updateFoodOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
-import { simpleAuth, simpleAdminAuth, createUserToken, getUserFromToken, removeUserToken } from "./auth-simple";
+import { simpleAuth, simpleAdminAuth, simpleAdminOrCoachAuth, createUserToken, getUserFromToken, removeUserToken } from "./auth-simple";
 import { devAuth } from "./auth-bypass";
 
 
@@ -673,8 +673,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new player (admin only)
-  app.post("/api/players", async (req, res) => {
+  // Create new player (admin and coach access)
+  app.post("/api/players", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const validatedData = insertPlayerSchema.parse(req.body);
       const player = await storage.createPlayer(validatedData);
@@ -690,8 +690,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update player
-  app.put("/api/players/:id", async (req, res) => {
+  // Update player (admin and coach access)
+  app.put("/api/players/:id", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = updatePlayerSchema.parse(req.body);
@@ -714,8 +714,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Delete player
-  app.delete("/api/players/:id", async (req, res) => {
+  // Delete player (admin and coach access)
+  app.delete("/api/players/:id", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deletePlayer(id);
@@ -1421,11 +1421,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/event-templates", simpleAdminAuth, async (req: any, res) => {
+  app.post("/api/event-templates", simpleAdminOrCoachAuth, async (req: any, res) => {
     try {
       const templateData = {
         ...req.body,
-        createdBy: req.user.id
+        createdBy: req.user.userData?.id || req.user.id
       };
       const template = await storage.createEventTemplate(templateData);
       res.status(201).json(template);
