@@ -782,11 +782,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = req.user;
       const house = req.query.house as string;
       
+      console.log("Chore request - user role:", user.role, "house filter:", house);
+      
       // If user is admin or coach, show all chores for the house
       if (user.role === 'admin' || user.role === 'coach') {
-        const chores = house 
-          ? await storage.getChoresByHouse(house)
-          : await storage.getAllChores();
+        let chores;
+        if (house) {
+          console.log("Getting chores for house:", house);
+          chores = await storage.getChoresByHouse(house);
+        } else {
+          console.log("Getting all chores");
+          chores = await storage.getAllChores();
+        }
+        console.log("Found chores:", chores.length);
         res.json(chores);
       } else {
         // If user is a player, show chores assigned to them
