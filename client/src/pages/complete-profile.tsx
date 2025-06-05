@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { COUNTRIES, getCountryFlag } from "@/lib/country-flags";
 
 export default function CompleteProfile() {
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -30,12 +31,18 @@ export default function CompleteProfile() {
           
           <div>
             <Label htmlFor="nationality">Nationality</Label>
-            <Input
-              id="nationality"
-              placeholder="e.g., German, Brazilian"
-              value={nationality}
-              onChange={(e) => setNationality(e.target.value)}
-            />
+            <Select value={nationality} onValueChange={setNationality}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select your nationality" />
+              </SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((country) => (
+                  <SelectItem key={country.code} value={country.name}>
+                    {getCountryFlag(country.code)} {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div>

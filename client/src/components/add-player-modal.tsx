@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { insertPlayerSchema, type InsertPlayer } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { COUNTRIES, getCountryFlag } from "@/lib/country-flags";
 
 interface AddPlayerModalProps {
   isOpen: boolean;
@@ -126,14 +127,11 @@ export default function AddPlayerModal({ isOpen, onClose }: AddPlayerModalProps)
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="germany">Germany</SelectItem>
-                        <SelectItem value="brazil">Brazil</SelectItem>
-                        <SelectItem value="france">France</SelectItem>
-                        <SelectItem value="spain">Spain</SelectItem>
-                        <SelectItem value="italy">Italy</SelectItem>
-                        <SelectItem value="portugal">Portugal</SelectItem>
-                        <SelectItem value="england">England</SelectItem>
-                        <SelectItem value="netherlands">Netherlands</SelectItem>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country.code} value={country.name}>
+                            {getCountryFlag(country.code)} {country.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
