@@ -31,7 +31,11 @@ export function useAuth() {
     isLoading,
     isAuthenticated,
     isAdmin: user?.role === "admin",
-    isPlayer: user?.role === "player", 
+    isCoach: user?.role === "coach",
+    isPlayer: user?.role === "player",
+    // Coaches have admin-level access for calendar and player management
+    canManageCalendar: user?.role === "admin" || user?.role === "coach",
+    canManagePlayers: user?.role === "admin" || user?.role === "coach",
     hasCompletedProfile,
     needsApproval: user && hasCompletedProfile && user?.status === "pending",
   };

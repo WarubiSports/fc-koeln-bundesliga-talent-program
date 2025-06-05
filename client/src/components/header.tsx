@@ -7,9 +7,10 @@ import { NotificationBell } from "@/components/notification-bell";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, canManageCalendar, canManagePlayers } = useAuth();
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
+  const isCoach = user?.role === 'coach';
   const [location] = useLocation();
 
   return (

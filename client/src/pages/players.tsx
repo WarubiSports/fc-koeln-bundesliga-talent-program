@@ -48,7 +48,7 @@ const playerEditSchema = z.object({
 type PlayerEditFormData = z.infer<typeof playerEditSchema>;
 
 export default function Players() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, canManagePlayers } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,10 +108,10 @@ export default function Players() {
     });
   }, [players, searchQuery, filterPosition, filterNationality, filterStatus, filterAgeRange, filterHouse]);
 
-  // Fetch pending users (admin only)
+  // Fetch pending users (admin and coach access)
   const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/pending-users"],
-    enabled: isAdmin,
+    enabled: canManagePlayers,
   });
 
   const approveUserMutation = useMutation({

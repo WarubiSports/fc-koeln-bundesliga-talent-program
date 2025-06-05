@@ -53,7 +53,7 @@ export default function Calendar() {
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
   const [isCreateTemplateModalOpen, setIsCreateTemplateModalOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, canManageCalendar } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isAdmin = user?.role === "admin";
