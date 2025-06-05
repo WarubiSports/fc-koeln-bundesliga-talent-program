@@ -90,6 +90,32 @@ export default function AdminUsers() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await apiRequest(`/api/admin/delete-user/${userId}`, "DELETE");
+    },
+    onSuccess: (_, userId) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/user-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      
+      const user = pendingUsers.find(u => u.id === userId);
+      toast({
+        title: "User Deleted",
+        description: `${user?.firstName} ${user?.lastName} has been permanently deleted.`,
+        variant: "destructive",
+      });
+      setSelectedUser(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Deletion Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

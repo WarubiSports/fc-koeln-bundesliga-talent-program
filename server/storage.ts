@@ -52,6 +52,7 @@ export interface IStorage {
   getPendingUsers(): Promise<User[]>;
   approveUser(userId: string): Promise<void>;
   rejectUser(userId: string): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
   updateUserProfile(userId: string, profileData: {
     dateOfBirth?: string;
     nationality?: string;
@@ -300,6 +301,26 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
       throw new Error("User not found");
+    }
+
+    // Delete the user from the database
+    await db
+      .delete(users)
+      .where(eq(users.id, userId));
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    // Get the user first to verify it exists
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Also delete associated player record if it exists
+    if (user.email) {
+      await db
+        .delete(players)
+        .where(eq(players.email, user.email));
     }
 
     // Delete the user from the database

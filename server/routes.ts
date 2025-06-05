@@ -425,6 +425,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin deletion endpoints - only for Max Bisinger
+  app.delete('/api/admin/delete-user/:userId', simpleAdminAuth, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const adminUser = req.user;
+      
+      // Only allow Max Bisinger to delete users
+      if (adminUser?.id !== 'max.bisinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger can delete users" });
+      }
+      
+      // Prevent self-deletion
+      if (userId === adminUser?.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+      
+      await storage.deleteUser(userId);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  app.delete('/api/admin/delete-player/:playerId', simpleAdminAuth, async (req: any, res) => {
+    try {
+      const { playerId } = req.params;
+      const adminUser = req.user;
+      
+      // Only allow Max Bisinger to delete players
+      if (adminUser?.id !== 'max.bisinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger can delete players" });
+      }
+      
+      const deleted = await storage.deletePlayer(parseInt(playerId));
+      if (!deleted) {
+        return res.status(404).json({ message: "Player not found" });
+      }
+      
+      res.json({ message: "Player deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting player:", error);
+      res.status(500).json({ message: "Failed to delete player" });
+    }
+  });
+
   app.delete('/api/admin/reject-user/:userId', simpleAdminAuth, async (req, res) => {
     try {
       const { userId } = req.params;
