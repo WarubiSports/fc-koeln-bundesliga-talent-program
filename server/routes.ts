@@ -819,16 +819,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/chores", simpleAdminOrCoachAuth, async (req: any, res) => {
     try {
       const user = req.user;
-      const validatedData = insertChoreSchema.parse({
+      console.log("Creating chore - user:", user);
+      console.log("Creating chore - request body:", req.body);
+      
+      const dataToValidate = {
         ...req.body,
         createdBy: user.id || user.username || user.email
-      });
+      };
+      console.log("Creating chore - data to validate:", dataToValidate);
+      
+      const validatedData = insertChoreSchema.parse(dataToValidate);
       
       const chore = await storage.createChore(validatedData);
       res.status(201).json(chore);
     } catch (error) {
       console.error("Error creating chore:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: error.errors 
