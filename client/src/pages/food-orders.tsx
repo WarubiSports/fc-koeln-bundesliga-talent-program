@@ -105,7 +105,7 @@ export default function GroceryOrdersPage() {
   // Bulk house order management mutations
   const bulkConfirmHouseMutation = useMutation({
     mutationFn: async ({ houseName, weekStartDate }: { houseName: string; weekStartDate: string }) => {
-      const response = await apiRequest("PATCH", "/api/house-orders/confirm", { houseName, weekStartDate });
+      const response = await apiRequest("/api/house-orders/confirm", "PATCH", { houseName, weekStartDate });
       return response.json();
     },
     onSuccess: (data) => {
@@ -128,7 +128,7 @@ export default function GroceryOrdersPage() {
 
   const bulkCancelHouseMutation = useMutation({
     mutationFn: async ({ houseName, weekStartDate, reason }: { houseName: string; weekStartDate: string; reason?: string }) => {
-      const response = await apiRequest("PATCH", "/api/house-orders/cancel", { houseName, weekStartDate, reason });
+      const response = await apiRequest("/api/house-orders/cancel", "PATCH", { houseName, weekStartDate, reason });
       return response.json();
     },
     onSuccess: (data) => {
