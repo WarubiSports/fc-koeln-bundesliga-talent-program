@@ -74,10 +74,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Raw request body:', req.body);
     console.log('Request headers:', req.headers);
     
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
+    const loginIdentifier = username || email;
     
-    console.log('Parsed credentials:', { username, password });
-    console.log('Username type:', typeof username);
+    console.log('Parsed credentials:', { loginIdentifier, password });
+    console.log('Login identifier type:', typeof loginIdentifier);
     console.log('Password type:', typeof password);
     
     // Simple credential validation - you can modify these as needed
@@ -92,13 +93,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     console.log('Available credentials:', validCredentials.map(c => ({ username: c.username, password: c.password })));
     
-    const user = validCredentials.find(u => u.username === username && u.password === password);
+    const user = validCredentials.find(u => u.username === loginIdentifier && u.password === password);
     
     if (!user) {
-      console.log('No matching user found for:', { username, password });
+      console.log('No matching user found for:', { loginIdentifier, password });
       console.log('Exact match check:', validCredentials.map(c => ({
         username: c.username,
-        usernameMatch: c.username === username,
+        usernameMatch: c.username === loginIdentifier,
         password: c.password, 
         passwordMatch: c.password === password
       })));
