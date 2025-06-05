@@ -93,7 +93,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     console.log('Available credentials:', validCredentials.map(c => ({ username: c.username, password: c.password })));
     
-    const user = validCredentials.find(u => u.username === loginIdentifier && u.password === password);
+    // First check hardcoded credentials
+    let user = validCredentials.find(u => u.username === loginIdentifier && u.password === password);
+    
+    // If not found in hardcoded credentials, check approved users in database
+    if (!user) {
+      try {
+        const dbUser = await storage.getUserByUsername(loginIdentifier);
+        console.log('Database user found:', dbUser);
+        
+        if (dbUser && dbUser.status === 'approved' && dbUser.password === password) {
+          const userEmail = dbUser.email || loginIdentifier;
+          user = {
+            username: userEmail,
+            password: dbUser.password || '',
+            role: dbUser.role || 'player',
+            name: `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim()
+          };
+          console.log('Database user authenticated:', user);
+        }
+      } catch (error) {
+        console.error('Error checking database user:', error);
+      }
+    }
     
     if (!user) {
       console.log('No matching user found for:', { loginIdentifier, password });
@@ -110,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       id: user.username,
       firstName: user.name.split(' ')[0],
       lastName: user.name.split(' ')[1] || '',
-      email: `${user.username}@fckoeln.dev`,
+      email: user.username.includes('@') ? user.username : `${user.username}@fckoeln.dev`,
       role: user.role,
       status: 'approved'
     };
