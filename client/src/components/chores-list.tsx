@@ -42,9 +42,7 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
 
   const deleteChoreMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/chores/${id}`, {
-        method: "DELETE",
-      });
+      return apiRequest("DELETE", `/api/chores/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
