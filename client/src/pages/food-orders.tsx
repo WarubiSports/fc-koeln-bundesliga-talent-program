@@ -247,96 +247,172 @@ export default function GroceryOrdersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle>House Orders Summary</CardTitle>
+          <p className="text-sm text-gray-600">Consolidated grocery orders organized by house</p>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8">Loading orders...</div>
-          ) : orders.length === 0 ? (
+          ) : Object.keys(houseOrderSummary).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No orders found. Create your first grocery order!
             </div>
           ) : (
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
+            <div className="space-y-6">
+              {Object.entries(houseOrderSummary).map(([houseName, houseData]: [string, any]) => (
+                <Card key={houseName} className="border-l-4 border-l-[#DC143C]">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">{order.playerName}</p>
-                        <p className="text-sm text-gray-500">Week: {order.weekStartDate}</p>
+                        <CardTitle className="text-lg text-[#DC143C]">{houseName}</CardTitle>
+                        <p className="text-sm text-gray-600">
+                          {houseData.players?.length || 0} players • {houseData.totalOrders} orders this week
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        {houseData.orderDetails?.some((order: any) => order.status === 'pending') && (
+                          <Badge variant="outline" className="text-orange-600 border-orange-600">
+                            Pending Orders
+                          </Badge>
+                        )}
+                        {houseData.orderDetails?.some((order: any) => order.status === 'confirmed') && (
+                          <Badge variant="secondary" className="text-blue-600">
+                            Confirmed Orders
+                          </Badge>
+                        )}
+                        {houseData.orderDetails?.some((order: any) => order.status === 'delivered') && (
+                          <Badge variant="default" className="bg-green-600">
+                            Delivered Orders
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant={
-                      order.status === 'delivered' ? 'default' :
-                      order.status === 'confirmed' ? 'secondary' :
-                      order.status === 'pending' ? 'outline' : 'destructive'
-                    }>
-                      {order.status}
-                    </Badge>
-                    
-                    {/* Admin/Staff Action Buttons */}
-                    {(user?.role === 'admin' || user?.role === 'staff') && (
-                      <div className="flex items-center gap-2">
-                        {order.status === 'pending' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => confirmOrderMutation.mutate(order.id)}
-                              disabled={confirmOrderMutation.isPending}
-                              className="flex items-center gap-1"
-                            >
-                              <Clock className="h-3 w-3" />
-                              Confirm
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => cancelOrderMutation.mutate(order.id)}
-                              disabled={cancelOrderMutation.isPending}
-                              className="flex items-center gap-1"
-                            >
-                              <X className="h-3 w-3" />
-                              Cancel
-                            </Button>
-                          </>
-                        )}
-                        
-                        {order.status === 'confirmed' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="default"
-                              onClick={() => completeOrderMutation.mutate(order.id)}
-                              disabled={completeOrderMutation.isPending}
-                              className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
-                            >
-                              <Check className="h-3 w-3" />
-                              Mark Delivered
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => cancelOrderMutation.mutate(order.id)}
-                              disabled={cancelOrderMutation.isPending}
-                              className="flex items-center gap-1"
-                            >
-                              <X className="h-3 w-3" />
-                              Cancel
-                            </Button>
-                          </>
-                        )}
-                        
-                        {order.status === 'delivered' && (
-                          <span className="text-sm text-green-600 font-medium">✓ Completed</span>
-                        )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Players in this house */}
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Players in House:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {houseData.players?.map((player: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {player}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Consolidated Shopping List */}
+                    {houseData.consolidatedItems && (
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-sm">Consolidated Shopping List:</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {Object.entries(houseData.consolidatedItems).map(([category, items]: [string, any]) => (
+                            items?.length > 0 && (
+                              <div key={category} className="bg-gray-50 p-3 rounded-lg">
+                                <h5 className="text-xs font-semibold text-gray-700 uppercase mb-2">
+                                  {category.replace(/([A-Z])/g, ' $1').trim()}
+                                </h5>
+                                <div className="text-sm text-gray-800">
+                                  {Array.isArray(items) ? items.join(', ') : items}
+                                </div>
+                              </div>
+                            )
+                          ))}
+                        </div>
                       </div>
                     )}
-                  </div>
-                </div>
+
+                    {/* Individual Orders for Admin Management */}
+                    {(user?.role === 'admin' || user?.role === 'staff') && houseData.orderDetails && (
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-sm">Individual Orders Management:</h4>
+                        <div className="space-y-2">
+                          {houseData.orderDetails.map((order: any) => (
+                            <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3">
+                                  <div>
+                                    <p className="font-medium text-sm">{order.playerName}</p>
+                                    <p className="text-xs text-gray-500">
+                                      Week: {order.weekStartDate} • Delivery: {order.deliveryDay}
+                                    </p>
+                                    <p className="text-xs text-gray-600">Cost: €{order.estimatedCost}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Badge variant={
+                                  order.status === 'delivered' ? 'default' :
+                                  order.status === 'confirmed' ? 'secondary' :
+                                  order.status === 'pending' ? 'outline' : 'destructive'
+                                }>
+                                  {order.status}
+                                </Badge>
+                                
+                                {/* Admin Action Buttons */}
+                                <div className="flex items-center gap-1">
+                                  {order.status === 'pending' && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => confirmOrderMutation.mutate(order.id)}
+                                        disabled={confirmOrderMutation.isPending}
+                                        className="flex items-center gap-1 text-xs px-2 py-1"
+                                      >
+                                        <Clock className="h-3 w-3" />
+                                        Confirm
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={() => cancelOrderMutation.mutate(order.id)}
+                                        disabled={cancelOrderMutation.isPending}
+                                        className="flex items-center gap-1 text-xs px-2 py-1"
+                                      >
+                                        <X className="h-3 w-3" />
+                                        Cancel
+                                      </Button>
+                                    </>
+                                  )}
+                                  
+                                  {order.status === 'confirmed' && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        onClick={() => completeOrderMutation.mutate(order.id)}
+                                        disabled={completeOrderMutation.isPending}
+                                        className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-xs px-2 py-1"
+                                      >
+                                        <Check className="h-3 w-3" />
+                                        Deliver
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={() => cancelOrderMutation.mutate(order.id)}
+                                        disabled={cancelOrderMutation.isPending}
+                                        className="flex items-center gap-1 text-xs px-2 py-1"
+                                      >
+                                        <X className="h-3 w-3" />
+                                        Cancel
+                                      </Button>
+                                    </>
+                                  )}
+                                  
+                                  {order.status === 'delivered' && (
+                                    <span className="text-xs text-green-600 font-medium">✓ Completed</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
