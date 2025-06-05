@@ -819,10 +819,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/chores", simpleAdminOrCoachAuth, async (req: any, res) => {
     try {
       const user = req.user;
+      console.log("Creating chore - user:", user);
+      console.log("Creating chore - request body:", req.body);
+      
       const validatedData = insertChoreSchema.parse({
         ...req.body,
-        createdBy: user.username
+        createdBy: user.id || user.username || user.email
       });
+      
+      console.log("Creating chore - validated data:", validatedData);
       const chore = await storage.createChore(validatedData);
       res.status(201).json(chore);
     } catch (error) {
