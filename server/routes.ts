@@ -1059,10 +1059,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Event routes (admin-only)
+  // Event routes - accessible to all authenticated users
   app.get("/api/events", async (req, res) => {
     try {
+      console.log("Events API called by user:", req.user?.id || "unauthenticated");
       const events = await storage.getAllEvents();
+      console.log("Found", events.length, "events");
       res.json(events);
     } catch (error) {
       console.error("Error fetching events:", error);
