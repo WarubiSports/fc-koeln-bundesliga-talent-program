@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, ShoppingCart, TrendingUp, Check, X, Clock } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, ShoppingCart, TrendingUp, Check, X, Clock, Archive, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -16,13 +17,55 @@ export default function GroceryOrdersPage() {
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState<FoodOrder | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<string>();
+  const [dateFilter, setDateFilter] = useState<string>("current-month");
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: orders = [], isLoading } = useQuery<FoodOrder[]>({
+  const { data: allOrders = [], isLoading } = useQuery<FoodOrder[]>({
     queryKey: ["/api/food-orders"],
   });
+
+  // Filter orders based on selected date range
+  const getFilteredOrders = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return allOrders.filter(order => {
+      const orderDate = new Date(order.weekStartDate);
+      
+      switch (dateFilter) {
+        case "current-week":
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          return orderDate >= startOfWeek && orderDate <= endOfWeek;
+          
+        case "current-month":
+          return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+          
+        case "last-month":
+          const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+          const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+          return orderDate.getMonth() === lastMonth && orderDate.getFullYear() === lastMonthYear;
+          
+        case "last-3-months":
+          const threeMonthsAgo = new Date(now);
+          threeMonthsAgo.setMonth(now.getMonth() - 3);
+          return orderDate >= threeMonthsAgo;
+          
+        case "all":
+          return true;
+          
+        default:
+          return true;
+      }
+    });
+  };
+
+  const orders = getFilteredOrders();
 
   const { data: stats } = useQuery({
     queryKey: ["/api/food-order-stats"],
@@ -177,6 +220,24 @@ export default function GroceryOrdersPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Grocery Orders</h1>
             <p className="text-gray-600">Manage weekly grocery orders for the houses</p>
+            <div className="flex items-center gap-4 mt-3">
+              <Calendar className="h-4 w-4 text-gray-500" />
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select time period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current-week">This Week</SelectItem>
+                  <SelectItem value="current-month">This Month</SelectItem>
+                  <SelectItem value="last-month">Last Month</SelectItem>
+                  <SelectItem value="last-3-months">Last 3 Months</SelectItem>
+                  <SelectItem value="all">All Orders</SelectItem>
+                </SelectContent>
+              </Select>
+              <Badge variant="outline" className="text-gray-600">
+                {orders.length} orders shown
+              </Badge>
+            </div>
           </div>
           <Button onClick={() => setIsModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -385,15 +446,9 @@ export default function GroceryOrdersPage() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => {
-                                  console.log('Cancel All clicked for house:', houseName);
-                                  console.log('House data orders:', houseData.orderDetails);
                                   const weekStartDate = houseData.orderDetails.find((order: any) => ['pending', 'confirmed'].includes(order.status))?.weekStartDate;
-                                  console.log('Found weekStartDate:', weekStartDate);
                                   if (weekStartDate) {
-                                    console.log('Calling bulk cancel mutation with:', { houseName, weekStartDate, reason: 'Bulk cancelled by admin' });
                                     bulkCancelHouseMutation.mutate({ houseName, weekStartDate, reason: 'Bulk cancelled by admin' });
-                                  } else {
-                                    console.error('No weekStartDate found for cancellable orders');
                                   }
                                 }}
                                 disabled={bulkCancelHouseMutation.isPending}
