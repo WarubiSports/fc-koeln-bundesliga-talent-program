@@ -444,7 +444,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUser = req.user;
       
       // Only allow Max Bisinger to delete users
-      if (adminUser?.id !== 'max.bisinger@warubi-sports.com') {
+      if (adminUser?.id !== 'max.bisinger@warubi-sports.com' && adminUser?.email !== 'max.bisinger@warubi-sports.com') {
         return res.status(403).json({ message: "Only Max Bisinger can delete users" });
       }
       
@@ -467,7 +467,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUser = req.user;
       
       // Only allow Max Bisinger to delete players
-      if (adminUser?.id !== 'max.bisinger@warubi-sports.com') {
+      if (adminUser?.id !== 'max.bisinger@warubi-sports.com' && adminUser?.email !== 'max.bisinger@warubi-sports.com') {
         return res.status(403).json({ message: "Only Max Bisinger can delete players" });
       }
       
