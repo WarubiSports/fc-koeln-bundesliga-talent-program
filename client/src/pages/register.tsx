@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { getCountryFlag } from "@/lib/country-flags";
+import { getCountryFlag, COUNTRIES } from "@/lib/country-flags";
 
 const positions = [
   "Goalkeeper",
@@ -252,14 +252,18 @@ export default function Register() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="nationality" className="text-gray-700">Nationality *</Label>
-                    <Input
-                      id="nationality"
-                      type="text"
-                      value={formData.nationality}
-                      onChange={(e) => handleNationalityChange(e.target.value)}
-                      required
-                      placeholder="e.g. German, Brazilian"
-                    />
+                    <Select value={formData.nationality} onValueChange={(value) => handleNationalityChange(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your nationality" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country.code} value={country.name}>
+                            {getCountryFlag(country.code)} {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 
