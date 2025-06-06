@@ -49,8 +49,20 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
       return apiRequest("/api/chores", "POST", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
+      // Invalidate all chore-related queries with pattern matching
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/chores') || key?.includes('/api/chore-stats');
+        }
+      });
+      // Force refetch all active chore queries
+      queryClient.refetchQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/chores');
+        }
+      });
       toast({
         title: "Success",
         description: "Chore created successfully",
