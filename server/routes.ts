@@ -798,7 +798,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json(chores);
       } else {
         // If user is a player, show chores assigned to them
-        // Try both username and full name for matching
+        // Try both username and full name for exact matching
         const userName = user.username || user.id;
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
         
@@ -809,10 +809,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // If no chores found with username/email, try with full name
         if (chores.length === 0 && fullName) {
-          chores = await storage.getChoresForUser(fullName);
+          chores = await storage.getChoresForUserByName(fullName);
         }
         
         console.log("Player chores found:", chores.length);
+        console.log("Player chores:", chores.map(c => ({ id: c.id, title: c.title, assignedTo: c.assignedTo, house: c.house })));
         res.json(chores);
       }
     } catch (error) {

@@ -93,6 +93,7 @@ export interface IStorage {
   deleteChore(id: number): Promise<boolean>;
   getChoresByHouse(house: string): Promise<Chore[]>;
   getChoresForUser(username: string): Promise<Chore[]>;
+  getChoresForUserByName(fullName: string): Promise<Chore[]>;
   getChoreStats(): Promise<{
     totalChores: number;
     pendingChores: number;
@@ -533,8 +534,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getChoresForUser(username: string): Promise<Chore[]> {
+    // Use exact matching for better precision
     return await db.select().from(chores).where(
-      sql`${chores.assignedTo} LIKE ${`%${username}%`}`
+      sql`${chores.assignedTo} = ${username}`
+    );
+  }
+
+  async getChoresForUserByName(fullName: string): Promise<Chore[]> {
+    // Separate method for full name matching
+    return await db.select().from(chores).where(
+      sql`${chores.assignedTo} = ${fullName}`
     );
   }
 
