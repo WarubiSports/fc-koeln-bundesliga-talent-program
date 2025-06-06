@@ -25,14 +25,17 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
 
   const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
 
-  // For admins/coaches, use house filtering; for players, get their assigned chores
-  const queryKey = isAdmin 
-    ? [`/api/chores?house=${encodeURIComponent(selectedHouse)}`]
-    : ['/api/chores'];
-
-  const { data: chores, isLoading } = useQuery<Chore[]>({
-    queryKey,
+  // Get all chores and filter on frontend for consistent behavior
+  const { data: allChores, isLoading } = useQuery<Chore[]>({
+    queryKey: isAdmin 
+      ? [`/api/chores?house=${encodeURIComponent(selectedHouse)}`]
+      : ['/api/chores'],
   });
+
+  // Filter chores by selected house for players
+  const chores = isAdmin 
+    ? allChores 
+    : allChores?.filter(chore => chore.house === selectedHouse) || [];
 
   const updateChoreMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
