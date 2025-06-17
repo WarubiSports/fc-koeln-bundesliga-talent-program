@@ -32,16 +32,32 @@ export default function GroceryOrdersPage() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
+    console.log("Current date for filtering:", now.toISOString());
+    console.log("Date filter selected:", dateFilter);
+    
     return allOrders.filter(order => {
       const orderDate = new Date(order.weekStartDate);
+      console.log("Checking order with date:", order.weekStartDate, "parsed as:", orderDate.toISOString());
       
       switch (dateFilter) {
         case "current-week":
+          // Calculate start of current week (Sunday)
           const startOfWeek = new Date(now);
           startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
+          
+          // Calculate end of current week (Saturday)
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
-          return orderDate >= startOfWeek && orderDate <= endOfWeek;
+          endOfWeek.setHours(23, 59, 59, 999);
+          
+          console.log("Current week range:", startOfWeek.toISOString(), "to", endOfWeek.toISOString());
+          
+          // Check if order's week start date falls within current week
+          const isInCurrentWeek = orderDate >= startOfWeek && orderDate <= endOfWeek;
+          console.log("Order", order.id, "is in current week:", isInCurrentWeek);
+          
+          return isInCurrentWeek;
           
         case "current-month":
           return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
