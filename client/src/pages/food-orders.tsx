@@ -93,7 +93,7 @@ export default function GroceryOrdersPage() {
 
   // Query for house order summaries (admin only)
   const { data: houseOrderSummary = {} } = useQuery({
-    queryKey: ["/api/house-order-summary"],
+    queryKey: [`/api/house-order-summary?dateFilter=${encodeURIComponent(dateFilter)}`],
     enabled: isAdmin,
   });
 
@@ -170,7 +170,12 @@ export default function GroceryOrdersPage() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/food-orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/food-order-stats"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/house-order-summary"] });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/house-order-summary');
+        }
+      });
       toast({
         title: "House Orders Confirmed",
         description: data.message,

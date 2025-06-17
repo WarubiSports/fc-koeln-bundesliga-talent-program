@@ -1105,7 +1105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/house-order-summary", async (req, res) => {
     try {
-      const summary = await storage.getHouseOrderSummary();
+      const { dateFilter } = req.query;
+      const summary = await storage.getHouseOrderSummary(dateFilter as string);
       res.json(summary);
     } catch (error) {
       console.error("Error fetching house order summary:", error);

@@ -150,7 +150,7 @@ export interface IStorage {
   }>;
 
   // House order summary methods
-  getHouseOrderSummary(): Promise<{
+  getHouseOrderSummary(dateFilter?: string): Promise<{
     [house: string]: {
       totalOrders: number;
       players: string[];
@@ -779,7 +779,48 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async getHouseOrderSummary(): Promise<{
+  private filterOrdersByDate(orders: FoodOrder[], dateFilter?: string): FoodOrder[] {
+    if (!dateFilter || dateFilter === 'all') {
+      return orders;
+    }
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return orders.filter(order => {
+      const orderDate = new Date(order.weekStartDate);
+      
+      switch (dateFilter) {
+        case "current-week":
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23, 59, 59, 999);
+          return orderDate >= startOfWeek && orderDate <= endOfWeek;
+          
+        case "current-month":
+          return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+          
+        case "last-month":
+          const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+          const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+          return orderDate.getMonth() === lastMonth && orderDate.getFullYear() === lastMonthYear;
+          
+        case "last-3-months":
+          const threeMonthsAgo = new Date(now);
+          threeMonthsAgo.setMonth(now.getMonth() - 3);
+          return orderDate >= threeMonthsAgo;
+          
+        default:
+          return true;
+      }
+    });
+  }
+
+  async getHouseOrderSummary(dateFilter?: string): Promise<{
     [house: string]: {
       totalOrders: number;
       players: string[];
@@ -807,10 +848,13 @@ export class DatabaseStorage implements IStorage {
     // Get all food orders
     const allOrders = await this.getAllFoodOrders();
     
+    // Filter orders based on date filter
+    const filteredOrders = this.filterOrdersByDate(allOrders, dateFilter);
+    
     // Group orders by house
     const houseSummary: any = {};
     
-    allOrders.forEach(order => {
+    filteredOrders.forEach(order => {
       const playerHouse = playerHouseMap.get(order.playerName) || 'Unassigned';
       
       if (!houseSummary[playerHouse]) {
