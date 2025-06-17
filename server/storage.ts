@@ -770,25 +770,31 @@ export class DatabaseStorage implements IStorage {
   }> {
     const orders = await this.getAllFoodOrders();
     
+    // Filter out cancelled orders from active counts
+    const activeOrders = orders.filter(order => order.status !== 'cancelled');
+    
     return {
-      totalOrders: orders.length,
-      pendingOrders: orders.filter(order => order.status === 'pending').length,
-      confirmedOrders: orders.filter(order => order.status === 'confirmed').length,
-      deliveredOrders: orders.filter(order => order.status === 'delivered').length,
-      cancelledOrders: orders.filter(order => order.status === 'cancelled').length,
+      totalOrders: activeOrders.length,
+      pendingOrders: activeOrders.filter(order => order.status === 'pending').length,
+      confirmedOrders: activeOrders.filter(order => order.status === 'confirmed').length,
+      deliveredOrders: activeOrders.filter(order => order.status === 'delivered').length,
+      cancelledOrders: 0, // Hide cancelled count entirely
     };
   }
 
   private filterOrdersByDate(orders: FoodOrder[], dateFilter?: string): FoodOrder[] {
+    // First filter out cancelled orders entirely
+    const activeOrders = orders.filter(order => order.status !== 'cancelled');
+    
     if (!dateFilter || dateFilter === 'all') {
-      return orders;
+      return activeOrders;
     }
 
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     
-    return orders.filter(order => {
+    return activeOrders.filter(order => {
       const orderDate = new Date(order.weekStartDate);
       
       switch (dateFilter) {

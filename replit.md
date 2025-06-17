@@ -114,7 +114,19 @@ This is a comprehensive web application for managing the FC Köln International 
 
 Preferred communication style: Simple, everyday language.
 
-## Changelog
+## Recent Changes
 
-Changelog:
-- June 17, 2025. Initial setup
+### June 17, 2025
+- **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
+- **Date Filtering Enhancement**: Implemented comprehensive date filtering for House Order Summary to prevent overwhelming data accumulation over 10-month season
+- **Player Authentication**: Resolved chore visibility bug where players saw chores from all houses instead of only their assigned house
+- **Cache Strategy**: Enhanced React Query cache invalidation with pattern-based queries for immediate UI updates
+
+### Technical Improvements
+- Added exact matching for chore assignments instead of broad LIKE queries
+- Implemented date range filtering (current week, current month, last month, last 3 months) for food order summaries
+- Enhanced house tab filtering on frontend to respect selected house assignments
+- Improved admin chore creation with immediate visibility through better cache management
+
+## Project Status
+Current focus: Fully operational chore and food order management systems with proper role-based filtering and date-based organization to handle season-long data management.
