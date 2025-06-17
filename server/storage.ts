@@ -496,23 +496,80 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createChore(insertChore: InsertChore): Promise<Chore> {
-    const [chore] = await db
-      .insert(chores)
-      .values(insertChore)
-      .returning();
-    
-    // Create notifications for assigned players
-    if (chore.assignedTo) {
-      await this.createNotificationsForAssignees(
-        chore.assignedTo,
-        `New Chore Assigned: ${chore.title}`,
-        `You have been assigned a new chore in ${chore.house}. Due: ${chore.dueDate}`,
-        'chore',
-        '/chores'
-      );
+    // Enhanced validation
+    if (!insertChore.title?.trim()) {
+      throw new Error('Chore title is required');
     }
     
-    return chore;
+    if (!insertChore.createdBy?.trim()) {
+      throw new Error('Creator is required');
+    }
+
+    // Validate house assignment
+    const validHouses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
+    if (!validHouses.includes(insertChore.house)) {
+      throw new Error(`Invalid house. Must be one of: ${validHouses.join(', ')}`);
+    }
+
+    // Validate assigned players exist in the specified house
+    if (insertChore.assignedTo) {
+      try {
+        const assignedPlayers = JSON.parse(insertChore.assignedTo);
+        if (Array.isArray(assignedPlayers) && assignedPlayers.length > 0) {
+          const housePlayers = await this.getAllPlayers();
+          const validPlayers = housePlayers
+            .filter(player => player.house === insertChore.house)
+            .map(player => `${player.firstName} ${player.lastName}`);
+          
+          const invalidAssignments = assignedPlayers.filter(player => 
+            !validPlayers.includes(player)
+          );
+          
+          if (invalidAssignments.length > 0) {
+            throw new Error(`Invalid player assignments for ${insertChore.house}: ${invalidAssignments.join(', ')}`);
+          }
+        }
+      } catch (parseError) {
+        if (parseError instanceof SyntaxError) {
+          throw new Error('Invalid assignedTo format. Must be valid JSON array');
+        }
+        throw parseError;
+      }
+    }
+
+    // Validate due date format if provided
+    if (insertChore.dueDate) {
+      const dueDate = new Date(insertChore.dueDate);
+      if (isNaN(dueDate.getTime())) {
+        throw new Error('Invalid due date format');
+      }
+    }
+
+    try {
+      const [chore] = await db
+        .insert(chores)
+        .values({
+          ...insertChore,
+          createdAt: new Date(),
+        })
+        .returning();
+      
+      // Create notifications for assigned players
+      if (chore.assignedTo) {
+        await this.createNotificationsForAssignees(
+          chore.assignedTo,
+          `New Chore Assigned: ${chore.title}`,
+          `You have been assigned a new chore in ${chore.house}. Due: ${chore.dueDate}`,
+          'chore',
+          '/chores'
+        );
+      }
+      
+      return chore;
+    } catch (error) {
+      console.error('Database error creating chore:', error);
+      throw new Error('Failed to create chore due to database error');
+    }
   }
 
   async updateChore(id: number, updates: UpdateChore): Promise<Chore | undefined> {
@@ -732,11 +789,55 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createFoodOrder(insertOrder: InsertFoodOrder): Promise<FoodOrder> {
-    const [order] = await db
-      .insert(groceryOrders)
-      .values(insertOrder)
-      .returning();
-    return order;
+    // Enhanced validation and error handling
+    if (!insertOrder.playerName?.trim()) {
+      throw new Error('Player name is required');
+    }
+    
+    if (!insertOrder.weekStartDate) {
+      throw new Error('Week start date is required');
+    }
+
+    // Validate week start date format and ensure it's not in the past
+    const weekStart = new Date(insertOrder.weekStartDate);
+    if (isNaN(weekStart.getTime())) {
+      throw new Error('Invalid week start date format');
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (weekStart < today) {
+      throw new Error('Cannot create orders for past weeks');
+    }
+
+    // Check for duplicate orders (same player, same week)
+    const existingOrder = await db.select().from(groceryOrders)
+      .where(and(
+        eq(groceryOrders.playerName, insertOrder.playerName),
+        eq(groceryOrders.weekStartDate, insertOrder.weekStartDate),
+        ne(groceryOrders.status, 'cancelled')
+      ))
+      .limit(1);
+
+    if (existingOrder.length > 0) {
+      throw new Error(`Order already exists for ${insertOrder.playerName} for week starting ${insertOrder.weekStartDate}`);
+    }
+
+    try {
+      const [order] = await db
+        .insert(groceryOrders)
+        .values({
+          ...insertOrder,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      return order;
+    } catch (error) {
+      console.error('Database error creating food order:', error);
+      throw new Error('Failed to create food order due to database error');
+    }
   }
 
   async updateFoodOrder(id: number, updates: UpdateFoodOrder): Promise<FoodOrder | undefined> {
@@ -790,40 +891,9 @@ export class DatabaseStorage implements IStorage {
       return activeOrders;
     }
 
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
-    return activeOrders.filter(order => {
-      const orderDate = new Date(order.weekStartDate);
-      
-      switch (dateFilter) {
-        case "current-week":
-          const startOfWeek = new Date(now);
-          startOfWeek.setDate(now.getDate() - now.getDay());
-          startOfWeek.setHours(0, 0, 0, 0);
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          endOfWeek.setHours(23, 59, 59, 999);
-          return orderDate >= startOfWeek && orderDate <= endOfWeek;
-          
-        case "current-month":
-          return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
-          
-        case "last-month":
-          const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-          const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-          return orderDate.getMonth() === lastMonth && orderDate.getFullYear() === lastMonthYear;
-          
-        case "last-3-months":
-          const threeMonthsAgo = new Date(now);
-          threeMonthsAgo.setMonth(now.getMonth() - 3);
-          return orderDate >= threeMonthsAgo;
-          
-        default:
-          return true;
-      }
-    });
+    // Use centralized date filtering logic
+    const { DateFilterUtils } = require('./dateFilters');
+    return DateFilterUtils.filterOrdersByDateRange(activeOrders, dateFilter);
   }
 
   async getHouseOrderSummary(dateFilter?: string): Promise<{
@@ -842,19 +912,28 @@ export class DatabaseStorage implements IStorage {
       };
     };
   }> {
-    // Get all players and their house assignments
-    const allPlayers = await this.getAllPlayers();
+    // Validate date filter input
+    if (dateFilter && dateFilter !== 'all') {
+      const { DateFilterUtils } = require('./dateFilters');
+      if (!DateFilterUtils.validateDateFilter(dateFilter)) {
+        throw new Error(`Invalid date filter: ${dateFilter}`);
+      }
+    }
+
+    // Optimize: Use parallel queries for better performance
+    const [allPlayers, allOrders] = await Promise.all([
+      this.getAllPlayers(),
+      this.getAllFoodOrders()
+    ]);
+
+    // Create player-house mapping
     const playerHouseMap = new Map<string, string>();
-    
     allPlayers.forEach(player => {
       const fullName = `${player.firstName} ${player.lastName}`;
       playerHouseMap.set(fullName, player.house || 'Unassigned');
     });
 
-    // Get all food orders
-    const allOrders = await this.getAllFoodOrders();
-    
-    // Filter orders based on date filter
+    // Filter orders based on date filter and exclude cancelled orders
     const filteredOrders = this.filterOrdersByDate(allOrders, dateFilter);
     
     // Group orders by house
