@@ -1228,6 +1228,37 @@ export class DatabaseStorage implements IStorage {
     return result[0]?.count || 0;
   }
 
+  // Notification cleanup for long-term scalability
+  async cleanupOldNotifications(): Promise<{ deletedCount: number }> {
+    // Delete read notifications older than 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const result = await db
+      .delete(notifications)
+      .where(and(
+        eq(notifications.isRead, true),
+        sql`${notifications.createdAt} < ${thirtyDaysAgo.toISOString()}`
+      ));
+    
+    return { deletedCount: result.rowCount || 0 };
+  }
+
+  async cleanupOldUnreadNotifications(): Promise<{ deletedCount: number }> {
+    // Delete unread notifications older than 90 days (they're probably stale)
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    
+    const result = await db
+      .delete(notifications)
+      .where(and(
+        eq(notifications.isRead, false),
+        sql`${notifications.createdAt} < ${ninetyDaysAgo.toISOString()}`
+      ));
+    
+    return { deletedCount: result.rowCount || 0 };
+  }
+
   // Bulk operations implementation
   async bulkUpdateEvents(eventIds: number[], updates: UpdateEvent): Promise<Event[]> {
     const results = await db

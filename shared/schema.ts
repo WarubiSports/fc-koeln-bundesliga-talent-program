@@ -201,7 +201,12 @@ export const groceryOrders = pgTable("grocery_orders", {
   adminNotes: text("admin_notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  playerNameIdx: index("grocery_orders_player_idx").on(table.playerName),
+  weekStartIdx: index("grocery_orders_week_idx").on(table.weekStartDate),
+  statusIdx: index("grocery_orders_status_idx").on(table.status),
+  playerWeekIdx: index("grocery_orders_player_week_idx").on(table.playerName, table.weekStartDate),
+}));
 
 export const insertGroceryOrderSchema = createInsertSchema(groceryOrders).omit({
   id: true,
@@ -293,7 +298,12 @@ export const events = pgTable("events", {
   createdBy: text("created_by").notNull(), // Admin who created the event
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  dateIdx: index("events_date_idx").on(table.date),
+  eventTypeIdx: index("events_type_idx").on(table.eventType),
+  createdByIdx: index("events_created_by_idx").on(table.createdBy),
+  dateTypeIdx: index("events_date_type_idx").on(table.date, table.eventType),
+}));
 
 export const insertEventSchema = createInsertSchema(events).omit({
   id: true,
@@ -347,7 +357,12 @@ export const notifications = pgTable("notifications", {
   scheduledFor: timestamp("scheduled_for"), // for future notifications
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  userIdIdx: index("notifications_user_id_idx").on(table.userId),
+  isReadIdx: index("notifications_is_read_idx").on(table.isRead),
+  createdAtIdx: index("notifications_created_at_idx").on(table.createdAt),
+  userReadIdx: index("notifications_user_read_idx").on(table.userId, table.isRead),
+}));
 
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
   id: true,
