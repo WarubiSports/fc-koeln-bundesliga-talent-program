@@ -1528,6 +1528,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification cleanup endpoints for long-term maintenance
+  app.post("/api/notifications/cleanup", simpleAuth, async (req: any, res) => {
+    try {
+      const userRole = req.user?.role;
+      if (!userRole || userRole !== 'admin') {
+        return res.status(403).json({ message: "Access denied. Admin role required." });
+      }
+
+      const readCleanup = await storage.cleanupOldNotifications();
+      const unreadCleanup = await storage.cleanupOldUnreadNotifications();
+      
+      res.json({ 
+        message: "Notification cleanup completed",
+        readNotificationsDeleted: readCleanup.deletedCount,
+        staleUnreadNotificationsDeleted: unreadCleanup.deletedCount,
+        totalDeleted: readCleanup.deletedCount + unreadCleanup.deletedCount
+      });
+    } catch (error) {
+      console.error("Error cleaning up notifications:", error);
+      res.status(500).json({ message: "Failed to cleanup notifications" });
+    }
+  });
+
   // Bulk operations routes
   app.patch("/api/events/bulk", simpleAdminAuth, async (req, res) => {
     try {
