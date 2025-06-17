@@ -47,7 +47,7 @@ import {
   type UpdateMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, sql, desc, count, and, or, inArray, gte, lte } from "drizzle-orm";
+import { eq, ilike, sql, desc, count, and, or, inArray, gte, lte, ne } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
