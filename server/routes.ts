@@ -1035,7 +1035,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/food-orders", async (req, res) => {
     try {
       const orders = await storage.getAllFoodOrders();
-      res.json(orders);
+      // Filter out cancelled orders completely
+      const activeOrders = orders.filter(order => order.status !== 'cancelled');
+      res.json(activeOrders);
     } catch (error) {
       console.error("Error fetching food orders:", error);
       res.status(500).json({ message: "Failed to fetch food orders" });
