@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/header";
 import SectionOverview from "@/components/section-overview";
 import { useAuth, AuthProvider } from "@/hooks/use-token-auth";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
 import Chores from "@/pages/chores";
@@ -27,6 +28,9 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   const { user, isLoading } = useAuth();
+  
+  // Initialize push notifications for authenticated users
+  usePushNotifications();
 
   if (isLoading) {
     return (

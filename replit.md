@@ -122,6 +122,8 @@ Preferred communication style: Simple, everyday language.
 - **TypeScript Error Resolution**: Fixed all compilation errors in food orders component for smooth operation
 - **Database Query Optimization**: Enhanced SQL syntax and error handling in storage layer
 - **Players Page Cleanup**: Removed pending approvals section since dedicated user and member management sections exist
+- **Push Notifications System**: Implemented browser notifications for events, chores, and messages when players aren't using the app
+- **Chore Deletion Fix**: Resolved React Query cache invalidation error preventing chore deletion functionality
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
