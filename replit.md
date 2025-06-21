@@ -124,6 +124,8 @@ Preferred communication style: Simple, everyday language.
 - **Players Page Cleanup**: Removed pending approvals section since dedicated user and member management sections exist
 - **Push Notifications System**: Implemented browser notifications for events, chores, and messages when players aren't using the app
 - **Chore Deletion Fix**: Resolved React Query cache invalidation error preventing chore deletion functionality
+- **Smart Chore Rotation**: AI-powered fair distribution system considering workload, experience, and availability with 60% fairness weight
+- **House Competition System**: Real-time scoring across categories (chores, punctuality, teamwork, cleanliness, participation) with badges and achievements
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
