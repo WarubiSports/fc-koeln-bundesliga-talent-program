@@ -108,52 +108,7 @@ export default function Players() {
     });
   }, [players, searchQuery, filterPosition, filterNationality, filterStatus, filterAgeRange, filterHouse]);
 
-  // Fetch pending users (admin and coach access)
-  const { data: pendingUsers = [], isLoading: pendingUsersLoading } = useQuery<any[]>({
-    queryKey: ["/api/admin/pending-users"],
-    enabled: canManagePlayers,
-  });
 
-  const approveUserMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      await apiRequest(`/api/admin/approve-user/${userId}`, "PUT");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
-      toast({
-        title: "User approved",
-        description: "User has been approved and can now access the system.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const rejectUserMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      await apiRequest(`/api/admin/reject-user/${userId}`, "DELETE");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
-      toast({
-        title: "User rejected",
-        description: "User has been rejected and removed from the system.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
   // Player edit form
   const editForm = useForm<PlayerEditFormData>({
@@ -275,56 +230,7 @@ export default function Players() {
         </div>
       </div>
 
-      <Tabs defaultValue={isAdmin ? "pending" : "players"} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          {isAdmin && <TabsTrigger value="pending">Pending Approvals</TabsTrigger>}
-          <TabsTrigger value="players">All Players</TabsTrigger>
-        </TabsList>
-
-        {isAdmin && (
-          <TabsContent value="pending" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Pending User Approvals
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {pendingUsersLoading ? (
-                  <div className="text-center py-8">Loading...</div>
-                ) : pendingUsers.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No pending approvals
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {pendingUsers.map((user: any) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
-                          <p className="font-medium">{user.firstName} {user.lastName}</p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => approveUserMutation.mutate(user.id)}
-                            disabled={approveUserMutation.isPending}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Approve
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
-
-        <TabsContent value="players" className="space-y-6">
+      <div className="space-y-6">
           {/* Enhanced Filter Interface */}
           <Card>
             <CardHeader>
@@ -576,8 +482,7 @@ export default function Players() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
 
       {/* Player Edit Modal */}
       <Dialog open={!!editingPlayer} onOpenChange={() => setEditingPlayer(null)}>
