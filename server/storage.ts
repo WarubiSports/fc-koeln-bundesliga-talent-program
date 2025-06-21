@@ -896,9 +896,34 @@ export class DatabaseStorage implements IStorage {
       return activeOrders;
     }
 
-    // Use centralized date filtering logic
-    const { DateFilterUtils } = require('./dateFilters');
-    return DateFilterUtils.filterOrdersByDateRange(activeOrders, dateFilter);
+    const now = new Date();
+    const currentWeekStart = new Date(now);
+    currentWeekStart.setDate(now.getDate() - now.getDay());
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+
+    return activeOrders.filter(order => {
+      const orderDate = new Date(order.weekStartDate);
+      
+      switch (dateFilter) {
+        case 'current-week':
+          const nextWeek = new Date(currentWeekStart);
+          nextWeek.setDate(currentWeekStart.getDate() + 7);
+          return orderDate >= currentWeekStart && orderDate < nextWeek;
+        case 'current-month':
+          const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          return orderDate >= currentMonthStart && orderDate < nextMonth;
+        case 'last-month':
+          return orderDate >= lastMonthStart && orderDate < currentMonthStart;
+        case 'last-3-months':
+          return orderDate >= threeMonthsAgo;
+        default:
+          return true;
+      }
+    });
   }
 
   async getHouseOrderSummary(dateFilter?: string): Promise<{
@@ -919,8 +944,8 @@ export class DatabaseStorage implements IStorage {
   }> {
     // Validate date filter input
     if (dateFilter && dateFilter !== 'all') {
-      const { DateFilterUtils } = require('./dateFilters');
-      if (!DateFilterUtils.validateDateFilter(dateFilter)) {
+      const validFilters = ['current-week', 'current-month', 'last-month', 'last-3-months'];
+      if (!validFilters.includes(dateFilter)) {
         throw new Error(`Invalid date filter: ${dateFilter}`);
       }
     }
