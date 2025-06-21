@@ -116,6 +116,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### June 21, 2025
+- **Calendar Event Creation Bug Fix**: Resolved critical issue where events were created with current date instead of user-selected date
+- **Date Handling Improvement**: Modified calendar onSubmit function to properly use form-selected dates for event creation
+- **TypeScript Error Resolution**: Fixed all compilation errors in food orders component for smooth operation
+- **Database Query Optimization**: Enhanced SQL syntax and error handling in storage layer
+
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
 - **Date Filtering Enhancement**: Implemented comprehensive date filtering for House Order Summary to prevent overwhelming data accumulation over 10-month season

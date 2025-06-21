@@ -447,7 +447,7 @@ export default function Calendar() {
     createMutation.mutate({
       ...data,
       title: getEventTitle(data.eventType),
-      date: format(currentDate, "yyyy-MM-dd"),
+      date: data.date || format(currentDate, "yyyy-MM-dd"),
       createdBy: user?.id || "system"
     });
   };
