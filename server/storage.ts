@@ -94,6 +94,7 @@ export interface IStorage {
   getChoresByHouse(house: string): Promise<Chore[]>;
   getChoresForUser(username: string): Promise<Chore[]>;
   getChoresForUserByName(fullName: string): Promise<Chore[]>;
+  getPlayersByHouse(house: string): Promise<Player[]>;
   getChoreStats(): Promise<{
     totalChores: number;
     pendingChores: number;
@@ -473,6 +474,10 @@ export class DatabaseStorage implements IStorage {
     }
     
     return await db.select().from(players).where(and(...conditions));
+  }
+
+  async getPlayersByHouse(house: string): Promise<Player[]> {
+    return await db.select().from(players).where(eq(players.house, house));
   }
 
   async getPlayerStats(): Promise<{ totalPlayers: number; countries: number }> {

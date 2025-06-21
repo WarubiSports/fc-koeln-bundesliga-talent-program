@@ -918,6 +918,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Smart chore rotation endpoints
+  app.get("/api/chore-rotation/optimal-assignments/:house", async (req, res) => {
+    try {
+      const { house } = req.params;
+      const { choreRotationEngine } = await import('./choreRotation');
+      
+      const standardChores = [
+        'Kitchen Cleaning',
+        'Vacuum Common Areas', 
+        'Bathroom Cleaning',
+        'Take Out Trash',
+        'Laundry Room Maintenance'
+      ];
+      
+      const result = await choreRotationEngine.getOptimalChoreAssignments(house, standardChores);
+      res.json(result);
+    } catch (error) {
+      console.error("Error getting optimal chore assignments:", error);
+      res.status(500).json({ message: "Failed to get optimal assignments" });
+    }
+  });
+
+  app.get("/api/chore-rotation/fairness-report", async (req, res) => {
+    try {
+      const { choreRotationEngine } = await import('./choreRotation');
+      const report = await choreRotationEngine.getFairnessReport();
+      res.json(report);
+    } catch (error) {
+      console.error("Error getting fairness report:", error);
+      res.status(500).json({ message: "Failed to get fairness report" });
+    }
+  });
+
+  app.post("/api/chore-rotation/generate-weekly", async (req, res) => {
+    try {
+      const { choreRotationEngine } = await import('./choreRotation');
+      const assignments = await choreRotationEngine.generateWeeklyChoreAssignments();
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error generating weekly assignments:", error);
+      res.status(500).json({ message: "Failed to generate weekly assignments" });
+    }
+  });
+
+  // House competition endpoints
+  app.get("/api/house-competition/leaderboard", async (req, res) => {
+    try {
+      const { houseCompetition } = await import('./houseCompetition');
+      const leaderboard = await houseCompetition.getLeaderboard();
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error getting house leaderboard:", error);
+      res.status(500).json({ message: "Failed to get house leaderboard" });
+    }
+  });
+
+  app.get("/api/house-competition/scores", async (req, res) => {
+    try {
+      const { houseCompetition } = await import('./houseCompetition');
+      const scores = await houseCompetition.calculateHouseScores();
+      res.json(scores);
+    } catch (error) {
+      console.error("Error getting house scores:", error);
+      res.status(500).json({ message: "Failed to get house scores" });
+    }
+  });
+
+  app.get("/api/house-competition/activities/:house", async (req, res) => {
+    try {
+      const { house } = req.params;
+      const { days = '30' } = req.query;
+      const { houseCompetition } = await import('./houseCompetition');
+      const activities = await houseCompetition.getHouseActivities(house, parseInt(days as string));
+      res.json(activities);
+    } catch (error) {
+      console.error("Error getting house activities:", error);
+      res.status(500).json({ message: "Failed to get house activities" });
+    }
+  });
+
+  app.get("/api/house-competition/stats", async (req, res) => {
+    try {
+      const { houseCompetition } = await import('./houseCompetition');
+      const stats = await houseCompetition.getCompetitionStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting competition stats:", error);
+      res.status(500).json({ message: "Failed to get competition stats" });
+    }
+  });
+
+  app.post("/api/house-competition/award-points", async (req, res) => {
+    try {
+      const { house, category, activity, points, description, recordedBy } = req.body;
+      const { houseCompetition } = await import('./houseCompetition');
+      
+      const activityRecord = await houseCompetition.awardPoints(
+        house, category, activity, points, description, recordedBy
+      );
+      
+      res.status(201).json(activityRecord);
+    } catch (error) {
+      console.error("Error awarding points:", error);
+      res.status(500).json({ message: "Failed to award points" });
+    }
+  });
+
   // Practice excuse routes (simplified in-memory system)
   let practiceExcuses: any[] = [
     {
