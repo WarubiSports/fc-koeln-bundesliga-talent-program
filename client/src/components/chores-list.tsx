@@ -66,8 +66,8 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
       // Invalidate all chore-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
       queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
-      // Also refetch the current query to ensure immediate update
-      queryClient.refetchQueries({ queryKey });
+      // Also refetch chore queries to ensure immediate update
+      queryClient.refetchQueries({ queryKey: ["/api/chores"] });
       toast({
         title: "Success",
         description: "Chore deleted successfully",
