@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Search, Filter, CheckCircle, XCircle, Clock, Users, UserX, AlertTriangle, Edit3, Trash2 } from "lucide-react";
+import { Plus, Search, Filter, Users, UserX, AlertTriangle, Edit3, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -160,7 +160,7 @@ export default function Players() {
     },
   });
 
-  const handleEditPlayer = (player: Player) => {
+  const handleEditPlayer = (player: any) => {
     setEditingPlayer(player);
     const playerPositions = player.positions ? 
       (Array.isArray(player.positions) ? player.positions : [player.position]) : 
@@ -175,9 +175,9 @@ export default function Players() {
       dateOfBirth: player.dateOfBirth,
       nationality: player.nationality,
       nationalityCode: player.nationalityCode || "",
-      position: player.position as any,
+      position: player.position,
       positions: playerPositions,
-      preferredFoot: (player.preferredFoot as any) || "right",
+      preferredFoot: player.preferredFoot || "right",
       height: player.height?.toString() || "",
       weight: player.weight?.toString() || "",
       previousClub: player.previousClub || "",
@@ -186,8 +186,8 @@ export default function Players() {
       emergencyContactPhone: player.emergencyContactPhone || "",
       medicalConditions: player.medicalConditions || "",
       allergies: player.allergies || "",
-      status: player.status as any,
-      house: player.house as any,
+      status: player.status,
+      house: player.house,
       jerseyNumber: player.jerseyNumber?.toString() || "",
     });
   };
@@ -482,7 +482,7 @@ export default function Players() {
               )}
             </CardContent>
           </Card>
-        </div>
+      </div>
 
       {/* Player Edit Modal */}
       <Dialog open={!!editingPlayer} onOpenChange={() => setEditingPlayer(null)}>
