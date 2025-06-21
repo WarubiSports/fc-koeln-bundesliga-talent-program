@@ -13,6 +13,7 @@ import Players from "@/pages/players";
 import Chores from "@/pages/chores";
 import Calendar from "@/pages/calendar";
 import FoodOrders from "@/pages/food-orders";
+import HouseOrders from "@/pages/house-orders";
 import Communications from "@/pages/communications";
 import HouseManagement from "@/pages/house-management";
 import AdminUsers from "@/pages/admin-users";
@@ -65,6 +66,7 @@ function Router() {
           <Route path="/chores" component={Chores} />
           <Route path="/calendar" component={Calendar} />
           <Route path="/food-orders" component={FoodOrders} />
+          <Route path="/house-orders" component={HouseOrders} />
           <Route path="/communications" component={Communications} />
           <Route path="/house-management" component={HouseManagement} />
           <Route path="/admin/users" component={AdminUsers} />

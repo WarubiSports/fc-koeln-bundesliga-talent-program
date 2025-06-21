@@ -1,4 +1,4 @@
-import { Users, Home, Calendar, MessageSquare, ShoppingCart } from "lucide-react";
+import { Users, Home, Calendar, MessageSquare, ShoppingCart, ClipboardList } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function SectionOverview() {
@@ -7,7 +7,7 @@ export default function SectionOverview() {
   const sections = [
     { path: "/", label: "Dashboard", icon: Home },
     { path: "/players", label: "Players", icon: Users },
-    { path: "/chores", label: "Housing", icon: Home },
+    { path: "/house-orders", label: "Orders", icon: ClipboardList },
     { path: "/food-orders", label: "Groceries", icon: ShoppingCart },
     { path: "/communications", label: "Messages", icon: MessageSquare },
     { path: "/calendar", label: "Calendar", icon: Calendar },
