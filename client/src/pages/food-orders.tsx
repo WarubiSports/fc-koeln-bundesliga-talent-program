@@ -79,16 +79,22 @@ export default function GroceryOrdersPage() {
 
   const orders = getFilteredOrders();
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<{
+    totalOrders: number;
+    pendingOrders: number;
+    confirmedOrders: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
+  }>({
     queryKey: ["/api/food-order-stats"],
   });
 
-  const { data: players = [] } = useQuery({
+  const { data: players = [] } = useQuery<any[]>({
     queryKey: ["/api/players"],
   });
 
   // Query for house order summaries (admin only)
-  const { data: houseOrderSummary = {} } = useQuery({
+  const { data: houseOrderSummary = {} } = useQuery<Record<string, any>>({
     queryKey: [`/api/house-order-summary?dateFilter=${encodeURIComponent(dateFilter)}`],
     enabled: isAdmin,
   });
@@ -315,7 +321,7 @@ export default function GroceryOrdersPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(houseOrderSummary).map(([houseName, houseData]: [string, any]) => (
+                {Object.entries(houseOrderSummary as Record<string, any>).map(([houseName, houseData]: [string, any]) => (
                   <Card key={houseName} className="border-l-4 border-l-blue-500">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center justify-between">

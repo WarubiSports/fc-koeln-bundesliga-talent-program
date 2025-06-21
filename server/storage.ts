@@ -816,7 +816,7 @@ export class DatabaseStorage implements IStorage {
       .where(and(
         eq(groceryOrders.playerName, insertOrder.playerName),
         eq(groceryOrders.weekStartDate, insertOrder.weekStartDate),
-        ne(groceryOrders.status, 'cancelled')
+        sql`${groceryOrders.status} != 'cancelled'`
       ))
       .limit(1);
 
