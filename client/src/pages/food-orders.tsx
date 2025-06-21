@@ -620,7 +620,6 @@ export default function GroceryOrdersPage() {
       <GroceryOrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        players={players}
         selectedWeek={selectedWeek}
       />
 
