@@ -1768,7 +1768,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/events/:id", devAuth, async (req: any, res) => {
+  app.put("/api/events/:id", simpleAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);
@@ -1783,7 +1783,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/events/:id", devAuth, async (req: any, res) => {
+  app.patch("/api/events/:id", simpleAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
       const event = await storage.updateEvent(id, req.body);

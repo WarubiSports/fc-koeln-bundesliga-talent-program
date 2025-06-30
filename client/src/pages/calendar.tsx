@@ -545,7 +545,15 @@ export default function Calendar() {
           <div className="grid grid-cols-7">
             {days.map(day => {
               const dateStr = format(day, "yyyy-MM-dd");
-              const dayEvents = filteredEvents.filter((event: Event) => event.date === dateStr);
+              const dayEvents = filteredEvents
+                .filter((event: Event) => event.date === dateStr)
+                .sort((a, b) => {
+                  // Sort by start time, putting events without time at the end
+                  if (!a.startTime && !b.startTime) return 0;
+                  if (!a.startTime) return 1;
+                  if (!b.startTime) return -1;
+                  return a.startTime.localeCompare(b.startTime);
+                });
               return (
                 <div
                   key={day.toISOString()}
@@ -651,12 +659,14 @@ export default function Calendar() {
                   {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}
                 </div>
                 {weekDays.map(day => {
-                  // Find events that start in this hour
-                  const startingEvents = getEventsForDay(day).filter(event => {
-                    if (!event.startTime) return false;
-                    const eventHour = parseInt(event.startTime.split(':')[0]);
-                    return eventHour === hour;
-                  });
+                  // Find events that start in this hour, sorted chronologically
+                  const startingEvents = getEventsForDay(day)
+                    .filter(event => {
+                      if (!event.startTime) return false;
+                      const eventHour = parseInt(event.startTime.split(':')[0]);
+                      return eventHour === hour;
+                    })
+                    .sort((a, b) => a.startTime.localeCompare(b.startTime));
                   
                   return (
                     <div key={`${day.toISOString()}-${hour}`} className="border-r last:border-r-0 min-h-12 relative">
