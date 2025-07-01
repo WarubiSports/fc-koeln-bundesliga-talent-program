@@ -112,6 +112,23 @@ export default function PlayerTable() {
       portugal: "🇵🇹",
       england: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
       netherlands: "🇳🇱",
+      "united states": "🇺🇸",
+      usa: "🇺🇸",
+      america: "🇺🇸",
+      us: "🇺🇸",
+      canada: "🇨🇦",
+      mexico: "🇲🇽",
+      argentina: "🇦🇷",
+      colombia: "🇨🇴",
+      poland: "🇵🇱",
+      turkey: "🇹🇷",
+      croatia: "🇭🇷",
+      serbia: "🇷🇸",
+      nigeria: "🇳🇬",
+      ghana: "🇬🇭",
+      morocco: "🇲🇦",
+      japan: "🇯🇵",
+      australia: "🇦🇺",
     };
     return flags[nationality.toLowerCase()] || "🌍";
   };
