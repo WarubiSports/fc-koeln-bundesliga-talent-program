@@ -49,27 +49,64 @@ interface GroceryOrderModalProps {
 }
 
 // Helper functions for delivery dates and deadlines
-function getUpcomingDeliveryDates(): Array<{ date: string; label: string; deadline: string; isPastDeadline: boolean }> {
+function getCurrentWeekDeliveryDates(): Array<{ date: string; label: string; deadline: string; isPastDeadline: boolean }> {
   const today = new Date();
   const deliveryDates = [];
   
-  // Find next 4 delivery dates (2 Tuesdays and 2 Fridays)
-  for (let i = 0; i < 30; i++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(today.getDate() + i);
+  // Get current week's Monday (start of week)
+  const currentWeekMonday = new Date(today);
+  const dayOfWeek = today.getDay();
+  const daysFromMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Handle Sunday (0) as last day of week
+  currentWeekMonday.setDate(today.getDate() + daysFromMonday);
+  
+  // Get Tuesday and Friday of current week
+  const tuesday = new Date(currentWeekMonday);
+  tuesday.setDate(currentWeekMonday.getDate() + 1); // Tuesday
+  
+  const friday = new Date(currentWeekMonday);
+  friday.setDate(currentWeekMonday.getDate() + 4); // Friday
+  
+  // Add Tuesday delivery option
+  if (tuesday >= today || tuesday.toDateString() === today.toDateString()) {
+    deliveryDates.push({
+      date: tuesday.toISOString().split('T')[0],
+      label: `Tuesday, ${tuesday.toLocaleDateString('en-GB')}`,
+      deadline: getOrderingDeadline(tuesday),
+      isPastDeadline: isOrderingDeadlinePassed(tuesday)
+    });
+  }
+  
+  // Add Friday delivery option
+  if (friday >= today || friday.toDateString() === today.toDateString()) {
+    deliveryDates.push({
+      date: friday.toISOString().split('T')[0],
+      label: `Friday, ${friday.toLocaleDateString('en-GB')}`,
+      deadline: getOrderingDeadline(friday),
+      isPastDeadline: isOrderingDeadlinePassed(friday)
+    });
+  }
+  
+  // If current week options are not available, show next week
+  if (deliveryDates.length === 0) {
+    const nextWeekTuesday = new Date(tuesday);
+    nextWeekTuesday.setDate(tuesday.getDate() + 7);
     
-    if (checkDate.getDay() === 2 || checkDate.getDay() === 5) { // Tuesday or Friday
-      const isDeadlinePassed = isOrderingDeadlinePassed(checkDate);
-      
-      deliveryDates.push({
-        date: checkDate.toISOString().split('T')[0],
-        label: `${checkDate.getDay() === 2 ? 'Tuesday' : 'Friday'}, ${checkDate.toLocaleDateString('en-GB')}`,
-        deadline: getOrderingDeadline(checkDate),
-        isPastDeadline: isDeadlinePassed
-      });
-      
-      if (deliveryDates.length >= 4) break;
-    }
+    const nextWeekFriday = new Date(friday);
+    nextWeekFriday.setDate(friday.getDate() + 7);
+    
+    deliveryDates.push({
+      date: nextWeekTuesday.toISOString().split('T')[0],
+      label: `Tuesday, ${nextWeekTuesday.toLocaleDateString('en-GB')}`,
+      deadline: getOrderingDeadline(nextWeekTuesday),
+      isPastDeadline: isOrderingDeadlinePassed(nextWeekTuesday)
+    });
+    
+    deliveryDates.push({
+      date: nextWeekFriday.toISOString().split('T')[0],
+      label: `Friday, ${nextWeekFriday.toLocaleDateString('en-GB')}`,
+      deadline: getOrderingDeadline(nextWeekFriday),
+      isPastDeadline: isOrderingDeadlinePassed(nextWeekFriday)
+    });
   }
   
   return deliveryDates;
@@ -123,7 +160,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     queryKey: ["/api/players"],
   });
 
-  const availableDeliveryDates = getUpcomingDeliveryDates();
+  const availableDeliveryDates = getCurrentWeekDeliveryDates();
 
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
