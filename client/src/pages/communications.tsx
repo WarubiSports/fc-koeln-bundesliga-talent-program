@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Send, Search, MoreVertical, ArrowLeft, Users, Plus, UserPlus } from "lucide-react";
+import { MessageSquare, Send, Search, MoreVertical, ArrowLeft, Users, Plus, UserPlus, Trash2, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -61,6 +61,48 @@ export default function Communications() {
       queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
       setNewMessage("");
       scrollToBottom();
+    }
+  });
+
+  // Delete single message mutation
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (messageId: number) => {
+      return apiRequest(`/api/messages/${messageId}`, "DELETE");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
+      toast({
+        title: "Message deleted",
+        description: "Message has been deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete message",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete all team messages mutation (admin only)
+  const deleteAllTeamMessagesMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("/api/messages/team/all", "DELETE");
+    },
+    onSuccess: (response: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
+      toast({
+        title: "All team messages deleted",
+        description: response.message || "All team messages have been deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete team messages",
+        variant: "destructive",
+      });
     }
   });
 
@@ -360,6 +402,23 @@ export default function Communications() {
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  {/* Delete all team messages button (admin only) */}
+                  {user?.role === 'admin' && selectedConversation.type === "team" && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => {
+                        if (confirm('Are you sure you want to delete ALL team messages? This action cannot be undone.')) {
+                          deleteAllTeamMessagesMutation.mutate();
+                        }
+                      }}
+                      disabled={deleteAllTeamMessagesMutation.isPending}
+                    >
+                      <AlertTriangle className="h-4 w-4 mr-1" />
+                      Clear All
+                    </Button>
+                  )}
                   <Button variant="ghost" size="sm">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -384,28 +443,50 @@ export default function Communications() {
                   const isFromMe = message.from_user_id === user?.id || message.senderId === user?.id;
                   const senderName = message.subject || message.senderName || "Unknown";
                   
+                  const canDeleteMessage = isFromMe || user?.role === 'admin';
+                  
                   return (
                     <div
                       key={message.id}
-                      className={`flex ${isFromMe ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${isFromMe ? 'justify-end' : 'justify-start'} group`}
                     >
-                      <div className={`max-w-xs lg:max-w-md xl:max-w-lg`}>
+                      <div className={`max-w-xs lg:max-w-md xl:max-w-lg relative`}>
                         {selectedConversation.type === "team" && !isFromMe && (
                           <div className="text-xs text-gray-500 mb-1 px-1">
                             {senderName}
                           </div>
                         )}
                         <div
-                          className={`p-3 rounded-2xl ${
+                          className={`p-3 rounded-2xl relative ${
                             isFromMe
                               ? 'bg-blue-500 text-white rounded-br-md'
                               : 'bg-white border border-gray-200 rounded-bl-md'
                           }`}
                         >
-                          <p className="text-sm">{message.content}</p>
+                          <p className="text-sm pr-6">{message.content}</p>
                           <div className={`text-xs mt-1 ${isFromMe ? 'text-blue-100' : 'text-gray-500'}`}>
                             {formatTime(message.created_at || message.createdAt)}
                           </div>
+                          
+                          {/* Delete button - visible on hover or for own messages */}
+                          {canDeleteMessage && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={`absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                                isFromMe 
+                                  ? 'text-blue-100 hover:text-white hover:bg-blue-600' 
+                                  : 'text-gray-400 hover:text-red-500 hover:bg-gray-100'
+                              }`}
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this message?')) {
+                                  deleteMessageMutation.mutate(message.id);
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>

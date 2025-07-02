@@ -1553,6 +1553,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/messages/:id', simpleAuth, async (req: any, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const currentUser = req.user;
+      
+      // Get the message to check permissions
+      const message = await storage.getMessage(messageId);
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      // Only allow deletion by message sender or admin
+      const canDelete = message.from_user_id === currentUser?.id || currentUser?.role === 'admin';
+      if (!canDelete) {
+        return res.status(403).json({ message: "Not authorized to delete this message" });
+      }
+      
+      const deleted = await storage.deleteMessage(messageId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      res.json({ message: "Message deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      res.status(500).json({ message: "Failed to delete message" });
+    }
+  });
+
+  app.delete('/api/messages/team/all', simpleAdminAuth, async (req, res) => {
+    try {
+      const deletedCount = await storage.deleteAllTeamMessages();
+      res.json({ message: `Deleted ${deletedCount} team messages successfully` });
+    } catch (error) {
+      console.error("Error deleting all team messages:", error);
+      res.status(500).json({ message: "Failed to delete team messages" });
+    }
+  });
+
   // Event routes - accessible to all authenticated users
   app.get("/api/events", async (req, res) => {
     try {
