@@ -124,6 +124,8 @@ export default function PlayerTable() {
       turkey: "🇹🇷",
       croatia: "🇭🇷",
       serbia: "🇷🇸",
+      switzerland: "🇨🇭",
+      ukraine: "🇺🇦",
       nigeria: "🇳🇬",
       ghana: "🇬🇭",
       morocco: "🇲🇦",
