@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { getCountryFlag, COUNTRIES } from "@/lib/country-flags";
 import type { Player } from "@shared/schema";
 
 export default function PlayerTable() {
@@ -102,37 +103,46 @@ export default function PlayerTable() {
     }
   };
 
-  const getCountryFlag = (nationality: string) => {
-    const flags: { [key: string]: string } = {
-      germany: "🇩🇪",
-      brazil: "🇧🇷",
-      france: "🇫🇷",
-      spain: "🇪🇸",
-      italy: "🇮🇹",
-      portugal: "🇵🇹",
-      england: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      netherlands: "🇳🇱",
-      "united states": "🇺🇸",
-      usa: "🇺🇸",
-      america: "🇺🇸",
-      us: "🇺🇸",
-      canada: "🇨🇦",
-      mexico: "🇲🇽",
-      argentina: "🇦🇷",
-      colombia: "🇨🇴",
-      poland: "🇵🇱",
-      turkey: "🇹🇷",
-      croatia: "🇭🇷",
-      serbia: "🇷🇸",
-      switzerland: "🇨🇭",
-      ukraine: "🇺🇦",
-      nigeria: "🇳🇬",
-      ghana: "🇬🇭",
-      morocco: "🇲🇦",
-      japan: "🇯🇵",
-      australia: "🇦🇺",
+  const getCountryFlagFromName = (nationality: string) => {
+    // Handle special cases and variations
+    const countryNameMap: { [key: string]: string } = {
+      "united states": "US",
+      "usa": "US",
+      "america": "US",
+      "us": "US",
+      "england": "GB",
+      "united kingdom": "GB",
+      "uk": "GB",
+      "south korea": "KR",
+      "north korea": "KP",
+      "ivory coast": "CI",
+      "democratic republic of congo": "CD",
+      "congo": "CG",
     };
-    return flags[nationality.toLowerCase()] || "🌍";
+
+    const normalized = nationality.toLowerCase().trim();
+    
+    // Check for special mappings first
+    if (countryNameMap[normalized]) {
+      return getCountryFlag(countryNameMap[normalized]);
+    }
+    
+    // Find country by name in COUNTRIES array
+    const country = COUNTRIES.find(c => 
+      c.name.toLowerCase() === normalized
+    );
+    
+    if (country) {
+      return getCountryFlag(country.code);
+    }
+    
+    // If it's already a 2-letter code, use it directly
+    if (nationality.length === 2) {
+      return getCountryFlag(nationality.toUpperCase());
+    }
+    
+    // Default fallback
+    return "🌍";
   };
 
 
@@ -266,7 +276,7 @@ export default function PlayerTable() {
                       <span className="text-sm text-gray-900">
                         {player.nationality.charAt(0).toUpperCase() + player.nationality.slice(1)}
                       </span>
-                      <span className="ml-2 text-lg">{getCountryFlag(player.nationality)}</span>
+                      <span className="ml-2 text-lg">{getCountryFlagFromName(player.nationality)}</span>
                     </div>
                   </td>
 

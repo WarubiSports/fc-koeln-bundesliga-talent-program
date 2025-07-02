@@ -379,7 +379,55 @@ export default function Players() {
                     const playerPositions = player.positions ? 
                       (Array.isArray(player.positions) ? player.positions : [player.position]) : 
                       [player.position];
-                    const countryFlag = player.nationalityCode ? getCountryFlag(player.nationalityCode) : getCountryFlag('');
+                    // Get country flag using comprehensive mapping
+                    const getCountryFlagFromName = (nationality: string, nationalityCode?: string) => {
+                      // If we have a country code, use it directly
+                      if (nationalityCode && nationalityCode.length === 2) {
+                        return getCountryFlag(nationalityCode);
+                      }
+                      
+                      // Handle special cases and variations
+                      const countryNameMap: { [key: string]: string } = {
+                        "united states": "US",
+                        "usa": "US",
+                        "america": "US",
+                        "us": "US",
+                        "england": "GB",
+                        "united kingdom": "GB",
+                        "uk": "GB",
+                        "south korea": "KR",
+                        "north korea": "KP",
+                        "ivory coast": "CI",
+                        "democratic republic of congo": "CD",
+                        "congo": "CG",
+                      };
+
+                      const normalized = nationality.toLowerCase().trim();
+                      
+                      // Check for special mappings first
+                      if (countryNameMap[normalized]) {
+                        return getCountryFlag(countryNameMap[normalized]);
+                      }
+                      
+                      // Find country by name in COUNTRIES array
+                      const country = COUNTRIES.find(c => 
+                        c.name.toLowerCase() === normalized
+                      );
+                      
+                      if (country) {
+                        return getCountryFlag(country.code);
+                      }
+                      
+                      // If it's already a 2-letter code, use it directly
+                      if (nationality.length === 2) {
+                        return getCountryFlag(nationality.toUpperCase());
+                      }
+                      
+                      // Default fallback
+                      return "🌍";
+                    };
+                    
+                    const countryFlag = getCountryFlagFromName(player.nationality, player.nationalityCode);
                     // Remove availability color reference
                     
                     return (
