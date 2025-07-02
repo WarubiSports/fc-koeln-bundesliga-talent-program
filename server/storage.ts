@@ -1156,11 +1156,6 @@ export class DatabaseStorage implements IStorage {
     return (result.rowCount || 0) > 0;
   }
 
-  async getMessage(id: number): Promise<any | undefined> {
-    const [message] = await db.select().from(messages).where(eq(messages.id, id));
-    return message || undefined;
-  }
-
   async deleteAllTeamMessages(): Promise<number> {
     const result = await db.delete(messages).where(eq(messages.message_type, 'team'));
     return result.rowCount || 0;

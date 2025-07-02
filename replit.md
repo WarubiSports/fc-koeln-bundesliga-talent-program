@@ -128,6 +128,7 @@ Preferred communication style: Simple, everyday language.
 - **House Competition System**: Real-time scoring across categories (chores, punctuality, teamwork, cleanliness, participation) with badges and achievements
 - **House Order Summary Fix**: Resolved critical bug preventing order display after placement by fixing date filtering logic and creating comprehensive House Orders page
 - **Calendar Event Issues Fix**: Fixed chronological ordering of events in month/week views and resolved event editing functionality by correcting authentication middleware
+- **Message Deletion System**: Added comprehensive message deletion with individual message delete buttons and admin bulk delete for all team messages
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
