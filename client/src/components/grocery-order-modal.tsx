@@ -339,14 +339,21 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {(players as any[]).map((player: any) => (
-                          <SelectItem 
-                            key={player.id} 
-                            value={`${player.firstName} ${player.lastName}`}
-                          >
-                            {player.firstName} {player.lastName}
-                          </SelectItem>
-                        ))}
+                        {(players as any[])
+                          .filter((player: any, index: number, arr: any[]) => 
+                            // Remove duplicates based on name
+                            arr.findIndex((p: any) => 
+                              `${p.firstName} ${p.lastName}` === `${player.firstName} ${player.lastName}`
+                            ) === index
+                          )
+                          .map((player: any) => (
+                            <SelectItem 
+                              key={`${player.id}-${player.firstName}-${player.lastName}`} 
+                              value={`${player.firstName} ${player.lastName}`}
+                            >
+                              {player.firstName} {player.lastName}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
