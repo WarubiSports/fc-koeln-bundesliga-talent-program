@@ -282,7 +282,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
             New Weekly Grocery Order
           </DialogTitle>
           <p className="text-sm text-gray-600">
-            Order deadline: Monday 8am (Tuesday delivery) • Thursday 8am (Friday delivery)
+            Order deadline: Monday 12pm (Tuesday delivery) • Thursday 12pm (Friday delivery)
           </p>
         </DialogHeader>
 
