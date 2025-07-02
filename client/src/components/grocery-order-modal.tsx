@@ -36,8 +36,7 @@ import { groceryCategories, groceryData, getCategoryDisplayName, type GroceryCat
 
 const groceryOrderSchema = z.object({
   playerName: z.string().min(1, "Player name is required"),
-  weekStartDate: z.string().min(1, "Week start date is required"),
-  deliveryDay: z.enum(["monday", "thursday"]),
+  deliveryDate: z.string().min(1, "Delivery date is required"),
   selectedItems: z.record(z.string(), z.number()).default({}),
 });
 
@@ -49,13 +48,68 @@ interface GroceryOrderModalProps {
   selectedWeek?: string;
 }
 
-// Get Monday of current week
-function getMondayOfWeek(date: Date): string {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  return d.toISOString().split('T')[0];
+// Helper functions for delivery dates and deadlines
+function getUpcomingDeliveryDates(): Array<{ date: string; label: string; deadline: string; isPastDeadline: boolean }> {
+  const today = new Date();
+  const deliveryDates = [];
+  
+  // Find next 4 delivery dates (2 Tuesdays and 2 Fridays)
+  for (let i = 0; i < 30; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() + i);
+    
+    if (checkDate.getDay() === 2 || checkDate.getDay() === 5) { // Tuesday or Friday
+      const isDeadlinePassed = isOrderingDeadlinePassed(checkDate);
+      
+      deliveryDates.push({
+        date: checkDate.toISOString().split('T')[0],
+        label: `${checkDate.getDay() === 2 ? 'Tuesday' : 'Friday'}, ${checkDate.toLocaleDateString('en-GB')}`,
+        deadline: getOrderingDeadline(checkDate),
+        isPastDeadline: isDeadlinePassed
+      });
+      
+      if (deliveryDates.length >= 4) break;
+    }
+  }
+  
+  return deliveryDates;
+}
+
+function getOrderingDeadline(deliveryDate: Date): string {
+  const deadline = new Date(deliveryDate);
+  
+  if (deliveryDate.getDay() === 2) { // Tuesday delivery
+    // Monday 12pm deadline
+    deadline.setDate(deliveryDate.getDate() - 1);
+  } else { // Friday delivery
+    // Thursday 12pm deadline
+    deadline.setDate(deliveryDate.getDate() - 1);
+  }
+  
+  deadline.setHours(12, 0, 0, 0);
+  return deadline.toLocaleString('en-GB', { 
+    weekday: 'long', 
+    month: 'short', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+}
+
+function isOrderingDeadlinePassed(deliveryDate: Date): boolean {
+  const now = new Date();
+  const deadline = new Date(deliveryDate);
+  
+  if (deliveryDate.getDay() === 2) { // Tuesday delivery
+    // Monday 12pm deadline
+    deadline.setDate(deliveryDate.getDate() - 1);
+  } else { // Friday delivery
+    // Thursday 12pm deadline
+    deadline.setDate(deliveryDate.getDate() - 1);
+  }
+  
+  deadline.setHours(12, 0, 0, 0);
+  return now > deadline;
 }
 
 export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: GroceryOrderModalProps) {
@@ -69,12 +123,13 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     queryKey: ["/api/players"],
   });
 
+  const availableDeliveryDates = getUpcomingDeliveryDates();
+
   const form = useForm<GroceryOrderFormData>({
     resolver: zodResolver(groceryOrderSchema),
     defaultValues: {
       playerName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : "",
-      weekStartDate: selectedWeek || getMondayOfWeek(new Date()),
-      deliveryDay: "monday",
+      deliveryDate: availableDeliveryDates.find(d => !d.isPastDeadline)?.date || availableDeliveryDates[0]?.date || "",
       selectedItems: {},
     },
   });
@@ -141,11 +196,20 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
       try {
         const formattedItems = formatSelectedItemsForSubmission();
         
+        // Convert delivery date to weekStartDate and deliveryDay for backend compatibility
+        const deliveryDate = new Date(data.deliveryDate);
+        const isDeliveryTuesday = deliveryDate.getDay() === 2;
+        
+        // Calculate week start date (Monday of delivery week)
+        const weekStart = new Date(deliveryDate);
+        weekStart.setDate(deliveryDate.getDate() - (deliveryDate.getDay() - 1));
+        const weekStartDate = weekStart.toISOString().split('T')[0];
+        
         // Format the data to match the existing grocery order schema
         const orderData = {
           playerName: data.playerName,
-          weekStartDate: data.weekStartDate,
-          deliveryDay: data.deliveryDay,
+          weekStartDate: weekStartDate,
+          deliveryDay: isDeliveryTuesday ? "tuesday" : "friday",
           proteins: formattedItems["Meat & Protein"]?.join(", ") || "",
           vegetables: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
           fruits: formattedItems["Vegetables & Fruits"]?.join(", ") || "",
@@ -238,7 +302,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {players.map((player: any) => (
+                        {(players as any[]).map((player: any) => (
                           <SelectItem 
                             key={player.id} 
                             value={`${player.firstName} ${player.lastName}`}
@@ -255,33 +319,33 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
 
               <FormField
                 control={form.control}
-                name="weekStartDate"
+                name="deliveryDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Week Start (Monday)</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="deliveryDay"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Delivery Day</FormLabel>
+                    <FormLabel>Delivery Date</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select delivery day" />
+                          <SelectValue placeholder="Select delivery date" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="monday">Tuesday Delivery (Order by Monday 8am)</SelectItem>
-                        <SelectItem value="thursday">Friday Delivery (Order by Thursday 8am)</SelectItem>
+                        {availableDeliveryDates.map((delivery) => (
+                          <SelectItem 
+                            key={delivery.date} 
+                            value={delivery.date}
+                            disabled={delivery.isPastDeadline}
+                          >
+                            <div className="flex flex-col">
+                              <span className={delivery.isPastDeadline ? 'text-gray-400' : ''}>
+                                {delivery.label}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {delivery.isPastDeadline ? 'Deadline passed' : `Order until: ${delivery.deadline}`}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
