@@ -6,6 +6,7 @@ import {
   practiceExcuses,
   groceryOrders,
   deliveredOrders,
+
   events,
   messages,
   notifications,
@@ -247,6 +248,9 @@ export interface IStorage {
     averageCost: number;
     topStorageLocations: string[];
   }>;
+
+  // Recent activities
+  getRecentActivities(): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1197,6 +1201,99 @@ export class DatabaseStorage implements IStorage {
 
   async getMedicalRecordsByPlayer(playerId: number): Promise<any[]> {
     return [];
+  }
+
+  async getRecentActivities(): Promise<any[]> {
+    try {
+      // Get recent activities from the last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      const activities = [];
+
+      // Recent player registrations
+      const recentPlayers = await db.select().from(players)
+        .where(gte(players.createdAt, sevenDaysAgo))
+        .orderBy(desc(players.createdAt))
+        .limit(5);
+
+      for (const player of recentPlayers) {
+        activities.push({
+          id: `player-${player.id}`,
+          type: 'player_registered',
+          message: 'New player registered',
+          description: `${player.firstName} ${player.lastName} joined ${player.house}`,
+          createdAt: player.createdAt,
+          playerName: `${player.firstName} ${player.lastName}`
+        });
+      }
+
+      // Recent grocery orders
+      const recentOrders = await db.select().from(groceryOrders)
+        .where(gte(groceryOrders.createdAt, sevenDaysAgo))
+        .orderBy(desc(groceryOrders.createdAt))
+        .limit(5);
+
+      for (const order of recentOrders) {
+        activities.push({
+          id: `order-${order.id}`,
+          type: 'food_order',
+          message: 'New grocery order placed',
+          description: `Order for ${order.deliveryDay} delivery`,
+          createdAt: order.createdAt,
+          playerName: order.playerName
+        });
+      }
+
+      // Recent events
+      const recentEvents = await db.select().from(events)
+        .where(gte(events.createdAt, sevenDaysAgo))
+        .orderBy(desc(events.createdAt))
+        .limit(5);
+
+      for (const event of recentEvents) {
+        activities.push({
+          id: `event-${event.id}`,
+          type: 'event_created',
+          message: 'New event scheduled',
+          description: `${event.title} on ${event.date}`,
+          createdAt: event.createdAt,
+          playerName: 'Admin'
+        });
+      }
+
+      // Recent messages
+      const recentMessages = await db.select().from(messages)
+        .where(gte(messages.created_at, sevenDaysAgo))
+        .orderBy(desc(messages.created_at))
+        .limit(5);
+
+      for (const message of recentMessages) {
+        activities.push({
+          id: `message-${message.id}`,
+          type: 'message_sent',
+          message: 'New message sent',
+          description: `Message in ${message.message_type} chat`,
+          createdAt: message.created_at,
+          playerName: message.from_user_id
+        });
+      }
+
+      // Sort all activities by date and return top 10
+      const sortedActivities = activities
+        .filter(activity => activity.createdAt) // Filter out activities without date
+        .sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+          const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+          return dateB.getTime() - dateA.getTime();
+        })
+        .slice(0, 10);
+
+      return sortedActivities;
+    } catch (error) {
+      console.error("Error fetching recent activities:", error);
+      return [];
+    }
   }
 
   // Performance metrics methods - temporary implementation
