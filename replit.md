@@ -140,6 +140,7 @@ Preferred communication style: Simple, everyday language.
 - **Selective Bulk Delete for Repetitive Events**: Added intelligent duplicate detection with selection interface - groups events by title and participants, displays organized selection modal allowing admins to choose specific duplicates to delete rather than automatic deletion
 - **Custom Days Recurring Pattern**: Enhanced calendar recurring events with visual day selection interface - includes quick presets for Training Days (Mon/Wed/Thu/Fri), weekdays, weekends, and custom combinations for flexible scheduling like team practices
 - **Custom Days Recurring Pattern Fix**: Fixed critical issue where custom days recurring events weren't being created - added missing database columns for password reset functionality and implemented proper custom days logic in recurring event creation system
+- **Bulk Delete Group Selection Fix**: Resolved visual feedback issue where selecting entire groups for deletion showed no indication - improved synchronization between group checkboxes and individual event selection with proper visual highlighting and accurate selection counters
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
