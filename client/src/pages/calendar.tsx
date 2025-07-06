@@ -1272,6 +1272,7 @@ export default function Calendar() {
                                 <SelectItem value="daily">Daily</SelectItem>
                                 <SelectItem value="weekdays">Weekdays (Mon-Fri)</SelectItem>
                                 <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="custom">Custom Days</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
                               </SelectContent>
                             </Select>
@@ -1294,19 +1295,103 @@ export default function Calendar() {
                         )}
                       />
 
-                      {form.watch("recurringPattern") === "weekly" && (
+                      {(form.watch("recurringPattern") === "weekly" || form.watch("recurringPattern") === "custom") && (
                         <FormField
                           control={form.control}
                           name="recurringDays"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Repeat on Days</FormLabel>
-                              <FormControl>
-                                <Input placeholder="e.g., monday,wednesday,friday" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                          render={({ field }) => {
+                            const selectedDays = field.value ? field.value.split(',').filter(Boolean) : [];
+                            const daysOfWeek = [
+                              { short: 'Mon', full: 'monday', label: 'Monday' },
+                              { short: 'Tue', full: 'tuesday', label: 'Tuesday' },
+                              { short: 'Wed', full: 'wednesday', label: 'Wednesday' },
+                              { short: 'Thu', full: 'thursday', label: 'Thursday' },
+                              { short: 'Fri', full: 'friday', label: 'Friday' },
+                              { short: 'Sat', full: 'saturday', label: 'Saturday' },
+                              { short: 'Sun', full: 'sunday', label: 'Sunday' }
+                            ];
+
+                            const toggleDay = (dayValue: string) => {
+                              const currentDays = selectedDays.includes(dayValue) 
+                                ? selectedDays.filter(d => d !== dayValue)
+                                : [...selectedDays, dayValue];
+                              field.onChange(currentDays.join(','));
+                            };
+
+                            const presets = [
+                              { name: 'Training Days', days: ['monday', 'wednesday', 'thursday', 'friday'] },
+                              { name: 'Weekdays', days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] },
+                              { name: 'Weekends', days: ['saturday', 'sunday'] },
+                              { name: 'Mon-Wed-Fri', days: ['monday', 'wednesday', 'friday'] }
+                            ];
+
+                            const applyPreset = (presetDays: string[]) => {
+                              field.onChange(presetDays.join(','));
+                            };
+
+                            return (
+                              <FormItem>
+                                <FormLabel>Select Days</FormLabel>
+                                
+                                {/* Quick Presets */}
+                                <div className="mb-3">
+                                  <div className="text-sm text-gray-600 mb-2">Quick presets:</div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {presets.map((preset) => (
+                                      <Button
+                                        key={preset.name}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => applyPreset(preset.days)}
+                                        className="text-xs"
+                                      >
+                                        {preset.name}
+                                      </Button>
+                                    ))}
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => field.onChange('')}
+                                      className="text-xs text-red-600"
+                                    >
+                                      Clear All
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <FormControl>
+                                  <div className="grid grid-cols-7 gap-2">
+                                    {daysOfWeek.map((day) => (
+                                      <Button
+                                        key={day.full}
+                                        type="button"
+                                        variant={selectedDays.includes(day.full) ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => toggleDay(day.full)}
+                                        className="h-12 text-xs"
+                                      >
+                                        <div className="text-center">
+                                          <div className="font-semibold">{day.short}</div>
+                                          <div className="text-xs opacity-75">{day.label.slice(0, 3)}</div>
+                                        </div>
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </FormControl>
+                                <div className="text-sm text-gray-600 mt-2">
+                                  {selectedDays.length > 0 
+                                    ? `Selected: ${selectedDays.map(day => 
+                                        daysOfWeek.find(d => d.full === day)?.label
+                                      ).join(', ')}`
+                                    : 'No days selected'
+                                  }
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            );
+                          }}
                         />
                       )}
                     </>
