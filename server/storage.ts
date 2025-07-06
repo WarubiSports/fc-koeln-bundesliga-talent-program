@@ -251,6 +251,11 @@ export interface IStorage {
 
   // Recent activities
   getRecentActivities(): Promise<any[]>;
+
+  // Password reset
+  generatePasswordResetToken(email: string): Promise<string | null>;
+  validatePasswordResetToken(token: string): Promise<User | null>;
+  updatePassword(userId: string, newPassword: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1646,6 +1651,78 @@ export class DatabaseStorage implements IStorage {
       averageCost: Math.round(averageCost * 100) / 100,
       topStorageLocations,
     };
+  }
+
+  // Password reset methods
+  async generatePasswordResetToken(email: string): Promise<string | null> {
+    try {
+      // Find user by email
+      const [user] = await db.select().from(users).where(eq(users.email, email));
+      if (!user) {
+        return null;
+      }
+
+      // Generate secure token
+      const token = require('crypto').randomBytes(32).toString('hex');
+      const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Update user with reset token
+      await db.update(users)
+        .set({
+          passwordResetToken: token,
+          passwordResetExpiry: expiry,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, user.id));
+
+      return token;
+    } catch (error) {
+      console.error('Error generating password reset token:', error);
+      return null;
+    }
+  }
+
+  async validatePasswordResetToken(token: string): Promise<User | null> {
+    try {
+      const [user] = await db.select().from(users).where(eq(users.passwordResetToken, token));
+      if (!user || !user.passwordResetExpiry) {
+        return null;
+      }
+
+      // Check if token has expired
+      if (new Date() > user.passwordResetExpiry) {
+        // Clear expired token
+        await db.update(users)
+          .set({
+            passwordResetToken: null,
+            passwordResetExpiry: null,
+            updatedAt: new Date()
+          })
+          .where(eq(users.id, user.id));
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      console.error('Error validating password reset token:', error);
+      return null;
+    }
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    try {
+      await db.update(users)
+        .set({
+          password: newPassword,
+          passwordResetToken: null,
+          passwordResetExpiry: null,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw error;
+    }
   }
 }
 

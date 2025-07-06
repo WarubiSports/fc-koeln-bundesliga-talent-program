@@ -92,6 +92,8 @@ export const users = pgTable("users", {
   jerseyNumber: integer("jersey_number"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  passwordResetToken: varchar("password_reset_token"),
+  passwordResetExpiry: timestamp("password_reset_expiry"),
 });
 
 export type UpsertUser = typeof users.$inferInsert;

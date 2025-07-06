@@ -25,6 +25,7 @@ import CompleteProfile from "@/pages/complete-profile";
 import WaitingApproval from "@/pages/waiting-approval";
 import PlayerRegistration from "@/pages/player-registration";
 import Logout from "@/pages/logout";
+import ResetPassword from "@/pages/reset-password";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -48,6 +49,7 @@ function Router() {
         <Route path="/" component={TokenLogin} />
         <Route path="/login" component={TokenLogin} />
         <Route path="/register" component={Register} />
+        <Route path="/reset-password" component={ResetPassword} />
         <Route path="/logout" component={Logout} />
         <Route component={TokenLogin} />
       </Switch>

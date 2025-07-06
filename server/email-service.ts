@@ -131,3 +131,100 @@ export async function sendUserConfirmationEmail(
     html: htmlContent,
   });
 }
+
+export async function sendPasswordResetEmail(
+  userEmail: string | null,
+  userName: string,
+  resetToken: string
+): Promise<boolean> {
+  if (!userEmail) {
+    console.error('No email provided for password reset');
+    return false;
+  }
+
+  const subject = "Password Reset - FC Köln International Talent Program";
+  const resetUrl = `https://warubisports.replit.app/reset-password?token=${resetToken}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background-color: #DC143C; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #f9f9f9; }
+        .footer { background-color: #333; color: white; padding: 15px; text-align: center; }
+        .button { background-color: #DC143C; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 15px 0; }
+        .warning { background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .code { background-color: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 18px; letter-spacing: 2px; text-align: center; margin: 15px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>🔐 FC Köln International Talent Program</h1>
+      </div>
+      
+      <div class="content">
+        <h2>Password Reset Request</h2>
+        
+        <p>Hello ${userName},</p>
+        
+        <p>We received a request to reset your password for the FC Köln International Talent Program platform.</p>
+        
+        <p>Click the button below to reset your password:</p>
+        
+        <p>
+          <a href="${resetUrl}" class="button">Reset Password</a>
+        </p>
+        
+        <p>Or copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; color: #666; font-size: 14px;">${resetUrl}</p>
+        
+        <div class="warning">
+          <strong>Important:</strong>
+          <ul>
+            <li>This link will expire in 1 hour for security reasons</li>
+            <li>If you didn't request this password reset, please ignore this email</li>
+            <li>Contact the coaching staff if you have any concerns</li>
+          </ul>
+        </div>
+        
+        <p>If you're having trouble clicking the button, copy and paste the link above into your web browser.</p>
+        
+        <p><strong>FC Köln Coaching Staff</strong></p>
+      </div>
+      
+      <div class="footer">
+        <p>FC Köln International Talent Program<br>
+        This is an automated message from the team management system.</p>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  const textContent = `
+    Password Reset Request - FC Köln International Talent Program
+    
+    Hello ${userName},
+    
+    We received a request to reset your password for the FC Köln International Talent Program platform.
+    
+    Visit this link to reset your password:
+    ${resetUrl}
+    
+    Important:
+    - This link will expire in 1 hour for security reasons
+    - If you didn't request this password reset, please ignore this email
+    - Contact the coaching staff if you have any concerns
+    
+    FC Köln Coaching Staff
+  `;
+  
+  return await sendEmail({
+    to: userEmail,
+    from: "max.bisinger@warubi-sports.com",
+    subject,
+    text: textContent,
+    html: htmlContent,
+  });
+}
