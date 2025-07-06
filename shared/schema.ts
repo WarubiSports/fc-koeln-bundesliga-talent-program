@@ -18,6 +18,11 @@ export const players = pgTable("players", {
   availability: text("availability").notNull().default("available"), // available, unavailable, injured, suspended
   availabilityReason: text("availability_reason"), // reason for unavailability
   profileImageUrl: text("profile_image_url"),
+  phoneNumber: text("phone_number"),
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
+  medicalConditions: text("medical_conditions"),
+  allergies: text("allergies"),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -40,6 +45,11 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   availability: z.enum(["available", "unavailable", "injured", "suspended"]).default("available"),
   availabilityReason: z.string().optional(),
   profileImageUrl: z.string().url("Invalid URL format").optional().or(z.literal("")),
+  phoneNumber: z.string().optional(),
+  emergencyContactName: z.string().optional(),
+  emergencyContactPhone: z.string().optional(),
+  medicalConditions: z.string().optional(),
+  allergies: z.string().optional(),
   notes: z.string().optional(),
 });
 
