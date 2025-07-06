@@ -373,6 +373,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Logged out successfully" });
   });
 
+  // Profile update endpoint
+  app.put('/api/auth/profile', simpleAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const profileData = req.body;
+
+      // Validate required fields
+      if (!profileData.firstName || !profileData.lastName || !profileData.email) {
+        return res.status(400).json({ message: "First name, last name, and email are required" });
+      }
+
+      // Update user profile
+      const updatedUser = await storage.updateUserProfile(userId, profileData);
+
+      res.json({ 
+        message: "Profile updated successfully",
+        user: updatedUser
+      });
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: error.message || "Failed to update profile" });
+    }
+  });
+
   // Profile completion endpoint
   app.post('/api/complete-profile', simpleAuth, async (req: any, res) => {
     try {

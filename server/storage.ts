@@ -62,11 +62,7 @@ export interface IStorage {
   approveUser(userId: string): Promise<void>;
   rejectUser(userId: string): Promise<void>;
   deleteUser(userId: string): Promise<void>;
-  updateUserProfile(userId: string, profileData: {
-    dateOfBirth?: string;
-    nationality?: string;
-    position?: string;
-  }): Promise<void>;
+  updateUserProfile(userId: string, profileData: any): Promise<User>;
 
   // Player methods
   getAllPlayers(): Promise<Player[]>;
@@ -365,18 +361,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
   }
 
-  async updateUserProfile(userId: string, profileData: {
-    dateOfBirth?: string;
-    nationality?: string;
-    position?: string;
-  }): Promise<void> {
-    await db
+  async updateUserProfile(userId: string, profileData: any): Promise<User> {
+    // Filter out undefined values and prepare update data
+    const updateData: any = {
+      updatedAt: new Date()
+    };
+
+    // Only include fields that are provided (not undefined)
+    if (profileData.firstName !== undefined) updateData.firstName = profileData.firstName;
+    if (profileData.lastName !== undefined) updateData.lastName = profileData.lastName;
+    if (profileData.email !== undefined) updateData.email = profileData.email;
+    if (profileData.phone !== undefined) updateData.phone = profileData.phone;
+    if (profileData.phoneNumber !== undefined) updateData.phoneNumber = profileData.phoneNumber;
+    if (profileData.dateOfBirth !== undefined) updateData.dateOfBirth = profileData.dateOfBirth;
+    if (profileData.nationality !== undefined) updateData.nationality = profileData.nationality;
+    if (profileData.nationalityCode !== undefined) updateData.nationalityCode = profileData.nationalityCode;
+    if (profileData.position !== undefined) updateData.position = profileData.position;
+    if (profileData.preferredFoot !== undefined) updateData.preferredFoot = profileData.preferredFoot;
+    if (profileData.height !== undefined) updateData.height = profileData.height;
+    if (profileData.weight !== undefined) updateData.weight = profileData.weight;
+    if (profileData.previousClub !== undefined) updateData.previousClub = profileData.previousClub;
+    if (profileData.profileImageUrl !== undefined) updateData.profileImageUrl = profileData.profileImageUrl;
+    if (profileData.emergencyContactName !== undefined) updateData.emergencyContactName = profileData.emergencyContactName;
+    if (profileData.emergencyContactPhone !== undefined) updateData.emergencyContactPhone = profileData.emergencyContactPhone;
+    if (profileData.medicalConditions !== undefined) updateData.medicalConditions = profileData.medicalConditions;
+    if (profileData.allergies !== undefined) updateData.allergies = profileData.allergies;
+    if (profileData.house !== undefined) updateData.house = profileData.house;
+
+    // Update the user
+    const [updatedUser] = await db
       .update(users)
-      .set({
-        ...profileData,
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, userId));
+      .set(updateData)
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+
+    return updatedUser;
   }
 
   // Helper method to sync a user to player database

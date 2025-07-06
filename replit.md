@@ -131,6 +131,11 @@ Preferred communication style: Simple, everyday language.
 - **Message Deletion System**: Added comprehensive message deletion with individual message delete buttons and admin bulk delete for all team messages
 - **Weekly Grocery Order Refresh**: Updated delivery date selection to refresh every Monday, showing only current week's Tuesday/Friday options with 12pm deadlines
 
+### July 6, 2025
+- **Individual Food Ordering Restrictions**: Implemented role-based restrictions so regular players can only place grocery orders for themselves, while admins/coaches retain full ordering capabilities for any player
+- **Profile Editing System**: Added comprehensive profile editing functionality allowing registered members to update their personal information, contact details, medical information, and football-specific data post-registration
+- **Enhanced Navigation**: Added "Edit Profile" link to main navigation for easy access to profile management
+
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
 - **Date Filtering Enhancement**: Implemented comprehensive date filtering for House Order Summary to prevent overwhelming data accumulation over 10-month season
