@@ -139,6 +139,7 @@ Preferred communication style: Simple, everyday language.
 - **Player-Specific Calendar Visibility**: Enhanced calendar filtering so players see team-wide events, group events they belong to (position, house, age group, nationality), events where they're individually mentioned, and events they created themselves - maintains privacy while ensuring players see relevant information
 - **Selective Bulk Delete for Repetitive Events**: Added intelligent duplicate detection with selection interface - groups events by title and participants, displays organized selection modal allowing admins to choose specific duplicates to delete rather than automatic deletion
 - **Custom Days Recurring Pattern**: Enhanced calendar recurring events with visual day selection interface - includes quick presets for Training Days (Mon/Wed/Thu/Fri), weekdays, weekends, and custom combinations for flexible scheduling like team practices
+- **Custom Days Recurring Pattern Fix**: Fixed critical issue where custom days recurring events weren't being created - added missing database columns for password reset functionality and implemented proper custom days logic in recurring event creation system
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility

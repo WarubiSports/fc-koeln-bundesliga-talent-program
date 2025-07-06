@@ -1848,6 +1848,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       console.log('Original request body:', req.body);
+      console.log('isRecurring check:', req.body.isRecurring, 'type:', typeof req.body.isRecurring);
+      console.log('recurringPattern check:', req.body.recurringPattern, 'type:', typeof req.body.recurringPattern);
       
       const baseEventData = {
         title: req.body.title,
@@ -1865,6 +1867,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Handle recurring events
       if (req.body.isRecurring && req.body.recurringPattern) {
+        console.log('Processing recurring event:', {
+          pattern: req.body.recurringPattern,
+          days: req.body.recurringDays,
+          startDate: req.body.date,
+          endDate: req.body.recurringEndDate
+        });
+        
         const events = [];
         const startDate = new Date(req.body.date);
         const endDate = req.body.recurringEndDate ? new Date(req.body.recurringEndDate) : new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000); // Default 30 days
@@ -1883,6 +1892,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 return currentDate.getDay() === startDate.getDay();
               case 'monthly':
                 return currentDate.getDate() === startDate.getDate();
+              case 'custom':
+                if (!req.body.recurringDays) return false;
+                const selectedDays = req.body.recurringDays.split(',').map((day: string) => day.trim().toLowerCase());
+                const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                const currentDayName = dayNames[currentDate.getDay()];
+                return selectedDays.includes(currentDayName);
               default:
                 return false;
             }
