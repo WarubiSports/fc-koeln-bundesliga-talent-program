@@ -214,12 +214,7 @@ export default function Players() {
   };
 
   const onEditSubmit = (data: PlayerEditFormData) => {
-    console.log("Form submitted with data:", data);
-    console.log("Editing player:", editingPlayer);
-    console.log("Form errors:", editForm.formState.errors);
-    
     if (editingPlayer) {
-      console.log("Calling mutation with:", { ...data, id: editingPlayer.id });
       updatePlayerMutation.mutate({ ...data, id: editingPlayer.id });
     }
   };
@@ -888,27 +883,8 @@ export default function Players() {
                     Cancel
                   </Button>
                   <Button 
-                    type="button" 
+                    type="submit" 
                     disabled={updatePlayerMutation.isPending}
-                    onClick={async () => {
-                      console.log("Update button clicked");
-                      console.log("Form state:", editForm.formState);
-                      console.log("Form errors:", editForm.formState.errors);
-                      console.log("Form values:", editForm.getValues());
-                      
-                      // Trigger form validation manually
-                      const isValid = await editForm.trigger();
-                      console.log("Form validation result:", isValid);
-                      
-                      if (isValid) {
-                        // Submit the form manually
-                        const formData = editForm.getValues();
-                        console.log("Submitting form with data:", formData);
-                        onEditSubmit(formData);
-                      } else {
-                        console.log("Form validation failed:", editForm.formState.errors);
-                      }
-                    }}
                   >
                     {updatePlayerMutation.isPending ? "Updating..." : "Update Player"}
                   </Button>
