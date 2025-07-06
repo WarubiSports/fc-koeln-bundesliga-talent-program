@@ -32,7 +32,7 @@ export const insertPlayerSchema = createInsertSchema(players).omit({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   age: z.number().min(16).max(30).optional(),
   nationality: z.string().min(1, "Nationality is required"),
-  nationalityCode: z.string().length(2, "Country code must be 2 characters").optional(),
+  nationalityCode: z.string().length(2, "Country code must be 2 characters").optional().or(z.literal("")),
   positions: z.array(z.enum(["Goalkeeper", "Defender", "Midfielder", "Forward", "Winger", "Striker", "Center-back", "Fullback", "Defensive-midfielder", "Attacking-midfielder"])).optional(),
   position: z.enum(["Goalkeeper", "Defender", "Midfielder", "Forward", "Winger", "Striker", "Center-back", "Fullback", "Defensive-midfielder", "Attacking-midfielder"]),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).default("Widdersdorf 1"),
