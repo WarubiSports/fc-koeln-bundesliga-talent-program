@@ -440,23 +440,61 @@ export default function Calendar() {
 
   // Function to toggle event selection
   const toggleRepetitiveEventSelection = (eventId: number) => {
-    setSelectedRepetitiveEvents(prev => 
-      prev.includes(eventId) 
+    setSelectedRepetitiveEvents(prev => {
+      const newSelection = prev.includes(eventId) 
         ? prev.filter(id => id !== eventId)
-        : [...prev, eventId]
-    );
+        : [...prev, eventId];
+      
+      // After updating individual selection, check if we need to update group selections
+      setTimeout(() => {
+        setSelectedGroups(currentGroups => {
+          const newGroups = [...currentGroups];
+          
+          // Check each group to see if all its events are selected
+          Object.entries(repetitiveGroups).forEach(([groupKey, events]) => {
+            const groupEventIds = events.map(event => event.id);
+            const allEventsSelected = groupEventIds.every(id => newSelection.includes(id));
+            const someEventsSelected = groupEventIds.some(id => newSelection.includes(id));
+            
+            if (allEventsSelected && !newGroups.includes(groupKey)) {
+              newGroups.push(groupKey);
+            } else if (!someEventsSelected && newGroups.includes(groupKey)) {
+              const index = newGroups.indexOf(groupKey);
+              newGroups.splice(index, 1);
+            }
+          });
+          
+          return newGroups;
+        });
+      }, 0);
+      
+      return newSelection;
+    });
   };
 
   // Function to toggle group selection
   const toggleGroupSelection = (groupKey: string) => {
-    setSelectedGroups(prev => 
-      prev.includes(groupKey) 
-        ? prev.filter(key => key !== groupKey)
-        : [...prev, groupKey]
-    );
+    const wasSelected = selectedGroups.includes(groupKey);
+    
+    if (wasSelected) {
+      // Deselecting group - remove group and its events
+      setSelectedGroups(prev => prev.filter(key => key !== groupKey));
+      setSelectedRepetitiveEvents(prev => {
+        const groupEventIds = repetitiveGroups[groupKey]?.map(event => event.id) || [];
+        return prev.filter(id => !groupEventIds.includes(id));
+      });
+    } else {
+      // Selecting group - add group and its events
+      setSelectedGroups(prev => [...prev, groupKey]);
+      setSelectedRepetitiveEvents(prev => {
+        const groupEventIds = repetitiveGroups[groupKey]?.map(event => event.id) || [];
+        const newEventIds = groupEventIds.filter(id => !prev.includes(id));
+        return [...prev, ...newEventIds];
+      });
+    }
   };
 
-  // Function to select all events in selected groups
+  // Function to select all events in selected groups  
   const selectAllInSelectedGroups = () => {
     const eventIds: number[] = [];
     selectedGroups.forEach(groupKey => {
@@ -464,7 +502,10 @@ export default function Calendar() {
         repetitiveGroups[groupKey].forEach(event => eventIds.push(event.id));
       }
     });
-    setSelectedRepetitiveEvents(eventIds);
+    setSelectedRepetitiveEvents(prev => {
+      const combinedIds = [...new Set([...prev, ...eventIds])];
+      return combinedIds;
+    });
   };
 
   // Function to clear all selections
