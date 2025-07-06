@@ -361,6 +361,63 @@ export default function Calendar() {
     }
   });
 
+  // Bulk delete repetitive events mutation
+  const bulkDeleteRepetitiveMutation = useMutation({
+    mutationFn: async (eventIds: number[]) => {
+      const promises = eventIds.map(id => apiRequest(`/api/events/${id}`, "DELETE"));
+      await Promise.all(promises);
+    },
+    onSuccess: (_, eventIds) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({
+        title: "Repetitive events deleted",
+        description: `${eventIds.length} repetitive events have been deleted successfully.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Function to identify and delete repetitive events
+  const handleBulkDeleteRepetitive = () => {
+    const eventGroups: { [key: string]: any[] } = {};
+    
+    // Group events by title and participants
+    (filteredEvents as any[]).forEach((event: any) => {
+      const key = `${event.title.toLowerCase()}-${(event.participants || '').toLowerCase()}`;
+      if (!eventGroups[key]) {
+        eventGroups[key] = [];
+      }
+      eventGroups[key].push(event);
+    });
+    
+    // Find groups with more than 1 event (repetitive)
+    const repetitiveEventIds: number[] = [];
+    Object.values(eventGroups).forEach(group => {
+      if (group.length > 1) {
+        // Keep the first event, delete the rest
+        group.slice(1).forEach(event => {
+          repetitiveEventIds.push(event.id);
+        });
+      }
+    });
+    
+    if (repetitiveEventIds.length === 0) {
+      toast({
+        title: "No repetitive events found",
+        description: "No duplicate events were found in the calendar.",
+      });
+      return;
+    }
+    
+    bulkDeleteRepetitiveMutation.mutate(repetitiveEventIds);
+  };
+
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, event: Event) => {
     e.dataTransfer.setData("text/plain", event.id.toString());
@@ -883,6 +940,17 @@ export default function Calendar() {
                 Templates
               </Button>
               
+              {/* Bulk Delete Repetitive Events */}
+              <Button
+                variant="outline"
+                onClick={handleBulkDeleteRepetitive}
+                disabled={bulkDeleteRepetitiveMutation.isPending}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {bulkDeleteMutation.isPending ? "Deleting..." : "Delete Repetitive"}
+              </Button>
+
               <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                 <DialogTrigger asChild>
                   <Button>
