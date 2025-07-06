@@ -136,6 +136,7 @@ Preferred communication style: Simple, everyday language.
 - **Profile Editing System**: Added comprehensive profile editing functionality allowing registered members to update their personal information, contact details, medical information, and football-specific data post-registration
 - **Enhanced Navigation**: Added "Edit Profile" link to main navigation for easy access to profile management
 - **Player Update System Fix**: Resolved critical "Update Player" button functionality through comprehensive debugging and database schema updates - fixed authentication permissions, form validation mismatches, cache invalidation issues, and database field mapping for phone numbers and emergency contacts
+- **Player-Specific Calendar Visibility**: Enhanced calendar filtering so players see team-wide events, group events they belong to (position, house, age group, nationality), events where they're individually mentioned, and events they created themselves - maintains privacy while ensuring players see relevant information
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
