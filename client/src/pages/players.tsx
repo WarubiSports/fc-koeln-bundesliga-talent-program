@@ -890,6 +890,19 @@ export default function Players() {
                   <Button 
                     type="submit" 
                     disabled={updatePlayerMutation.isPending}
+                    onClick={(e) => {
+                      console.log("Update button clicked");
+                      console.log("Form state:", editForm.formState);
+                      console.log("Form errors:", editForm.formState.errors);
+                      console.log("Form values:", editForm.getValues());
+                      
+                      // Check if form is valid before submission
+                      if (!editForm.formState.isValid) {
+                        console.log("Form is invalid, preventing submission");
+                        e.preventDefault();
+                        return;
+                      }
+                    }}
                   >
                     {updatePlayerMutation.isPending ? "Updating..." : "Update Player"}
                   </Button>
