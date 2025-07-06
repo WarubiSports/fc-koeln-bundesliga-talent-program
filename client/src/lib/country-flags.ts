@@ -81,16 +81,16 @@ export const calculateAge = (dateOfBirth: string): number => {
 
 // Position display names
 export const POSITION_DISPLAY_NAMES: Record<string, string> = {
-  "goalkeeper": "Goalkeeper",
-  "defender": "Defender",
-  "midfielder": "Midfielder",
-  "forward": "Forward",
-  "winger": "Winger",
-  "striker": "Striker",
-  "center-back": "Center-back",
-  "fullback": "Fullback",
-  "defensive-midfielder": "Defensive Midfielder",
-  "attacking-midfielder": "Attacking Midfielder",
+  "Goalkeeper": "Goalkeeper",
+  "Defender": "Defender",
+  "Midfielder": "Midfielder",
+  "Forward": "Forward",
+  "Winger": "Winger",
+  "Striker": "Striker",
+  "Center-back": "Center-back",
+  "Fullback": "Fullback",
+  "Defensive-midfielder": "Defensive Midfielder",
+  "Attacking-midfielder": "Attacking Midfielder",
 };
 
 // Availability status colors
