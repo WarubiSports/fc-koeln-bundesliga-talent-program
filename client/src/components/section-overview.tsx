@@ -7,7 +7,7 @@ export default function SectionOverview() {
   const sections = [
     { path: "/", label: "Dashboard", icon: Home },
     { path: "/players", label: "Players", icon: Users },
-    { path: "/house-orders", label: "Orders", icon: ClipboardList },
+    { path: "/chores", label: "Housing", icon: ClipboardList },
     { path: "/food-orders", label: "Groceries", icon: ShoppingCart },
     { path: "/communications", label: "Messages", icon: MessageSquare },
     { path: "/calendar", label: "Calendar", icon: Calendar },
