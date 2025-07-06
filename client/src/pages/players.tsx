@@ -117,10 +117,14 @@ export default function Players() {
 
   const updatePlayerMutation = useMutation({
     mutationFn: async (data: PlayerEditFormData & { id: number }) => {
-      return await apiRequest(`/api/players/${data.id}`, "PUT", data);
+      const response = await apiRequest(`/api/players/${data.id}`, "PUT", data);
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (updatedPlayer) => {
+      // Force refetch of players data
       queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      queryClient.refetchQueries({ queryKey: ["/api/players"] });
+      
       toast({
         title: "Player Updated",
         description: "Player profile has been successfully updated.",

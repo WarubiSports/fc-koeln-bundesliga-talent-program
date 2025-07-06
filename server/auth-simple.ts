@@ -43,17 +43,12 @@ export const simpleAdminOrCoachAuth: RequestHandler = (req: any, res, next) => {
     const token = authHeader.substring(7);
     const userData = loggedInUsers.get(token);
     
-    console.log('Admin/Coach auth check - Token:', token.substring(0, 20) + '...');
-    console.log('Admin/Coach auth check - User data:', userData);
-    console.log('Admin/Coach auth check - User role:', userData?.role);
-    
     if (userData && (userData.role === 'admin' || userData.role === 'coach')) {
       req.user = userData;
       return next();
     }
   }
   
-  console.log('Admin/Coach auth failed - Access denied');
   res.status(403).json({ message: "Admin or Coach access required" });
 };
 
