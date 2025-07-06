@@ -56,6 +56,7 @@ export default function Calendar() {
   const [showRepetitiveSelection, setShowRepetitiveSelection] = useState(false);
   const [repetitiveGroups, setRepetitiveGroups] = useState<{ [key: string]: any[] }>({});
   const [selectedRepetitiveEvents, setSelectedRepetitiveEvents] = useState<number[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const { user, canManageCalendar } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -417,6 +418,7 @@ export default function Calendar() {
     
     setRepetitiveGroups(repetitiveGroupsFound);
     setSelectedRepetitiveEvents([]);
+    setSelectedGroups([]);
     setShowRepetitiveSelection(true);
   };
 
@@ -443,6 +445,32 @@ export default function Calendar() {
         ? prev.filter(id => id !== eventId)
         : [...prev, eventId]
     );
+  };
+
+  // Function to toggle group selection
+  const toggleGroupSelection = (groupKey: string) => {
+    setSelectedGroups(prev => 
+      prev.includes(groupKey) 
+        ? prev.filter(key => key !== groupKey)
+        : [...prev, groupKey]
+    );
+  };
+
+  // Function to select all events in selected groups
+  const selectAllInSelectedGroups = () => {
+    const eventIds: number[] = [];
+    selectedGroups.forEach(groupKey => {
+      if (repetitiveGroups[groupKey]) {
+        repetitiveGroups[groupKey].forEach(event => eventIds.push(event.id));
+      }
+    });
+    setSelectedRepetitiveEvents(eventIds);
+  };
+
+  // Function to clear all selections
+  const clearAllSelections = () => {
+    setSelectedRepetitiveEvents([]);
+    setSelectedGroups([]);
   };
 
   // Drag and drop handlers
@@ -1715,16 +1743,58 @@ export default function Calendar() {
               Choose which duplicate events you want to delete. Events are grouped by title and participants.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Group Selection Controls */}
+          <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium">Quick Actions:</span>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={selectAllInSelectedGroups}
+                disabled={selectedGroups.length === 0}
+              >
+                Select All in Selected Groups
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={clearAllSelections}
+              >
+                Clear All
+              </Button>
+            </div>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">
+                {selectedGroups.length} group(s) selected, {selectedRepetitiveEvents.length} event(s) selected
+              </p>
+            </div>
+          </div>
           
           <div className="space-y-6">
             {Object.entries(repetitiveGroups).map(([groupKey, events]) => (
-              <div key={groupKey} className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-3 text-lg">
-                  {events[0]?.title} - {events[0]?.participants || "No participants"}
-                </h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Found {events.length} duplicate events:
-                </p>
+              <div key={groupKey} className={`border rounded-lg p-4 ${selectedGroups.includes(groupKey) ? 'border-blue-300 bg-blue-50' : ''}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedGroups.includes(groupKey)}
+                      onChange={() => toggleGroupSelection(groupKey)}
+                      className="w-4 h-4"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        {events[0]?.title} - {events[0]?.participants || "No participants"}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Found {events.length} duplicate events
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant={selectedGroups.includes(groupKey) ? "default" : "secondary"}>
+                    {selectedGroups.includes(groupKey) ? "Group Selected" : "Group"}
+                  </Badge>
+                </div>
                 
                 <div className="grid gap-2">
                   {events.map((event: any) => (
@@ -1774,6 +1844,7 @@ export default function Calendar() {
                 onClick={() => {
                   setShowRepetitiveSelection(false);
                   setSelectedRepetitiveEvents([]);
+                  setSelectedGroups([]);
                 }}
               >
                 Cancel
