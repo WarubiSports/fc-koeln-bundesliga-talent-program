@@ -459,15 +459,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updatePlayer(id: number, updates: UpdatePlayer): Promise<Player | undefined> {
-    console.log('Updating player:', id, 'with data:', updates);
-    
     const [player] = await db
       .update(players)
       .set(updates)
       .where(eq(players.id, id))
       .returning();
-    
-    console.log('Player updated result:', player);
     return player || undefined;
   }
 

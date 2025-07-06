@@ -121,13 +121,20 @@ export default function Players() {
       return await response.json();
     },
     onSuccess: (updatedPlayer) => {
-      // Force refetch of players data
+      // Update the cache with the new player data immediately
+      queryClient.setQueryData(["/api/players"], (oldPlayers: any[] | undefined) => {
+        if (!oldPlayers) return oldPlayers;
+        return oldPlayers.map(player => 
+          player.id === updatedPlayer.id ? updatedPlayer : player
+        );
+      });
+      
+      // Also invalidate to ensure consistency
       queryClient.invalidateQueries({ queryKey: ["/api/players"] });
-      queryClient.refetchQueries({ queryKey: ["/api/players"] });
       
       toast({
-        title: "Player Updated",
-        description: "Player profile has been successfully updated.",
+        title: "Player Updated Successfully",
+        description: `${updatedPlayer.firstName} ${updatedPlayer.lastName}'s profile has been updated.`,
       });
       setEditingPlayer(null);
       editForm.reset();
