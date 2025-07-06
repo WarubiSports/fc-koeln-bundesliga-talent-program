@@ -6,6 +6,7 @@ import { z } from "zod";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 import { simpleAuth, simpleAdminAuth, simpleAdminOrCoachAuth, createUserToken, getUserFromToken, removeUserToken } from "./auth-simple";
 import { devAuth } from "./auth-bypass";
+import { sendUserConfirmationEmail } from "./email-service";
 
 
 
@@ -409,7 +410,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/approve-user/:userId', simpleAdminAuth, async (req, res) => {
     try {
       const { userId } = req.params;
+      
+      // Get user details before approval
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       await storage.approveUser(userId);
+      
+      // Send confirmation email
+      if (user.email) {
+        const userName = `${user.firstName} ${user.lastName}`;
+        const house = user.house || 'Widdersdorf 1'; // Default house if not assigned
+        
+        const emailSent = await sendUserConfirmationEmail(user.email, userName, house);
+        if (emailSent) {
+          console.log(`Confirmation email sent to ${user.email}`);
+        } else {
+          console.error(`Failed to send confirmation email to ${user.email}`);
+        }
+      }
+      
       res.json({ message: "User approved successfully" });
     } catch (error) {
       console.error("Error approving user:", error);
