@@ -888,19 +888,25 @@ export default function Players() {
                     Cancel
                   </Button>
                   <Button 
-                    type="submit" 
+                    type="button" 
                     disabled={updatePlayerMutation.isPending}
-                    onClick={(e) => {
+                    onClick={async () => {
                       console.log("Update button clicked");
                       console.log("Form state:", editForm.formState);
                       console.log("Form errors:", editForm.formState.errors);
                       console.log("Form values:", editForm.getValues());
                       
-                      // Check if form is valid before submission
-                      if (!editForm.formState.isValid) {
-                        console.log("Form is invalid, preventing submission");
-                        e.preventDefault();
-                        return;
+                      // Trigger form validation manually
+                      const isValid = await editForm.trigger();
+                      console.log("Form validation result:", isValid);
+                      
+                      if (isValid) {
+                        // Submit the form manually
+                        const formData = editForm.getValues();
+                        console.log("Submitting form with data:", formData);
+                        onEditSubmit(formData);
+                      } else {
+                        console.log("Form validation failed:", editForm.formState.errors);
                       }
                     }}
                   >
