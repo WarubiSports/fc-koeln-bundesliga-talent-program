@@ -137,6 +137,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Navigation**: Added "Edit Profile" link to main navigation for easy access to profile management
 - **Player Update System Fix**: Resolved critical "Update Player" button functionality through comprehensive debugging and database schema updates - fixed authentication permissions, form validation mismatches, cache invalidation issues, and database field mapping for phone numbers and emergency contacts
 - **Player-Specific Calendar Visibility**: Enhanced calendar filtering so players see team-wide events, group events they belong to (position, house, age group, nationality), events where they're individually mentioned, and events they created themselves - maintains privacy while ensuring players see relevant information
+- **Selective Bulk Delete for Repetitive Events**: Added intelligent duplicate detection with selection interface - groups events by title and participants, displays organized selection modal allowing admins to choose specific duplicates to delete rather than automatic deletion
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility

@@ -53,6 +53,9 @@ export default function Calendar() {
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
   const [isCreateTemplateModalOpen, setIsCreateTemplateModalOpen] = useState(false);
+  const [showRepetitiveSelection, setShowRepetitiveSelection] = useState(false);
+  const [repetitiveGroups, setRepetitiveGroups] = useState<{ [key: string]: any[] }>({});
+  const [selectedRepetitiveEvents, setSelectedRepetitiveEvents] = useState<number[]>([]);
   const { user, canManageCalendar } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -383,7 +386,7 @@ export default function Calendar() {
     },
   });
 
-  // Function to identify and delete repetitive events
+  // Function to identify and show repetitive events for selection
   const handleBulkDeleteRepetitive = () => {
     const eventGroups: { [key: string]: any[] } = {};
     
@@ -397,17 +400,14 @@ export default function Calendar() {
     });
     
     // Find groups with more than 1 event (repetitive)
-    const repetitiveEventIds: number[] = [];
-    Object.values(eventGroups).forEach(group => {
+    const repetitiveGroupsFound: { [key: string]: any[] } = {};
+    Object.entries(eventGroups).forEach(([key, group]) => {
       if (group.length > 1) {
-        // Keep the first event, delete the rest
-        group.slice(1).forEach(event => {
-          repetitiveEventIds.push(event.id);
-        });
+        repetitiveGroupsFound[key] = group;
       }
     });
     
-    if (repetitiveEventIds.length === 0) {
+    if (Object.keys(repetitiveGroupsFound).length === 0) {
       toast({
         title: "No repetitive events found",
         description: "No duplicate events were found in the calendar.",
@@ -415,7 +415,34 @@ export default function Calendar() {
       return;
     }
     
-    bulkDeleteRepetitiveMutation.mutate(repetitiveEventIds);
+    setRepetitiveGroups(repetitiveGroupsFound);
+    setSelectedRepetitiveEvents([]);
+    setShowRepetitiveSelection(true);
+  };
+
+  // Function to delete selected repetitive events
+  const handleDeleteSelectedRepetitive = () => {
+    if (selectedRepetitiveEvents.length === 0) {
+      toast({
+        title: "No events selected",
+        description: "Please select events to delete.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    bulkDeleteRepetitiveMutation.mutate(selectedRepetitiveEvents);
+    setShowRepetitiveSelection(false);
+    setSelectedRepetitiveEvents([]);
+  };
+
+  // Function to toggle event selection
+  const toggleRepetitiveEventSelection = (eventId: number) => {
+    setSelectedRepetitiveEvents(prev => 
+      prev.includes(eventId) 
+        ? prev.filter(id => id !== eventId)
+        : [...prev, eventId]
+    );
   };
 
   // Drag and drop handlers
@@ -1676,6 +1703,90 @@ export default function Calendar() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Repetitive Events Selection Modal */}
+      <Dialog open={showRepetitiveSelection} onOpenChange={setShowRepetitiveSelection}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Select Repetitive Events to Delete</DialogTitle>
+            <DialogDescription>
+              Choose which duplicate events you want to delete. Events are grouped by title and participants.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {Object.entries(repetitiveGroups).map(([groupKey, events]) => (
+              <div key={groupKey} className="border rounded-lg p-4">
+                <h3 className="font-semibold mb-3 text-lg">
+                  {events[0]?.title} - {events[0]?.participants || "No participants"}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Found {events.length} duplicate events:
+                </p>
+                
+                <div className="grid gap-2">
+                  {events.map((event: any) => (
+                    <div 
+                      key={event.id} 
+                      className={`flex items-center justify-between p-3 border rounded cursor-pointer transition-colors ${
+                        selectedRepetitiveEvents.includes(event.id) 
+                          ? 'bg-red-50 border-red-200' 
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                      onClick={() => toggleRepetitiveEventSelection(event.id)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedRepetitiveEvents.includes(event.id)}
+                          onChange={() => toggleRepetitiveEventSelection(event.id)}
+                          className="w-4 h-4"
+                        />
+                        <div>
+                          <p className="font-medium">{event.title}</p>
+                          <p className="text-sm text-gray-600">
+                            {event.date} at {event.startTime} - {event.endTime}
+                          </p>
+                          {event.location && (
+                            <p className="text-sm text-gray-500">📍 {event.location}</p>
+                          )}
+                        </div>
+                      </div>
+                      <Badge variant={selectedRepetitiveEvents.includes(event.id) ? "destructive" : "secondary"}>
+                        {selectedRepetitiveEvents.includes(event.id) ? "Selected for deletion" : "Keep"}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-between items-center pt-4 border-t">
+            <p className="text-sm text-gray-600">
+              {selectedRepetitiveEvents.length} events selected for deletion
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowRepetitiveSelection(false);
+                  setSelectedRepetitiveEvents([]);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={handleDeleteSelectedRepetitive}
+                disabled={selectedRepetitiveEvents.length === 0 || bulkDeleteRepetitiveMutation.isPending}
+              >
+                {bulkDeleteRepetitiveMutation.isPending ? "Deleting..." : `Delete ${selectedRepetitiveEvents.length} Events`}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
