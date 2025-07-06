@@ -130,89 +130,31 @@ export default function Calendar() {
     }
     
     if (!currentUserPlayer) {
-      // If user has no player profile, show general team events
-      return eventList.filter((event: any) => {
-        const participants = event.participants || "";
-        
-        // Show events for entire team
-        if (participants.toLowerCase().includes("all players") || 
-            participants.toLowerCase().includes("entire team") ||
-            participants.toLowerCase().includes("full team") ||
-            participants.toLowerCase().includes("all") ||
-            !participants) {
-          return true;
-        }
-        
-        // Show general team events
-        const generalEvents = [
-          "team_practice", 
-          "team_meeting", 
-          "match",
-          "travel",
-          "nutrition_consultation",
-          "medical_checkup"
-        ];
-        
-        return generalEvents.includes(event.eventType);
-      });
+      // If user has no player profile, show no events for privacy
+      return [];
     }
     
     return eventList.filter((event: any) => {
       const participants = event.participants || "";
-      const eventType = event.eventType;
+      const userName = `${currentUserPlayer.firstName} ${currentUserPlayer.lastName}`;
       
-      // Check if event is for entire team
-      if (participants.toLowerCase().includes("all players") || 
-          participants.toLowerCase().includes("entire team") ||
-          participants.toLowerCase().includes("full team") ||
-          participants.toLowerCase().includes("all") ||
-          !participants) {
+      // Only show events where the player is specifically mentioned by name
+      const participantsLower = participants.toLowerCase();
+      const userNameLower = userName.toLowerCase();
+      const firstNameLower = currentUserPlayer.firstName.toLowerCase();
+      const lastNameLower = currentUserPlayer.lastName.toLowerCase();
+      
+      // Check if user is specifically mentioned by full name, first name, or last name
+      if (participantsLower.includes(userNameLower) ||
+          participantsLower.includes(firstNameLower) ||
+          participantsLower.includes(lastNameLower)) {
         return true;
       }
       
-      // Check if user is specifically mentioned by name
-      const userName = `${currentUserPlayer.firstName} ${currentUserPlayer.lastName}`.toLowerCase();
-      if (participants.toLowerCase().includes(userName) ||
-          participants.toLowerCase().includes(currentUserPlayer.firstName.toLowerCase()) ||
-          participants.toLowerCase().includes(currentUserPlayer.lastName.toLowerCase())) {
-        return true;
-      }
-      
-      // Check if event is for user's position
-      if (currentUserPlayer.position && 
-          participants.toLowerCase().includes(currentUserPlayer.position.toLowerCase())) {
-        return true;
-      }
-      
-      // Check if event is for user's house
-      if (currentUserPlayer.house && 
-          participants.toLowerCase().includes(currentUserPlayer.house.toLowerCase())) {
-        return true;
-      }
-      
-      // Check if event is for user's age group
-      if (currentUserPlayer.ageGroup && 
-          participants.toLowerCase().includes(currentUserPlayer.ageGroup.toLowerCase())) {
-        return true;
-      }
-      
-      // Check if event is for user's nationality group
-      if (currentUserPlayer.nationality && 
-          participants.toLowerCase().includes(currentUserPlayer.nationality.toLowerCase())) {
-        return true;
-      }
-      
-      // Default team events that should be visible to all players
-      const generalEvents = [
-        "team_practice", 
-        "team_meeting", 
-        "match",
-        "travel",
-        "nutrition_consultation",
-        "medical_checkup"
-      ];
-      
-      if (generalEvents.includes(eventType) && !participants) {
+      // Also check if it's an event created by the player themselves
+      if (event.createdBy === userName || 
+          event.createdBy === currentUserPlayer.firstName ||
+          event.createdBy === currentUserPlayer.lastName) {
         return true;
       }
       
