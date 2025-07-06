@@ -25,7 +25,7 @@ const playerEditSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phone: z.string().min(10, "Phone number is required"),
+  phoneNumber: z.string().min(10, "Phone number is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   nationalityCode: z.string().optional(),
@@ -182,7 +182,7 @@ export default function Players() {
       firstName: player.firstName,
       lastName: player.lastName,
       email: player.email,
-      phone: player.phone || "",
+      phoneNumber: player.phoneNumber || "",
       dateOfBirth: player.dateOfBirth,
       nationality: player.nationality,
       nationalityCode: player.nationalityCode || "",
@@ -600,10 +600,10 @@ export default function Players() {
                   
                   <FormField
                     control={editForm.control}
-                    name="phone"
+                    name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
