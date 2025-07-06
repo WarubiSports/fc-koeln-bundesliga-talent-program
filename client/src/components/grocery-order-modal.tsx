@@ -156,9 +156,33 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
   const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
 
   // Fetch players for dropdown
-  const { data: players = [] } = useQuery({
+  const { data: players = [] } = useQuery<any[]>({
     queryKey: ["/api/players"],
   });
+
+  // Get current user's full name for comparison
+  const currentUserName = user ? `${user.firstName} ${user.lastName}` : "";
+  
+  // Filter players based on user role - regular players can only order for themselves
+  const getAvailablePlayersForOrdering = (): any[] => {
+    if (!user) return [];
+    
+    // Admins and coaches can order for any player
+    if (user.role === 'admin' || user.role === 'coach' || user.role === 'staff' || user.role === 'manager') {
+      return players as any[];
+    }
+    
+    // Regular players can only order for themselves
+    // Find the player record that matches the current user
+    const userAsPlayer = (players as any[]).find((player: any) => 
+      `${player.firstName} ${player.lastName}` === currentUserName ||
+      player.email === user.email
+    );
+    
+    return userAsPlayer ? [userAsPlayer] : [];
+  };
+
+  const availablePlayersForOrdering = getAvailablePlayersForOrdering();
 
   const availableDeliveryDates = getCurrentWeekDeliveryDates();
 
@@ -321,6 +345,13 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
           <p className="text-sm text-gray-600">
             Order deadline: Monday 12pm (Tuesday delivery) • Thursday 12pm (Friday delivery)
           </p>
+          {user?.role === 'player' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-2">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> You can only place orders for yourself. If you need to order for someone else, please contact an admin or coach.
+              </p>
+            </div>
+          )}
         </DialogHeader>
 
         <Form {...form}>
@@ -339,21 +370,27 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {(players as any[])
-                          .filter((player: any, index: number, arr: any[]) => 
-                            // Remove duplicates based on name
-                            arr.findIndex((p: any) => 
-                              `${p.firstName} ${p.lastName}` === `${player.firstName} ${player.lastName}`
-                            ) === index
-                          )
-                          .map((player: any) => (
-                            <SelectItem 
-                              key={`${player.id}-${player.firstName}-${player.lastName}`} 
-                              value={`${player.firstName} ${player.lastName}`}
-                            >
-                              {player.firstName} {player.lastName}
-                            </SelectItem>
-                          ))}
+                        {availablePlayersForOrdering.length === 0 ? (
+                          <div className="p-2 text-sm text-gray-500 text-center">
+                            No players available for ordering
+                          </div>
+                        ) : (
+                          availablePlayersForOrdering
+                            .filter((player: any, index: number, arr: any[]) => 
+                              // Remove duplicates based on name
+                              arr.findIndex((p: any) => 
+                                `${p.firstName} ${p.lastName}` === `${player.firstName} ${player.lastName}`
+                              ) === index
+                            )
+                            .map((player: any) => (
+                              <SelectItem 
+                                key={`${player.id}-${player.firstName}-${player.lastName}`} 
+                                value={`${player.firstName} ${player.lastName}`}
+                              >
+                                {player.firstName} {player.lastName}
+                              </SelectItem>
+                            ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
