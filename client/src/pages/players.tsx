@@ -334,21 +334,6 @@ export default function Players() {
                   </SelectContent>
                 </Select>
 
-                {/* Nationality Filter */}
-                <Select value={filterNationality} onValueChange={setFilterNationality}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Nationalities" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Nationalities</SelectItem>
-                    {COUNTRIES.map((country) => (
-                      <SelectItem key={country.code} value={country.name}>
-                        {getCountryFlag(country.code)} {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
                 {/* Clear Filters */}
                 <Button 
                   variant="outline" 
