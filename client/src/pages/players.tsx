@@ -29,7 +29,7 @@ const playerEditSchema = z.object({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   nationalityCode: z.string().optional(),
-  position: z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"]),
+  position: z.enum(["Goalkeeper", "Defender", "Midfielder", "Forward", "Winger", "Striker", "Center-back", "Fullback", "Defensive-midfielder", "Attacking-midfielder"]),
   positions: z.array(z.string()).min(1, "Select at least one position"),
   preferredFoot: z.enum(["left", "right", "both"]).default("right"),
   height: z.string().optional(),
