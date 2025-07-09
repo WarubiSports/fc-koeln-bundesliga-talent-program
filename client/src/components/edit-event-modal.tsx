@@ -87,7 +87,7 @@ export default function EditEventModal({ isOpen, onClose, event }: EditEventModa
     "Individual Training",
     "Medical Appointment",
     "Language School",
-    "Weight Lifting Session",
+    "Weight Lifting",
     "Cryotherapy Session",
     "Trial Session",
     "Other"

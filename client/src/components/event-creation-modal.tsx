@@ -21,7 +21,7 @@ const eventTypeOptions = [
   { value: "Group Practice Session", label: "Group Practice Session" },
   { value: "Cryotherapy Session", label: "Cryotherapy Session" },
   { value: "Language School", label: "Language School" },
-  { value: "Weight Lifting Session", label: "Weight Lifting Session" },
+  { value: "Weight Lifting", label: "Weight Lifting" },
   { value: "Doctor's Appointment", label: "Doctor's Appointment" },
   { value: "Trial Session", label: "Trial Session" },
   { value: "Match", label: "Match" },

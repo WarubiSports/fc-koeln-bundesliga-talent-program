@@ -55,7 +55,7 @@ export default function ExcuseModal({ isOpen, onClose, selectedActivity }: Excus
     "Group Practice Session", 
     "Cryotherapy Session",
     "Language School",
-    "Weight Lifting Session",
+    "Weight Lifting",
     "Doctor's Appointment",
     "Trial Session"
   ];

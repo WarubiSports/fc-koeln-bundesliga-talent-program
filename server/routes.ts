@@ -1847,6 +1847,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to normalize event types
   const normalizeEventType = (eventType: string) => {
     const eventTypeMap: { [key: string]: string } = {
+      'Weight Lifting': 'weight_lifting',
       'Weight Lifting Session': 'weight_lifting',
       'Team Practice Session': 'team_practice',
       'Group Practice Session': 'group_practice',

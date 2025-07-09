@@ -141,6 +141,7 @@ Preferred communication style: Simple, everyday language.
 - **Custom Days Recurring Pattern**: Enhanced calendar recurring events with visual day selection interface - includes quick presets for Training Days (Mon/Wed/Thu/Fri), weekdays, weekends, and custom combinations for flexible scheduling like team practices
 - **Custom Days Recurring Pattern Fix**: Fixed critical issue where custom days recurring events weren't being created - added missing database columns for password reset functionality and implemented proper custom days logic in recurring event creation system
 - **Bulk Delete Group Selection Fix**: Resolved visual feedback issue where selecting entire groups for deletion showed no indication - improved synchronization between group checkboxes and individual event selection with proper visual highlighting and accurate selection counters
+- **Weight Lifting Event Standardization**: Standardized all weight lifting events to display as "Weight Lifting" instead of "Weight Lifting Session" - updated 22 existing database records and all UI components (event creation, editing, and excuse modals) for complete consistency across the system
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
