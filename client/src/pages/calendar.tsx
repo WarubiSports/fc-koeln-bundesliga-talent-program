@@ -628,7 +628,7 @@ export default function Calendar() {
       "individual_training": "Individual Training",
       "fitness_session": "Fitness Session",
       "tactical_training": "Tactical Training",
-      "weight_lifting": "Weight Lifting Session",
+      "weight_lifting": "Weight Lifting",
       "cryotherapy": "Cryotherapy Session",
       "language_school": "Language School",
       "medical_checkup": "Medical Checkup",

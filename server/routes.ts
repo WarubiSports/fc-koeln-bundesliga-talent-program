@@ -1867,7 +1867,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to get proper event title from event type
   const getEventTitleFromType = (eventType: string) => {
     const titleMap: { [key: string]: string } = {
-      'weight_lifting': 'Weight Lifting Session',
+      'weight_lifting': 'Weight Lifting',
       'team_practice': 'Team Practice',
       'group_practice': 'Group Practice',
       'cryotherapy': 'Cryotherapy Session',
