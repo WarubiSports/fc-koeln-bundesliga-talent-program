@@ -34,7 +34,6 @@ const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phone: z.string().optional(),
   phoneNumber: z.string().optional(),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
@@ -87,7 +86,6 @@ export default function EditProfile() {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
       phoneNumber: "",
       dateOfBirth: "",
       nationality: "",
@@ -113,7 +111,6 @@ export default function EditProfile() {
         firstName: (profileData as any).firstName || "",
         lastName: (profileData as any).lastName || "",
         email: (profileData as any).email || "",
-        phone: (profileData as any).phone || "",
         phoneNumber: (profileData as any).phoneNumber || "",
         dateOfBirth: (profileData as any).dateOfBirth || "",
         nationality: (profileData as any).nationality || "",
@@ -296,7 +293,7 @@ export default function EditProfile() {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>Phone Number (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="+49 123 456 7890" {...field} />
                       </FormControl>
@@ -499,7 +496,7 @@ export default function EditProfile() {
                   name="emergencyContactName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Emergency Contact Name</FormLabel>
+                      <FormLabel>Emergency Contact Name (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="Full name" {...field} />
                       </FormControl>
@@ -513,7 +510,7 @@ export default function EditProfile() {
                   name="emergencyContactPhone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Emergency Contact Phone</FormLabel>
+                      <FormLabel>Emergency Contact Phone (optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="+49 123 456 7890" {...field} />
                       </FormControl>

@@ -142,6 +142,7 @@ Preferred communication style: Simple, everyday language.
 - **Custom Days Recurring Pattern Fix**: Fixed critical issue where custom days recurring events weren't being created - added missing database columns for password reset functionality and implemented proper custom days logic in recurring event creation system
 - **Bulk Delete Group Selection Fix**: Resolved visual feedback issue where selecting entire groups for deletion showed no indication - improved synchronization between group checkboxes and individual event selection with proper visual highlighting and accurate selection counters
 - **Weight Lifting Event Standardization**: Standardized all weight lifting events to display as "Weight Lifting" instead of "Weight Lifting Session" - updated 22 existing database records and all UI components (event creation, editing, and excuse modals) for complete consistency across the system
+- **Profile Update Field Requirements**: Removed necessity for phone, emergency contact, and emergency phone fields in profile editing - marked as optional in UI labels, cleaned up duplicate phone field from schema, and maintained server-side validation only for essential fields (firstName, lastName, email)
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
