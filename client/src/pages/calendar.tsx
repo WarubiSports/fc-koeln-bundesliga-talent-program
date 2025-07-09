@@ -856,6 +856,9 @@ export default function Calendar() {
                               event.eventType === "individual_training" ? "bg-purple-50 text-purple-800 border-purple-500" :
                               event.eventType === "fitness_session" ? "bg-orange-50 text-orange-800 border-orange-500" :
                               event.eventType === "tactical_training" ? "bg-yellow-50 text-yellow-800 border-yellow-500" :
+                              event.eventType === "weight_lifting" ? "bg-stone-50 text-stone-800 border-stone-500" :
+                              event.eventType === "cryotherapy" ? "bg-cyan-50 text-cyan-800 border-cyan-500" :
+                              event.eventType === "language_school" ? "bg-emerald-50 text-emerald-800 border-emerald-500" :
                               event.eventType === "medical_checkup" ? "bg-pink-50 text-pink-800 border-pink-500" :
                               event.eventType === "team_meeting" ? "bg-indigo-50 text-indigo-800 border-indigo-500" :
                               event.eventType === "travel" ? "bg-teal-50 text-teal-800 border-teal-500" :
@@ -945,6 +948,9 @@ export default function Calendar() {
                             event.eventType === "individual_training" ? "bg-purple-50 text-purple-800 border-purple-500" :
                             event.eventType === "fitness_session" ? "bg-orange-50 text-orange-800 border-orange-500" :
                             event.eventType === "tactical_training" ? "bg-yellow-50 text-yellow-800 border-yellow-500" :
+                            event.eventType === "weight_lifting" ? "bg-stone-50 text-stone-800 border-stone-500" :
+                            event.eventType === "cryotherapy" ? "bg-cyan-50 text-cyan-800 border-cyan-500" :
+                            event.eventType === "language_school" ? "bg-emerald-50 text-emerald-800 border-emerald-500" :
                             event.eventType === "medical_checkup" ? "bg-pink-50 text-pink-800 border-pink-500" :
                             event.eventType === "team_meeting" ? "bg-indigo-50 text-indigo-800 border-indigo-500" :
                             event.eventType === "travel" ? "bg-teal-50 text-teal-800 border-teal-500" :
