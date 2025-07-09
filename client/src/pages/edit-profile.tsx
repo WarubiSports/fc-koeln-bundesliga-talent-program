@@ -1,562 +1,260 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-token-auth";
 import { apiRequest } from "@/lib/queryClient";
-import { User, Save, Upload, ArrowLeft } from "lucide-react";
-import { COUNTRIES, getCountryFlag } from "@/lib/country-flags";
-
-// Simple type for form data
-interface ProfileFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  dateOfBirth: string;
-  nationality: string;
-  nationalityCode: string;
-  position: string;
-  preferredFoot: string;
-  height: string;
-  weight: string;
-  previousClub: string;
-  profileImageUrl: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  medicalConditions: string;
-  allergies: string;
-  house: string;
-}
-
-const positions = [
-  "goalkeeper",
-  "defender", 
-  "midfielder",
-  "forward",
-  "winger",
-  "striker",
-  "center-back",
-  "fullback",
-  "defensive-midfielder",
-  "attacking-midfielder"
-];
-
-const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
 
 export default function EditProfile() {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Get current user profile data
-  const { data: profileData, isLoading: profileLoading } = useQuery<any>({
-    queryKey: ["/api/auth/user"],
-    enabled: !!user,
-  });
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
-    dateOfBirth: "",
-    nationality: "",
-    nationalityCode: "",
-    position: "",
-    preferredFoot: "",
-    height: "",
-    weight: "",
-    previousClub: "",
-    profileImageUrl: "",
     emergencyContactName: "",
     emergencyContactPhone: "",
+    dateOfBirth: "",
+    nationality: "",
+    position: "",
     medicalConditions: "",
     allergies: "",
-    house: "",
+    medications: "",
+    house: ""
   });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // Update form when profile data loads
   useEffect(() => {
-    if (profileData) {
+    if (user) {
       setFormData({
-        firstName: profileData.firstName || "",
-        lastName: profileData.lastName || "",
-        email: profileData.email || "",
-        phoneNumber: profileData.phoneNumber || "",
-        dateOfBirth: profileData.dateOfBirth || "",
-        nationality: profileData.nationality || "",
-        nationalityCode: profileData.nationalityCode || "",
-        position: profileData.position || "",
-        preferredFoot: profileData.preferredFoot || "",
-        height: profileData.height || "",
-        weight: profileData.weight || "",
-        previousClub: profileData.previousClub || "",
-        profileImageUrl: profileData.profileImageUrl || "",
-        emergencyContactName: profileData.emergencyContactName || "",
-        emergencyContactPhone: profileData.emergencyContactPhone || "",
-        medicalConditions: profileData.medicalConditions || "",
-        allergies: profileData.allergies || "",
-        house: profileData.house || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        emergencyContactName: user.emergencyContactName || "",
+        emergencyContactPhone: user.emergencyContactPhone || "",
+        dateOfBirth: user.dateOfBirth || "",
+        nationality: user.nationality || "",
+        position: user.position || "",
+        medicalConditions: user.medicalConditions || "",
+        allergies: user.allergies || "",
+        medications: user.medications || "",
+        house: user.house || ""
       });
     }
-  }, [profileData]);
+  }, [user]);
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: ProfileFormData) => {
-      const response = await apiRequest("PUT", "/api/auth/profile", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Update Failed",
-        description: error?.message || "Failed to update profile",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simple validation for required fields only
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      toast({
-        title: "Validation Error",
-        description: "First name, last name, and email are required.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    updateProfileMutation.mutate(formData);
-  };
-
-  const handleChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  // Handle nationality selection and auto-populate country code
-  const handleNationalityChange = (nationality: string) => {
-    const countryData = COUNTRIES.find((country: any) => country.name === nationality);
-    if (countryData) {
-      form.setValue("nationality", nationality);
-      form.setValue("nationalityCode", countryData.code);
+  const handleSubmit = async () => {
+    setLoading(true);
+    setMessage("");
+    
+    try {
+      const response = await apiRequest("PUT", "/api/auth/update-profile", formData);
+      
+      if (response.ok) {
+        setMessage("Profile updated successfully!");
+      } else {
+        setMessage("Failed to update profile. Please try again.");
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      setMessage("An error occurred while updating your profile.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getInitials = (firstName?: string, lastName?: string) => {
-    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+  const inputStyle = {
+    width: "100%",
+    padding: "8px 12px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "14px",
+    marginBottom: "16px"
   };
 
-  const getFlagEmoji = (countryCode?: string) => {
-    if (!countryCode) return "";
-    return getCountryFlag(countryCode);
+  const labelStyle = {
+    display: "block",
+    marginBottom: "4px",
+    fontWeight: "500",
+    fontSize: "14px"
   };
 
-  if (profileLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading profile...</div>
-      </div>
-    );
-  }
+  const buttonStyle = {
+    backgroundColor: loading ? "#ccc" : "#dc2626",
+    color: "white",
+    padding: "12px 24px",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: loading ? "not-allowed" : "pointer",
+    marginTop: "16px"
+  };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <Button
-          variant="ghost"
-          onClick={() => window.history.back()}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
-        <p className="mt-2 text-gray-600">
-          Update your personal information and preferences
-        </p>
+    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+      <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "24px" }}>
+        Edit Profile
+      </h1>
+      
+      {message && (
+        <div style={{ 
+          padding: "10px", 
+          marginBottom: "20px", 
+          backgroundColor: message.includes("successfully") ? "#d4edda" : "#f8d7da",
+          color: message.includes("successfully") ? "#155724" : "#721c24",
+          borderRadius: "4px"
+        }}>
+          {message}
+        </div>
+      )}
+
+      <div>
+        <label style={labelStyle}>First Name</label>
+        <input
+          type="text"
+          value={formData.firstName}
+          onChange={(e) => handleInputChange("firstName", e.target.value)}
+          style={inputStyle}
+        />
       </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-          {/* Profile Image Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Profile Picture
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center gap-6">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={form.watch("profileImageUrl")} />
-                <AvatarFallback className="text-lg">
-                  {getInitials(form.watch("firstName"), form.watch("lastName"))}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="profileImageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profile Image URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/your-photo.jpg"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <p className="text-sm text-gray-500">
-                  Enter a URL to your profile image or upload it to an image hosting service
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+      <div>
+        <label style={labelStyle}>Last Name</label>
+        <input
+          type="text"
+          value={formData.lastName}
+          onChange={(e) => handleInputChange("lastName", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-          {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="firstName">First Name *</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => handleChange("firstName", e.target.value)}
-                    placeholder="Enter your first name"
-                  />
-                </div>
+      <div>
+        <label style={labelStyle}>Email</label>
+        <input
+          type="email"
+          value={formData.email}
+          onChange={(e) => handleInputChange("email", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                <div>
-                  <Label htmlFor="lastName">Last Name *</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => handleChange("lastName", e.target.value)}
-                    placeholder="Enter your last name"
-                  />
-                </div>
+      <div>
+        <label style={labelStyle}>Phone Number</label>
+        <input
+          type="tel"
+          value={formData.phoneNumber}
+          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    placeholder="Enter your email"
-                  />
-                </div>
+      <div>
+        <label style={labelStyle}>Emergency Contact Name</label>
+        <input
+          type="text"
+          value={formData.emergencyContactName}
+          onChange={(e) => handleInputChange("emergencyContactName", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(e) => handleChange("phoneNumber", e.target.value)}
-                    placeholder="+49 123 456 7890"
-                  />
-                </div>
+      <div>
+        <label style={labelStyle}>Emergency Contact Phone</label>
+        <input
+          type="tel"
+          value={formData.emergencyContactPhone}
+          onChange={(e) => handleInputChange("emergencyContactPhone", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+      <div>
+        <label style={labelStyle}>Date of Birth</label>
+        <input
+          type="date"
+          value={formData.dateOfBirth}
+          onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                <FormField
-                  control={form.control}
-                  name="nationality"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nationality</FormLabel>
-                      <Select onValueChange={handleNationalityChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select nationality">
-                              {field.value && (
-                                <span className="flex items-center gap-2">
-                                  <span>{getFlagEmoji(form.watch("nationalityCode"))}</span>
-                                  {field.value}
-                                </span>
-                              )}
-                            </SelectValue>
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {COUNTRIES.map((country: any) => (
-                            <SelectItem key={country.code} value={country.name}>
-                              <span className="flex items-center gap-2">
-                                <span>{getCountryFlag(country.code)}</span>
-                                {country.name}
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
+      <div>
+        <label style={labelStyle}>Nationality</label>
+        <input
+          type="text"
+          value={formData.nationality}
+          onChange={(e) => handleInputChange("nationality", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-          {/* Football Information (for players) */}
-          {user?.role === 'player' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Football Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primary Position</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select position" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {positions.map((position) => (
-                              <SelectItem key={position} value={position}>
-                                {position.charAt(0).toUpperCase() + position.slice(1).replace('-', ' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div>
+        <label style={labelStyle}>Position</label>
+        <input
+          type="text"
+          value={formData.position}
+          onChange={(e) => handleInputChange("position", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="preferredFoot"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Preferred Foot</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select preferred foot" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="left">Left</SelectItem>
-                            <SelectItem value="right">Right</SelectItem>
-                            <SelectItem value="both">Both</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div>
+        <label style={labelStyle}>Medical Conditions</label>
+        <input
+          type="text"
+          value={formData.medicalConditions}
+          onChange={(e) => handleInputChange("medicalConditions", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Height (cm)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="180" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div>
+        <label style={labelStyle}>Allergies</label>
+        <input
+          type="text"
+          value={formData.allergies}
+          onChange={(e) => handleInputChange("allergies", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Weight (kg)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="75" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div>
+        <label style={labelStyle}>Medications</label>
+        <input
+          type="text"
+          value={formData.medications}
+          onChange={(e) => handleInputChange("medications", e.target.value)}
+          style={inputStyle}
+        />
+      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="previousClub"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Previous Club</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter previous club name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div>
+        <label style={labelStyle}>House</label>
+        <select
+          value={formData.house}
+          onChange={(e) => handleInputChange("house", e.target.value)}
+          style={inputStyle}
+        >
+          <option value="">Select House</option>
+          <option value="Widdersdorf 1">Widdersdorf 1</option>
+          <option value="Widdersdorf 2">Widdersdorf 2</option>
+          <option value="Widdersdorf 3">Widdersdorf 3</option>
+        </select>
+      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="house"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>House Assignment</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={user?.role === 'player'}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="House assignment" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {houses.map((house) => (
-                              <SelectItem key={house} value={house}>
-                                {house}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {user?.role === 'player' && (
-                          <p className="text-sm text-gray-500">House assignment can only be changed by admin</p>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Emergency Contact & Medical Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Emergency Contact & Medical Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
-                  <Input
-                    id="emergencyContactName"
-                    value={formData.emergencyContactName}
-                    onChange={(e) => handleChange("emergencyContactName", e.target.value)}
-                    placeholder="Full name"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="emergencyContactPhone">Emergency Contact Phone</Label>
-                  <Input
-                    id="emergencyContactPhone"
-                    value={formData.emergencyContactPhone}
-                    onChange={(e) => handleChange("emergencyContactPhone", e.target.value)}
-                    placeholder="+49 123 456 7890"
-                  />
-                </div>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="medicalConditions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Medical Conditions</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="List any medical conditions, injuries, or relevant health information..."
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="allergies"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Allergies</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="List any allergies or dietary restrictions..."
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={updateProfileMutation.isPending}
-              className="bg-[#DC143C] hover:bg-red-700"
-            >
-              {updateProfileMutation.isPending ? (
-                "Updating..."
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Update Profile
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        style={buttonStyle}
+      >
+        {loading ? "Updating..." : "Update Profile"}
+      </button>
     </div>
   );
 }

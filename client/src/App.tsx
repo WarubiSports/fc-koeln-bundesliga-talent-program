@@ -20,7 +20,7 @@ import AdminUsers from "@/pages/admin-users";
 import AdminMembers from "@/pages/admin-members";
 import TestProfile from "@/pages/test-profile";
 import EmergencyTest from "@/pages/emergency-test";
-import ProfileSimpleFix from "@/pages/profile-simple-fix";
+import EditProfile from "@/pages/edit-profile";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
@@ -78,8 +78,7 @@ function Router() {
         <Route path="/admin/members" component={AdminMembers} />
           <Route path="/test-page" component={TestProfile} />
           <Route path="/emergency-test" component={EmergencyTest} />
-          <Route path="/profile-fix" component={ProfileSimpleFix} />
-          <Route path="/edit-profile" component={ProfileSimpleFix} />
+          <Route path="/edit-profile" component={EditProfile} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>

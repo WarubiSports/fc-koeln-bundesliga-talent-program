@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-token-auth";
 import { apiRequest } from "@/lib/queryClient";
 
-export default function ProfileSimpleFix() {
+export default function EditProfile() {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
