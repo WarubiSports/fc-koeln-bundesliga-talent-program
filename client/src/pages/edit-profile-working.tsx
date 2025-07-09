@@ -67,7 +67,7 @@ export default function EditProfileWorking() {
     }
 
     try {
-      const response = await apiRequest("PUT", "/api/auth/user", {
+      const response = await apiRequest("/api/auth/user", "PUT", {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
