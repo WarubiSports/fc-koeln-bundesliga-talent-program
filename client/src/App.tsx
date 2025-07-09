@@ -20,7 +20,7 @@ import AdminUsers from "@/pages/admin-users";
 import AdminMembers from "@/pages/admin-members";
 import TestProfile from "@/pages/test-profile";
 import EmergencyTest from "@/pages/emergency-test";
-import EditProfile from "@/pages/edit-profile-final";
+import EditProfile from "@/pages/profile-new";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
