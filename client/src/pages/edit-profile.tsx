@@ -157,23 +157,30 @@ export default function EditProfile() {
   });
 
   const onSubmit = (data: ProfileFormData) => {
+    console.log("=== FORM SUBMISSION START ===");
     console.log("Form data:", data);
     console.log("Form errors:", form.formState.errors);
+    console.log("Form state:", form.formState);
+    console.log("Form values:", form.getValues());
     
     // Manual validation for required fields only
     if (!data.firstName || data.firstName.length < 2) {
+      console.log("First name validation failed");
       form.setError("firstName", { message: "First name is required" });
       return;
     }
     if (!data.lastName || data.lastName.length < 2) {
+      console.log("Last name validation failed");
       form.setError("lastName", { message: "Last name is required" });
       return;
     }
     if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
+      console.log("Email validation failed");
       form.setError("email", { message: "Valid email is required" });
       return;
     }
     
+    console.log("All validations passed, submitting...");
     updateProfileMutation.mutate(data);
   };
 
