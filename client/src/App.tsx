@@ -19,6 +19,7 @@ import HouseManagement from "@/pages/house-management";
 import AdminUsers from "@/pages/admin-users";
 import AdminMembers from "@/pages/admin-members";
 import TestProfile from "@/pages/test-profile";
+import EmergencyTest from "@/pages/emergency-test";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
@@ -74,7 +75,8 @@ function Router() {
           <Route path="/house-management" component={HouseManagement} />
           <Route path="/admin/users" component={AdminUsers} />
         <Route path="/admin/members" component={AdminMembers} />
-          <Route path="/edit-profile" component={TestProfile} />
+          <Route path="/test-page" component={TestProfile} />
+          <Route path="/emergency-test" component={EmergencyTest} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
