@@ -85,8 +85,7 @@ export default function EditProfile() {
   });
 
   const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    mode: "onChange",
+    mode: "onSubmit",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -157,6 +156,26 @@ export default function EditProfile() {
   });
 
   const onSubmit = (data: ProfileFormData) => {
+    // Manual validation - only require firstName, lastName, email
+    const errors: any = {};
+    
+    if (!data.firstName || data.firstName.length < 2) {
+      errors.firstName = "First name is required";
+    }
+    if (!data.lastName || data.lastName.length < 2) {
+      errors.lastName = "Last name is required";
+    }
+    if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
+      errors.email = "Valid email is required";
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      Object.keys(errors).forEach(key => {
+        form.setError(key as keyof ProfileFormData, { message: errors[key] });
+      });
+      return;
+    }
+    
     updateProfileMutation.mutate(data);
   };
 
