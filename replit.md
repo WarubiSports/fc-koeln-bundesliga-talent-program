@@ -151,6 +151,7 @@ Preferred communication style: Simple, everyday language.
 - **Emergency Test Success**: Basic JavaScript execution works fine - emergency test button shows alerts correctly, confirming the issue is specific to profile form implementation, not general JavaScript execution failure
 - **Profile Form Fixed**: Completely replaced broken edit-profile.tsx with working simple HTML form using direct onClick handlers, inline styling, and proper API integration - eliminated all React component conflicts that were preventing form submission
 - **Profile Form Simplified**: Removed phone number, emergency contact name, and emergency contact phone fields from profile editing form per user request to streamline the interface
+- **Player Edit Form Fixed**: Removed phone number and emergency contact fields from the player directory edit modal (pen icon) - eliminated both from validation schema and form UI per user request
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility

@@ -25,7 +25,6 @@ const playerEditSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phoneNumber: z.string().min(10, "Phone number is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   nationalityCode: z.string().optional(),
@@ -36,8 +35,6 @@ const playerEditSchema = z.object({
   weight: z.string().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
-  emergencyContactName: z.string().min(2, "Emergency contact name is required"),
-  emergencyContactPhone: z.string().min(10, "Emergency contact phone is required"),
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
   status: z.enum(["active", "on_trial", "inactive", "pending"]),
@@ -182,7 +179,6 @@ export default function Players() {
       firstName: player.firstName,
       lastName: player.lastName,
       email: player.email,
-      phoneNumber: player.phoneNumber || "",
       dateOfBirth: player.dateOfBirth,
       nationality: player.nationality,
       nationalityCode: player.nationalityCode || "",
@@ -193,8 +189,6 @@ export default function Players() {
       weight: player.weight?.toString() || "",
       previousClub: player.previousClub || "",
       profileImageUrl: player.profileImageUrl || "",
-      emergencyContactName: player.emergencyContactName || "",
-      emergencyContactPhone: player.emergencyContactPhone || "",
       medicalConditions: player.medicalConditions || "",
       allergies: player.allergies || "",
       status: player.status,
@@ -583,19 +577,7 @@ export default function Players() {
                     )}
                   />
                   
-                  <FormField
-                    control={editForm.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                   
                   <FormField
                     control={editForm.control}
@@ -810,33 +792,7 @@ export default function Players() {
                     )}
                   />
                   
-                  <FormField
-                    control={editForm.control}
-                    name="emergencyContactName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Emergency Contact Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={editForm.control}
-                    name="emergencyContactPhone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Emergency Contact Phone</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                 </div>
 
                 {/* Medical Information */}
