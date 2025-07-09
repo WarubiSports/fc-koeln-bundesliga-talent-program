@@ -317,7 +317,12 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+49 123 456 7890" {...field} />
+                        <input
+                          type="text"
+                          placeholder="+49 123 456 7890"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -520,7 +525,12 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Emergency Contact Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Full name" {...field} />
+                        <input
+                          type="text"
+                          placeholder="Full name"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -534,7 +544,12 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Emergency Contact Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="+49 123 456 7890" {...field} />
+                        <input
+                          type="text"
+                          placeholder="+49 123 456 7890"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
