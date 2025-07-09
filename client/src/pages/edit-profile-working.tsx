@@ -224,6 +224,10 @@ export default function EditProfileWorking() {
             type="submit"
             disabled={isLoading}
             className="bg-[#DC143C] hover:bg-red-700"
+            onClick={(e) => {
+              console.log("Button clicked!");
+              alert("Button clicked!");
+            }}
           >
             {isLoading ? (
               "Updating..."
