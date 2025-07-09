@@ -1,20 +1,10 @@
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -30,33 +20,27 @@ import { apiRequest } from "@/lib/queryClient";
 import { User, Save, Upload, ArrowLeft } from "lucide-react";
 import { COUNTRIES, getCountryFlag } from "@/lib/country-flags";
 
-const profileSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  email: z.string().email("Valid email is required"),
-  phoneNumber: z.string().optional(),
-  dateOfBirth: z.string().optional(),
-  nationality: z.string().optional(),
-  nationalityCode: z.string().optional(),
-  position: z.enum(["goalkeeper", "defender", "midfielder", "forward", "winger", "striker", "center-back", "fullback", "defensive-midfielder", "attacking-midfielder"]).optional(),
-  preferredFoot: z.enum(["left", "right", "both"]).optional(),
-  height: z.coerce.number().optional(),
-  weight: z.coerce.number().optional(),
-  previousClub: z.string().optional(),
-  profileImageUrl: z.string().optional(),
-  emergencyContactName: z.string().optional(),
-  emergencyContactPhone: z.string().optional(),
-  medicalConditions: z.string().optional(),
-  allergies: z.string().optional(),
-  house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
-}).refine((data) => {
-  // Only validate required fields
-  return true;
-}, {
-  message: "Only first name, last name, and email are required",
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
+// Simple type for form data
+interface ProfileFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: string;
+  nationality: string;
+  nationalityCode: string;
+  position: string;
+  preferredFoot: string;
+  height: string;
+  weight: string;
+  previousClub: string;
+  profileImageUrl: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  medicalConditions: string;
+  allergies: string;
+  house: string;
+}
 
 const positions = [
   "goalkeeper",
