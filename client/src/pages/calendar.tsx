@@ -39,6 +39,33 @@ import SectionOverview from "@/components/section-overview";
 
 type CalendarView = "month" | "week" | "day";
 
+// Helper function to format event types for display
+const formatEventTypeForDisplay = (eventType: string): string => {
+  const eventTypeMap: { [key: string]: string } = {
+    'weight_lifting': 'Weight Lifting',
+    'team_practice': 'Team Practice',
+    'group_practice': 'Group Practice',
+    'cryotherapy': 'Cryotherapy',
+    'language_school': 'Language School',
+    'medical_checkup': 'Medical Checkup',
+    'trial_session': 'Trial Session',
+    'match': 'Match',
+    'team_meeting': 'Team Meeting',
+    'fitness_session': 'Fitness Session',
+    'recovery_session': 'Recovery Session',
+    'individual_training': 'Individual Training',
+    'tactical_training': 'Tactical Training',
+    'video_session': 'Video Session',
+    'travel': 'Travel',
+    'nutrition_consultation': 'Nutrition Consultation',
+    'mental_coaching': 'Mental Coaching',
+    'physiotherapy': 'Physiotherapy',
+    'other': 'Other'
+  };
+  
+  return eventTypeMap[eventType] || eventType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -1643,7 +1670,7 @@ export default function Calendar() {
 
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-sm capitalize">{selectedEvent.eventType.replace('_', ' ')}</span>
+                <span className="text-sm">{formatEventTypeForDisplay(selectedEvent.eventType)}</span>
               </div>
             </div>
           </DialogContent>
