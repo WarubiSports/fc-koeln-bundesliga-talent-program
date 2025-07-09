@@ -49,6 +49,11 @@ const profileSchema = z.object({
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
+}).refine((data) => {
+  // Only validate required fields
+  return true;
+}, {
+  message: "Only first name, last name, and email are required",
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -81,7 +86,6 @@ export default function EditProfile() {
   });
 
   const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
     mode: "onSubmit",
     defaultValues: {
       firstName: "",
@@ -155,6 +159,21 @@ export default function EditProfile() {
   const onSubmit = (data: ProfileFormData) => {
     console.log("Form data:", data);
     console.log("Form errors:", form.formState.errors);
+    
+    // Manual validation for required fields only
+    if (!data.firstName || data.firstName.length < 2) {
+      form.setError("firstName", { message: "First name is required" });
+      return;
+    }
+    if (!data.lastName || data.lastName.length < 2) {
+      form.setError("lastName", { message: "Last name is required" });
+      return;
+    }
+    if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
+      form.setError("email", { message: "Valid email is required" });
+      return;
+    }
+    
     updateProfileMutation.mutate(data);
   };
 
