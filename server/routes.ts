@@ -1844,6 +1844,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to normalize event types
+  const normalizeEventType = (eventType: string) => {
+    const eventTypeMap: { [key: string]: string } = {
+      'Weight Lifting Session': 'weight_lifting',
+      'Team Practice Session': 'team_practice',
+      'Group Practice Session': 'group_practice',
+      'Cryotherapy Session': 'cryotherapy',
+      'Language School': 'language_school',
+      'Doctor\'s Appointment': 'medical_checkup',
+      'Trial Session': 'trial_session',
+      'Match': 'match',
+      'Team Meeting': 'team_meeting',
+      'Fitness Assessment': 'fitness_session',
+      'Recovery Session': 'recovery_session',
+      'Other': 'other'
+    };
+    
+    return eventTypeMap[eventType] || eventType.toLowerCase().replace(/\s+/g, '_');
+  };
+
   app.post("/api/events", devAuth, async (req: any, res) => {
     
     try {
@@ -1851,9 +1871,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('isRecurring check:', req.body.isRecurring, 'type:', typeof req.body.isRecurring);
       console.log('recurringPattern check:', req.body.recurringPattern, 'type:', typeof req.body.recurringPattern);
       
+      const rawEventType = req.body.type || req.body.eventType;
+      const normalizedEventType = normalizeEventType(rawEventType);
+      
       const baseEventData = {
         title: req.body.title,
-        eventType: req.body.type || req.body.eventType,
+        eventType: normalizedEventType,
         date: req.body.date,
         startTime: req.body.time || req.body.startTime,
         endTime: req.body.endTime || req.body.time,

@@ -1691,6 +1691,9 @@ export default function Calendar() {
                           <SelectItem value="individual_training">Individual Training</SelectItem>
                           <SelectItem value="fitness_session">Fitness Session</SelectItem>
                           <SelectItem value="tactical_training">Tactical Training</SelectItem>
+                          <SelectItem value="weight_lifting">Weight Lifting</SelectItem>
+                          <SelectItem value="cryotherapy">Cryotherapy</SelectItem>
+                          <SelectItem value="language_school">Language School</SelectItem>
                           <SelectItem value="match">Match</SelectItem>
                           <SelectItem value="medical_checkup">Medical Checkup</SelectItem>
                           <SelectItem value="team_meeting">Team Meeting</SelectItem>
