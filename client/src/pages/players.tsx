@@ -28,7 +28,7 @@ const playerEditSchema = z.object({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   nationality: z.string().min(1, "Nationality is required"),
   nationalityCode: z.string().optional(),
-  position: z.enum(["Goalkeeper", "Defender", "Midfielder", "Forward", "Winger", "Striker", "Center-back", "Fullback", "Defensive-midfielder", "Attacking-midfielder"]),
+  position: z.string().min(1, "Position is required"),
   positions: z.array(z.string()).min(1, "Select at least one position"),
   preferredFoot: z.enum(["left", "right", "both"]).default("right"),
   height: z.string().optional(),
@@ -114,9 +114,7 @@ export default function Players() {
 
   const updatePlayerMutation = useMutation({
     mutationFn: async (data: PlayerEditFormData & { id: number }) => {
-      console.log("Mutation called with:", data);
       const response = await apiRequest(`/api/players/${data.id}`, "PUT", data);
-      console.log("API response:", response);
       return await response.json();
     },
     onSuccess: (updatedPlayer) => {
@@ -221,15 +219,8 @@ export default function Players() {
   };
 
   const onEditSubmit = (data: PlayerEditFormData) => {
-    console.log("Form submitted with data:", data);
-    console.log("Editing player:", editingPlayer);
-    console.log("Form errors:", editForm.formState.errors);
-    
     if (editingPlayer) {
-      console.log("Calling mutation with:", { ...data, id: editingPlayer.id });
       updatePlayerMutation.mutate({ ...data, id: editingPlayer.id });
-    } else {
-      console.log("No editing player found!");
     }
   };
 
@@ -540,9 +531,7 @@ export default function Players() {
           
           {editingPlayer && (
             <Form {...editForm}>
-              <form onSubmit={editForm.handleSubmit(onEditSubmit, (errors) => {
-                console.log("Form submission failed due to validation errors:", errors);
-              })} className="space-y-6">
+              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-6">
                 
                 {/* Personal Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -848,12 +837,6 @@ export default function Players() {
                   <Button 
                     type="submit" 
                     disabled={updatePlayerMutation.isPending}
-                    onClick={() => {
-                      console.log("Update button clicked");
-                      console.log("Form valid:", editForm.formState.isValid);
-                      console.log("Form errors:", editForm.formState.errors);
-                      console.log("Form values:", editForm.getValues());
-                    }}
                   >
                     {updatePlayerMutation.isPending ? "Updating..." : "Update Player"}
                   </Button>

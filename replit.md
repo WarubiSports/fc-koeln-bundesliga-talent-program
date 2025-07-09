@@ -152,6 +152,7 @@ Preferred communication style: Simple, everyday language.
 - **Profile Form Fixed**: Completely replaced broken edit-profile.tsx with working simple HTML form using direct onClick handlers, inline styling, and proper API integration - eliminated all React component conflicts that were preventing form submission
 - **Profile Form Simplified**: Removed phone number, emergency contact name, and emergency contact phone fields from profile editing form per user request to streamline the interface
 - **Player Edit Form Fixed**: Removed phone number and emergency contact fields from the player directory edit modal (pen icon) - eliminated both from validation schema and form UI per user request
+- **Position Validation Fixed**: Changed position field validation from strict enum to string validation to handle players with combined positions like "Midfielder, Forward" - resolved form submission failures for players with non-standard position formats
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
