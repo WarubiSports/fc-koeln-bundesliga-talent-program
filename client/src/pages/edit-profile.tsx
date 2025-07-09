@@ -85,55 +85,52 @@ export default function EditProfile() {
     enabled: !!user,
   });
 
-  const form = useForm<ProfileFormData>({
-    mode: "onSubmit",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-      dateOfBirth: "",
-      nationality: "",
-      nationalityCode: "",
-      position: undefined,
-      preferredFoot: undefined,
-      height: undefined,
-      weight: undefined,
-      previousClub: "",
-      profileImageUrl: "",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      medicalConditions: "",
-      allergies: "",
-      house: undefined,
-    },
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    dateOfBirth: "",
+    nationality: "",
+    nationalityCode: "",
+    position: "",
+    preferredFoot: "",
+    height: "",
+    weight: "",
+    previousClub: "",
+    profileImageUrl: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    medicalConditions: "",
+    allergies: "",
+    house: "",
   });
 
   // Update form when profile data loads
   useEffect(() => {
     if (profileData) {
-      form.reset({
-        firstName: (profileData as any).firstName || "",
-        lastName: (profileData as any).lastName || "",
-        email: (profileData as any).email || "",
-        phoneNumber: (profileData as any).phoneNumber || "",
-        dateOfBirth: (profileData as any).dateOfBirth || "",
-        nationality: (profileData as any).nationality || "",
-        nationalityCode: (profileData as any).nationalityCode || "",
-        position: (profileData as any).position || undefined,
-        preferredFoot: (profileData as any).preferredFoot || undefined,
-        height: (profileData as any).height || undefined,
-        weight: (profileData as any).weight || undefined,
-        previousClub: (profileData as any).previousClub || "",
-        profileImageUrl: (profileData as any).profileImageUrl || "",
-        emergencyContactName: (profileData as any).emergencyContactName || "",
-        emergencyContactPhone: (profileData as any).emergencyContactPhone || "",
-        medicalConditions: (profileData as any).medicalConditions || "",
-        allergies: (profileData as any).allergies || "",
-        house: (profileData as any).house || undefined,
+      setFormData({
+        firstName: profileData.firstName || "",
+        lastName: profileData.lastName || "",
+        email: profileData.email || "",
+        phoneNumber: profileData.phoneNumber || "",
+        dateOfBirth: profileData.dateOfBirth || "",
+        nationality: profileData.nationality || "",
+        nationalityCode: profileData.nationalityCode || "",
+        position: profileData.position || "",
+        preferredFoot: profileData.preferredFoot || "",
+        height: profileData.height || "",
+        weight: profileData.weight || "",
+        previousClub: profileData.previousClub || "",
+        profileImageUrl: profileData.profileImageUrl || "",
+        emergencyContactName: profileData.emergencyContactName || "",
+        emergencyContactPhone: profileData.emergencyContactPhone || "",
+        medicalConditions: profileData.medicalConditions || "",
+        allergies: profileData.allergies || "",
+        house: profileData.house || "",
       });
     }
-  }, [profileData, form]);
+  }, [profileData]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
@@ -156,32 +153,27 @@ export default function EditProfile() {
     },
   });
 
-  const onSubmit = (data: ProfileFormData) => {
-    console.log("=== FORM SUBMISSION START ===");
-    console.log("Form data:", data);
-    console.log("Form errors:", form.formState.errors);
-    console.log("Form state:", form.formState);
-    console.log("Form values:", form.getValues());
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Manual validation for required fields only
-    if (!data.firstName || data.firstName.length < 2) {
-      console.log("First name validation failed");
-      form.setError("firstName", { message: "First name is required" });
-      return;
-    }
-    if (!data.lastName || data.lastName.length < 2) {
-      console.log("Last name validation failed");
-      form.setError("lastName", { message: "Last name is required" });
-      return;
-    }
-    if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
-      console.log("Email validation failed");
-      form.setError("email", { message: "Valid email is required" });
+    // Simple validation for required fields only
+    if (!formData.firstName || !formData.lastName || !formData.email) {
+      toast({
+        title: "Validation Error",
+        description: "First name, last name, and email are required.",
+        variant: "destructive",
+      });
       return;
     }
     
-    console.log("All validations passed, submitting...");
-    updateProfileMutation.mutate(data);
+    updateProfileMutation.mutate(formData);
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Handle nationality selection and auto-populate country code
@@ -227,12 +219,7 @@ export default function EditProfile() {
         </p>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit(onSubmit)(e);
-        }} className="space-y-8" noValidate>
+        <form onSubmit={handleSubmit} className="space-y-8" noValidate>
           {/* Profile Image Section */}
           <Card>
             <CardHeader>
@@ -279,65 +266,46 @@ export default function EditProfile() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name *</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
+                    placeholder="Enter your first name"
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name *</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
+                    placeholder="Enter your last name"
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address *</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    placeholder="Enter your email"
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="+49 123 456 7890"
-                          className="min-h-[40px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleChange("phoneNumber", e.target.value)}
+                    placeholder="+49 123 456 7890"
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -528,41 +496,25 @@ export default function EditProfile() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="emergencyContactName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Emergency Contact Name</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Full name"
-                          className="min-h-[40px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="emergencyContactName">Emergency Contact Name</Label>
+                  <Input
+                    id="emergencyContactName"
+                    value={formData.emergencyContactName}
+                    onChange={(e) => handleChange("emergencyContactName", e.target.value)}
+                    placeholder="Full name"
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="emergencyContactPhone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Emergency Contact Phone</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="+49 123 456 7890"
-                          className="min-h-[40px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <Label htmlFor="emergencyContactPhone">Emergency Contact Phone</Label>
+                  <Input
+                    id="emergencyContactPhone"
+                    value={formData.emergencyContactPhone}
+                    onChange={(e) => handleChange("emergencyContactPhone", e.target.value)}
+                    placeholder="+49 123 456 7890"
+                  />
+                </div>
               </div>
 
               <FormField
@@ -606,13 +558,7 @@ export default function EditProfile() {
           {/* Submit Button */}
           <div className="flex justify-end">
             <Button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const formData = form.getValues();
-                onSubmit(formData);
-              }}
+              type="submit"
               disabled={updateProfileMutation.isPending}
               className="bg-[#DC143C] hover:bg-red-700"
             >
@@ -627,7 +573,6 @@ export default function EditProfile() {
             </Button>
           </div>
         </form>
-      </Form>
     </div>
   );
 }
