@@ -18,7 +18,7 @@ import Communications from "@/pages/communications";
 import HouseManagement from "@/pages/house-management";
 import AdminUsers from "@/pages/admin-users";
 import AdminMembers from "@/pages/admin-members";
-import EditProfileFinal from "@/pages/edit-profile-final";
+import EditProfileWorking from "@/pages/edit-profile-working";
 import Landing from "@/pages/landing";
 import TokenLogin from "@/pages/token-login";
 import Register from "@/pages/register";
@@ -74,7 +74,7 @@ function Router() {
           <Route path="/house-management" component={HouseManagement} />
           <Route path="/admin/users" component={AdminUsers} />
         <Route path="/admin/members" component={AdminMembers} />
-          <Route path="/edit-profile" component={EditProfileFinal} />
+          <Route path="/edit-profile" component={EditProfileWorking} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
