@@ -803,11 +803,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/players/:id", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      console.log("Update player request body:", req.body);
-      console.log("Update player ID:", id);
-      
       const validatedData = updatePlayerSchema.parse(req.body);
-      console.log("Validated data:", validatedData);
       
       const updatedPlayer = await storage.updatePlayer(id, validatedData);
       
@@ -817,9 +813,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedPlayer);
     } catch (error) {
-      console.error("Player update error:", error);
       if (error instanceof z.ZodError) {
-        console.error("Validation errors:", error.errors);
         return res.status(400).json({ 
           message: "Validation failed", 
           errors: error.errors 
