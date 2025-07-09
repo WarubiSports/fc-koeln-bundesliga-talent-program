@@ -34,7 +34,7 @@ const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phoneNumber: z.string().optional().nullable().default(""),
+  phoneNumber: z.string().optional(),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
   nationalityCode: z.string().optional(),
@@ -44,11 +44,15 @@ const profileSchema = z.object({
   weight: z.coerce.number().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
-  emergencyContactName: z.string().optional().nullable().default(""),
-  emergencyContactPhone: z.string().optional().nullable().default(""),
+  emergencyContactName: z.string().optional(),
+  emergencyContactPhone: z.string().optional(),
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
+}).partial({
+  phoneNumber: true,
+  emergencyContactName: true,
+  emergencyContactPhone: true,
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -82,6 +86,7 @@ export default function EditProfile() {
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
+    mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
