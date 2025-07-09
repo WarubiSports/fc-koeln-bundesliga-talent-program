@@ -8,9 +8,6 @@ export default function ProfileNew() {
     firstName: "",
     lastName: "",
     email: "",
-    phoneNumber: "",
-    emergencyContactName: "",
-    emergencyContactPhone: "",
     dateOfBirth: "",
     nationality: "",
     position: "",
@@ -28,9 +25,6 @@ export default function ProfileNew() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
-        phoneNumber: user.phoneNumber || "",
-        emergencyContactName: user.emergencyContactName || "",
-        emergencyContactPhone: user.emergencyContactPhone || "",
         dateOfBirth: user.dateOfBirth || "",
         nationality: user.nationality || "",
         position: user.position || "",
@@ -189,74 +183,7 @@ export default function ProfileNew() {
           />
         </div>
 
-        <div style={{ marginBottom: "25px" }}>
-          <label style={{
-            display: "block",
-            marginBottom: "8px",
-            fontWeight: "bold",
-            fontSize: "16px",
-            color: "#333"
-          }}>Phone Number</label>
-          <input
-            type="tel"
-            value={formData.phoneNumber}
-            onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-            style={{
-              width: "100%",
-              padding: "15px",
-              border: "3px solid #007bff",
-              borderRadius: "8px",
-              fontSize: "16px",
-              boxSizing: "border-box"
-            }}
-          />
-        </div>
 
-        <div style={{ marginBottom: "25px" }}>
-          <label style={{
-            display: "block",
-            marginBottom: "8px",
-            fontWeight: "bold",
-            fontSize: "16px",
-            color: "#333"
-          }}>Emergency Contact Name</label>
-          <input
-            type="text"
-            value={formData.emergencyContactName}
-            onChange={(e) => handleInputChange("emergencyContactName", e.target.value)}
-            style={{
-              width: "100%",
-              padding: "15px",
-              border: "3px solid #007bff",
-              borderRadius: "8px",
-              fontSize: "16px",
-              boxSizing: "border-box"
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "25px" }}>
-          <label style={{
-            display: "block",
-            marginBottom: "8px",
-            fontWeight: "bold",
-            fontSize: "16px",
-            color: "#333"
-          }}>Emergency Contact Phone</label>
-          <input
-            type="tel"
-            value={formData.emergencyContactPhone}
-            onChange={(e) => handleInputChange("emergencyContactPhone", e.target.value)}
-            style={{
-              width: "100%",
-              padding: "15px",
-              border: "3px solid #007bff",
-              borderRadius: "8px",
-              fontSize: "16px",
-              boxSizing: "border-box"
-            }}
-          />
-        </div>
 
         <div style={{ marginBottom: "25px" }}>
           <label style={{
