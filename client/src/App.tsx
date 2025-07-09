@@ -79,6 +79,7 @@ function Router() {
           <Route path="/test-page" component={TestProfile} />
           <Route path="/emergency-test" component={EmergencyTest} />
           <Route path="/edit-profile" component={EditProfile} />
+          <Route path="/profile-test" component={EditProfile} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
         </Switch>
