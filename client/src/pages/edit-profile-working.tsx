@@ -119,6 +119,7 @@ export default function EditProfileWorking() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    alert("Form submitted! Check console for details.");
     console.log("=== FORM SUBMISSION START ===");
     console.log("Form data:", formData);
     console.log("Required fields check:", {
@@ -188,7 +189,7 @@ export default function EditProfileWorking() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -203,7 +204,6 @@ export default function EditProfileWorking() {
                   value={formData.firstName}
                   onChange={(e) => handleChange("firstName", e.target.value)}
                   placeholder="Enter your first name"
-                  required
                 />
               </div>
 
@@ -214,7 +214,6 @@ export default function EditProfileWorking() {
                   value={formData.lastName}
                   onChange={(e) => handleChange("lastName", e.target.value)}
                   placeholder="Enter your last name"
-                  required
                 />
               </div>
 
@@ -222,11 +221,9 @@ export default function EditProfileWorking() {
                 <Label htmlFor="email">Email Address *</Label>
                 <Input
                   id="email"
-                  type="email"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   placeholder="Enter your email"
-                  required
                 />
               </div>
 
