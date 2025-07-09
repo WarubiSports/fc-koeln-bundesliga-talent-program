@@ -34,7 +34,7 @@ const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phoneNumber: z.string().optional(),
+  phoneNumber: z.string().optional().or(z.literal("")),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
   nationalityCode: z.string().optional(),
@@ -44,15 +44,11 @@ const profileSchema = z.object({
   weight: z.coerce.number().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
-  emergencyContactName: z.string().optional(),
-  emergencyContactPhone: z.string().optional(),
+  emergencyContactName: z.string().optional().or(z.literal("")),
+  emergencyContactPhone: z.string().optional().or(z.literal("")),
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
-}).partial({
-  phoneNumber: true,
-  emergencyContactName: true,
-  emergencyContactPhone: true,
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -157,6 +153,8 @@ export default function EditProfile() {
   });
 
   const onSubmit = (data: ProfileFormData) => {
+    console.log("Form data:", data);
+    console.log("Form errors:", form.formState.errors);
     updateProfileMutation.mutate(data);
   };
 
