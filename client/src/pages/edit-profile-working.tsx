@@ -189,7 +189,7 @@ export default function EditProfileWorking() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+      <div className="space-y-8">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -409,7 +409,11 @@ export default function EditProfileWorking() {
         {/* Submit Button */}
         <div className="flex justify-end">
           <Button
-            type="submit"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit(e);
+            }}
             disabled={updateProfileMutation.isPending}
             className="bg-[#DC143C] hover:bg-red-700"
           >
@@ -423,7 +427,7 @@ export default function EditProfileWorking() {
             )}
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
