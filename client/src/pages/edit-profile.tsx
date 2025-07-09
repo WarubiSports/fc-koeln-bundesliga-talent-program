@@ -34,7 +34,7 @@ const profileSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
-  phoneNumber: z.string().optional().or(z.literal("")),
+  phoneNumber: z.string().optional().nullable().default(""),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
   nationalityCode: z.string().optional(),
@@ -44,8 +44,8 @@ const profileSchema = z.object({
   weight: z.coerce.number().optional(),
   previousClub: z.string().optional(),
   profileImageUrl: z.string().optional(),
-  emergencyContactName: z.string().optional().or(z.literal("")),
-  emergencyContactPhone: z.string().optional().or(z.literal("")),
+  emergencyContactName: z.string().optional().nullable().default(""),
+  emergencyContactPhone: z.string().optional().nullable().default(""),
   medicalConditions: z.string().optional(),
   allergies: z.string().optional(),
   house: z.enum(["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"]).optional(),
@@ -295,7 +295,7 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Phone Number (optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="+49 123 456 7890" {...field} />
+                        <Input placeholder="+49 123 456 7890" {...field} required={false} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -498,7 +498,7 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Emergency Contact Name (optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Full name" {...field} />
+                        <Input placeholder="Full name" {...field} required={false} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -512,7 +512,7 @@ export default function EditProfile() {
                     <FormItem>
                       <FormLabel>Emergency Contact Phone (optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="+49 123 456 7890" {...field} />
+                        <Input placeholder="+49 123 456 7890" {...field} required={false} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
