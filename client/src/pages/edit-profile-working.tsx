@@ -93,10 +93,13 @@ export default function EditProfileWorking() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log("API call starting with data:", data);
       const response = await apiRequest("PUT", "/api/auth/user", data);
+      console.log("API response:", response);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      console.log("Update successful:", data);
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
@@ -104,6 +107,7 @@ export default function EditProfileWorking() {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: any) => {
+      console.log("Update failed:", error);
       toast({
         title: "Update Failed",
         description: error.message || "Failed to update profile. Please try again.",
@@ -115,8 +119,20 @@ export default function EditProfileWorking() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("=== FORM SUBMISSION START ===");
+    console.log("Form data:", formData);
+    console.log("Required fields check:", {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      hasFirstName: !!formData.firstName,
+      hasLastName: !!formData.lastName,
+      hasEmail: !!formData.email
+    });
+    
     // Simple validation for required fields only
     if (!formData.firstName || !formData.lastName || !formData.email) {
+      console.log("Validation failed - missing required fields");
       toast({
         title: "Validation Error",
         description: "First name, last name, and email are required.",
@@ -125,10 +141,12 @@ export default function EditProfileWorking() {
       return;
     }
     
+    console.log("Validation passed, submitting...");
     updateProfileMutation.mutate(formData);
   };
 
   const handleChange = (field: string, value: string) => {
+    console.log(`Field changed: ${field} = "${value}"`);
     setFormData(prev => ({
       ...prev,
       [field]: value
