@@ -114,7 +114,9 @@ export default function Players() {
 
   const updatePlayerMutation = useMutation({
     mutationFn: async (data: PlayerEditFormData & { id: number }) => {
+      console.log("Mutation called with:", data);
       const response = await apiRequest(`/api/players/${data.id}`, "PUT", data);
+      console.log("API response:", response);
       return await response.json();
     },
     onSuccess: (updatedPlayer) => {
@@ -219,8 +221,15 @@ export default function Players() {
   };
 
   const onEditSubmit = (data: PlayerEditFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Editing player:", editingPlayer);
+    console.log("Form errors:", editForm.formState.errors);
+    
     if (editingPlayer) {
+      console.log("Calling mutation with:", { ...data, id: editingPlayer.id });
       updatePlayerMutation.mutate({ ...data, id: editingPlayer.id });
+    } else {
+      console.log("No editing player found!");
     }
   };
 
