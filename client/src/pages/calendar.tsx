@@ -628,9 +628,19 @@ export default function Calendar() {
       "individual_training": "Individual Training",
       "fitness_session": "Fitness Session",
       "tactical_training": "Tactical Training",
+      "weight_lifting": "Weight Lifting Session",
+      "cryotherapy": "Cryotherapy Session",
+      "language_school": "Language School",
       "medical_checkup": "Medical Checkup",
       "team_meeting": "Team Meeting",
-      "travel": "Travel"
+      "travel": "Travel",
+      "video_session": "Video Session",
+      "nutrition_consultation": "Nutrition Consultation",
+      "mental_coaching": "Mental Coaching",
+      "physiotherapy": "Physiotherapy",
+      "trial_session": "Trial Session",
+      "recovery_session": "Recovery Session",
+      "other": "Other"
     };
     return titles[eventType as keyof typeof titles] || eventType;
   };
@@ -638,7 +648,7 @@ export default function Calendar() {
   const onSubmit = (data: InsertEvent) => {
     createMutation.mutate({
       ...data,
-      title: getEventTitle(data.eventType),
+      title: data.title || getEventTitle(data.eventType), // Use user's title if provided, otherwise auto-generate
       date: data.date || format(currentDate, "yyyy-MM-dd"),
       createdBy: user?.id || "system"
     });
@@ -649,7 +659,7 @@ export default function Calendar() {
       updateMutation.mutate({ 
         id: selectedEvent.id, 
         ...data,
-        title: getEventTitle(data.eventType)
+        title: data.title || getEventTitle(data.eventType) // Use user's title if provided, otherwise auto-generate
       });
     }
   };

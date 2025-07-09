@@ -1864,6 +1864,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return eventTypeMap[eventType] || eventType.toLowerCase().replace(/\s+/g, '_');
   };
 
+  // Helper function to get proper event title from event type
+  const getEventTitleFromType = (eventType: string) => {
+    const titleMap: { [key: string]: string } = {
+      'weight_lifting': 'Weight Lifting Session',
+      'team_practice': 'Team Practice',
+      'group_practice': 'Group Practice',
+      'cryotherapy': 'Cryotherapy Session',
+      'language_school': 'Language School',
+      'medical_checkup': 'Medical Checkup',
+      'trial_session': 'Trial Session',
+      'match': 'Match',
+      'team_meeting': 'Team Meeting',
+      'fitness_session': 'Fitness Session',
+      'recovery_session': 'Recovery Session',
+      'individual_training': 'Individual Training',
+      'tactical_training': 'Tactical Training',
+      'video_session': 'Video Session',
+      'travel': 'Travel',
+      'nutrition_consultation': 'Nutrition Consultation',
+      'mental_coaching': 'Mental Coaching',
+      'physiotherapy': 'Physiotherapy',
+      'other': 'Other'
+    };
+    
+    return titleMap[eventType] || eventType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  // Migration endpoint to fix existing event titles
+  app.post("/api/events/fix-titles", simpleAdminAuth, async (req, res) => {
+    try {
+      const events = await storage.getAllEvents();
+      let fixedCount = 0;
+      
+      for (const event of events) {
+        // Check if title matches eventType (indicating it needs fixing)
+        if (event.title === event.eventType) {
+          const properTitle = getEventTitleFromType(event.eventType);
+          await storage.updateEvent(event.id, { title: properTitle });
+          fixedCount++;
+        }
+      }
+      
+      res.json({ 
+        message: `Fixed ${fixedCount} event titles`,
+        fixedCount 
+      });
+    } catch (error) {
+      console.error("Error fixing event titles:", error);
+      res.status(500).json({ message: "Failed to fix event titles" });
+    }
+  });
+
   app.post("/api/events", devAuth, async (req: any, res) => {
     
     try {
