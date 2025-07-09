@@ -162,9 +162,9 @@ export default function Header() {
 
             <div className="border-t border-gray-200 pt-3 mt-3">
               <a 
-                href="/edit-profile" 
+                href="/profile-fix" 
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  location === "/edit-profile" 
+                  location === "/profile-fix" 
                     ? "text-[#DC143C] bg-red-50" 
                     : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
                 }`}

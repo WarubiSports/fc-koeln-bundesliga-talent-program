@@ -78,6 +78,7 @@ function Router() {
         <Route path="/admin/members" component={AdminMembers} />
           <Route path="/test-page" component={TestProfile} />
           <Route path="/emergency-test" component={EmergencyTest} />
+          <Route path="/profile-fix" component={ProfileSimpleFix} />
           <Route path="/edit-profile" component={ProfileSimpleFix} />
           <Route path="/logout" component={Logout} />
           <Route component={NotFound} />
