@@ -540,7 +540,9 @@ export default function Players() {
           
           {editingPlayer && (
             <Form {...editForm}>
-              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-6">
+              <form onSubmit={editForm.handleSubmit(onEditSubmit, (errors) => {
+                console.log("Form submission failed due to validation errors:", errors);
+              })} className="space-y-6">
                 
                 {/* Personal Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -846,6 +848,12 @@ export default function Players() {
                   <Button 
                     type="submit" 
                     disabled={updatePlayerMutation.isPending}
+                    onClick={() => {
+                      console.log("Update button clicked");
+                      console.log("Form valid:", editForm.formState.isValid);
+                      console.log("Form errors:", editForm.formState.errors);
+                      console.log("Form values:", editForm.getValues());
+                    }}
                   >
                     {updatePlayerMutation.isPending ? "Updating..." : "Update Player"}
                   </Button>
