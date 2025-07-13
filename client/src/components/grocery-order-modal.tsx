@@ -360,7 +360,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[#DC143C]">
             New Weekly Grocery Order
