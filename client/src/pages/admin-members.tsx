@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Users, User, Mail, MapPin, Calendar, Trash2, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Users, User, Mail, MapPin, Calendar, Trash2, AlertTriangle, Edit, Phone, UserCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { getCountryFlag } from "@/lib/country-flags";
@@ -34,6 +37,17 @@ export default function AdminMembers() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<ApprovedUser | null>(null);
+  const [editingUser, setEditingUser] = useState<ApprovedUser | null>(null);
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    dateOfBirth: "",
+    nationality: "",
+    position: "",
+    house: "",
+    role: ""
+  });
 
   const { data: approvedUsers = [], isLoading } = useQuery<ApprovedUser[]>({
     queryKey: ["/api/admin/approved-users"],
@@ -74,6 +88,54 @@ export default function AdminMembers() {
       });
     },
   });
+
+  const editMutation = useMutation({
+    mutationFn: async (data: { userId: string; updateData: any }) => {
+      await apiRequest(`/api/admin/update-user/${data.userId}`, "PUT", data.updateData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/approved-users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/user-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/players"] });
+      
+      toast({
+        title: "Member Updated",
+        description: "Member information has been successfully updated.",
+        variant: "default",
+      });
+      setEditingUser(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditUser = (user: ApprovedUser) => {
+    setEditingUser(user);
+    setEditForm({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      dateOfBirth: user.dateOfBirth || "",
+      nationality: user.nationality || "",
+      position: user.position || "",
+      house: user.house || "",
+      role: user.role
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingUser) return;
+    
+    editMutation.mutate({
+      userId: editingUser.id,
+      updateData: editForm
+    });
+  };
 
   if (isLoading) {
     return (
@@ -302,6 +364,16 @@ export default function AdminMembers() {
                         </DialogContent>
                       </Dialog>
 
+                      {/* Edit button */}
+                      <Button
+                        onClick={() => handleEditUser(user)}
+                        variant="outline"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+
                       {/* Quick delete button */}
                       <Button
                         onClick={() => {
@@ -324,6 +396,123 @@ export default function AdminMembers() {
           </div>
         )}
       </div>
+
+      {/* Edit Member Dialog */}
+      {editingUser && (
+        <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Member: {editingUser.firstName} {editingUser.lastName}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    value={editForm.firstName}
+                    onChange={(e) => setEditForm({...editForm, firstName: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    value={editForm.lastName}
+                    onChange={(e) => setEditForm({...editForm, lastName: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={editForm.dateOfBirth}
+                  onChange={(e) => setEditForm({...editForm, dateOfBirth: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="nationality">Nationality</Label>
+                <Input
+                  id="nationality"
+                  value={editForm.nationality}
+                  onChange={(e) => setEditForm({...editForm, nationality: e.target.value})}
+                  placeholder="e.g., Germany"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="position">Position</Label>
+                <Input
+                  id="position"
+                  value={editForm.position}
+                  onChange={(e) => setEditForm({...editForm, position: e.target.value})}
+                  placeholder="e.g., Midfielder"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="house">House</Label>
+                <Select value={editForm.house} onValueChange={(value) => setEditForm({...editForm, house: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select house" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Widdersdorf 1">Widdersdorf 1</SelectItem>
+                    <SelectItem value="Widdersdorf 2">Widdersdorf 2</SelectItem>
+                    <SelectItem value="Widdersdorf 3">Widdersdorf 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="role">Role</Label>
+                <Select value={editForm.role} onValueChange={(value) => setEditForm({...editForm, role: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="player">Player</SelectItem>
+                    <SelectItem value="coach">Coach</SelectItem>
+                    <SelectItem value="staff">Staff</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex space-x-2 pt-4">
+                <Button 
+                  onClick={handleSaveEdit}
+                  disabled={editMutation.isPending}
+                  className="flex-1"
+                >
+                  {editMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button 
+                  onClick={() => setEditingUser(null)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

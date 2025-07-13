@@ -597,6 +597,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin deletion endpoints - only for Max Bisinger
+  app.put('/api/admin/update-user/:userId', simpleAdminAuth, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const updateData = req.body;
+      
+      // Validate required fields
+      if (!updateData.firstName || !updateData.lastName || !updateData.email) {
+        return res.status(400).json({ message: "First name, last name, and email are required" });
+      }
+      
+      // Update the user
+      const updatedUser = await storage.updateUserProfile(userId, updateData);
+      
+      // Also update player record if it exists
+      if (updatedUser.role === 'player') {
+        try {
+          await storage.updatePlayerByEmail(updatedUser.email, {
+            firstName: updateData.firstName,
+            lastName: updateData.lastName,
+            dateOfBirth: updateData.dateOfBirth,
+            nationality: updateData.nationality,
+            position: updateData.position,
+            house: updateData.house
+          });
+        } catch (error) {
+          console.log("No player record found or update failed:", error);
+        }
+      }
+      
+      res.json({ 
+        message: "User updated successfully",
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   app.delete('/api/admin/delete-user/:userId', simpleAdminAuth, async (req: any, res) => {
     try {
       const { userId } = req.params;

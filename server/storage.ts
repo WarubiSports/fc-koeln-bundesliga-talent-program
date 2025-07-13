@@ -69,6 +69,7 @@ export interface IStorage {
   getPlayer(id: number): Promise<Player | undefined>;
   createPlayer(player: InsertPlayer): Promise<Player>;
   updatePlayer(id: number, updates: UpdatePlayer): Promise<Player | undefined>;
+  updatePlayerByEmail(email: string, updates: any): Promise<Player | undefined>;
   deletePlayer(id: number): Promise<boolean>;
   searchPlayers(query: string): Promise<Player[]>;
   filterPlayers(filters: {
@@ -463,6 +464,15 @@ export class DatabaseStorage implements IStorage {
       .update(players)
       .set(updates)
       .where(eq(players.id, id))
+      .returning();
+    return player || undefined;
+  }
+
+  async updatePlayerByEmail(email: string, updates: any): Promise<Player | undefined> {
+    const [player] = await db
+      .update(players)
+      .set(updates)
+      .where(eq(players.email, email))
       .returning();
     return player || undefined;
   }
