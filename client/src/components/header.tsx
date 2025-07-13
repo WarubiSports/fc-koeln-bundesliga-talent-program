@@ -60,7 +60,7 @@ export default function Header() {
         </div>
 
         {isMobileMenuOpen && (
-          <div className="border-t border-gray-200 py-3 space-y-1">
+          <div className="border-t border-gray-200 py-3 space-y-1 relative z-50">
             <a 
               href="/" 
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
