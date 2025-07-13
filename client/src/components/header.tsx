@@ -11,6 +11,9 @@ export default function Header() {
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
   const isCoach = user?.role === 'coach';
+  
+  // Debug logging for deployment
+  console.log('Header - User:', user, 'isAdmin:', isAdmin, 'role:', user?.role);
   const [location] = useLocation();
 
   return (

@@ -84,5 +84,14 @@ export function useAuth() {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context;
+  
+  // Extended functionality
+  const canManageCalendar = context.user?.role === 'admin' || context.user?.role === 'coach';
+  const canManagePlayers = context.user?.role === 'admin' || context.user?.role === 'coach';
+  
+  return {
+    ...context,
+    canManageCalendar,
+    canManagePlayers
+  };
 }

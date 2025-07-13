@@ -38,6 +38,9 @@ export default function AdminMembers() {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<ApprovedUser | null>(null);
   const [editingUser, setEditingUser] = useState<ApprovedUser | null>(null);
+  
+  // Debug logging
+  console.log('AdminMembers component loaded');
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
