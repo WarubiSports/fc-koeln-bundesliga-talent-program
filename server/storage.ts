@@ -308,6 +308,28 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
+  async getAllUsersWithoutImages(): Promise<User[]> {
+    return await db.select({
+      id: users.id,
+      username: users.username,
+      email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      dateOfBirth: users.dateOfBirth,
+      nationality: users.nationality,
+      nationalityCode: users.nationalityCode,
+      position: users.position,
+      role: users.role,
+      status: users.status,
+      house: users.house,
+      phoneNumber: users.phoneNumber,
+      emergencyContact: users.emergencyContact,
+      emergencyPhone: users.emergencyPhone,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt
+    }).from(users);
+  }
+
   async getPendingUsers(): Promise<User[]> {
     return await db.select().from(users).where(eq(users.status, "pending"));
   }

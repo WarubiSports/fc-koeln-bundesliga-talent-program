@@ -587,8 +587,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all approved users and players for deletion management
   app.get('/api/admin/approved-users', simpleAdminAuth, async (req, res) => {
     try {
-      const allUsers = await storage.getAllUsers();
-      const approvedUsers = allUsers.filter((u: any) => u.status === 'approved');
+      const allUsers = await storage.getAllUsersWithoutImages();
+      const approvedUsers = allUsers
+        .filter((u: any) => u.status === 'approved')
+        .map(user => ({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profileImageUrl: null, // Explicitly set to null
+          dateOfBirth: user.dateOfBirth,
+          nationality: user.nationality,
+          nationalityCode: user.nationalityCode,
+          position: user.position,
+          role: user.role,
+          status: user.status,
+          house: user.house,
+          phoneNumber: user.phoneNumber,
+          emergencyContact: user.emergencyContact,
+          emergencyPhone: user.emergencyPhone,
+          createdAt: user.createdAt ? new Date(user.createdAt).toISOString() : null,
+          updatedAt: user.updatedAt ? new Date(user.updatedAt).toISOString() : null
+        }));
+      
+      console.log(`Returning ${approvedUsers.length} approved users`);
       res.json(approvedUsers);
     } catch (error) {
       console.error("Error fetching approved users:", error);

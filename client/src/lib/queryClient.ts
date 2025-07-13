@@ -12,6 +12,7 @@ async function throwIfResNotOk(res: Response) {
       // Don't auto-redirect, let the user choose to re-login
     }
     
+    console.error(`API Error: ${res.status} ${res.statusText}`, text);
     throw new Error(`${res.status}: ${text}`);
   }
 }
@@ -67,9 +68,15 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
+      retry: (failureCount, error) => {
+        // Don't retry on 401 or 500 errors
+        if (error?.message?.includes('401') || error?.message?.includes('500')) {
+          return false;
+        }
+        return failureCount < 1;
+      },
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      retry: false,
     },
     mutations: {
       retry: false,

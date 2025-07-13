@@ -51,10 +51,24 @@ export default function AdminMembers() {
     role: ""
   });
 
-  const { data: approvedUsers = [], isLoading, error } = useQuery<ApprovedUser[]>({
+  const { data: approvedUsers = [], isLoading, error, refetch } = useQuery<ApprovedUser[]>({
     queryKey: ["/api/admin/approved-users"],
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: false, // Disable auto-refresh
+    retry: (failureCount, error) => {
+      console.log('Query retry attempt:', failureCount, error?.message);
+      // Don't retry on server errors
+      if (error?.message?.includes('500')) {
+        return false;
+      }
+      return failureCount < 1;
+    },
+    onError: (error) => {
+      console.error('Failed to fetch approved users:', error);
+    },
+    onSuccess: (data) => {
+      console.log('Successfully fetched approved users:', data?.length || 0);
+    },
   });
 
 
@@ -158,14 +172,20 @@ export default function AdminMembers() {
   }
 
   if (error) {
+    console.error('Admin Members error:', error);
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Error</h2>
           <p className="text-gray-600 mb-4">{error.message}</p>
-          <Button onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
+          <div className="space-y-2">
+            <Button onClick={() => refetch()}>
+              Try Again
+            </Button>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Reload Page
+            </Button>
+          </div>
         </div>
       </div>
     );
