@@ -157,6 +157,7 @@ Preferred communication style: Simple, everyday language.
 - **Player Edit Form Fixed**: Removed phone number and emergency contact fields from the player directory edit modal (pen icon) - eliminated both from validation schema and form UI per user request
 - **Position Validation Fixed**: Changed both position and positions field validation from strict enum to string validation to handle players with combined positions like "Midfielder, Forward" - resolved form submission failures for players with non-standard position formats
 - **Saudi Arabia Added**: Added Saudi Arabia as a country option with flag emoji (🇸🇦) for player nationality selection in both player registration and edit forms
+- **Desktop Zoom Fix**: Fixed viewport meta tag causing desktop app to appear zoomed in - removed user-scalable=no and maximum-scale=1 constraints and added proper responsive font sizing
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility
