@@ -64,12 +64,36 @@
   
   html {
     font-size: 16px;
+    zoom: 1;
   }
   
   @media (max-width: 768px) {
     html {
       font-size: 14px;
     }
+  }
+  
+  /* Ensure proper desktop scaling */
+  @media (min-width: 1024px) {
+    html {
+      font-size: 16px;
+    }
+    
+    body {
+      min-width: 1024px;
+    }
+    
+    /* Override any mobile-first scaling */
+    .container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+      max-width: none !important;
+    }
+  }
+  
+  /* Force normal scaling for all screen sizes */
+  * {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 }
 
