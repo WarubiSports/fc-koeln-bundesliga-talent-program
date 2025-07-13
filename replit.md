@@ -152,6 +152,7 @@ Preferred communication style: Simple, everyday language.
 - **Admin Authentication Enhanced**: Extended simpleAdminAuth to include coach access for member management, improved error logging, and increased token refresh intervals to prevent frequent authentication failures
 - **Member Management 36MB Response Fixed**: Resolved critical issue where approved users API endpoint returned 36MB response due to base64 profile images - implemented database-level exclusion of profileImageUrl field, reducing response size from 36MB to 11KB for smooth frontend operation
 - **Thomas Ellinger Admin Access**: Added Thomas Ellinger (thomas.ellinger@warubi-sports.com) as admin with full privileges including user/player deletion capabilities alongside Max Bisinger - updated authentication system and access control restrictions
+- **Grocery Orders & Chores Admin Access**: Enhanced Thomas Ellinger's admin privileges to include full access to grocery order management (confirm, cancel, complete orders) and chore management (create, update, delete chores, generate weekly rotations, award house competition points) - same admin capabilities as Max Bisinger
 
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints

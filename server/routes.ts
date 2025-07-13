@@ -1073,7 +1073,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update chore
-  app.put("/api/chores/:id", async (req, res) => {
+  app.put("/api/chores/:id", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = updateChoreSchema.parse(req.body);
@@ -1097,7 +1097,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete chore
-  app.delete("/api/chores/:id", async (req, res) => {
+  app.delete("/api/chores/:id", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteChore(id);
@@ -1155,7 +1155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/chore-rotation/generate-weekly", async (req, res) => {
+  app.post("/api/chore-rotation/generate-weekly", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const { choreRotationEngine } = await import('./choreRotation');
       const assignments = await choreRotationEngine.generateWeeklyChoreAssignments();
@@ -1213,7 +1213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/house-competition/award-points", async (req, res) => {
+  app.post("/api/house-competition/award-points", simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const { house, category, activity, points, description, recordedBy } = req.body;
       const { houseCompetition } = await import('./houseCompetition');
