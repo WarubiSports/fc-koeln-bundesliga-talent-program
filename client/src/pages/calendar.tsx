@@ -1097,7 +1097,7 @@ export default function Calendar() {
                     Add Event
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
                 <DialogTitle>Create New Event</DialogTitle>
                 <DialogDescription>
@@ -1646,7 +1646,7 @@ export default function Calendar() {
       {/* Event Details Modal */}
       {selectedEvent && (
         <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <span>{selectedEvent.title}</span>
@@ -1704,7 +1704,7 @@ export default function Calendar() {
       {/* Edit Event Modal */}
       {isEditModalOpen && selectedEvent && (
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Event</DialogTitle>
             </DialogHeader>
@@ -1845,7 +1845,7 @@ export default function Calendar() {
 
       {/* Create Template Modal */}
       <Dialog open={isCreateTemplateModalOpen} onOpenChange={setIsCreateTemplateModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Create Event Template</DialogTitle>
             <DialogDescription>
@@ -1922,7 +1922,7 @@ export default function Calendar() {
 
       {/* Repetitive Events Selection Modal */}
       <Dialog open={showRepetitiveSelection} onOpenChange={setShowRepetitiveSelection}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Select Repetitive Events to Delete</DialogTitle>
             <DialogDescription>
