@@ -39,8 +39,7 @@ export default function AdminMembers() {
   const [selectedUser, setSelectedUser] = useState<ApprovedUser | null>(null);
   const [editingUser, setEditingUser] = useState<ApprovedUser | null>(null);
   
-  // Debug logging
-  console.log('AdminMembers component loaded');
+
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -52,10 +51,12 @@ export default function AdminMembers() {
     role: ""
   });
 
-  const { data: approvedUsers = [], isLoading } = useQuery<ApprovedUser[]>({
+  const { data: approvedUsers = [], isLoading, error } = useQuery<ApprovedUser[]>({
     queryKey: ["/api/admin/approved-users"],
     refetchInterval: 30000,
   });
+
+
 
   const { data: userStats = {} } = useQuery<{
     totalUsers: number;

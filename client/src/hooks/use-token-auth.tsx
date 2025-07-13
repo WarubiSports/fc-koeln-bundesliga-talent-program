@@ -39,12 +39,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     enabled: hasToken, // Only run query if we have a token
     retry: (failureCount, error) => {
       // Retry on network errors but not on auth errors
-      return failureCount < 3 && !error?.message?.includes('401');
+      const isAuthError = error?.message?.includes('401') || error?.message?.includes('Unauthorized');
+      return failureCount < 2 && !isAuthError;
     },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    refetchInterval: 15 * 60 * 1000, // Auto-refresh every 15 minutes
   });
 
   // Monitor token changes

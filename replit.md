@@ -146,8 +146,10 @@ Preferred communication style: Simple, everyday language.
 
 ### July 13, 2025
 - **Player Update Form Fixed**: Resolved critical issue where Update Player button wasn't working due to validation errors on combined positions like "Midfielder, Forward" - updated both position and positions field validation from strict enum to flexible string validation in shared schema
-- **Authentication System Enhanced**: Fixed persistent authentication disconnection issues by implementing auto-extending tokens (24-hour expiration with auto-renewal within 2 hours), improved error handling for network vs authentication failures, enhanced query retry logic, and better token persistence to prevent users from being kicked out during app usage
+- **Authentication System Enhanced**: Fixed persistent authentication disconnection issues by implementing auto-extending tokens (7-day expiration with auto-renewal within 24 hours), improved error handling for network vs authentication failures, enhanced query retry logic, and better token persistence to prevent users from being kicked out during app usage
 - **Member Management System Restored**: Fully restored comprehensive member management functionality with complete edit capabilities for all member fields including personal information, nationality, position, house assignment, and user roles - added edit buttons and dialog forms with proper validation and server-side synchronization between user and player data
+- **Modal Display Issues Fixed**: Resolved critical modal positioning problems affecting grocery ordering and event creation forms by removing problematic zoom and transform CSS styles, restoring proper viewport settings, and using responsive Tailwind classes for consistent modal sizing across devices
+- **Admin Authentication Enhanced**: Extended simpleAdminAuth to include coach access for member management, improved error logging, and increased token refresh intervals to prevent frequent authentication failures
 
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints

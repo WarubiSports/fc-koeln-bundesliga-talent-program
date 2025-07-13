@@ -3,8 +3,8 @@ import type { RequestHandler } from "express";
 // Simple in-memory store for logged-in users (development only)
 const loggedInUsers = new Map<string, any>();
 
-// Token expiration time (24 hours)
-const TOKEN_EXPIRATION = 24 * 60 * 60 * 1000;
+// Token expiration time (7 days)
+const TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
 export const simpleAuth: RequestHandler = (req: any, res, next) => {
   const authHeader = req.headers.authorization;
@@ -29,7 +29,7 @@ export const simpleAdminAuth: RequestHandler = (req: any, res, next) => {
     const token = authHeader.substring(7);
     const userData = getUserFromToken(token);
     
-    if (userData && userData.role === 'admin') {
+    if (userData && (userData.role === 'admin' || userData.role === 'coach')) {
       req.user = userData;
       return next();
     }
@@ -38,13 +38,13 @@ export const simpleAdminAuth: RequestHandler = (req: any, res, next) => {
   // Log authentication failure for debugging
   console.log('Admin auth failed:', {
     hasAuthHeader: !!authHeader,
-    token: authHeader?.substring(7),
+    token: authHeader?.substring(7)?.substring(0, 10) + '...',
     userData: authHeader ? getUserFromToken(authHeader.substring(7)) : null,
-    allTokens: Array.from(loggedInUsers.keys()),
+    userRole: authHeader ? getUserFromToken(authHeader.substring(7))?.role : null,
     tokenCount: loggedInUsers.size
   });
   
-  res.status(401).json({ message: "Admin access required" });
+  res.status(401).json({ message: "Admin or Coach access required" });
 };
 
 // Admin or Coach authentication for calendar and player management
@@ -87,9 +87,9 @@ export function getUserFromToken(token: string): any | null {
     return null;
   }
   
-  // Auto-extend token if it's still valid and close to expiration (within 2 hours)
-  const twoHoursFromNow = Date.now() + (2 * 60 * 60 * 1000);
-  if (tokenData.expiresAt < twoHoursFromNow) {
+  // Auto-extend token if it's still valid and close to expiration (within 24 hours)
+  const oneDayFromNow = Date.now() + (24 * 60 * 60 * 1000);
+  if (tokenData.expiresAt < oneDayFromNow) {
     tokenData.expiresAt = Date.now() + TOKEN_EXPIRATION;
     loggedInUsers.set(token, tokenData);
     console.log('Token auto-extended for user:', tokenData.id, 'new expiry:', new Date(tokenData.expiresAt));
