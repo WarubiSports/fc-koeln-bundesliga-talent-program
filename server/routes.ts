@@ -85,6 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
       { username: 'max.bisinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
+      { username: 'thomas.ellinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Thomas Ellinger' },
       { username: 'max.bisinger@warubi-sports', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
       { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
       { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
@@ -664,10 +665,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId } = req.params;
       const adminUser = req.user;
       
-      // Only allow Max Bisinger to delete users
+      // Only allow Max Bisinger and Thomas Ellinger to delete users
       const userEmail = adminUser?.userData?.email || adminUser?.email || adminUser?.id;
-      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && userEmail !== 'max.bisinger@warubi-sports.com') {
-        return res.status(403).json({ message: "Only Max Bisinger can delete users" });
+      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && 
+          userEmail !== 'max.bisinger@warubi-sports.com' && 
+          userEmail !== 'thomas.ellinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger and Thomas Ellinger can delete users" });
       }
       
       // Prevent self-deletion
@@ -688,10 +691,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { playerId } = req.params;
       const adminUser = req.user;
       
-      // Only allow Max Bisinger to delete players
+      // Only allow Max Bisinger and Thomas Ellinger to delete players
       const userEmail = adminUser?.userData?.email || adminUser?.email || adminUser?.id;
-      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && userEmail !== 'max.bisinger@warubi-sports.com') {
-        return res.status(403).json({ message: "Only Max Bisinger can delete players" });
+      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && 
+          userEmail !== 'max.bisinger@warubi-sports.com' && 
+          userEmail !== 'thomas.ellinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger and Thomas Ellinger can delete players" });
       }
       
       const deleted = await storage.deletePlayer(parseInt(playerId));
