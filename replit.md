@@ -144,6 +144,9 @@ Preferred communication style: Simple, everyday language.
 - **Weight Lifting Event Standardization**: Standardized all weight lifting events to display as "Weight Lifting" instead of "Weight Lifting Session" - updated 22 existing database records and all UI components (event creation, editing, and excuse modals) for complete consistency across the system
 - **Profile Update Field Requirements**: Ongoing issue with phone, emergency contact, and emergency phone fields showing as required in profile editing form despite multiple attempts to make them optional - tried various approaches including schema changes, default value modifications, zodResolver removal, and custom validation implementations
 
+### July 13, 2025
+- **Player Update Form Fixed**: Resolved critical issue where Update Player button wasn't working due to validation errors on combined positions like "Midfielder, Forward" - updated both position and positions field validation from strict enum to flexible string validation in shared schema
+
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints
 - **Profile Form Submission Critical Issue**: Form submission completely non-functional - tried multiple approaches including removing form elements, using direct button clicks, adding alert popups, removing all validation, creating entirely new components, but clicking "Update Profile" produces no response whatsoever. Issue appears to be preventing any JavaScript execution on form submission.
@@ -153,6 +156,7 @@ Preferred communication style: Simple, everyday language.
 - **Profile Form Simplified**: Removed phone number, emergency contact name, and emergency contact phone fields from profile editing form per user request to streamline the interface
 - **Player Edit Form Fixed**: Removed phone number and emergency contact fields from the player directory edit modal (pen icon) - eliminated both from validation schema and form UI per user request
 - **Position Validation Fixed**: Changed both position and positions field validation from strict enum to string validation to handle players with combined positions like "Midfielder, Forward" - resolved form submission failures for players with non-standard position formats
+- **Saudi Arabia Added**: Added Saudi Arabia as a country option with flag emoji (🇸🇦) for player nationality selection in both player registration and edit forms
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility

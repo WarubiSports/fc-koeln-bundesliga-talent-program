@@ -59,6 +59,7 @@ export const COUNTRIES = [
   { code: "MA", name: "Morocco" },
   { code: "TN", name: "Tunisia" },
   { code: "EG", name: "Egypt" },
+  { code: "SA", name: "Saudi Arabia" },
   { code: "JP", name: "Japan" },
   { code: "KR", name: "South Korea" },
   { code: "AU", name: "Australia" },
