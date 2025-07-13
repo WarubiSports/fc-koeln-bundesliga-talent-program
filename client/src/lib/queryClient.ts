@@ -8,14 +8,8 @@ async function throwIfResNotOk(res: Response) {
     if (res.status === 401) {
       // Clear invalid token
       localStorage.removeItem('auth_token');
-      // Show notification instead of automatic redirect
       console.log('Authentication failed, token cleared');
-      // Only redirect if we're not already on the login page
-      if (!window.location.pathname.includes('/login')) {
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-      }
+      // Don't auto-redirect, let the user choose to re-login
     }
     
     throw new Error(`${res.status}: ${text}`);

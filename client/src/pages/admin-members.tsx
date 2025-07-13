@@ -53,7 +53,8 @@ export default function AdminMembers() {
 
   const { data: approvedUsers = [], isLoading, error } = useQuery<ApprovedUser[]>({
     queryKey: ["/api/admin/approved-users"],
-    refetchInterval: 30000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: false, // Disable auto-refresh
   });
 
 
@@ -151,6 +152,20 @@ export default function AdminMembers() {
               <div key={i} className="h-32 bg-gray-200 rounded"></div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Error</h2>
+          <p className="text-gray-600 mb-4">{error.message}</p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
         </div>
       </div>
     );

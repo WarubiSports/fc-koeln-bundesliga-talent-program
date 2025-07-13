@@ -16,6 +16,7 @@ type AuthContextType = {
   isLoading: boolean;
   error: Error | null;
   logout: () => void;
+  refreshAuth: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,14 +39,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: hasToken, // Only run query if we have a token
     retry: (failureCount, error) => {
-      // Retry on network errors but not on auth errors
+      // Only retry on network errors, not auth errors
       const isAuthError = error?.message?.includes('401') || error?.message?.includes('Unauthorized');
-      return failureCount < 2 && !isAuthError;
+      return failureCount < 1 && !isAuthError;
     },
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    refetchInterval: 15 * 60 * 1000, // Auto-refresh every 15 minutes
+    refetchOnMount: false,
+    staleTime: 2 * 60 * 60 * 1000, // 2 hours
+    refetchInterval: false, // Disable auto-refresh to prevent kicks
   });
 
   // Monitor token changes
@@ -66,6 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = "/";
   };
 
+  const refreshAuth = () => {
+    refetch();
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -73,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading: isLoading && hasToken,
         error,
         logout,
+        refreshAuth,
       }}
     >
       {children}
