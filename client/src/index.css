@@ -65,6 +65,9 @@
   html {
     font-size: 16px;
     zoom: 1;
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    text-size-adjust: none;
   }
   
   @media (max-width: 768px) {
@@ -91,9 +94,17 @@
   
   /* Force normal scaling for all screen sizes */
   * {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    text-size-adjust: none;
+    zoom: normal;
+  }
+  
+  /* Override any external zoom settings */
+  body {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    transform-origin: 0 0 !important;
   }
 }
 

@@ -61,7 +61,7 @@ function Router() {
 
   // Show main application for authenticated users
   return (
-    <div className="min-h-screen bg-gray-50" style={{ zoom: 1 }}>
+    <div className="min-h-screen bg-gray-50" style={{ zoom: 1, transform: 'scale(1)', transformOrigin: '0 0' }}>
       <Header />
       <main className="pb-20">
         <Switch>
