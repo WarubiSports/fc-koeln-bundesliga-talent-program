@@ -160,29 +160,51 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
     queryKey: ["/api/players"],
   });
 
+  // Fetch users (staff/coaches) for dropdown
+  const { data: allUsers = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/approved-users"],
+  });
+
   // Get current user's full name for comparison
   const currentUserName = user ? `${user.firstName} ${user.lastName}` : "";
   
-  // Filter players based on user role - regular players can only order for themselves
-  const getAvailablePlayersForOrdering = (): any[] => {
+  // Filter people based on user role - regular players can only order for themselves
+  const getAvailablePeopleForOrdering = (): any[] => {
     if (!user) return [];
     
-    // Admins and coaches can order for any player
+    // Admins and coaches can order for any player or user
     if (user.role === 'admin' || user.role === 'coach' || user.role === 'staff' || user.role === 'manager') {
-      return players as any[];
+      // Combine players and users (staff/coaches) for ordering
+      const combinedList = [
+        ...players.map((p: any) => ({ ...p, type: 'player' })),
+        ...allUsers.filter((u: any) => u.role !== 'player').map((u: any) => ({ ...u, type: 'user' }))
+      ];
+      return combinedList;
     }
     
     // Regular players can only order for themselves
-    // Find the player record that matches the current user
+    // Check if current user is a player
     const userAsPlayer = (players as any[]).find((player: any) => 
       `${player.firstName} ${player.lastName}` === currentUserName ||
       player.email === user.email
     );
     
-    return userAsPlayer ? [userAsPlayer] : [];
+    if (userAsPlayer) {
+      return [{ ...userAsPlayer, type: 'player' }];
+    }
+    
+    // If not a player, check if they're a staff/coach who can order for themselves
+    if (user.role === 'coach' || user.role === 'staff') {
+      const userAsStaff = allUsers.find((u: any) => u.email === user.email);
+      if (userAsStaff) {
+        return [{ ...userAsStaff, type: 'user' }];
+      }
+    }
+    
+    return [];
   };
 
-  const availablePlayersForOrdering = getAvailablePlayersForOrdering();
+  const availablePeopleForOrdering = getAvailablePeopleForOrdering();
 
   const availableDeliveryDates = getCurrentWeekDeliveryDates();
 
@@ -345,10 +367,10 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
           <p className="text-sm text-gray-600">
             Order deadline: Monday 12pm (Tuesday delivery) • Thursday 12pm (Friday delivery)
           </p>
-          {user?.role === 'player' && (
+          {(user?.role === 'player' || user?.role === 'coach' || user?.role === 'staff') && (
             <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-2">
               <p className="text-sm text-blue-800">
-                <strong>Note:</strong> You can only place orders for yourself. If you need to order for someone else, please contact an admin or coach.
+                <strong>Note:</strong> You can only place orders for yourself. If you need to order for someone else, please contact an admin.
               </p>
             </div>
           )}
@@ -362,32 +384,44 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                 name="playerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Player Name</FormLabel>
+                    <FormLabel>Order For</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select player" />
+                          <SelectValue placeholder="Select person" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {availablePlayersForOrdering.length === 0 ? (
+                        {availablePeopleForOrdering.length === 0 ? (
                           <div className="p-2 text-sm text-gray-500 text-center">
-                            No players available for ordering
+                            No people available for ordering
                           </div>
                         ) : (
-                          availablePlayersForOrdering
-                            .filter((player: any, index: number, arr: any[]) => 
+                          availablePeopleForOrdering
+                            .filter((person: any, index: number, arr: any[]) => 
                               // Remove duplicates based on name
                               arr.findIndex((p: any) => 
-                                `${p.firstName} ${p.lastName}` === `${player.firstName} ${player.lastName}`
+                                `${p.firstName} ${p.lastName}` === `${person.firstName} ${person.lastName}`
                               ) === index
                             )
-                            .map((player: any) => (
+                            .map((person: any) => (
                               <SelectItem 
-                                key={`${player.id}-${player.firstName}-${player.lastName}`} 
-                                value={`${player.firstName} ${player.lastName}`}
+                                key={`${person.id}-${person.firstName}-${person.lastName}`} 
+                                value={`${person.firstName} ${person.lastName}`}
                               >
-                                {player.firstName} {player.lastName}
+                                <div className="flex items-center justify-between w-full">
+                                  <span>{person.firstName} {person.lastName}</span>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                      {person.type === 'player' ? 'Player' : person.role}
+                                    </span>
+                                    {person.house && (
+                                      <span className="text-xs text-gray-600 bg-blue-100 px-2 py-1 rounded">
+                                        {person.house}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
                               </SelectItem>
                             ))
                         )}
