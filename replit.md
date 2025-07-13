@@ -158,6 +158,8 @@ Preferred communication style: Simple, everyday language.
 - **Position Validation Fixed**: Changed both position and positions field validation from strict enum to string validation to handle players with combined positions like "Midfielder, Forward" - resolved form submission failures for players with non-standard position formats
 - **Saudi Arabia Added**: Added Saudi Arabia as a country option with flag emoji (🇸🇦) for player nationality selection in both player registration and edit forms
 - **Desktop Zoom Fix**: Fixed viewport meta tag causing desktop app to appear zoomed in - removed user-scalable=no and maximum-scale=1 constraints and added proper responsive font sizing
+- **Menu Layering Fix**: Fixed z-index issue where bottom navigation was covering mobile menu sign out button - added proper z-index values
+- **Test Profile Removed**: Cleaned up development components by removing test profile page and menu links
 
 ### June 17, 2025
 - **Chore Management System**: Fixed all chore functionality issues including precise player filtering, cache invalidation, and house-specific visibility

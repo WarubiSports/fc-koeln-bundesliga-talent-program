@@ -162,17 +162,6 @@ export default function Header() {
 
             <div className="border-t border-gray-200 pt-3 mt-3">
               <a 
-                href="/profile-test" 
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  location === "/profile-test" 
-                    ? "text-[#DC143C] bg-red-50" 
-                    : "text-gray-700 hover:text-[#DC143C] hover:bg-gray-50"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                🔧 Edit Profile (TEST)
-              </a>
-              <a 
                 href="/logout" 
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
