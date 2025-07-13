@@ -87,6 +87,14 @@ export function getUserFromToken(token: string): any | null {
     return null;
   }
   
+  // Auto-extend token if it's still valid and close to expiration (within 2 hours)
+  const twoHoursFromNow = Date.now() + (2 * 60 * 60 * 1000);
+  if (tokenData.expiresAt < twoHoursFromNow) {
+    tokenData.expiresAt = Date.now() + TOKEN_EXPIRATION;
+    loggedInUsers.set(token, tokenData);
+    console.log('Token auto-extended for user:', tokenData.id, 'new expiry:', new Date(tokenData.expiresAt));
+  }
+  
   return tokenData;
 }
 

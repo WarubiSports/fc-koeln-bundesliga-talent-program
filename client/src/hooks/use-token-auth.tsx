@@ -37,7 +37,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["/api/auth/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: hasToken, // Only run query if we have a token
+    retry: (failureCount, error) => {
+      // Retry on network errors but not on auth errors
+      return failureCount < 3 && !error?.message?.includes('401');
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
   });
+
+  // Monitor token changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('auth_token');
+      setHasToken(!!token);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const logout = () => {
     localStorage.removeItem('auth_token');
@@ -50,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user: user ?? null,
-        isLoading,
+        isLoading: isLoading && hasToken,
         error,
         logout,
       }}

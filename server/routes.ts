@@ -2131,7 +2131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Recent activities endpoint
-  app.get("/api/recent-activities", isAuthenticated, async (req, res) => {
+  app.get("/api/recent-activities", simpleAuth, async (req, res) => {
     try {
       const activities = await storage.getRecentActivities();
       res.json(activities);
