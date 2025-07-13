@@ -238,6 +238,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: 'Logout flag cleared' });
   });
 
+  // Debug endpoint to check token status
+  app.get('/api/auth/debug', async (req: any, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+    
+    if (!token) {
+      return res.json({ 
+        status: 'No token provided',
+        hasAuthHeader: !!authHeader,
+        authHeader: authHeader 
+      });
+    }
+
+    const userData = getUserFromToken(token);
+    res.json({
+      status: userData ? 'Valid token' : 'Invalid or expired token',
+      hasToken: !!token,
+      token: token,
+      userData: userData ? {
+        id: userData.id,
+        role: userData.role,
+        email: userData.email,
+        createdAt: userData.createdAt ? new Date(userData.createdAt).toISOString() : null,
+        expiresAt: userData.expiresAt ? new Date(userData.expiresAt).toISOString() : null
+      } : null
+    });
+  });
+
   // Auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     // Set cache control headers to prevent caching
