@@ -74,6 +74,24 @@
     transform-origin: 0 0;
   }
   
+  /* Force content to render at actual size regardless of browser zoom */
+  @media screen {
+    html {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Override any inherited zoom from parent elements */
+  #root {
+    zoom: 1 !important;
+    transform: scale(1) !important;
+    -webkit-transform: scale(1) !important;
+    -moz-transform: scale(1) !important;
+    transform-origin: 0 0 !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+  }
+  
   @media (max-width: 768px) {
     html {
       font-size: 14px;
@@ -119,6 +137,32 @@
   .container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl, .max-w-2xl, .max-w-xl, .max-w-lg, .max-w-md, .max-w-sm {
     transform: scale(1) !important;
     zoom: 1 !important;
+  }
+  
+  /* Reset any scale transformations that might be applied by the deployment environment */
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Ensure proper scaling for mobile browsers */
+  @media screen and (max-width: 768px) {
+    html {
+      font-size: 14px !important;
+    }
+  }
+  
+  /* Force desktop rendering */
+  @media screen and (min-width: 769px) {
+    html {
+      font-size: 16px !important;
+    }
+    
+    body {
+      zoom: 1 !important;
+      -webkit-transform: scale(1) !important;
+      -moz-transform: scale(1) !important;
+      transform: scale(1) !important;
+    }
   }
 }
 
