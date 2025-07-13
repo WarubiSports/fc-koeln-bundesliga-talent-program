@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -364,9 +365,9 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
           <DialogTitle className="text-xl font-bold text-[#DC143C]">
             New Weekly Grocery Order
           </DialogTitle>
-          <p className="text-sm text-gray-600">
+          <DialogDescription className="text-sm text-gray-600">
             Order deadline: Monday 12pm (Tuesday delivery) • Thursday 12pm (Friday delivery)
-          </p>
+          </DialogDescription>
           {(user?.role === 'player' || user?.role === 'coach' || user?.role === 'staff') && (
             <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-2">
               <p className="text-sm text-blue-800">
@@ -409,19 +410,7 @@ export default function GroceryOrderModal({ isOpen, onClose, selectedWeek }: Gro
                                 key={`${person.id}-${person.firstName}-${person.lastName}`} 
                                 value={`${person.firstName} ${person.lastName}`}
                               >
-                                <div className="flex items-center justify-between w-full">
-                                  <span>{person.firstName} {person.lastName}</span>
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                      {person.type === 'player' ? 'Player' : person.role}
-                                    </span>
-                                    {person.house && (
-                                      <span className="text-xs text-gray-600 bg-blue-100 px-2 py-1 rounded">
-                                        {person.house}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
+                                {person.firstName} {person.lastName} ({person.type === 'player' ? 'Player' : person.role}){person.house && ` - ${person.house}`}
                               </SelectItem>
                             ))
                         )}
