@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Production build script that handles all deployment scenarios
+// CommonJS production build script that handles all deployment scenarios
 const { mkdirSync, existsSync, copyFileSync, writeFileSync, rmSync } = require('fs');
 
 function createProductionBuild() {
@@ -75,7 +75,7 @@ function createProductionBuild() {
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: #dc2626;
+            background: linear-gradient(90deg, #dc2626, #b91c1c);
             border-radius: 2px;
         }
         .form-group { 
@@ -84,17 +84,17 @@ function createProductionBuild() {
         label { 
             display: block;
             margin-bottom: 8px;
+            font-weight: 500;
             color: #374151;
-            font-weight: 600;
             font-size: 14px;
         }
         input { 
             width: 100%;
-            padding: 16px 20px;
+            padding: 12px 16px;
             border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             background: #f9fafb;
         }
         input:focus { 
@@ -105,73 +105,82 @@ function createProductionBuild() {
         }
         .btn { 
             width: 100%;
-            padding: 16px;
-            background: #dc2626;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             position: relative;
             overflow: hidden;
         }
-        .btn:hover { 
-            background: #b91c1c;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
-        }
-        .btn:active { 
-            transform: translateY(0);
+        .btn:hover:not(:disabled) { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
         }
         .btn:disabled { 
-            background: #9ca3af;
+            opacity: 0.7;
             cursor: not-allowed;
             transform: none;
         }
         .message { 
-            margin-top: 24px;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .success { 
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #10b981;
-        }
-        .error { 
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
-        }
-        .status { 
-            margin-top: 24px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-            padding: 12px;
-            background: #f9fafb;
+            padding: 12px 16px;
             border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .message.error { 
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .message.success { 
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 14px;
         }
         .status-indicator {
-            display: inline-block;
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            margin-right: 8px;
+            background: #6b7280;
+            animation: pulse 2s infinite;
         }
-        .online { background: #10b981; }
-        .offline { background: #ef4444; }
-        .loading { 
+        .status-indicator.online {
+            background: #10b981;
+        }
+        .status-indicator.offline {
+            background: #ef4444;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #ffffff;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            border-top-color: transparent;
+            border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
         @keyframes spin { 
@@ -275,11 +284,11 @@ function createProductionBuild() {
             elements.spinner.style.display = loading ? 'inline-block' : 'none';
         }
         
-        elements.form.addEventListener('submit', async function(e) {
+        elements.form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             if (!isConnected) {
-                showMessage('Please wait for server connection', 'error');
+                showMessage('Server connection required', 'error');
                 return;
             }
             
@@ -287,21 +296,22 @@ function createProductionBuild() {
             const password = document.getElementById('password').value;
             
             setLoading(true);
-            elements.message.innerHTML = '';
             
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({ email, password })
                 });
                 
                 const data = await response.json();
                 
-                if (response.ok) {
-                    showMessage(\`Welcome back, \${data.user.name}!\`, 'success');
+                if (response.ok && data.token) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    showMessage(\`Welcome back, \${data.user.name}!\`, 'success');
                     
                     // Redirect to dashboard or show success state
                     setTimeout(() => {
