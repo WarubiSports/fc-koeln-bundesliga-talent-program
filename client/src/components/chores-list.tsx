@@ -30,6 +30,8 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
     queryKey: isAdmin 
       ? [`/api/chores?house=${encodeURIComponent(selectedHouse)}`]
       : ['/api/chores'],
+    staleTime: 0, // Always refetch to avoid stale data
+    cacheTime: 0, // Don't cache results
   });
 
   // Filter chores by selected house for players
@@ -60,20 +62,31 @@ export default function ChoresList({ onAddChore }: ChoresListProps) {
 
   const deleteChoreMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/chores/${id}`, "DELETE");
+      console.log("Deleting chore with ID:", id);
+      const response = await apiRequest(`/api/chores/${id}`, "DELETE");
+      console.log("Delete response:", response);
+      return response;
     },
     onSuccess: () => {
-      // Invalidate all chore-related queries
+      console.log("Chore deletion successful, invalidating queries");
+      // Invalidate all chore-related queries with aggressive cache clearing
       queryClient.invalidateQueries({ queryKey: ["/api/chores"] });
       queryClient.invalidateQueries({ queryKey: ["/api/chore-stats"] });
-      // Also refetch chore queries to ensure immediate update
+      
+      // Force immediate refetch of all chore queries
       queryClient.refetchQueries({ queryKey: ["/api/chores"] });
+      queryClient.refetchQueries({ queryKey: [`/api/chores?house=${encodeURIComponent(selectedHouse)}`] });
+      
+      // Also clear any cached data
+      queryClient.removeQueries({ queryKey: ["/api/chores"] });
+      
       toast({
         title: "Success",
         description: "Chore deleted successfully",
       });
     },
     onError: (error: any) => {
+      console.error("Chore deletion failed:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to delete chore",

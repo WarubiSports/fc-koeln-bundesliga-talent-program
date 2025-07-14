@@ -1102,17 +1102,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete chore
-  app.delete("/api/chores/:id", simpleAdminOrCoachAuth, async (req, res) => {
+  app.delete("/api/chores/:id", simpleAdminOrCoachAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Delete chore request - ID:", id, "User:", req.user?.id);
+      
       const deleted = await storage.deleteChore(id);
+      console.log("Delete chore result:", deleted);
       
       if (!deleted) {
+        console.log("Chore not found with ID:", id);
         return res.status(404).json({ message: "Chore not found" });
       }
       
+      console.log("Chore deleted successfully:", id);
       res.status(204).send();
     } catch (error) {
+      console.error("Error deleting chore:", error);
       res.status(500).json({ message: "Failed to delete chore" });
     }
   });
