@@ -1,0 +1,64 @@
+# Replit deployment optimization
+# Exclude development files from deployment
+
+# Development dependencies
+*.log
+*.tmp
+*.temp
+.env.local
+.env.development
+.env.test
+
+# Build artifacts that get regenerated
+dist/
+build/
+.next/
+.nuxt/
+.vite/
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Git
+.git/
+.gitignore
+
+# Large files that aren't needed in production
+attached_assets/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.webp
+*.pdf
+*.zip
+*.tar.gz
+
+# Cache directories
+.cache/
+.parcel-cache/
+node_modules/.cache/
+.eslintcache
+.stylelintcache
+
+# OS files
+.DS_Store
+Thumbs.db
