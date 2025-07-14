@@ -1,20 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-
-console.log('Building FC Köln Management System deployment...');
-
-// Create dist directory
-if (!fs.existsSync('dist')) {
-  fs.mkdirSync('dist');
-}
-
-// Create public directory
-if (!fs.existsSync('dist/public')) {
-  fs.mkdirSync('dist/public');
-}
-
-// Copy the working CommonJS server
-const serverContent = `const http = require('http');
+const http = require('http');
 const path = require('path');
 const fs = require('fs');
 
@@ -31,7 +15,7 @@ users.set('max.bisinger@warubi-sports.com', {
 });
 
 function createToken(user) {
-  const token = \`user_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+  const token = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   tokens.set(token, { ...user, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 });
   return token;
 }
@@ -46,7 +30,7 @@ function validateToken(token) {
 }
 
 const server = http.createServer((req, res) => {
-  const url = new URL(req.url || '/', \`http://\${req.headers.host}\`);
+  const url = new URL(req.url || '/', `http://${req.headers.host}`);
   
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -71,7 +55,7 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ 
           status: 'ok', 
           timestamp: new Date().toISOString(),
-          message: 'FC Köln Management System - Production Ready'
+          message: 'FC Köln Management System - CommonJS Deployment'
         }));
         return;
       }
@@ -174,29 +158,7 @@ const server = http.createServer((req, res) => {
 
 const port = process.env.PORT || 5000;
 server.listen(port, '0.0.0.0', () => {
-  console.log(\`FC Köln Management System listening on port \${port}\`);
-  console.log(\`Admin: max.bisinger@warubi-sports.com / ITP2024\`);
-  console.log(\`Deployment: Production Ready - No External Dependencies\`);
+  console.log(`FC Köln Management System listening on port ${port}`);
+  console.log(`Admin: max.bisinger@warubi-sports.com / ITP2024`);
+  console.log(`Deployment: CommonJS - Production Ready`);
 });
-`;
-
-// Write server file
-fs.writeFileSync('dist/index.js', serverContent);
-
-// Create package.json
-const packageJson = {
-  "name": "fc-koln-management-system",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {}
-};
-
-fs.writeFileSync('dist/package.json', JSON.stringify(packageJson, null, 2));
-
-console.log('✅ Server deployment created successfully');
-console.log('✅ Zero external dependencies');
-console.log('✅ Production ready');
-console.log('✅ File size: ' + (fs.statSync('dist/index.js').size / 1024).toFixed(1) + 'KB');
