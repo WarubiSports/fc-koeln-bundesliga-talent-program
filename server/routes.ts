@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
       { username: 'max.bisinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
-      { username: 'th.el@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Thomas Ellinger' },
+      { username: 'th.el@warubi-sports.com', password: '1FCKöln', role: 'admin', name: 'Thomas Ellinger' },
       { username: 'max.bisinger@warubi-sports', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
       { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
       { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
