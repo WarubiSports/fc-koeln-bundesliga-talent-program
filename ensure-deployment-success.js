@@ -161,13 +161,17 @@ async function ensureDeploymentSuccess() {
   // Create the pure Node.js server
   fs.writeFileSync('dist/index.js', PURE_NODE_SERVER);
   
-  // Create package.json with zero dependencies
+  // Create package.json with zero dependencies and CommonJS configuration
   const packageJson = {
     name: 'fc-koln-management',
     version: '1.0.0',
+    type: 'commonjs',
     main: 'index.js',
     scripts: {
       start: 'node index.js'
+    },
+    engines: {
+      node: '>=16.0.0'
     }
   };
   
