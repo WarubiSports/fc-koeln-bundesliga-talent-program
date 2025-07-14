@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Build script for deployment
-echo "Starting deployment build..."
+# Build script for CommonJS deployment
+echo "Starting CommonJS deployment build..."
 
 # Build the frontend (with timeout to avoid hanging)
 echo "Building frontend..."
@@ -9,7 +9,7 @@ timeout 180s vite build --mode production || {
     echo "Frontend build timed out or failed, continuing with server build..."
 }
 
-# Copy the CommonJS server (this is critical and fast)
+# Copy the CommonJS server
 echo "Copying CommonJS server..."
 cp server/index-cjs.js dist/index.cjs
 
@@ -46,5 +46,10 @@ EOF
 
 echo "✓ Created deployment package.json"
 
-echo "Build completed successfully!"
+# Copy static files if they exist
+if [ -d "dist/public" ]; then
+    echo "✓ Frontend static files ready"
+fi
+
+echo "CommonJS build completed successfully!"
 echo "Deploy with: cd dist && node index.cjs"

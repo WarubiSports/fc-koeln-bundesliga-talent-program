@@ -164,6 +164,7 @@ Preferred communication style: Simple, everyday language.
 - **ROOT CAUSE CONFIRMED**: The --packages=external flag in esbuild was leaving import statements in the built file instead of bundling dependencies, causing "Cannot find module 'drizzle-orm'" errors in deployment environment.
 - **WORKING DEPLOYMENT CREATED**: Built standalone CommonJS server (5.2KB) with zero external dependencies, in-memory authentication, and all API endpoints working. Health check and login tests successful - ready for deployment after 17 failed attempts.
 - **ESBuild Configuration Fixed**: Successfully resolved all ESBuild deployment errors by changing format from ESM to CommonJS, removing "type": "module" from package.json, updating target to Node.js 20, and eliminating all ES6 import/export statements. Created deployment-ready build with pure CommonJS server and static HTML/CSS/JS frontend.
+- **Module Format Mismatch Resolved**: Fixed ESBuild module format error by creating pure CommonJS server (server/index-cjs.js) that avoids import.meta and top-level await incompatibilities. Updated build scripts to output .cjs files and deployment package.json to use CommonJS format. Login endpoint tested and working correctly with token authentication.
 
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints
