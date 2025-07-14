@@ -1,44 +1,33 @@
 #!/usr/bin/env node
 
-// Simple development server starter that works around import.meta.dirname issue
+/**
+ * Simple Development Server Starter
+ * This bypasses the vite.config.ts issue by using a working development server
+ */
+
 const { spawn } = require('child_process');
-const path = require('path');
 
-// Set NODE_ENV to development if not already set
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+console.log('🚀 Starting FC Köln Development Server (Alternative)...');
 
-console.log('Starting FC Köln Management System in development mode...');
-
-// Start the server with proper flags
-const serverProcess = spawn('node', [
-  '--experimental-import-meta-resolve',
-  '--loader', 'tsx/esm',
-  'server/index.ts'
-], {
+// Use the working development server directly
+const server = spawn('node', ['-r', 'tsx/cjs', 'server/index-dev.ts'], {
   stdio: 'inherit',
-  env: {
-    ...process.env,
-    NODE_ENV: 'development'
-  }
+  env: { ...process.env, NODE_ENV: 'development', PORT: '5000' }
 });
 
-serverProcess.on('exit', (code) => {
-  console.log(`Server process exited with code ${code}`);
-  process.exit(code);
-});
-
-serverProcess.on('error', (err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
-
-// Handle graceful shutdown
+// Handle process termination
 process.on('SIGINT', () => {
-  console.log('\nGracefully shutting down server...');
-  serverProcess.kill('SIGINT');
+  console.log('\n🛑 Shutting down development server...');
+  server.kill('SIGINT');
+  process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-  console.log('\nGracefully shutting down server...');
-  serverProcess.kill('SIGTERM');
+  server.kill('SIGTERM');
+  process.exit(0);
+});
+
+server.on('exit', (code) => {
+  console.log(`Development server exited with code ${code}`);
+  process.exit(code);
 });
