@@ -1,32 +1,36 @@
 import { build } from 'esbuild';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-async function buildServer() {
+async function buildProduction() {
   try {
     await build({
       entryPoints: ['server/index.ts'],
-      outdir: 'dist',
+      outfile: 'dist/index.js',
       bundle: true,
       platform: 'node',
       format: 'esm',
       target: 'node18',
       minify: true,
+      // Only external the truly problematic native dependencies
       external: [
         'bufferutil',
-        'utf-8-validate'
+        'utf-8-validate',
+        'lightningcss',
+        '@babel/preset-typescript',
+        '@babel/core'
       ],
       define: {
         'process.env.NODE_ENV': '"production"'
-      }
+      },
+      logLevel: 'warning'
     });
-    console.log('Server build completed successfully');
+    
+    console.log('✅ Production build completed successfully');
+    console.log('✅ All dependencies including drizzle-orm are now bundled');
+    
   } catch (error) {
-    console.error('Build failed:', error);
+    console.error('❌ Build failed:', error);
     process.exit(1);
   }
 }
 
-buildServer();
+buildProduction();
