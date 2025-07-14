@@ -52,6 +52,13 @@ attached_assets/
 *.zip
 *.tar.gz
 
+# Additional optimization
+node_modules/.cache/
+.vite/
+dist/
+*.log
+*.tmp
+
 # Cache directories
 .cache/
 .parcel-cache/
