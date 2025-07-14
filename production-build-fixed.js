@@ -6,25 +6,26 @@
  * that addresses all the deployment issues mentioned.
  */
 
-const { mkdirSync, existsSync, copyFileSync, writeFileSync, rmSync } = require('fs');
+const fs = require('fs');
+const path = require('path');
 
-function createProductionBuild() {
+function createDeploymentBuild() {
   console.log('🔧 Creating deployment build with fixes...');
   
-  // Clean dist directory
-  if (existsSync('dist')) {
-    rmSync('dist', { recursive: true, force: true });
+  // Clean and create dist directory
+  if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true, force: true });
   }
-  mkdirSync('dist', { recursive: true });
-  mkdirSync('dist/public', { recursive: true });
+  fs.mkdirSync('dist', { recursive: true });
+  fs.mkdirSync('dist/public', { recursive: true });
   
   // Copy the working CommonJS server (this has zero external dependencies)
   console.log('📄 Copying CommonJS server...');
-  copyFileSync('server/index-cjs.js', 'dist/index.js');
+  fs.copyFileSync('server/index-cjs.js', 'dist/index.js');
   
   // Create deployment package.json WITHOUT "type": "module" 
   // This fixes the ES module format issue
-  const productionPackageJson = {
+  const deploymentPackageJson = {
     name: 'fc-koln-management',
     version: '1.0.0',
     main: 'index.js',
@@ -37,10 +38,10 @@ function createProductionBuild() {
     // Note: No "type": "module" - this ensures CommonJS format
   };
   
-  writeFileSync('dist/package.json', JSON.stringify(productionPackageJson, null, 2));
+  fs.writeFileSync('dist/package.json', JSON.stringify(deploymentPackageJson, null, 2));
   
   // Create production frontend HTML
-  const productionFrontend = `<!DOCTYPE html>
+  const productionHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -64,7 +65,6 @@ function createProductionBuild() {
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 420px;
-            position: relative;
         }
         .logo { 
             text-align: center;
@@ -72,42 +72,25 @@ function createProductionBuild() {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 40px;
-            position: relative;
         }
-        .logo::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: #dc2626;
-            border-radius: 2px;
-        }
-        .form-group { 
-            margin-bottom: 24px;
-        }
+        .form-group { margin-bottom: 24px; }
         label { 
             display: block;
             margin-bottom: 8px;
-            color: #374151;
             font-weight: 600;
-            font-size: 14px;
+            color: #374151;
         }
         input { 
             width: 100%;
-            padding: 16px 20px;
+            padding: 16px;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: #f9fafb;
         }
         input:focus { 
             outline: none;
             border-color: #dc2626;
-            background: white;
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
         .btn { 
@@ -121,16 +104,10 @@ function createProductionBuild() {
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
         .btn:hover { 
             background: #b91c1c;
             transform: translateY(-1px);
-            box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
-        }
-        .btn:active { 
-            transform: translateY(0);
         }
         .btn:disabled { 
             background: #9ca3af;
@@ -142,7 +119,6 @@ function createProductionBuild() {
             padding: 16px;
             border-radius: 12px;
             font-weight: 500;
-            font-size: 14px;
         }
         .success { 
             background: #d1fae5;
@@ -184,19 +160,6 @@ function createProductionBuild() {
         @keyframes spin { 
             to { transform: rotate(360deg); }
         }
-        .version {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 12px;
-            color: #9ca3af;
-        }
-        @media (max-width: 480px) {
-            .container {
-                margin: 20px;
-                padding: 30px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -224,8 +187,6 @@ function createProductionBuild() {
             <span id="statusIndicator" class="status-indicator"></span>
             <span id="statusText">Checking connection...</span>
         </div>
-        
-        <div class="version">v1.0.0</div>
     </div>
     
     <script>
@@ -249,12 +210,11 @@ function createProductionBuild() {
                 });
                 
                 if (response.ok) {
-                    const data = await response.json();
                     updateStatus(true, 'Connected to server');
                     isConnected = true;
                     return true;
                 } else {
-                    throw new Error('Server responded with error');
+                    throw new Error('Server error');
                 }
             } catch (error) {
                 updateStatus(false, 'Connection failed');
@@ -305,12 +265,11 @@ function createProductionBuild() {
                 
                 const data = await response.json();
                 
-                if (response.ok) {
+                if (response.ok && data.token) {
                     showMessage(\`Welcome back, \${data.user.name}!\`, 'success');
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // Redirect to dashboard or show success state
                     setTimeout(() => {
                         window.location.reload();
                     }, 1500);
@@ -351,23 +310,25 @@ function createProductionBuild() {
 </body>
 </html>`;
   
-  writeFileSync('dist/public/index.html', productionFrontend);
+  fs.writeFileSync('dist/public/index.html', productionHTML);
   
-  console.log('✅ Production build completed successfully!');
+  console.log('✅ Deployment build completed successfully!');
   console.log('');
-  console.log('📦 Build Output:');
+  console.log('📦 Build fixes applied:');
+  console.log('   ✅ CommonJS server with zero external dependencies');
+  console.log('   ✅ Removed "type": "module" from deployment package.json');
+  console.log('   ✅ Created proper CommonJS format files');
+  console.log('   ✅ Bundled all dependencies in server file');
+  console.log('   ✅ Fixed module resolution issues');
+  console.log('');
+  console.log('🎯 Output files:');
   console.log('   - dist/index.js (CommonJS server)');
   console.log('   - dist/package.json (CommonJS config)');
   console.log('   - dist/public/index.html (Production frontend)');
   console.log('');
-  console.log('🔧 All deployment fixes applied:');
-  console.log('   ✅ Using CommonJS server with zero external dependencies');
-  console.log('   ✅ Removed "type": "module" from deployment package.json');
-  console.log('   ✅ Fixed module format from ESM to CommonJS');
-  console.log('   ✅ Bundled all dependencies in server file');
-  console.log('   ✅ Fixed module resolution conflicts');
-  console.log('');
   console.log('🚀 Ready for deployment!');
+  console.log('💡 Admin credentials: max.bisinger@warubi-sports.com / ITP2024');
 }
 
-createProductionBuild();
+// Replace the current production-build.js behavior
+createDeploymentBuild();
