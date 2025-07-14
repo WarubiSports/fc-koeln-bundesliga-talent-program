@@ -46,7 +46,7 @@ export default function AddChoreModal({ isOpen, onClose }: AddChoreModalProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertChore) => {
-      return apiRequest("/api/chores", "POST", data);
+      return apiRequest("/api/simple-chores", "POST", data);
     },
     onSuccess: () => {
       // Invalidate all chore-related queries with pattern matching
