@@ -11,53 +11,6 @@ import { sendUserConfirmationEmail, sendPasswordResetEmail } from "./email-servi
 
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Register simple auth endpoints BEFORE session middleware
-  // Simple chore creation endpoint that bypasses session middleware
-  app.post("/api/simple-chores", async (req: any, res) => {
-    try {
-      // Manual authentication check to bypass session middleware
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: "Authorization header required" });
-      }
-      
-      const token = authHeader.substring(7);
-      const userData = getUserFromToken(token);
-      
-      if (!userData || !['admin', 'coach', 'staff'].includes(userData.role)) {
-        return res.status(403).json({ message: "Admin, Coach, or Staff access required" });
-      }
-      
-      const user = userData;
-      console.log("Creating chore - user:", user);
-      console.log("Creating chore - request body:", req.body);
-      
-      const dataToValidate = {
-        ...req.body,
-        createdBy: user.id || user.username || user.email
-      };
-      console.log("Creating chore - data to validate:", dataToValidate);
-      
-      const validatedData = insertChoreSchema.parse(dataToValidate);
-      console.log("Creating chore - validated data:", validatedData);
-      
-      const chore = await storage.createChore(validatedData);
-      console.log("Creating chore - created chore:", chore);
-      res.status(201).json(chore);
-    } catch (error) {
-      console.error("Error creating chore:", error);
-      console.error("Error stack:", error.stack);
-      if (error instanceof z.ZodError) {
-        console.error("Validation errors:", error.errors);
-        return res.status(400).json({ 
-          message: "Validation failed", 
-          errors: error.errors 
-        });
-      }
-      res.status(500).json({ message: "Failed to create chore" });
-    }
-  });
-
   // Auth middleware
   await setupAuth(app);
 
@@ -132,17 +85,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Simple credential validation - you can modify these as needed
     const validCredentials = [
       { username: 'max.bisinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
-      { username: 'th.el@warubi-sports.com', password: '1FCKöln', role: 'admin', name: 'Thomas Ellinger' },
       { username: 'max.bisinger@warubi-sports', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
       { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
       { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
       { username: 'staff', password: 'staff123', role: 'staff', name: 'Staff Member' },
-      { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' },
-      // Staff member credentials
-      { username: 'ikercasanovar@gmail.com', password: 'ITP2024', role: 'staff', name: 'Iker Casanova' },
-      { username: 'ava-lehnhausen@web.de', password: 'ITP2024', role: 'staff', name: 'Ava Gamers' },
-      { username: 'mette.klein2002@gmail.com', password: 'ITP2024', role: 'staff', name: 'Mette Klein' },
-      { username: 'ctapia22002@gmail.com', password: 'ITP2024', role: 'staff', name: 'Connie Tapia' }
+      { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' }
     ];
     
     console.log('Available credentials:', validCredentials.map(c => ({ username: c.username, password: c.password })));
@@ -638,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all approved users and players for deletion management
-  app.get('/api/admin/approved-users', simpleAdminOrCoachAuth, async (req, res) => {
+  app.get('/api/admin/approved-users', simpleAdminAuth, async (req, res) => {
     try {
       const allUsers = await storage.getAllUsersWithoutImages();
       const approvedUsers = allUsers
@@ -717,12 +664,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId } = req.params;
       const adminUser = req.user;
       
-      // Only allow Max Bisinger and Thomas Ellinger to delete users
+      // Only allow Max Bisinger to delete users
       const userEmail = adminUser?.userData?.email || adminUser?.email || adminUser?.id;
-      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && 
-          userEmail !== 'max.bisinger@warubi-sports.com' && 
-          userEmail !== 'th.el@warubi-sports.com') {
-        return res.status(403).json({ message: "Only Max Bisinger and Thomas Ellinger can delete users" });
+      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && userEmail !== 'max.bisinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger can delete users" });
       }
       
       // Prevent self-deletion
@@ -743,12 +688,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { playerId } = req.params;
       const adminUser = req.user;
       
-      // Only allow Max Bisinger and Thomas Ellinger to delete players
+      // Only allow Max Bisinger to delete players
       const userEmail = adminUser?.userData?.email || adminUser?.email || adminUser?.id;
-      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && 
-          userEmail !== 'max.bisinger@warubi-sports.com' && 
-          userEmail !== 'th.el@warubi-sports.com') {
-        return res.status(403).json({ message: "Only Max Bisinger and Thomas Ellinger can delete players" });
+      if (userEmail !== 'max.bisinger@warubi-sports.com@fckoeln.dev' && userEmail !== 'max.bisinger@warubi-sports.com') {
+        return res.status(403).json({ message: "Only Max Bisinger can delete players" });
       }
       
       const deleted = await storage.deletePlayer(parseInt(playerId));
@@ -1094,23 +1037,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new chore - Using simple auth to bypass session middleware
-  app.post("/api/chores", async (req: any, res) => {
+  // Create new chore
+  app.post("/api/chores", simpleAdminOrCoachAuth, async (req: any, res) => {
     try {
-      // Manual authentication check to bypass session middleware
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: "Authorization header required" });
-      }
-      
-      const token = authHeader.substring(7);
-      const userData = getUserFromToken(token);
-      
-      if (!userData || !['admin', 'coach', 'staff'].includes(userData.role)) {
-        return res.status(403).json({ message: "Admin, Coach, or Staff access required" });
-      }
-      
-      const user = userData;
+      const user = req.user;
       console.log("Creating chore - user:", user);
       console.log("Creating chore - request body:", req.body);
       
@@ -1121,14 +1051,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Creating chore - data to validate:", dataToValidate);
       
       const validatedData = insertChoreSchema.parse(dataToValidate);
-      console.log("Creating chore - validated data:", validatedData);
       
       const chore = await storage.createChore(validatedData);
-      console.log("Creating chore - created chore:", chore);
       res.status(201).json(chore);
     } catch (error) {
       console.error("Error creating chore:", error);
-      console.error("Error stack:", error.stack);
       if (error instanceof z.ZodError) {
         console.error("Validation errors:", error.errors);
         return res.status(400).json({ 
@@ -1141,7 +1068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update chore
-  app.put("/api/chores/:id", simpleAdminOrCoachAuth, async (req, res) => {
+  app.put("/api/chores/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = updateChoreSchema.parse(req.body);
@@ -1165,23 +1092,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete chore
-  app.delete("/api/chores/:id", simpleAdminOrCoachAuth, async (req: any, res) => {
+  app.delete("/api/chores/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      console.log("Delete chore request - ID:", id, "User:", req.user?.id);
-      
       const deleted = await storage.deleteChore(id);
-      console.log("Delete chore result:", deleted);
       
       if (!deleted) {
-        console.log("Chore not found with ID:", id);
         return res.status(404).json({ message: "Chore not found" });
       }
       
-      console.log("Chore deleted successfully:", id);
       res.status(204).send();
     } catch (error) {
-      console.error("Error deleting chore:", error);
       res.status(500).json({ message: "Failed to delete chore" });
     }
   });
@@ -1229,7 +1150,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/chore-rotation/generate-weekly", simpleAdminOrCoachAuth, async (req, res) => {
+  app.post("/api/chore-rotation/generate-weekly", async (req, res) => {
     try {
       const { choreRotationEngine } = await import('./choreRotation');
       const assignments = await choreRotationEngine.generateWeeklyChoreAssignments();
@@ -1287,7 +1208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/house-competition/award-points", simpleAdminOrCoachAuth, async (req, res) => {
+  app.post("/api/house-competition/award-points", async (req, res) => {
     try {
       const { house, category, activity, points, description, recordedBy } = req.body;
       const { houseCompetition } = await import('./houseCompetition');

@@ -55,19 +55,13 @@ export const simpleAdminOrCoachAuth: RequestHandler = (req: any, res, next) => {
     const token = authHeader.substring(7);
     const userData = getUserFromToken(token);
     
-    console.log('SimpleAdminOrCoachAuth - Token:', token.substring(0, 20) + '...');
-    console.log('SimpleAdminOrCoachAuth - UserData:', userData);
-    console.log('SimpleAdminOrCoachAuth - Role:', userData?.role);
-    console.log('SimpleAdminOrCoachAuth - LoggedInUsers count:', loggedInUsers.size);
-    
-    if (userData && (userData.role === 'admin' || userData.role === 'coach' || userData.role === 'staff')) {
+    if (userData && (userData.role === 'admin' || userData.role === 'coach')) {
       req.user = userData;
       return next();
     }
   }
   
-  console.log('SimpleAdminOrCoachAuth - Access denied');
-  res.status(403).json({ message: "Admin, Coach, or Staff access required" });
+  res.status(403).json({ message: "Admin or Coach access required" });
 };
 
 export function createUserToken(userData: any): string {

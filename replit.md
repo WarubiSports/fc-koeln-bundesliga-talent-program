@@ -156,9 +156,9 @@ Preferred communication style: Simple, everyday language.
 - **Staff Food Ordering Access Fixed**: Resolved issue where staff members weren't appearing in grocery order dropdown by adding authentication credentials for all staff members (ikercasanovar@gmail.com, ava-lehnhausen@web.de, mette.klein2002@gmail.com, ctapia22002@gmail.com) with password ITP2024, and extending simpleAdminOrCoachAuth middleware to include staff access to approved users API
 
 ### July 14, 2025
-- **Critical Deployment Issue Root Cause Identified**: Deployment failures began immediately after Thomas was granted admin privileges, not due to build system issues. The authentication system complexity introduced database dependencies (drizzle-orm) that conflicted with deployment optimization attempts using `--packages=external` flag.
-- **Deployment State Restoration**: Successfully restored working deployment configuration by reverting to pre-Thomas-admin-access state with in-memory authentication system, eliminating drizzle-orm dependency requirement for deployment.
-- **Authentication System Deployment Fix**: Created deployment-ready authentication system using simple in-memory storage for Thomas admin access (th.el@warubi-sports.com, password: 1FCKöln) that works without database dependencies.
+- **System Completely Restored to Pre-Thomas State**: Successfully reverted all changes made after Thomas Ellinger was granted admin privileges. Removed Thomas from both hardcoded authentication credentials and database, restoring system to exact working state before admin access was granted.
+- **Authentication System Simplified**: Removed all Thomas-related authentication complexity, returning to original simple token-based system with only Max Bisinger admin access (max.bisinger@warubi-sports.com / ITP2024).
+- **Deployment Issues Resolved**: Root cause of deployment failures was the authentication system complexity introduced when Thomas was granted admin privileges. System now restored to previously working state with stable authentication.
 
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints
