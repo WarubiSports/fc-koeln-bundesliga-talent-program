@@ -55,13 +55,13 @@ export const simpleAdminOrCoachAuth: RequestHandler = (req: any, res, next) => {
     const token = authHeader.substring(7);
     const userData = getUserFromToken(token);
     
-    if (userData && (userData.role === 'admin' || userData.role === 'coach')) {
+    if (userData && (userData.role === 'admin' || userData.role === 'coach' || userData.role === 'staff')) {
       req.user = userData;
       return next();
     }
   }
   
-  res.status(403).json({ message: "Admin or Coach access required" });
+  res.status(403).json({ message: "Admin, Coach, or Staff access required" });
 };
 
 export function createUserToken(userData: any): string {

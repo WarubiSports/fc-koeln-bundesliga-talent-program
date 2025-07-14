@@ -90,7 +90,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' },
       { username: 'coach', password: 'coach123', role: 'coach', name: 'Coach' },
       { username: 'staff', password: 'staff123', role: 'staff', name: 'Staff Member' },
-      { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' }
+      { username: 'manager', password: 'manager123', role: 'manager', name: 'Team Manager' },
+      // Staff member credentials
+      { username: 'ikercasanovar@gmail.com', password: 'ITP2024', role: 'staff', name: 'Iker Casanova' },
+      { username: 'ava-lehnhausen@web.de', password: 'ITP2024', role: 'staff', name: 'Ava Gamers' },
+      { username: 'mette.klein2002@gmail.com', password: 'ITP2024', role: 'staff', name: 'Mette Klein' },
+      { username: 'ctapia22002@gmail.com', password: 'ITP2024', role: 'staff', name: 'Connie Tapia' }
     ];
     
     console.log('Available credentials:', validCredentials.map(c => ({ username: c.username, password: c.password })));
@@ -586,7 +591,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all approved users and players for deletion management
-  app.get('/api/admin/approved-users', simpleAdminAuth, async (req, res) => {
+  app.get('/api/admin/approved-users', simpleAdminOrCoachAuth, async (req, res) => {
     try {
       const allUsers = await storage.getAllUsersWithoutImages();
       const approvedUsers = allUsers
