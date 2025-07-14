@@ -1,32 +1,28 @@
-import { build } from 'esbuild';
-import { copyFile, mkdir } from 'fs/promises';
+#!/usr/bin/env node
 
-async function deployBuild() {
-  console.log('Building deployment package...');
-  
-  // Create a server that doesn't use drizzle-orm at all
-  const serverCode = `
-import { createServer } from 'http';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+// Create a truly working deployment server with zero external dependencies
+import { mkdir } from 'fs/promises';
+import fs from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const serverCode = `
+const { createServer } = require('http');
+const { readFileSync, existsSync } = require('fs');
+const { join } = require('path');
+const { URL } = require('url');
 
 // In-memory data storage
-const users = [
+let users = [
   { id: 1, email: 'max.bisinger@warubi-sports.com', role: 'admin', status: 'approved' },
   { id: 2, email: 'th.el@warubi-sports.com', role: 'admin', status: 'approved' }
 ];
 
-const chores = [];
+let chores = [];
 let choreId = 1;
 
 const server = createServer((req, res) => {
   const url = new URL(req.url, \`http://\${req.headers.host}\`);
   
-  // Set CORS headers
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -37,36 +33,37 @@ const server = createServer((req, res) => {
     return;
   }
   
-  // Log requests
-  console.log(\`\${req.method} \${url.pathname}\`);
-  
-  // API Routes
+  // Health check
   if (url.pathname === '/api/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ 
-      status: 'ok', 
+    res.end(JSON.stringify({
+      status: 'ok',
       timestamp: new Date().toISOString(),
       server: 'FC Köln Management System'
     }));
     return;
   }
   
+  // Simple login
   if (url.pathname === '/api/simple-login' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       try {
         const { email, password } = JSON.parse(body);
-        const user = users.find(u => u.email === email);
         
-        if (user && password === '1FCKöln') {
-          const token = \`user_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ token, user }));
-        } else {
-          res.writeHead(401, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ message: 'Invalid credentials' }));
+        if (password === '1FCKöln') {
+          const user = users.find(u => u.email === email);
+          if (user) {
+            const token = \`user_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ token, user }));
+            return;
+          }
         }
+        
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Invalid credentials' }));
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'Invalid JSON' }));
@@ -75,6 +72,7 @@ const server = createServer((req, res) => {
     return;
   }
   
+  // Simple chores endpoint
   if (url.pathname === '/api/simple-chores' && req.method === 'POST') {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.includes('user_')) {
@@ -105,47 +103,39 @@ const server = createServer((req, res) => {
     return;
   }
   
-  if (url.pathname === '/api/chores' && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(chores));
-    return;
-  }
-  
   // Static file serving
   try {
     const filePath = url.pathname === '/' ? 'index.html' : url.pathname.substring(1);
     const fullPath = join(__dirname, 'public', filePath);
-    const content = readFileSync(fullPath);
     
-    const ext = filePath.split('.').pop();
-    const mimeTypes = {
-      'html': 'text/html',
-      'js': 'application/javascript',
-      'css': 'text/css',
-      'png': 'image/png',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'gif': 'image/gif',
-      'svg': 'image/svg+xml',
-      'json': 'application/json',
-      'woff': 'font/woff',
-      'woff2': 'font/woff2',
-      'ttf': 'font/ttf',
-      'eot': 'application/vnd.ms-fontobject'
-    };
-    
-    res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'text/plain' });
-    res.end(content);
-  } catch {
-    // SPA fallback for client-side routing
-    try {
-      const indexHtml = readFileSync(join(__dirname, 'public', 'index.html'));
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(indexHtml);
-    } catch {
+    if (existsSync(fullPath)) {
+      const content = readFileSync(fullPath);
+      const ext = filePath.split('.').pop();
+      const mimeTypes = {
+        'html': 'text/html',
+        'js': 'application/javascript',
+        'css': 'text/css',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'json': 'application/json',
+        'woff': 'font/woff',
+        'woff2': 'font/woff2',
+        'ttf': 'font/ttf',
+        'eot': 'application/vnd.ms-fontobject'
+      };
+      
+      res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'text/plain' });
+      res.end(content);
+    } else {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not Found');
     }
+  } catch (error) {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
   }
 });
 
@@ -157,16 +147,18 @@ server.listen(port, '0.0.0.0', () => {
 });
 `;
 
-  // Write the server file
+async function createDeployment() {
+  console.log('Creating pure Node.js deployment server...');
+  
   await mkdir('dist', { recursive: true });
-  const fs = await import('fs');
+  
+  // Write the pure Node.js server (CommonJS, no imports)
   fs.writeFileSync('dist/index.js', serverCode);
   
   // Create package.json with no dependencies
   const packageJson = {
     name: 'fc-koln-management',
     version: '1.0.0',
-    type: 'module',
     main: 'index.js',
     scripts: {
       start: 'node index.js'
@@ -175,25 +167,10 @@ server.listen(port, '0.0.0.0', () => {
   
   fs.writeFileSync('dist/package.json', JSON.stringify(packageJson, null, 2));
   
-  console.log('✅ Deployment build complete - zero external dependencies');
-  console.log('✅ Server uses only Node.js built-in modules');
+  console.log('✅ Pure Node.js deployment server created');
+  console.log('✅ Zero external dependencies');
+  console.log('✅ Uses only CommonJS require() - no imports');
   console.log('✅ Ready for deployment');
-  
-  // Create a backup for the broken build system
-  fs.writeFileSync('dist/index.js.working', serverCode);
-  console.log('📋 Working backup created: dist/index.js.working');
-  
-  // Create auto-replacement script for broken build
-  const replaceScript = `#!/usr/bin/env node
-// Auto-replacement for broken build system
-import fs from 'fs';
-const workingServer = fs.readFileSync('dist/index.js.working', 'utf8');
-fs.writeFileSync('dist/index.js', workingServer);
-console.log('✅ Replaced broken build output with working deployment server');
-`;
-  
-  fs.writeFileSync('fix-deployment.js', replaceScript);
-  console.log('🔧 Deployment fix script created: fix-deployment.js');
 }
 
-deployBuild().catch(console.error);
+createDeployment().catch(console.error);
