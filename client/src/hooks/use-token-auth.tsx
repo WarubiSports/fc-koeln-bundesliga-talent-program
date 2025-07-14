@@ -95,10 +95,12 @@ export function useAuth() {
   // Extended functionality
   const canManageCalendar = context.user?.role === 'admin' || context.user?.role === 'coach';
   const canManagePlayers = context.user?.role === 'admin' || context.user?.role === 'coach';
+  const isAdmin = context.user?.role === 'admin';
   
   return {
     ...context,
     canManageCalendar,
-    canManagePlayers
+    canManagePlayers,
+    isAdmin
   };
 }
