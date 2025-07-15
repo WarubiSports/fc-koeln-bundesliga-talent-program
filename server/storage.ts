@@ -410,6 +410,7 @@ export class DatabaseStorage implements IStorage {
     if (profileData.medicalConditions !== undefined) updateData.medicalConditions = profileData.medicalConditions;
     if (profileData.allergies !== undefined) updateData.allergies = profileData.allergies;
     if (profileData.house !== undefined) updateData.house = profileData.house;
+    if (profileData.role !== undefined) updateData.role = profileData.role;
 
     // Update the user
     const [updatedUser] = await db
