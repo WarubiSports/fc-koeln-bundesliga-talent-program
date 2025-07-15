@@ -205,14 +205,22 @@ Current status: All core systems operational - enhanced authentication with pers
 
 ## Current Development Workflow (Post-Environment Change)
 
-### For Development and Testing
+### For Preview and Development Testing
 ```bash
-node server/index-dev.js
+node preview-working.js
 ```
-- Bypasses broken vite.config.ts due to Replit environment change
-- Runs development server on port 5000
+- Builds production version and starts preview server
+- Automatically finds available port (5000-5010)
 - Full authentication system (max.bisinger@warubi-sports.com / ITP2024)
-- Serves production frontend build for testing
+- Complete FC Köln Management System functionality
+- Bypasses all vite.config.ts configuration issues
+
+### For Quick Testing (if already built)
+```bash
+PORT=8080 node dist/index.js
+```
+- Direct access to production server
+- All features and authentication working
 
 ### For Deployment
 ```bash
@@ -226,5 +234,5 @@ npm start        # Starts production server
 ### Issue Summary
 - Original `npm run dev` broken due to Replit environment change from ES modules to CommonJS
 - vite.config.ts uses top-level await which is incompatible with new CommonJS mode
-- Development server (server/index-dev.js) works around this limitation
+- Preview solution uses production build system to provide working development environment
 - Deployment pipeline remains fully functional and tested
