@@ -18,9 +18,9 @@ function createProductionBuild() {
   mkdirSync('dist', { recursive: true });
   mkdirSync('dist/public', { recursive: true });
   
-  // Copy the working CommonJS server (this has zero external dependencies)
+  // Copy the working CommonJS server with database functionality and role fix
   console.log('📄 Copying CommonJS server...');
-  copyFileSync('server/index-cjs.js', 'dist/index.js');
+  copyFileSync('server/index-production.js', 'dist/index.js');
   
   // Create deployment package.json WITHOUT "type": "module" 
   // This fixes the ES module format issue
