@@ -175,6 +175,9 @@ Preferred communication style: Simple, everyday language.
 - **Production Build Role Update Fix Applied**: Fixed production deployment issue where role updates weren't working because production build used placeholder `server/index-cjs.js` instead of real database code. Created `server/index-production.js` with complete database functionality including role update fix, and updated `production-build.js` to use it. Member role changes now persist correctly in production.
 - **System Status**: All core functionality operational - authentication system, database storage, API endpoints, production deployment pipeline, and member management role updates fully functional in both development and production environments. Issue is limited to development workflow configuration, not application functionality.
 
+### July 16, 2025
+- **Thomas Ellinger Food Delivery Access**: Added Thomas Ellinger to authentication system with staff credentials to fix "Message is not a valid html token" error when completing deliveries. Added credentials (thomas.ellinger@warubi-sports.com / ITP2024 and th.el@warubi-sports.com / ITP2024) to both development and production servers with staff role, allowing delivery completion access.
+
 ### July 9, 2025
 - **Profile Form Validation Issue**: Persistent validation errors on phone number, emergency contact name, and emergency contact phone fields despite extensive troubleshooting - added noValidate to form element and implemented custom validation logic to bypass HTML5 validation constraints
 - **Profile Form Submission Critical Issue**: Form submission completely non-functional - tried multiple approaches including removing form elements, using direct button clicks, adding alert popups, removing all validation, creating entirely new components, but clicking "Update Profile" produces no response whatsoever. Issue appears to be preventing any JavaScript execution on form submission.

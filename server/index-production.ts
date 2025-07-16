@@ -124,13 +124,25 @@ app.post('/api/auth/simple-login', (req, res) => {
   
   console.log('Production login attempt:', loginIdentifier);
   
-  if (loginIdentifier === 'max.bisinger@warubi-sports.com' && password === 'ITP2024') {
-    const user = users.find(u => u.email === loginIdentifier);
-    if (user) {
-      const token = createUserToken(user);
-      res.json({ token, user, message: 'Login successful' });
-      return;
-    }
+  const validCredentials = [
+    { username: 'max.bisinger@warubi-sports.com', password: 'ITP2024', role: 'admin', name: 'Max Bisinger' },
+    { username: 'thomas.ellinger@warubi-sports.com', password: 'ITP2024', role: 'staff', name: 'Thomas Ellinger' },
+    { username: 'th.el@warubi-sports.com', password: 'ITP2024', role: 'staff', name: 'Thomas Ellinger' }
+  ];
+  
+  const credentials = validCredentials.find(c => c.username === loginIdentifier && c.password === password);
+  if (credentials) {
+    const userData = {
+      id: credentials.username,
+      firstName: credentials.name.split(' ')[0],
+      lastName: credentials.name.split(' ')[1] || '',
+      email: credentials.username,
+      role: credentials.role,
+      status: 'approved'
+    };
+    const token = createUserToken(userData);
+    res.json({ token, user: userData, message: 'Login successful' });
+    return;
   }
   
   res.status(401).json({ message: 'Invalid credentials' });
