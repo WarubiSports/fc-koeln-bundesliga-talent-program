@@ -18,12 +18,12 @@ function createProductionBuild() {
   mkdirSync('dist', { recursive: true });
   mkdirSync('dist/public', { recursive: true });
   
-  // Copy the working CommonJS server with database functionality and role fix
-  console.log('📄 Copying CommonJS server...');
-  copyFileSync('server/index-production.js', 'dist/index.js');
+  // Copy the zero-dependency server
+  console.log('📄 Copying zero-dependency server...');
+  copyFileSync('server/index-zero-deps.js', 'dist/index.js');
   
-  // Create deployment package.json WITHOUT "type": "module" 
-  // This fixes the ES module format issue
+  // Create deployment package.json WITHOUT "type": "module" and NO dependencies
+  // This fixes the ES module format issue and dependency conflicts
   const productionPackageJson = {
     name: 'fc-koln-management',
     version: '1.0.0',
@@ -34,7 +34,7 @@ function createProductionBuild() {
     engines: {
       node: '>=20.0.0'
     }
-    // Note: No "type": "module" - this ensures CommonJS format
+    // Note: No "type": "module" and NO dependencies - completely standalone
   };
   
   writeFileSync('dist/package.json', JSON.stringify(productionPackageJson, null, 2));
