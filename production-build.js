@@ -18,9 +18,9 @@ function createProductionBuild() {
   mkdirSync('dist', { recursive: true });
   mkdirSync('dist/public', { recursive: true });
   
-  // Copy the zero-dependency server
-  console.log('📄 Copying zero-dependency server...');
-  copyFileSync('server/index-zero-deps.js', 'dist/index.js');
+  // Copy the Replit-aligned server
+  console.log('📄 Copying Replit-aligned server...');
+  copyFileSync('index.js', 'dist/index.js');
   
   // Create deployment package.json WITHOUT "type": "module" and NO dependencies
   // This fixes the ES module format issue and dependency conflicts
