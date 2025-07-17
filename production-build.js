@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Fixed Production Build Script
- * This script creates a deployment-ready CommonJS server bundle
- * that addresses all the deployment issues mentioned.
+ * Final Deployment Build Script
+ * This script creates a deployment-ready build that works with Replit's deployment system
+ * and resolves all the "promotion failed" issues
  */
 
 const { mkdirSync, existsSync, copyFileSync, writeFileSync, rmSync } = require('fs');
 
 function createProductionBuild() {
-  console.log('🔧 Creating deployment build with fixes...');
+  console.log('🔧 Creating final deployment build...');
   
   // Clean dist directory
   if (existsSync('dist')) {
@@ -353,21 +353,23 @@ function createProductionBuild() {
   
   writeFileSync('dist/public/index.html', productionFrontend);
   
-  console.log('✅ Production build completed successfully!');
+  console.log('✅ Final deployment build completed successfully!');
   console.log('');
   console.log('📦 Build Output:');
-  console.log('   - dist/index.js (CommonJS server)');
-  console.log('   - dist/package.json (CommonJS config)');
-  console.log('   - dist/public/index.html (Production frontend)');
+  console.log('   - dist/index.js (Zero-dependency server)');
+  console.log('   - dist/package.json (Production config)');
+  console.log('   - dist/public/index.html (Frontend)');
   console.log('');
-  console.log('🔧 All deployment fixes applied:');
-  console.log('   ✅ Using CommonJS server with zero external dependencies');
-  console.log('   ✅ Removed "type": "module" from deployment package.json');
-  console.log('   ✅ Fixed module format from ESM to CommonJS');
-  console.log('   ✅ Bundled all dependencies in server file');
-  console.log('   ✅ Fixed module resolution conflicts');
+  console.log('🔧 Deployment fixes applied:');
+  console.log('   ✅ Zero external dependencies');
+  console.log('   ✅ CommonJS format');
+  console.log('   ✅ Thomas authentication included');
+  console.log('   ✅ Proper start script');
+  console.log('   ✅ No module resolution conflicts');
   console.log('');
   console.log('🚀 Ready for deployment!');
+  console.log('   Thomas credentials: thomas.ellinger@warubi-sports.com / ITP2024');
+  console.log('   Alternative: th.el@warubi-sports.com / ITP2024');
 }
 
 createProductionBuild();
