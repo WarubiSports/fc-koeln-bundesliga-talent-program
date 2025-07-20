@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Test</title>
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 224 71% 4%;
+            --card: 0 0% 100%;
+            --card-foreground: 224 71% 4%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 224 71% 4%;
+            --primary: 224 71% 4%;
+            --primary-foreground: 210 20% 98%;
+            --secondary: 220 14% 96%;
+            --secondary-foreground: 220 9% 46%;
+            --muted: 220 14% 96%;
+            --muted-foreground: 220 9% 46%;
+            --accent: 220 14% 96%;
+            --accent-foreground: 220 9% 46%;
+            --destructive: 0 84% 60%;
+            --destructive-foreground: 210 20% 98%;
+            --border: 220 13% 91%;
+            --input: 220 13% 91%;
+            --ring: 224 71% 4%;
+            --radius: 0.5rem;
+        }
+        * { border-color: hsl(var(--border)); }
+        body {
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            margin: 0;
+        }
+        .debug { position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 9999; }
+    </style>
+</head>
+<body>
+    <div class="debug" id="debug">Loading...</div>
+    <div id="root"></div>
+    
+    <script>
+        const debug = document.getElementById('debug');
+        
+        window.addEventListener('error', (e) => {
+            debug.textContent = 'JS Error: ' + e.message;
+            debug.style.background = 'red';
+        });
+        
+        window.addEventListener('unhandledrejection', (e) => {
+            debug.textContent = 'Promise Error: ' + e.reason;
+            debug.style.background = 'orange';
+        });
+        
+        // Try to load React app
+        setTimeout(() => {
+            debug.textContent = 'Loading React...';
+            debug.style.background = 'blue';
+            
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/assets/index-DFRn-7AA.css';
+            link.onload = () => {
+                debug.textContent = 'CSS loaded, loading JS...';
+                
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = '/assets/index-D9rQIHwU.js';
+                script.onload = () => {
+                    debug.textContent = 'React script loaded successfully';
+                    debug.style.background = 'green';
+                };
+                script.onerror = (e) => {
+                    debug.textContent = 'React script failed to load: ' + e.message;
+                    debug.style.background = 'red';
+                };
+                document.head.appendChild(script);
+            };
+            link.onerror = () => {
+                debug.textContent = 'CSS failed to load';
+                debug.style.background = 'red';
+            };
+            document.head.appendChild(link);
+        }, 500);
+        
+        // Check if React rendered after 3 seconds
+        setTimeout(() => {
+            const root = document.getElementById('root');
+            if (root && root.innerHTML && root.innerHTML.trim() !== '') {
+                debug.textContent = 'React rendered successfully!';
+                debug.style.background = 'darkgreen';
+            } else {
+                debug.textContent = 'React failed to render - root is empty';
+                debug.style.background = 'darkred';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
