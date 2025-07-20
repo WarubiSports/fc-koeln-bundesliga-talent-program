@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Debug Test</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: Arial, sans-serif; 
+            background: #f0f0f0;
+        }
+        .debug-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>FC Köln Management System Debug</h1>
+    
+    <div class="debug-info">
+        <h2>Asset Loading Test</h2>
+        <div id="asset-test">Testing...</div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Authentication Test</h2>
+        <div id="auth-test">
+            <input type="email" id="email" placeholder="Email" value="max.bisinger@warubi-sports.com">
+            <input type="password" id="password" placeholder="Password" value="ITP2024">
+            <button onclick="testAuth()">Test Login</button>
+        </div>
+        <div id="auth-result"></div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Original App Container</h2>
+        <div id="root" style="background: #e0e0e0; min-height: 200px; padding: 20px;">
+            React app should load here...
+        </div>
+    </div>
+
+    <script>
+        function testAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('auth-result');
+            
+            fetch('/api/auth/simple-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    resultDiv.innerHTML = `<div class="success">✓ Login successful! Token: ${data.token.substring(0, 20)}...</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ Login failed: ${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            });
+        }
+        
+        // Test asset loading
+        fetch('/assets/index-D9rQIHwU.js')
+            .then(response => {
+                const assetDiv = document.getElementById('asset-test');
+                if (response.ok) {
+                    assetDiv.innerHTML = '<div class="success">✓ JavaScript assets loading correctly</div>';
+                } else {
+                    assetDiv.innerHTML = '<div class="error">✗ JavaScript assets failed to load</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('asset-test').innerHTML = `<div class="error">✗ Asset error: ${error.message}</div>`;
+            });
+            
+        // Load the original React app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.crossOrigin = true;
+        script.src = '/assets/index-D9rQIHwU.js';
+        script.onload = () => {
+            console.log('React script loaded successfully');
+        };
+        script.onerror = (error) => {
+            console.error('React script failed to load:', error);
+            document.getElementById('root').innerHTML = '<div class="error">React app failed to load</div>';
+        };
+        document.head.appendChild(script);
+        
+        // Add CSS
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.crossOrigin = true;
+        link.href = '/assets/index-DFRn-7AA.css';
+        document.head.appendChild(link);
+    </script>
+</body>
+</html>
