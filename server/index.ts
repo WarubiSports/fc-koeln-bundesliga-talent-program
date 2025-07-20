@@ -66,6 +66,103 @@ app.use((req, res, next) => {
       console.log(`Static directory not found: ${clientDistPath}`);
     }
     
+    // Add direct FC Köln login route
+    app.get('/fc-login', (_req, res) => {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FC Köln International Talent Program</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    .login-container { 
+      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; 
+    }
+    .login-card { 
+      background: white; padding: 3rem; border-radius: 1rem; 
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; 
+    }
+    .logo { text-align: center; color: #dc2626; font-size: 2rem; font-weight: 700; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+    input { width: 100%; padding: 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; }
+    input:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+    button { width: 100%; padding: 0.75rem; background: #dc2626; color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    button:hover { background: #b91c1c; }
+    .message { margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; font-weight: 500; }
+    .success { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo">FC Köln Management</div>
+      <div style="text-align: center; color: #666; margin-bottom: 2rem;">International Talent Program</div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required placeholder="Enter your email" value="max.bisinger@warubi-sports.com">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Enter your password" value="ITP2024">
+        </div>
+        <button type="submit">Sign In</button>
+      </form>
+      <div id="message"></div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+      try {
+        const response = await fetch('/api/auth/simple-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (response.ok && data.token) {
+          localStorage.setItem('auth-token', data.token);
+          messageDiv.innerHTML = '<div class="message success">Login successful! Welcome to FC Köln Management System.</div>';
+        } else {
+          messageDiv.innerHTML = '<div class="message error">' + (data.message || 'Login failed') + '</div>';
+        }
+      } catch (error) {
+        messageDiv.innerHTML = '<div class="message error">Connection error: ' + error.message + '</div>';
+      }
+    });
+  </script>
+</body>
+</html>`);
+    });
+
+    // Add direct test route to bypass static file serving
+    app.get('/direct-test', (_req, res) => {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.send(`<!DOCTYPE html>
+<html>
+<head><title>FC Köln Direct Test</title></head>
+<body style="background: #DC143C; color: white; font-size: 24px; padding: 50px; text-align: center;">
+<h1>🔴 FC KÖLN MANAGEMENT SYSTEM 🔴</h1>
+<h2>DIRECT SERVER RESPONSE - ${new Date().toLocaleTimeString()}</h2>
+<p>This is served directly from Express, not static files.</p>
+<script>alert('JavaScript is working! Server time: ${new Date().toISOString()}');</script>
+</body>
+</html>`);
+    });
+
     // Fallback HTML for development - only for non-API routes that don't have static files
     app.use("*", (_req, res) => {
       if (_req.path.startsWith('/api')) {
@@ -74,6 +171,10 @@ app.use((req, res, next) => {
       }
       const indexPath = path.resolve(clientDistPath, 'index.html');
       if (fs.existsSync(indexPath)) {
+        // Force no-cache headers for index.html
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.sendFile(indexPath);
       } else {
         // Enhanced fallback with CSS variables for the React app
