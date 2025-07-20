@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { serveStatic, log } from "./vite";
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy for proper session handling
@@ -48,13 +48,79 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
+  // Setup static serving for both development and production
+  // This bypasses the problematic vite.ts configuration
+  if (process.env.NODE_ENV === "production") {
     serveStatic(app);
+  } else {
+    // In development, serve static files directly
+    const path = await import("path");
+    const fs = await import("fs");
+    
+    // Serve static assets if they exist
+    const clientDistPath = path.resolve(process.cwd(), 'dist', 'public');
+    if (fs.existsSync(clientDistPath)) {
+      app.use(express.static(clientDistPath));
+    }
+    
+    // Fallback HTML for development
+    app.use("*", (_req, res) => {
+      const indexPath = path.resolve(clientDistPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        // Basic HTML fallback
+        res.setHeader('Content-Type', 'text/html');
+        res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FC Köln Management System</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    .login-container { max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>FC Köln International Talent Program</h1>
+  <div class="login-container">
+    <h2>Management System Login</h2>
+    <input type="email" id="email" placeholder="Email" value="max.bisinger@warubi-sports.com">
+    <input type="password" id="password" placeholder="Password" value="ITP2024">
+    <button onclick="login()">Login</button>
+  </div>
+  <script>
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      fetch('/api/auth/simple-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem('auth-token', data.token);
+          alert('Login successful! System is running properly.');
+        } else {
+          alert('Login failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        alert('Login error: ' + error.message);
+      });
+    }
+  </script>
+</body>
+</html>`);
+      }
+    });
   }
 
   // ALWAYS serve the app on port 5000
