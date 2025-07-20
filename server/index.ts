@@ -60,11 +60,18 @@ app.use((req, res, next) => {
     // Serve static assets if they exist
     const clientDistPath = path.resolve(process.cwd(), 'dist', 'public');
     if (fs.existsSync(clientDistPath)) {
+      console.log(`Serving static files from: ${clientDistPath}`);
       app.use(express.static(clientDistPath));
+    } else {
+      console.log(`Static directory not found: ${clientDistPath}`);
     }
     
-    // Fallback HTML for development
+    // Fallback HTML for development - only for non-API routes that don't have static files
     app.use("*", (_req, res) => {
+      if (_req.path.startsWith('/api')) {
+        res.status(404).json({ error: 'API endpoint not found' });
+        return;
+      }
       const indexPath = path.resolve(clientDistPath, 'index.html');
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
