@@ -10,16 +10,16 @@ if (!fs.existsSync('dist')) {
     fs.mkdirSync('dist');
 }
 
-// Copy our working index.js to the expected production location
-fs.copyFileSync('index.js', 'dist/index-production.js');
+// Copy our working app.js to the expected production location
+fs.copyFileSync('app.js', 'dist/index.js');
 
 // Create the expected production package.json
 const productionPackage = {
     name: "fc-koln-management-production",
     version: "1.0.0",
-    main: "index-production.js",
+    main: "index.js",
     scripts: {
-        start: "node index-production.js"
+        start: "node index.js"
     },
     engines: {
         node: ">=18.0.0"
@@ -30,6 +30,6 @@ const productionPackage = {
 fs.writeFileSync('dist/package.json', JSON.stringify(productionPackage, null, 2));
 
 console.log('✅ Production build completed successfully!');
-console.log('📦 Created: dist/index-production.js');
+console.log('📦 Created: dist/index.js');
 console.log('📦 Created: dist/package.json');
 console.log('🚀 Ready for deployment!');
