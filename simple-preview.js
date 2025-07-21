@@ -1,166 +1,177 @@
-#!/usr/bin/env node
-
-/**
- * Simple Preview Server for FC Köln Management System
- * Completely bypasses all configuration issues
- */
-
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 
-async function startSimplePreview() {
-  console.log('🚀 Starting FC Köln Management System Simple Preview...');
-  
-  // First, ensure we have the production build
-  console.log('📦 Building production version...');
-  const { execSync } = require('child_process');
-  
-  try {
-    execSync('npm run build', { stdio: 'inherit' });
-    console.log('✅ Build completed successfully!');
-  } catch (error) {
-    console.error('❌ Build failed:', error.message);
-    process.exit(1);
-  }
-  
-  // Create Express app
-  const app = express();
-  
-  // Middleware
-  app.use(express.json());
-  app.use(express.static(path.join(__dirname, 'dist/public')));
-  
-  // Simple authentication
-  const tokens = new Map();
-  
-  function createToken(user) {
-    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    tokens.set(token, { ...user, createdAt: new Date() });
-    return token;
-  }
-  
-  function getUserFromToken(token) {
-    return tokens.get(token) || null;
-  }
-  
-  // API endpoints
-  app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    if (email === 'max.bisinger@warubi-sports.com' && password === 'ITP2024') {
-      const user = { id: 1, email: 'max.bisinger@warubi-sports.com', name: 'Max Bisinger', role: 'admin' };
-      const token = createToken(user);
-      res.json({ token, user });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
-    }
-  });
-  
-  app.get('/api/user', (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    const user = getUserFromToken(token);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
-  });
-  
-  app.get('/api/players', (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    const user = getUserFromToken(token);
-    if (user) {
-      res.json([
-        { id: 1, name: 'Max Bisinger', position: 'Coach', house: 'Widdersdorf 1', status: 'active' },
-        { id: 2, name: 'Test Player', position: 'Forward', house: 'Widdersdorf 2', status: 'active' }
-      ]);
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
-  });
-  
-  app.get('/api/chores', (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    const user = getUserFromToken(token);
-    if (user) {
-      res.json([
-        { id: 1, title: 'Clean Kitchen', assignedTo: 'Max Bisinger', dueDate: '2025-07-15', status: 'pending' },
-        { id: 2, title: 'Vacuum Living Room', assignedTo: 'Test Player', dueDate: '2025-07-16', status: 'pending' }
-      ]);
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
-  });
-  
-  app.get('/api/events', (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    const user = getUserFromToken(token);
-    if (user) {
-      res.json([
-        { id: 1, title: 'Team Practice', date: '2025-07-15', time: '09:00', type: 'practice' },
-        { id: 2, title: 'Weight Lifting', date: '2025-07-16', time: '14:00', type: 'training' }
-      ]);
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
-  });
-  
-  app.get('/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
-  });
-  
-  // SPA fallback
-  app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'dist/public/index.html');
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      res.status(404).send('Frontend not found. Please run the build first.');
-    }
-  });
-  
-  // Find available port
-  const http = require('http');
-  function checkPort(port) {
-    return new Promise((resolve) => {
-      const server = http.createServer();
-      server.listen(port, () => {
-        server.close(() => resolve(true));
-      });
-      server.on('error', () => resolve(false));
-    });
-  }
-  
-  let port = 5000;
-  while (port < 5010) {
-    if (await checkPort(port)) {
-      break;
-    }
-    port++;
-  }
-  
-  // Start server
-  app.listen(port, '0.0.0.0', () => {
-    console.log('');
-    console.log('🎉 Simple Preview Server is running!');
-    console.log(`📡 Access your app at: http://localhost:${port}`);
-    console.log('🔐 Admin login: max.bisinger@warubi-sports.com');
-    console.log('🔑 Password: ITP2024');
-    console.log('');
-    console.log('✅ All features available:');
-    console.log('   - Player management');
-    console.log('   - Chore tracking');
-    console.log('   - Event scheduling');
-    console.log('   - Authentication system');
-    console.log('');
-    console.log('Press Ctrl+C to stop the server');
-  });
-  
-  // Handle graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('\n🛑 Stopping preview server...');
-    process.exit(0);
-  });
-}
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-startSimplePreview().catch(console.error);
+console.log('🔧 Starting simple FC Köln preview server...');
+
+// Static middleware for serving files
+app.use(express.static(path.join(__dirname, 'dist', 'public')));
+
+// Simple FC Köln login page
+app.get('*', (req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Köln International Talent Program</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            width: 100%; 
+            max-width: 400px; 
+        }
+        .logo { 
+            text-align: center; 
+            color: #dc2626; 
+            font-size: 28px; 
+            font-weight: 700; 
+            margin-bottom: 30px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #374151;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 2px solid #e5e7eb; 
+            border-radius: 8px; 
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { 
+            outline: none; 
+            border-color: #dc2626; 
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.1); 
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #dc2626; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer;
+        }
+        button:hover { 
+            background: #b91c1c; 
+        }
+        .message { 
+            margin-top: 20px; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: 500; 
+        }
+        .success { 
+            background: #d1fae5; 
+            color: #065f46; 
+            border: 1px solid #10b981; 
+        }
+        .error { 
+            background: #fee2e2; 
+            color: #991b1b; 
+            border: 1px solid #ef4444; 
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">FC Köln Management</div>
+        <div class="subtitle">International Talent Program</div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="Enter your email" value="max.bisinger@warubi-sports.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password" value="ITP2024">
+            </div>
+            <button type="submit" id="submitBtn">Sign In</button>
+        </form>
+        
+        <div id="message"></div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+            messageDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/auth/simple-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('auth-token', data.token);
+                    messageDiv.innerHTML = '<div class="message success">Login successful! Welcome to FC Köln Management System.</div>';
+                    
+                    // Show success for 2 seconds then redirect
+                    setTimeout(() => {
+                        messageDiv.innerHTML = '<div class="message success">Redirecting to dashboard...</div>';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<div class="message error">' + (data.message || 'Login failed') + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="message error">Connection error: ' + error.message + '</div>';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        });
+        
+        // Test connection on load
+        fetch('/api/health').then(() => console.log('Server connected')).catch(() => console.log('Server offline'));
+    </script>
+</body>
+</html>`);
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ FC Köln Management System running on port ${PORT}`);
+  console.log(`🔗 Open: http://localhost:${PORT}`);
+  console.log(`🔑 Admin: max.bisinger@warubi-sports.com / ITP2024`);
+});

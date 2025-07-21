@@ -1,23 +1,20 @@
 #!/bin/bash
 
-# FC Köln Management System - Working Development Script
-# This script starts the production build which bypasses all CommonJS issues
+# Kill any existing servers
+pkill -f "tsx server/index.ts" 2>/dev/null || true
+pkill -f "node index.js" 2>/dev/null || true
+pkill -f "simple-preview.js" 2>/dev/null || true
 
 echo "🔧 Starting FC Köln Management System..."
 
-# Kill any existing processes
-pkill -f "tsx.*server" || true
-pkill -f "node.*index.js" || true
-sleep 2
+# Use the production build which includes authentication API
+cd dist
+node index.js &
 
-# Kill anything on port 5000
-lsof -ti:5000 | xargs kill -9 || true
-sleep 1
+echo "✅ Server started in background"
+echo "🔗 Available at: http://localhost:5000"
+echo "🔑 Admin login: max.bisinger@warubi-sports.com / ITP2024"
 
-# Build the production version
-echo "📦 Building production version..."
-npm run build
-
-# Start the server
-echo "🚀 Starting FC Köln Management System..."
-cd dist && node index.js
+# Keep script running to show output
+sleep 3
+curl -s http://localhost:5000/api/health > /dev/null && echo "✅ Health check passed" || echo "❌ Health check failed"
