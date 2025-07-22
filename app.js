@@ -768,6 +768,214 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #a16207;
             margin-bottom: 0.5rem;
         }
+
+        /* Admin Styles */
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .tab-btn.active {
+            color: #dc2626;
+            border-bottom-color: #dc2626;
+        }
+        
+        .admin-tab-content {
+            display: none;
+        }
+        
+        .admin-tab-content.active {
+            display: block;
+        }
+        
+        .users-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .user-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            gap: 1rem;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .user-status.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .pending-approvals {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .approval-item {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .approval-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .role-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .analytics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .analytics-stat {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+        
+        .settings-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .setting-toggle {
+            transform: scale(1.2);
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Registration Styles */
+        .registration-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .registration-type-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        
+        .registration-type-btn.active {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .registration-type-btn:hover {
+            border-color: #dc2626;
+        }
+        
+        .registration-form {
+            display: none;
+        }
+        
+        .registration-form.active {
+            display: block;
+        }
+        
+        .form-subsection {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-subsection h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
@@ -894,6 +1102,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <a class="nav-item" onclick="showPage('communications')">Communications</a>
                 <a class="nav-item" onclick="showPage('house-management')">House Management</a>
                 <a class="nav-item" onclick="showPage('admin')">Admin</a>
+                <a class="nav-item" onclick="showPage('registration')">Registration</a>
             </div>
         </nav>
 
@@ -1533,22 +1742,465 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <!-- Admin Page -->
             <div id="admin" class="page">
                 <h1>System Administration</h1>
+                
+                <!-- User Management -->
                 <div class="form-section">
-                    <h3>User Management</h3>
-                    <p>Manage system users, roles, and permissions</p>
-                    <button class="btn">Manage Users</button>
+                    <h3>👥 User Management</h3>
+                    <div class="admin-tabs">
+                        <button class="tab-btn active" onclick="showAdminTab('users')">Active Users</button>
+                        <button class="tab-btn" onclick="showAdminTab('pending')">Pending Approvals</button>
+                        <button class="tab-btn" onclick="showAdminTab('roles')">Role Management</button>
+                    </div>
+                    
+                    <div id="users-tab" class="admin-tab-content active">
+                        <div class="users-list">
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Max Bisinger</strong><br>
+                                    <small>max.bisinger@warubi-sports.com - Admin</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Thomas Ellinger</strong><br>
+                                    <small>thomas.ellinger@warubi-sports.com - Staff</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Ahmed Hassan</strong><br>
+                                    <small>ahmed.hassan@fckoln.de - Player</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="pending-tab" class="admin-tab-content">
+                        <div class="pending-approvals">
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>New Registration: Luis Martinez</strong><br>
+                                    <small>luis.martinez@email.com - Player Application</small>
+                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn">Approve</button>
+                                    <button class="btn btn-secondary">Reject</button>
+                                    <button class="btn btn-secondary">Review</button>
+                                </div>
+                            </div>
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>Staff Application: Maria Schmidt</strong><br>
+                                    <small>maria.schmidt@email.com - Coaching Staff</small>
+                                    <p>Role: Fitness Coach, Experience: 5 years</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn">Approve</button>
+                                    <button class="btn btn-secondary">Reject</button>
+                                    <button class="btn btn-secondary">Review</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="roles-tab" class="admin-tab-content">
+                        <div class="roles-grid">
+                            <div class="role-card">
+                                <h4>Admin</h4>
+                                <p>Full system access</p>
+                                <small>2 users assigned</small>
+                            </div>
+                            <div class="role-card">
+                                <h4>Staff</h4>
+                                <p>Management and oversight</p>
+                                <small>5 users assigned</small>
+                            </div>
+                            <div class="role-card">
+                                <h4>Player</h4>
+                                <p>Basic access and profile</p>
+                                <small>24 users assigned</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
+                <!-- System Analytics -->
                 <div class="form-section">
-                    <h3>System Settings</h3>
-                    <p>Configure application settings and preferences</p>
-                    <button class="btn btn-secondary">System Settings</button>
+                    <h3>📊 System Analytics</h3>
+                    <div class="analytics-overview">
+                        <div class="analytics-stat">
+                            <h4>Total Registrations</h4>
+                            <div class="stat-number">31</div>
+                            <small>This month: +7</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>Active Sessions</h4>
+                            <div class="stat-number">18</div>
+                            <small>Currently online</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>System Uptime</h4>
+                            <div class="stat-number">99.8%</div>
+                            <small>Last 30 days</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>Data Storage</h4>
+                            <div class="stat-number">2.4GB</div>
+                            <small>Used of 10GB</small>
+                        </div>
+                    </div>
                 </div>
                 
+                <!-- System Settings -->
                 <div class="form-section">
-                    <h3>Data Export</h3>
-                    <p>Export player data, statistics, and reports</p>
-                    <button class="btn btn-secondary">Export Data</button>
+                    <h3>⚙️ System Configuration</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>Auto-approve player registrations</label>
+                            <input type="checkbox" class="setting-toggle">
+                        </div>
+                        <div class="setting-item">
+                            <label>Email notifications enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                        <div class="setting-item">
+                            <label>House competition active</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                        <div class="setting-item">
+                            <label>AI chore rotation enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                    </div>
+                    <button class="btn">Save Settings</button>
+                </div>
+                
+                <!-- Data Export -->
+                <div class="form-section">
+                    <h3>📁 Data Export & Backup</h3>
+                    <div class="export-options">
+                        <button class="btn">Export Player Data</button>
+                        <button class="btn">Export House Statistics</button>
+                        <button class="btn">Export System Logs</button>
+                        <button class="btn btn-secondary">Full System Backup</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Page -->
+            <div id="registration" class="page">
+                <h1>New User Registration</h1>
+                
+                <!-- Registration Type Selection -->
+                <div class="form-section">
+                    <h3>👤 Registration Type</h3>
+                    <div class="registration-types">
+                        <button class="registration-type-btn active" onclick="showRegistrationType('player')">
+                            <h4>⚽ Player Registration</h4>
+                            <p>Join the FC Köln International Talent Program</p>
+                        </button>
+                        <button class="registration-type-btn" onclick="showRegistrationType('staff')">
+                            <h4>👨‍🏫 Staff Registration</h4>
+                            <p>Apply for coaching or administrative position</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Player Registration Form -->
+                <div id="player-registration" class="registration-form active">
+                    <div class="form-section">
+                        <h3>⚽ Player Profile Creation</h3>
+                        
+                        <!-- Personal Information -->
+                        <div class="form-subsection">
+                            <h4>Personal Information</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date of Birth *</label>
+                                    <input type="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nationality *</label>
+                                    <select required>
+                                        <option value="">Select nationality</option>
+                                        <option>Germany</option>
+                                        <option>Spain</option>
+                                        <option>France</option>
+                                        <option>Brazil</option>
+                                        <option>Argentina</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel">
+                            </div>
+                        </div>
+
+                        <!-- Football Information -->
+                        <div class="form-subsection">
+                            <h4>Football Profile</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Primary Position *</label>
+                                    <select required>
+                                        <option value="">Select position</option>
+                                        <option>Goalkeeper</option>
+                                        <option>Centre-Back</option>
+                                        <option>Left-Back</option>
+                                        <option>Right-Back</option>
+                                        <option>Defensive Midfielder</option>
+                                        <option>Central Midfielder</option>
+                                        <option>Attacking Midfielder</option>
+                                        <option>Left Winger</option>
+                                        <option>Right Winger</option>
+                                        <option>Striker</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Secondary Position</label>
+                                    <select>
+                                        <option value="">Select secondary position</option>
+                                        <option>Goalkeeper</option>
+                                        <option>Centre-Back</option>
+                                        <option>Left-Back</option>
+                                        <option>Right-Back</option>
+                                        <option>Defensive Midfielder</option>
+                                        <option>Central Midfielder</option>
+                                        <option>Attacking Midfielder</option>
+                                        <option>Left Winger</option>
+                                        <option>Right Winger</option>
+                                        <option>Striker</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Preferred Foot</label>
+                                    <select>
+                                        <option>Right</option>
+                                        <option>Left</option>
+                                        <option>Both</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Height (cm)</label>
+                                    <input type="number" min="150" max="220">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Previous Club(s)</label>
+                                <textarea rows="3" placeholder="List your previous football clubs and years played"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Housing Preferences -->
+                        <div class="form-subsection">
+                            <h4>Housing Preferences</h4>
+                            <div class="form-group">
+                                <label>Preferred House</label>
+                                <select>
+                                    <option value="">No preference</option>
+                                    <option>Widdersdorf 1</option>
+                                    <option>Widdersdorf 2</option>
+                                    <option>Widdersdorf 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Dietary Requirements</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox"> Vegetarian</label>
+                                    <label><input type="checkbox"> Vegan</label>
+                                    <label><input type="checkbox"> Halal</label>
+                                    <label><input type="checkbox"> Lactose Intolerant</label>
+                                    <label><input type="checkbox"> Other allergies</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Special Requirements</label>
+                                <textarea rows="3" placeholder="Any special accommodations needed"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div class="form-subsection">
+                            <h4>Emergency Contact</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Contact Name *</label>
+                                    <input type="text" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Relationship *</label>
+                                    <select required>
+                                        <option value="">Select relationship</option>
+                                        <option>Parent</option>
+                                        <option>Guardian</option>
+                                        <option>Sibling</option>
+                                        <option>Other Family</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Phone Number *</label>
+                                    <input type="tel" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn">Submit Player Registration</button>
+                    </div>
+                </div>
+
+                <!-- Staff Registration Form -->
+                <div id="staff-registration" class="registration-form">
+                    <div class="form-section">
+                        <h3>👨‍🏫 Staff Profile Creation</h3>
+                        
+                        <!-- Personal Information -->
+                        <div class="form-subsection">
+                            <h4>Personal Information</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date of Birth *</label>
+                                    <input type="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nationality *</label>
+                                    <select required>
+                                        <option value="">Select nationality</option>
+                                        <option>Germany</option>
+                                        <option>Spain</option>
+                                        <option>France</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" required>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <div class="form-subsection">
+                            <h4>Professional Background</h4>
+                            <div class="form-group">
+                                <label>Applied Position *</label>
+                                <select required>
+                                    <option value="">Select position</option>
+                                    <option>Head Coach</option>
+                                    <option>Assistant Coach</option>
+                                    <option>Fitness Coach</option>
+                                    <option>Goalkeeper Coach</option>
+                                    <option>Youth Development Coach</option>
+                                    <option>Sports Psychologist</option>
+                                    <option>Physiotherapist</option>
+                                    <option>Nutritionist</option>
+                                    <option>House Manager</option>
+                                    <option>Administrative Staff</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Years of Experience *</label>
+                                    <input type="number" min="0" max="50" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Highest Qualification</label>
+                                    <select>
+                                        <option>UEFA Pro License</option>
+                                        <option>UEFA A License</option>
+                                        <option>UEFA B License</option>
+                                        <option>DFB Trainer License</option>
+                                        <option>University Degree</option>
+                                        <option>Professional Certificate</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Previous Experience *</label>
+                                <textarea rows="4" placeholder="Describe your relevant football coaching/management experience" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Language Skills</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox"> German (Native)</label>
+                                    <label><input type="checkbox"> German (Fluent)</label>
+                                    <label><input type="checkbox"> English</label>
+                                    <label><input type="checkbox"> Spanish</label>
+                                    <label><input type="checkbox"> French</label>
+                                    <label><input type="checkbox"> Other</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Availability -->
+                        <div class="form-subsection">
+                            <h4>Availability & Preferences</h4>
+                            <div class="form-group">
+                                <label>Available Start Date *</label>
+                                <input type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contract Type Preference</label>
+                                <select>
+                                    <option>Full-time</option>
+                                    <option>Part-time</option>
+                                    <option>Contract</option>
+                                    <option>Volunteer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Additional Information</label>
+                                <textarea rows="3" placeholder="Any additional information about your application"></textarea>
+                            </div>
+                        </div>
+
+                        <button class="btn">Submit Staff Application</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1614,6 +2266,40 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById(pageId).classList.add('active');
             
             // Add active to clicked nav item
+            event.target.classList.add('active');
+        }
+
+        // Admin tab management
+        function showAdminTab(tabId) {
+            // Hide all admin tabs
+            const tabs = document.querySelectorAll('.admin-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active from tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId + '-tab').classList.add('active');
+            
+            // Add active to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Registration type management
+        function showRegistrationType(type) {
+            // Hide all registration forms
+            const forms = document.querySelectorAll('.registration-form');
+            forms.forEach(form => form.classList.remove('active'));
+            
+            // Remove active from type buttons
+            const buttons = document.querySelectorAll('.registration-type-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected form
+            document.getElementById(type + '-registration').classList.add('active');
+            
+            // Add active to clicked button
             event.target.classList.add('active');
         }
 
