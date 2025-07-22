@@ -1210,8 +1210,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         </button>
                         <button class="public-registration-type-btn" onclick="showPublicRegistrationType('staff')">
                             <div class="registration-icon">👨‍🏫</div>
-                            <h4>Staff Application</h4>
-                            <p>Coaching, admin, and support positions</p>
+                            <h4>Staff Registration</h4>
+                            <p>Current FC Köln staff members</p>
                         </button>
                     </div>
 
@@ -1353,7 +1353,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
                     <!-- Quick Staff Registration -->
                     <div id="public-staff-registration" class="public-registration-form">
-                        <h3>Staff Application Form</h3>
+                        <h3>Staff Registration Form</h3>
                         <form class="quick-registration-form" id="staffApplicationForm">
                             <div class="form-row">
                                 <div class="form-group">
@@ -1377,7 +1377,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Position Applied For *</label>
+                                    <label>Current Position *</label>
                                     <select id="staffPosition" required>
                                         <option value="">Select position</option>
                                         <option>Head Coach</option>
@@ -1398,16 +1398,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Relevant Experience *</label>
-                                <textarea rows="3" id="staffExperienceDetail" placeholder="Describe your football coaching/management experience" required></textarea>
+                                <label>Additional Information *</label>
+                                <textarea rows="3" id="staffExperienceDetail" placeholder="Any updates to your role, special requirements, or information we should know" required></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Qualifications</label>
                                 <input type="text" id="staffQualifications" placeholder="UEFA licenses, degrees, certifications">
                             </div>
                             
-                            <button type="button" class="btn btn-primary" onclick="submitStaffApplication()">Submit Staff Application</button>
-                            <p class="form-note">* After submission, you'll be contacted for an interview and detailed application process.</p>
+                            <button type="button" class="btn btn-primary" onclick="submitStaffApplication()">Complete Registration</button>
+                            <p class="form-note">* This registration will update your profile in our system and notify management.</p>
                         </form>
                     </div>
                 </div>
@@ -2734,10 +2734,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
-                '<p>Thank you ' + formData.firstName + '! Your staff application has been received.</p>' +
-                '<p>📧 You will receive a confirmation email at ' + formData.email + ' within 24 hours.</p>' +
-                '<p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>';
+            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
+                '<p>Welcome ' + formData.firstName + '! Your staff registration has been processed.</p>' +
+                '<p>📧 Your profile has been updated in our system and management notified.</p>' +
+                '<p>📋 You will receive any updates about your role at ' + formData.email + ' shortly.</p>';
             
             // Replace the form with success message
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
