@@ -701,6 +701,655 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             border-radius: 8px;
             padding: 1.5rem;
         }
+
+        /* Enhanced Calendar Styles */
+        .calendar-grid.enhanced {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .calendar-day {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 120px;
+        }
+
+        .calendar-day.match-day {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+        }
+
+        .calendar-event {
+            background: #f8fafc;
+            border-left: 3px solid #64748b;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .calendar-event.training {
+            border-left-color: #059669;
+            background: #ecfdf5;
+        }
+
+        .calendar-event.tactical {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .calendar-event.fitness {
+            border-left-color: #7c3aed;
+            background: #f3e8ff;
+        }
+
+        .calendar-event.recovery {
+            border-left-color: #0891b2;
+            background: #f0f9ff;
+        }
+
+        .calendar-event.match {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: #fbbf24;
+        }
+
+        .event-time {
+            display: block;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .event-title {
+            display: block;
+            margin: 0.25rem 0;
+        }
+
+        .attendance {
+            display: block;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .match-venue {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        /* Enhanced Metrics Dashboard */
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+
+        .metric-trend.up {
+            color: #059669;
+        }
+
+        .metric-trend.stable {
+            color: #6b7280;
+        }
+
+        .metric-detail {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Event Cards */
+        .upcoming-events {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .event-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .event-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #dc2626;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-right: 1.5rem;
+            min-width: 60px;
+        }
+
+        .event-date .day {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .event-date .month {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .event-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #111827;
+        }
+
+        .event-info p {
+            margin: 0.25rem 0;
+            color: #6b7280;
+        }
+
+        .event-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .event-status.home {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .event-status.camp {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .event-status.medical {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Calendar Actions */
+        .calendar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .calendar-actions .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Nutrition Styles */
+        .nutrition-overview {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+
+        .nutrition-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .nutrition-stat h4 {
+            margin: 0 0 0.5rem 0;
+            color: #374151;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+
+        .stat-progress {
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            transition: width 0.3s;
+        }
+
+        /* Meal Schedule */
+        .meal-schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .meal-day {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .meal-day h4 {
+            margin: 0 0 1rem 0;
+            color: #dc2626;
+            border-bottom: 2px solid #dc2626;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .meal-slot {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .meal-slot:hover {
+            background: #f8fafc;
+        }
+
+        .meal-slot.breakfast {
+            border-left: 4px solid #fbbf24;
+        }
+
+        .meal-slot.lunch {
+            border-left: 4px solid #059669;
+        }
+
+        .meal-slot.dinner {
+            border-left: 4px solid #7c3aed;
+        }
+
+        .meal-time {
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .meal-name {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .meal-details {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Dietary Info */
+        .dietary-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .dietary-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .dietary-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dietary-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .dietary-status.monitored {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .dietary-status.customized {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Meal Requests */
+        .meal-requests {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+
+        .request-form {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .recent-requests {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .request-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .request-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .request-status.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .request-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Goals Grid */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .goal-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#dc2626 var(--percentage), #e5e7eb 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            position: relative;
+        }
+
+        .progress-circle:before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+        }
+
+        .progress-circle span {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            color: #dc2626;
+        }
+
+        /* Communication Styles */
+        .message-composer {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .composer-header, .composer-body, .composer-footer {
+            margin: 1rem 0;
+        }
+
+        .message-options {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .message-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .message-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .message-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #6b7280;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .message-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-item.urgent {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .message-item.match-announcement {
+            border-left-color: #059669;
+            background: #ecfdf5;
+        }
+
+        .message-item.info {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sender {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .timestamp {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .priority-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.high {
+            background: #fecaca;
+            color: #dc2626;
+        }
+
+        .priority-badge.normal {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .read-status {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .message-content h4 {
+            margin: 0 0 0.5rem 0;
+            color: #111827;
+        }
+
+        .message-content p {
+            margin: 0.5rem 0;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-small:hover {
+            background: #f8fafc;
+        }
+
+        .quick-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .quick-tool {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .quick-tool h4 {
+            margin: 0 0 0.5rem 0;
+            color: #111827;
+        }
+
+        .quick-tool p {
+            margin: 0.5rem 0 1rem 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .comm-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+
+        .stat-detail {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
         
         .trend-chart {
             display: flex;
@@ -1941,73 +2590,444 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Calendar Page -->
             <div id="calendar" class="page">
-                <h1>Training Calendar</h1>
+                <h1>Training Calendar & Schedule Management</h1>
+                
+                <!-- Weekly Overview -->
                 <div class="form-section">
-                    <h3>This Week's Schedule</h3>
-                    <div class="calendar-grid">
+                    <h3>📅 This Week's Schedule</h3>
+                    <div class="calendar-grid enhanced">
                         <div class="calendar-day">
-                            <strong>Mon</strong>
-                            <div class="calendar-event">Training 3:00 PM</div>
+                            <strong>Monday</strong>
+                            <div class="calendar-event training">
+                                <span class="event-time">9:00 AM</span>
+                                <span class="event-title">Morning Training</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
+                            <div class="calendar-event tactical">
+                                <span class="event-time">3:00 PM</span>
+                                <span class="event-title">Tactical Session</span>
+                                <span class="attendance">22/24</span>
+                            </div>
                         </div>
                         <div class="calendar-day">
-                            <strong>Tue</strong>
+                            <strong>Tuesday</strong>
+                            <div class="calendar-event fitness">
+                                <span class="event-time">10:00 AM</span>
+                                <span class="event-title">Fitness Training</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
+                            <div class="calendar-event recovery">
+                                <span class="event-time">2:00 PM</span>
+                                <span class="event-title">Recovery Session</span>
+                                <span class="attendance">18/24</span>
+                            </div>
                         </div>
                         <div class="calendar-day">
-                            <strong>Wed</strong>
-                            <div class="calendar-event">Training 3:00 PM</div>
+                            <strong>Wednesday</strong>
+                            <div class="calendar-event technical">
+                                <span class="event-time">9:00 AM</span>
+                                <span class="event-title">Technical Skills</span>
+                                <span class="attendance">23/24</span>
+                            </div>
+                            <div class="calendar-event match-prep">
+                                <span class="event-time">4:00 PM</span>
+                                <span class="event-title">Match Preparation</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
                         </div>
                         <div class="calendar-day">
-                            <strong>Thu</strong>
-                            <div class="calendar-event">Weight Lifting</div>
+                            <strong>Thursday</strong>
+                            <div class="calendar-event light">
+                                <span class="event-time">10:00 AM</span>
+                                <span class="event-title">Light Training</span>
+                                <span class="attendance">20/24</span>
+                            </div>
+                            <div class="calendar-event analysis">
+                                <span class="event-time">3:00 PM</span>
+                                <span class="event-title">Video Analysis</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
                         </div>
                         <div class="calendar-day">
-                            <strong>Fri</strong>
-                            <div class="calendar-event">Training 3:00 PM</div>
+                            <strong>Friday</strong>
+                            <div class="calendar-event preparation">
+                                <span class="event-time">10:00 AM</span>
+                                <span class="event-title">Match Day Prep</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
+                            <div class="calendar-event meeting">
+                                <span class="event-time">1:00 PM</span>
+                                <span class="event-title">Team Meeting</span>
+                                <span class="attendance">24/24 ✓</span>
+                            </div>
+                        </div>
+                        <div class="calendar-day match-day">
+                            <strong>Saturday</strong>
+                            <div class="calendar-event match">
+                                <span class="event-time">3:00 PM</span>
+                                <span class="event-title">vs BVB U19</span>
+                                <span class="match-venue">RheinEnergie Stadion</span>
+                            </div>
                         </div>
                         <div class="calendar-day">
-                            <strong>Sat</strong>
-                            <div class="calendar-event">Match 2:00 PM</div>
+                            <strong>Sunday</strong>
+                            <div class="calendar-event recovery">
+                                <span class="event-time">11:00 AM</span>
+                                <span class="event-title">Optional Recovery</span>
+                                <span class="attendance">12/24</span>
+                            </div>
                         </div>
-                        <div class="calendar-day">
-                            <strong>Sun</strong>
+                    </div>
+                </div>
+
+                <!-- Performance Tracking -->
+                <div class="form-section">
+                    <h3>📊 Weekly Performance Metrics</h3>
+                    <div class="metrics-dashboard">
+                        <div class="metric-card">
+                            <h4>Overall Attendance</h4>
+                            <div class="metric-value">92.3%</div>
+                            <div class="metric-trend up">↗ +2.1% vs last week</div>
                         </div>
+                        <div class="metric-card">
+                            <h4>Training Intensity</h4>
+                            <div class="metric-value">High</div>
+                            <div class="metric-detail">8.4/10 average rating</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Injury Rate</h4>
+                            <div class="metric-value">0%</div>
+                            <div class="metric-trend stable">No injuries this week</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Session Feedback</h4>
+                            <div class="metric-value">4.7/5</div>
+                            <div class="metric-detail">Player satisfaction score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="form-section">
+                    <h3>🎯 Upcoming Matches & Events</h3>
+                    <div class="upcoming-events">
+                        <div class="event-card match-event">
+                            <div class="event-date">
+                                <span class="day">25</span>
+                                <span class="month">JAN</span>
+                            </div>
+                            <div class="event-info">
+                                <h4>FC Köln U19 vs Borussia Dortmund U19</h4>
+                                <p>📍 RheinEnergie Stadion • 15:00</p>
+                                <span class="event-status home">Home Match</span>
+                            </div>
+                        </div>
+                        <div class="event-card training-event">
+                            <div class="event-date">
+                                <span class="day">27</span>
+                                <span class="month">JAN</span>
+                            </div>
+                            <div class="event-info">
+                                <h4>Winter Training Camp</h4>
+                                <p>📍 Düsseldorf Training Center • 3 Days</p>
+                                <span class="event-status camp">Training Camp</span>
+                            </div>
+                        </div>
+                        <div class="event-card admin-event">
+                            <div class="event-date">
+                                <span class="day">01</span>
+                                <span class="month">FEB</span>
+                            </div>
+                            <div class="event-info">
+                                <h4>Medical Check-ups</h4>
+                                <p>📍 Medical Center • All Day</p>
+                                <span class="event-status medical">Health Assessment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="form-section">
+                    <h3>⚡ Calendar Management</h3>
+                    <div class="calendar-actions">
+                        <button class="btn btn-primary" onclick="markAttendance()">📝 Mark Attendance</button>
+                        <button class="btn" onclick="scheduleTraining()">⏰ Schedule Training</button>
+                        <button class="btn" onclick="reportAbsence()">🚫 Report Absence</button>
+                        <button class="btn" onclick="sendReminders()">📢 Send Reminders</button>
+                        <button class="btn" onclick="exportSchedule()">📋 Export Schedule</button>
                     </div>
                 </div>
             </div>
 
             <!-- Food Orders Page -->
             <div id="food-orders" class="page">
-                <h1>Food Order Management</h1>
+                <h1>🍽️ Nutrition & Meal Management</h1>
+                
+                <!-- Daily Nutrition Overview -->
                 <div class="form-section">
-                    <h3>Place New Order</h3>
-                    <div class="form-group">
-                        <label>House</label>
-                        <select>
-                            <option>Widdersdorf 1</option>
-                            <option>Widdersdorf 2</option>
-                            <option>Widdersdorf 3</option>
-                        </select>
+                    <h3>🎯 Daily Nutrition Targets</h3>
+                    <div class="nutrition-overview">
+                        <div class="nutrition-stats">
+                            <div class="nutrition-stat">
+                                <h4>Calories Target</h4>
+                                <div class="stat-value">3,200</div>
+                                <div class="stat-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 78%"></div>
+                                    </div>
+                                    <span>2,496 consumed (78%)</span>
+                                </div>
+                            </div>
+                            <div class="nutrition-stat">
+                                <h4>Protein Target</h4>
+                                <div class="stat-value">180g</div>
+                                <div class="stat-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                    <span>153g consumed (85%)</span>
+                                </div>
+                            </div>
+                            <div class="nutrition-stat">
+                                <h4>Hydration</h4>
+                                <div class="stat-value">3.5L</div>
+                                <div class="stat-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 92%"></div>
+                                    </div>
+                                    <span>3.2L consumed (92%)</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Delivery Date</label>
-                        <select>
-                            <option>Tuesday</option>
-                            <option>Friday</option>
-                        </select>
+                </div>
+
+                <!-- Weekly Meal Plan -->
+                <div class="form-section">
+                    <h3>📋 Weekly Meal Schedule</h3>
+                    <div class="meal-schedule">
+                        <div class="meal-day">
+                            <h4>Monday - High Intensity Training Day</h4>
+                            <div class="meal-slot breakfast">
+                                <span class="meal-time">7:00 AM</span>
+                                <div>
+                                    <div class="meal-name">High-Protein Breakfast</div>
+                                    <div class="meal-details">Oatmeal, Greek Yogurt, Mixed Berries, Almonds</div>
+                                </div>
+                            </div>
+                            <div class="meal-slot lunch">
+                                <span class="meal-time">12:30 PM</span>
+                                <div>
+                                    <div class="meal-name">Training Day Lunch</div>
+                                    <div class="meal-details">Grilled Chicken, Quinoa, Steamed Vegetables</div>
+                                </div>
+                            </div>
+                            <div class="meal-slot dinner">
+                                <span class="meal-time">7:00 PM</span>
+                                <div>
+                                    <div class="meal-name">Recovery Dinner</div>
+                                    <div class="meal-details">Salmon, Sweet Potato, Mixed Greens</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meal-day">
+                            <h4>Tuesday - Recovery Day</h4>
+                            <div class="meal-slot breakfast">
+                                <span class="meal-time">7:30 AM</span>
+                                <div>
+                                    <div class="meal-name">Light Energy Breakfast</div>
+                                    <div class="meal-details">Smoothie Bowl, Granola, Fresh Fruits</div>
+                                </div>
+                            </div>
+                            <div class="meal-slot lunch">
+                                <span class="meal-time">1:00 PM</span>
+                                <div>
+                                    <div class="meal-name">Balanced Recovery Lunch</div>
+                                    <div class="meal-details">Turkey, Brown Rice, Roasted Vegetables</div>
+                                </div>
+                            </div>
+                            <div class="meal-slot dinner">
+                                <span class="meal-time">7:30 PM</span>
+                                <div>
+                                    <div class="meal-name">Light Dinner</div>
+                                    <div class="meal-details">Grilled Fish, Quinoa Salad, Avocado</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn">Create Order</button>
                 </div>
-                
-                <div class="order-card">
-                    <h4>Widdersdorf 1 - Weekly Groceries</h4>
-                    <p>Delivery: Tuesday, July 23</p>
-                    <span class="order-status status-confirmed">Confirmed</span>
+
+                <!-- Dietary Management -->
+                <div class="form-section">
+                    <h3>🥗 Dietary Preferences & Special Requirements</h3>
+                    <div class="dietary-info">
+                        <div class="dietary-card">
+                            <h4>Vegetarian Players</h4>
+                            <p>4 players following vegetarian diet</p>
+                            <p><strong>Players:</strong> Marco Silva, Luis García, Ahmad Hassan, Jonas Weber</p>
+                            <span class="dietary-status active">Menu Adapted ✓</span>
+                        </div>
+                        <div class="dietary-card">
+                            <h4>Food Allergies</h4>
+                            <p><strong>Gluten-free:</strong> 2 players<br><strong>Lactose-free:</strong> 3 players<br><strong>Nut allergies:</strong> 1 player</p>
+                            <span class="dietary-status monitored">Actively Monitored</span>
+                        </div>
+                        <div class="dietary-card">
+                            <h4>Weight Management</h4>
+                            <p>6 players on specialized nutrition plans</p>
+                            <p><strong>Goals:</strong> Muscle gain (4), Weight loss (1), Maintenance (1)</p>
+                            <span class="dietary-status customized">Custom Portions</span>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="order-card">
-                    <h4>Widdersdorf 2 - Weekly Groceries</h4>
-                    <p>Delivery: Friday, July 26</p>
-                    <span class="order-status status-pending">Pending</span>
+
+                <!-- Grocery Orders -->
+                <div class="form-section">
+                    <h3>🛒 House Grocery Orders</h3>
+                    <div class="meal-requests">
+                        <div class="request-form">
+                            <h4>Place New Grocery Order</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>House</label>
+                                    <select class="form-control">
+                                        <option>Widdersdorf 1</option>
+                                        <option>Widdersdorf 2</option>
+                                        <option>Widdersdorf 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Delivery Date</label>
+                                    <select class="form-control">
+                                        <option>Tuesday</option>
+                                        <option>Friday</option>
+                                        <option>Sunday (Emergency)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Special Items</label>
+                                <textarea placeholder="List any special dietary items, supplements, or specific requests..." class="form-control" rows="3"></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="createGroceryOrder()">Create Grocery Order</button>
+                        </div>
+                        
+                        <div class="recent-requests">
+                            <h4>Active Grocery Orders</h4>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Widdersdorf 1</strong> - Weekly Groceries
+                                    <p>Delivery: Tuesday, July 23 • €340</p>
+                                </div>
+                                <span class="request-status approved">Confirmed</span>
+                            </div>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Widdersdorf 2</strong> - Weekly Groceries
+                                    <p>Delivery: Friday, July 26 • €385</p>
+                                </div>
+                                <span class="request-status pending">Pending</span>
+                            </div>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Widdersdorf 3</strong> - Special Diet Items
+                                    <p>Delivery: Thursday, July 25 • €95</p>
+                                </div>
+                                <span class="request-status approved">Confirmed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meal Requests -->
+                <div class="form-section">
+                    <h3>📝 Special Meal Requests</h3>
+                    <div class="meal-requests">
+                        <div class="request-form">
+                            <h4>Request Special Meal</h4>
+                            <div class="form-row">
+                                <select class="form-control">
+                                    <option>Pre-match energy meal</option>
+                                    <option>Post-training recovery</option>
+                                    <option>Birthday celebration</option>
+                                    <option>Cultural/religious meal</option>
+                                    <option>Medical dietary requirement</option>
+                                </select>
+                                <input type="date" class="form-control" placeholder="Date">
+                            </div>
+                            <textarea placeholder="Describe your specific meal requirements..." class="form-control" rows="3"></textarea>
+                            <button class="btn btn-primary" onclick="submitMealRequest()">Submit Meal Request</button>
+                        </div>
+                        
+                        <div class="recent-requests">
+                            <h4>Recent Meal Requests</h4>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Carlos Rodriguez</strong> - Pre-match energy meal
+                                    <p>Saturday match preparation</p>
+                                </div>
+                                <span class="request-status approved">Approved</span>
+                            </div>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Marco Silva</strong> - Gluten-free pasta
+                                    <p>Weekly dietary accommodation</p>
+                                </div>
+                                <span class="request-status pending">Pending</span>
+                            </div>
+                            <div class="request-item">
+                                <div>
+                                    <strong>Team Kitchen</strong> - Extra training camp portions
+                                    <p>3-day camp in Düsseldorf</p>
+                                </div>
+                                <span class="request-status approved">Approved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Nutrition Analytics -->
+                <div class="form-section">
+                    <h3>📊 Team Nutrition Analytics</h3>
+                    <div class="goals-grid">
+                        <div class="goal-card">
+                            <h4>Team Hydration Goal</h4>
+                            <div class="goal-progress">
+                                <div class="progress-circle" style="--percentage: 94%">
+                                    <span>94%</span>
+                                </div>
+                                <p>Excellent team hydration this week</p>
+                            </div>
+                        </div>
+                        <div class="goal-card">
+                            <h4>Meal Attendance</h4>
+                            <div class="goal-progress">
+                                <div class="progress-circle" style="--percentage: 89%">
+                                    <span>89%</span>
+                                </div>
+                                <p>Team meals attendance rate</p>
+                            </div>
+                        </div>
+                        <div class="goal-card">
+                            <h4>Supplement Compliance</h4>
+                            <div class="goal-progress">
+                                <div class="progress-circle" style="--percentage: 96%">
+                                    <span>96%</span>
+                                </div>
+                                <p>Players following supplement schedule</p>
+                            </div>
+                        </div>
+                        <div class="goal-card">
+                            <h4>Nutrition Score</h4>
+                            <div class="goal-progress">
+                                <div class="progress-circle" style="--percentage: 91%">
+                                    <span>91%</span>
+                                </div>
+                                <p>Overall team nutrition quality</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2762,6 +3782,121 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         console.log('FC Köln Management System loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
+
+        // Enhanced Interactive Functions
+        function markAttendance() {
+            alert('Attendance marking feature - Players can mark themselves present for training sessions');
+        }
+
+        function scheduleTraining() {
+            alert('Training scheduler - Coaches can create new training sessions with detailed parameters');
+        }
+
+        function reportAbsence() {
+            alert('Absence reporting - Players can report absence with reasons for better tracking');
+        }
+
+        function sendReminders() {
+            alert('Automated reminder system - Send notifications for upcoming events and deadlines');
+        }
+
+        function exportSchedule() {
+            alert('Schedule export - Download training calendars in PDF/iCal format for external use');
+        }
+
+        function createGroceryOrder() {
+            alert('Grocery ordering system - Automated house-specific grocery orders with dietary requirements');
+        }
+
+        function submitMealRequest() {
+            alert('Special meal request system - Players can request customized meals for events or dietary needs');
+        }
+
+        function sendMessage() {
+            alert('Advanced messaging system - Send targeted messages with priority levels and read confirmations');
+        }
+
+        function sendEmergencyAlert() {
+            if(confirm('Send emergency alert to all team members? This will trigger immediate SMS and email notifications.')) {
+                alert('Emergency alert sent to all 40 team members');
+            }
+        }
+
+        function sendTrainingReminder() {
+            alert('Training reminder sent to all active players for tomorrow\\'s sessions');
+        }
+
+        function sendMealAnnouncement() {
+            alert('Meal announcement system - Notify about special menus, dietary changes, or meal times');
+        }
+
+        function sendHouseUpdate() {
+            alert('House-specific updates - Send targeted messages to individual house groups');
+        }
+
+        function viewReplies() {
+            alert('View message replies and conversation threads for better communication tracking');
+        }
+
+        function markImportant() {
+            alert('Mark message as important - Prioritize key communications for easier access');
+        }
+
+        function viewMatchDetails() {
+            alert('Detailed match information - View lineup, tactics, opponent analysis, and logistics');
+        }
+
+        function requestTickets() {
+            alert('Ticket request system - Family and friends can request match tickets through players');
+        }
+
+        function downloadGuidelines() {
+            alert('Download nutrition guidelines - Access latest dietary recommendations in PDF format');
+        }
+
+        // Enhanced Real-time Updates
+        function updateDashboardMetrics() {
+            // Simulate real-time updates for dashboard metrics
+            const metrics = [
+                { id: 'attendance-rate', value: Math.floor(Math.random() * 10) + 90 },
+                { id: 'performance-score', value: Math.floor(Math.random() * 20) + 80 },
+                { id: 'nutrition-compliance', value: Math.floor(Math.random() * 15) + 85 }
+            ];
+            
+            metrics.forEach(function(metric) {
+                const element = document.querySelector('[data-metric="' + metric.id + '"]');
+                if (element) {
+                    element.textContent = metric.value + '%';
+                }
+            });
+        }
+
+        // Initialize enhanced features
+        function initializeEnhancements() {
+            // Update metrics every 30 seconds
+            setInterval(updateDashboardMetrics, 30000);
+            
+            // Add hover effects for interactive elements
+            document.querySelectorAll('.calendar-event').forEach(event => {
+                event.addEventListener('click', function() {
+                    alert('Event details: ' + this.querySelector('.event-title').textContent);
+                });
+            });
+
+            // Initialize nutrition progress animations
+            document.querySelectorAll('.progress-fill').forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 1000);
+            });
+
+            console.log('Enhanced features initialized successfully');
+        }
+
+        // Start enhanced features when system loads
+        setTimeout(initializeEnhancements, 2000);
     </script>
 </body>
 </html>`;
