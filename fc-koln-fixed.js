@@ -1350,6 +1350,228 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #6b7280;
             font-size: 0.875rem;
         }
+
+        /* Admin Styles */
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 1rem;
+        }
+
+        .admin-nav-btn {
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-nav-btn:hover, .admin-nav-btn.active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .admin-section {
+            display: none;
+            margin: 2rem 0;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-controls select {
+            min-width: 150px;
+        }
+
+        .players-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .player-admin-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .player-admin-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #111827;
+        }
+
+        .player-position {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+
+        .player-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-injured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-suspended {
+            background: #fecaca;
+            color: #dc2626;
+        }
+
+        .player-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-warning {
+            background: #fbbf24;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .player-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .player-details p {
+            margin: 0.25rem 0;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close:hover {
+            color: #111827;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
         
         .trend-chart {
             display: flex;
@@ -3090,8 +3312,169 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <div id="admin" class="page">
                 <h1>System Administration</h1>
                 
+                <!-- Admin Navigation -->
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
+                </div>
+
+                <!-- Player Management Section -->
+                <div id="player-management" class="admin-section active">
+                    <h2>Player Management & Editing</h2>
+                    
+                    <!-- Player Search and Filters -->
+                    <div class="admin-controls">
+                        <div class="search-bar">
+                            <input type="text" id="playerSearch" placeholder="Search players by name, position, or nationality..." class="form-control">
+                            <button class="btn" onclick="searchPlayers()">🔍 Search</button>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="statusFilter" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="injured">Injured</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="on-loan">On Loan</option>
+                            </select>
+                            <select id="positionFilter" class="form-control">
+                                <option value="">All Positions</option>
+                                <option value="goalkeeper">Goalkeeper</option>
+                                <option value="defender">Defender</option>
+                                <option value="midfielder">Midfielder</option>
+                                <option value="forward">Forward</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="addNewPlayer()">+ Add New Player</button>
+                        </div>
+                    </div>
+
+                    <!-- Players Admin Grid -->
+                    <div class="players-admin-grid">
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Marco Silva</h4>
+                                    <span class="player-position">Midfielder</span>
+                                    <span class="player-status status-active">Active</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('marco-silva')">✏️ Edit</button>
+                                    <button class="btn-small btn-warning" onclick="suspendPlayer('marco-silva')">⚠️ Suspend</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Portugal</p>
+                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 12A</p>
+                                <p><strong>Contract:</strong> 2024-2026 • <strong>Performance:</strong> 8.4/10</p>
+                            </div>
+                        </div>
+
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Luis García</h4>
+                                    <span class="player-position">Forward</span>
+                                    <span class="player-status status-injured">Injured</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('luis-garcia')">✏️ Edit</button>
+                                    <button class="btn-small" onclick="viewMedicalRecord('luis-garcia')">🏥 Medical</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 18 • <strong>Nationality:</strong> Spain</p>
+                                <p><strong>House:</strong> Widdersdorf 2 • <strong>Room:</strong> 08B</p>
+                                <p><strong>Injury:</strong> Knee strain (2 weeks) • <strong>Performance:</strong> 7.8/10</p>
+                            </div>
+                        </div>
+
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Ahmad Hassan</h4>
+                                    <span class="player-position">Defender</span>
+                                    <span class="player-status status-active">Active</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('ahmad-hassan')">✏️ Edit</button>
+                                    <button class="btn-small" onclick="viewPerformance('ahmad-hassan')">📈 Stats</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 20 • <strong>Nationality:</strong> Egypt</p>
+                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 15C</p>
+                                <p><strong>Contract:</strong> 2023-2025 • <strong>Performance:</strong> 8.9/10</p>
+                            </div>
+                        </div>
+
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Jonas Weber</h4>
+                                    <span class="player-position">Goalkeeper</span>
+                                    <span class="player-status status-active">Active</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('jonas-weber')">✏️ Edit</button>
+                                    <button class="btn-small" onclick="assignCaptain('jonas-weber')">👑 Captain</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Germany</p>
+                                <p><strong>House:</strong> Widdersdorf 3 • <strong>Room:</strong> 03A</p>
+                                <p><strong>Contract:</strong> 2024-2027 • <strong>Performance:</strong> 9.2/10</p>
+                            </div>
+                        </div>
+
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Carlos Rodriguez</h4>
+                                    <span class="player-position">Forward</span>
+                                    <span class="player-status status-active">Active</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('carlos-rodriguez')">✏️ Edit</button>
+                                    <button class="btn-small" onclick="transferPlayer('carlos-rodriguez')">🔄 Transfer</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 17 • <strong>Nationality:</strong> Argentina</p>
+                                <p><strong>House:</strong> Widdersdorf 3 • <strong>Room:</strong> 07B</p>
+                                <p><strong>Contract:</strong> 2024-2025 • <strong>Performance:</strong> 8.7/10</p>
+                            </div>
+                        </div>
+
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Luca Müller</h4>
+                                    <span class="player-position">Defender</span>
+                                    <span class="player-status status-suspended">Suspended</span>
+                                </div>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('luca-muller')">✏️ Edit</button>
+                                    <button class="btn-small btn-success" onclick="reactivatePlayer('luca-muller')">✅ Reactivate</button>
+                                </div>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 18 • <strong>Nationality:</strong> Germany</p>
+                                <p><strong>House:</strong> Widdersdorf 2 • <strong>Room:</strong> 14A</p>
+                                <p><strong>Suspension:</strong> Disciplinary (1 week) • <strong>Performance:</strong> 7.2/10</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- User Management -->
-                <div class="form-section">
+                <div id="user-management" class="admin-section">
                     <h3>👥 User Management</h3>
                     <div class="admin-tabs">
                         <button class="tab-btn active" onclick="showAdminTab('users')">Active Users</button>
@@ -3897,7 +4280,280 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Start enhanced features when system loads
         setTimeout(initializeEnhancements, 2000);
+
+        // Admin Player Management Functions
+        function showAdminSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.admin-nav-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(section);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Activate corresponding button
+            event.target.classList.add('active');
+        }
+
+        function searchPlayers() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const positionFilter = document.getElementById('positionFilter').value;
+            
+            alert('Search functionality - Filter players by: "' + searchTerm + '", Status: ' + statusFilter + ', Position: ' + positionFilter);
+        }
+
+        function addNewPlayer() {
+            alert('Add New Player - Open detailed registration form for new team member');
+        }
+
+        function editPlayer(playerId) {
+            // Populate modal with player data based on playerId
+            let playerData = getPlayerData(playerId);
+            
+            document.getElementById('editFirstName').value = playerData.firstName;
+            document.getElementById('editLastName').value = playerData.lastName;
+            document.getElementById('editPosition').value = playerData.position;
+            document.getElementById('editStatus').value = playerData.status;
+            document.getElementById('editAge').value = playerData.age;
+            document.getElementById('editNationality').value = playerData.nationality;
+            document.getElementById('editHouse').value = playerData.house;
+            document.getElementById('editRoom').value = playerData.room;
+            document.getElementById('editContract').value = playerData.contract;
+            document.getElementById('editNotes').value = playerData.notes || '';
+            
+            // Store current player ID for saving
+            document.getElementById('playerEditModal').setAttribute('data-player-id', playerId);
+            document.getElementById('playerEditModal').style.display = 'block';
+        }
+
+        function getPlayerData(playerId) {
+            // Mock data - in real implementation, this would fetch from database
+            const players = {
+                'marco-silva': {
+                    firstName: 'Marco',
+                    lastName: 'Silva',
+                    position: 'midfielder',
+                    status: 'active',
+                    age: 19,
+                    nationality: 'Portugal',
+                    house: 'Widdersdorf 1',
+                    room: '12A',
+                    contract: '2024-2026',
+                    notes: 'Team captain, excellent leadership skills'
+                },
+                'luis-garcia': {
+                    firstName: 'Luis',
+                    lastName: 'García',
+                    position: 'forward',
+                    status: 'injured',
+                    age: 18,
+                    nationality: 'Spain',
+                    house: 'Widdersdorf 2',
+                    room: '08B',
+                    contract: '2023-2025',
+                    notes: 'Knee injury - expected return in 2 weeks'
+                },
+                'ahmad-hassan': {
+                    firstName: 'Ahmad',
+                    lastName: 'Hassan',
+                    position: 'defender',
+                    status: 'active',
+                    age: 20,
+                    nationality: 'Egypt',
+                    house: 'Widdersdorf 1',
+                    room: '15C',
+                    contract: '2023-2025',
+                    notes: 'Strong defensive player, vegetarian diet'
+                }
+            };
+            return players[playerId] || {
+                firstName: '',
+                lastName: '',
+                position: 'midfielder',
+                status: 'active',
+                age: 18,
+                nationality: 'Germany',
+                house: 'Widdersdorf 1',
+                room: '',
+                contract: '',
+                notes: ''
+            };
+        }
+
+        function closePlayerEditModal() {
+            document.getElementById('playerEditModal').style.display = 'none';
+        }
+
+        function savePlayerChanges() {
+            const playerId = document.getElementById('playerEditModal').getAttribute('data-player-id');
+            const playerData = {
+                firstName: document.getElementById('editFirstName').value,
+                lastName: document.getElementById('editLastName').value,
+                position: document.getElementById('editPosition').value,
+                status: document.getElementById('editStatus').value,
+                age: document.getElementById('editAge').value,
+                nationality: document.getElementById('editNationality').value,
+                house: document.getElementById('editHouse').value,
+                room: document.getElementById('editRoom').value,
+                contract: document.getElementById('editContract').value,
+                notes: document.getElementById('editNotes').value
+            };
+            
+            // In real implementation, save to database here
+            alert('Player profile updated successfully!\\nPlayer: ' + playerData.firstName + ' ' + playerData.lastName + '\\nPosition: ' + playerData.position + '\\nStatus: ' + playerData.status + '\\nHouse: ' + playerData.house + ' - Room ' + playerData.room);
+            
+            closePlayerEditModal();
+            
+            // Refresh player list display
+            updatePlayerDisplay(playerId, playerData);
+        }
+
+        function updatePlayerDisplay(playerId, playerData) {
+            // Update the visual display of the player in the admin grid
+            console.log('Updated player profile for: ' + playerId);
+            console.log('New data:', playerData);
+        }
+
+        function suspendPlayer(playerId) {
+            if(confirm('Are you sure you want to suspend this player? This will temporarily restrict their access.')) {
+                alert('Player suspended successfully. They have been notified and will be contacted by administration.');
+            }
+        }
+
+        function viewMedicalRecord(playerId) {
+            alert('Medical Record Access - View detailed medical history, injuries, and treatment plans for player: ' + playerId);
+        }
+
+        function viewPerformance(playerId) {
+            alert('Performance Analytics - View detailed statistics, training progress, and match performance for player: ' + playerId);
+        }
+
+        function assignCaptain(playerId) {
+            if(confirm('Assign this player as team captain? This will update their leadership role and responsibilities.')) {
+                alert('Player assigned as team captain successfully!');
+            }
+        }
+
+        function transferPlayer(playerId) {
+            alert('Player Transfer Management - Manage loan agreements, transfers, and contract changes for player: ' + playerId);
+        }
+
+        function reactivatePlayer(playerId) {
+            if(confirm('Reactivate this player? This will restore their full access and playing status.')) {
+                alert('Player reactivated successfully! They have been notified and can resume all activities.');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('playerEditModal');
+            if (event.target === modal) {
+                closePlayerEditModal();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin player editing functionality loaded');
+        });
     </script>
+
+    <!-- Player Edit Modal -->
+    <div id="playerEditModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Player Profile</h3>
+                <span class="close" onclick="closePlayerEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="editPlayerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="editFirstName" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="editLastName" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Position</label>
+                            <select id="editPosition" class="form-control">
+                                <option value="goalkeeper">Goalkeeper</option>
+                                <option value="defender">Defender</option>
+                                <option value="midfielder">Midfielder</option>
+                                <option value="forward">Forward</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="editStatus" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="injured">Injured</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="on-loan">On Loan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Age</label>
+                            <input type="number" id="editAge" class="form-control" min="16" max="25">
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <select id="editNationality" class="form-control">
+                                <option value="Germany">Germany</option>
+                                <option value="Spain">Spain</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="France">France</option>
+                                <option value="Brazil">Brazil</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Egypt">Egypt</option>
+                                <option value="Morocco">Morocco</option>
+                                <option value="Turkey">Turkey</option>
+                                <option value="Poland">Poland</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>House Assignment</label>
+                            <select id="editHouse" class="form-control">
+                                <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                <option value="Widdersdorf 3">Widdersdorf 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Room Number</label>
+                            <input type="text" id="editRoom" class="form-control" placeholder="e.g., 12A">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Contract Period</label>
+                        <input type="text" id="editContract" class="form-control" placeholder="e.g., 2024-2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Special Notes</label>
+                        <textarea id="editNotes" class="form-control" rows="3" placeholder="Medical conditions, dietary requirements, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="savePlayerChanges()">Save Changes</button>
+                <button class="btn" onclick="closePlayerEditModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>`;
 
