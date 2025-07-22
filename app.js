@@ -1199,14 +1199,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <!-- Public Registration Tab -->
             <div id="register-auth-tab" class="auth-tab-content">
                 <div class="public-registration">
-                    <p class="registration-intro">Join the FC Köln International Talent Program</p>
+                    <p class="registration-intro">FC Köln International Talent Program Registration</p>
                     
                     <!-- Registration Type Selection -->
                     <div class="public-registration-types">
                         <button class="public-registration-type-btn active" onclick="showPublicRegistrationType('player')">
                             <div class="registration-icon">⚽</div>
-                            <h4>Player Application</h4>
-                            <p>Ages 16-20, International talent program</p>
+                            <h4>Player Registration</h4>
+                            <p>Current FC Köln signed players</p>
                         </button>
                         <button class="public-registration-type-btn" onclick="showPublicRegistrationType('staff')">
                             <div class="registration-icon">👨‍🏫</div>
@@ -1217,7 +1217,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
                     <!-- Quick Player Registration -->
                     <div id="public-player-registration" class="public-registration-form active">
-                        <h3>Player Application Form</h3>
+                        <h3>Player Registration Form</h3>
                         <form class="quick-registration-form" id="playerApplicationForm">
                             <div class="form-row">
                                 <div class="form-group">
@@ -1248,14 +1248,73 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <label>Nationality *</label>
                                     <select id="playerNationality" required>
                                         <option value="">Select nationality</option>
-                                        <option>Germany</option>
-                                        <option>Spain</option>
-                                        <option>France</option>
-                                        <option>Brazil</option>
+                                        <option>Afghanistan</option>
+                                        <option>Albania</option>
+                                        <option>Algeria</option>
                                         <option>Argentina</option>
-                                        <option>Portugal</option>
-                                        <option>Netherlands</option>
+                                        <option>Australia</option>
+                                        <option>Austria</option>
+                                        <option>Belgium</option>
+                                        <option>Bosnia and Herzegovina</option>
+                                        <option>Brazil</option>
+                                        <option>Bulgaria</option>
+                                        <option>Cameroon</option>
+                                        <option>Canada</option>
+                                        <option>Chile</option>
+                                        <option>Colombia</option>
+                                        <option>Croatia</option>
+                                        <option>Czech Republic</option>
+                                        <option>Denmark</option>
+                                        <option>Ecuador</option>
+                                        <option>Egypt</option>
+                                        <option>England</option>
+                                        <option>Finland</option>
+                                        <option>France</option>
+                                        <option>Germany</option>
+                                        <option>Ghana</option>
+                                        <option>Greece</option>
+                                        <option>Hungary</option>
+                                        <option>Iceland</option>
+                                        <option>Iran</option>
+                                        <option>Iraq</option>
+                                        <option>Ireland</option>
+                                        <option>Israel</option>
                                         <option>Italy</option>
+                                        <option>Ivory Coast</option>
+                                        <option>Japan</option>
+                                        <option>Jordan</option>
+                                        <option>Kosovo</option>
+                                        <option>Lebanon</option>
+                                        <option>Mali</option>
+                                        <option>Mexico</option>
+                                        <option>Montenegro</option>
+                                        <option>Morocco</option>
+                                        <option>Netherlands</option>
+                                        <option>Nigeria</option>
+                                        <option>North Macedonia</option>
+                                        <option>Norway</option>
+                                        <option>Peru</option>
+                                        <option>Poland</option>
+                                        <option>Portugal</option>
+                                        <option>Romania</option>
+                                        <option>Russia</option>
+                                        <option>Scotland</option>
+                                        <option>Senegal</option>
+                                        <option>Serbia</option>
+                                        <option>Slovakia</option>
+                                        <option>Slovenia</option>
+                                        <option>South Korea</option>
+                                        <option>Spain</option>
+                                        <option>Sweden</option>
+                                        <option>Switzerland</option>
+                                        <option>Syria</option>
+                                        <option>Tunisia</option>
+                                        <option>Turkey</option>
+                                        <option>Ukraine</option>
+                                        <option>United States</option>
+                                        <option>Uruguay</option>
+                                        <option>Venezuela</option>
+                                        <option>Wales</option>
                                         <option>Other</option>
                                     </select>
                                 </div>
@@ -1283,12 +1342,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Why do you want to join FC Köln? *</label>
-                                <textarea rows="3" id="playerMotivation" placeholder="Tell us about your football ambitions and why you're interested in our program" required></textarea>
+                                <label>Additional Information *</label>
+                                <textarea rows="3" id="playerMotivation" placeholder="Any special requirements, medical conditions, or information we should know" required></textarea>
                             </div>
                             
-                            <button type="button" class="btn btn-primary" onclick="submitPlayerApplication()">Submit Player Application</button>
-                            <p class="form-note">* After submission, you'll receive an email with next steps and a detailed application form.</p>
+                            <button type="button" class="btn btn-primary" onclick="submitPlayerApplication()">Complete Registration</button>
+                            <p class="form-note">* This registration will update your profile in our system and notify the coaching staff.</p>
                         </form>
                     </div>
 
@@ -2640,12 +2699,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = `
-                <h3>✅ Application Submitted Successfully!</h3>
-                <p>Thank you ${formData.firstName}! Your player application has been received.</p>
-                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
-                <p>🏆 Our talent scouts will review your application and contact you for next steps.</p>
-            `;
+            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
+                '<p>Welcome ' + formData.firstName + '! Your player registration has been processed.</p>' +
+                '<p>📧 Your profile has been updated in our system and coaching staff notified.</p>' +
+                '<p>🏠 You will receive housing and program details at ' + formData.email + ' shortly.</p>';
             
             // Replace the form with success message
             document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
@@ -2677,12 +2734,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = `
-                <h3>✅ Application Submitted Successfully!</h3>
-                <p>Thank you ${formData.firstName}! Your staff application has been received.</p>
-                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
-                <p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>
-            `;
+            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your staff application has been received.</p>' +
+                '<p>📧 You will receive a confirmation email at ' + formData.email + ' within 24 hours.</p>' +
+                '<p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>';
             
             // Replace the form with success message
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
