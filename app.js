@@ -299,6 +299,476 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #1e40af;
         }
         
+        /* Enhanced Components Styles */
+        .leaderboard {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 8px;
+            gap: 1rem;
+        }
+        
+        .leaderboard-item.leader {
+            border: 2px solid #fbbf24;
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+        }
+        
+        .rank {
+            font-weight: bold;
+            min-width: 40px;
+        }
+        
+        .house-name {
+            flex: 1;
+            font-weight: 600;
+        }
+        
+        .points {
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transition: width 0.3s;
+        }
+        
+        /* Alerts & Notifications */
+        .alerts-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .alert-item.urgent {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+        
+        .alert-item.warning {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+        
+        .alert-item.info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+        
+        /* AI Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .insight-card {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        /* Activity Timeline */
+        .activity-timeline {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .timestamp {
+            color: #6b7280;
+            font-size: 0.875rem;
+            min-width: 80px;
+        }
+        
+        /* Player Table Styles */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-input {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .stat-large {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .player-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .player-table th,
+        .player-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .player-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .player-info strong {
+            color: #1f2937;
+        }
+        
+        .house-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .house-badge.w1 { background: #dc2626; }
+        .house-badge.w2 { background: #059669; }
+        .house-badge.w3 { background: #3b82f6; }
+        
+        .attendance-good { color: #059669; font-weight: 600; }
+        .attendance-warning { color: #d97706; font-weight: 600; }
+        .fitness-score { color: #7c3aed; font-weight: 600; }
+        
+        .status-active { color: #059669; }
+        .status-injured { color: #dc2626; }
+        
+        .btn-mini {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-right: 0.25rem;
+        }
+        
+        .btn-mini:hover {
+            background: #4b5563;
+        }
+        
+        /* Practice Excuse Styles */
+        .excuse-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .excuse-category {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .excuse-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+        
+        .recent-excuses {
+            margin-top: 1rem;
+        }
+        
+        .excuse-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        
+        .excuse-item.pending {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+        
+        .excuse-item.approved {
+            background: #d1fae5;
+            border-left-color: #10b981;
+        }
+        
+        /* Smart Chore Styles */
+        .ai-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .ai-status {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .chore-houses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .house-chores {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .completion-rate {
+            float: right;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .completion-rate.excellent {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .completion-rate.good {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .completion-rate.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .chore-list {
+            margin-top: 1rem;
+        }
+        
+        .chore-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 80px 100px;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: #f9fafb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+        
+        .chore-item.completed {
+            background: #f0fdf4;
+            border-left: 3px solid #22c55e;
+        }
+        
+        .chore-item.in-progress {
+            background: #fffbeb;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .chore-item.overdue {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+        }
+        
+        .chore-item.pending {
+            background: #f8fafc;
+            border-left: 3px solid #94a3b8;
+        }
+        
+        .chore-name {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .assigned-to {
+            color: #6b7280;
+        }
+        
+        .chore-points {
+            font-weight: 600;
+            color: #059669;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status-badge.done {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-badge.progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-badge.overdue {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .status-badge.pending {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .analytics-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .trend-chart {
+            display: flex;
+            align-items: end;
+            gap: 0.5rem;
+            height: 80px;
+            margin: 1rem 0;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #dc2626, #ef4444);
+            border-radius: 2px;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            font-weight: 600;
+        }
+        
+        .fairness-meter {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .points-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .points-item {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        /* Recommendations */
+        .recommendations {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .recommendation-item {
+            background: #fefce8;
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .recommendation-item h4 {
+            color: #a16207;
+            margin-bottom: 0.5rem;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -317,6 +787,23 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             .dashboard-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .chore-houses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chore-item {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-controls {
+                flex-direction: column;
             }
         }
         
@@ -414,94 +901,325 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         <main class="main">
             <!-- Dashboard Page -->
             <div id="dashboard" class="page active">
-                <h1>Dashboard</h1>
+                <h1>FC Köln Dashboard</h1>
+                
+                <!-- Key Metrics -->
                 <div class="dashboard-grid">
                     <div class="card">
                         <h3>Total Players</h3>
                         <div class="stat">24</div>
                         <p>Active talent program participants</p>
+                        <small>↗ +2 new this week</small>
                     </div>
                     <div class="card">
-                        <h3>Houses</h3>
+                        <h3>House Competition</h3>
+                        <div class="stat">🏆 W2</div>
+                        <p>Widdersdorf 2 leading with 425 pts</p>
+                        <small>Weekly challenge: Fitness Goals</small>
+                    </div>
+                    <div class="card">
+                        <h3>Attendance Rate</h3>
+                        <div class="stat">92%</div>
+                        <p>Training session participation</p>
+                        <small>↗ +5% from last month</small>
+                    </div>
+                    <div class="card">
+                        <h3>Smart Notifications</h3>
                         <div class="stat">3</div>
-                        <p>Widdersdorf 1, 2, and 3</p>
-                    </div>
-                    <div class="card">
-                        <h3>This Week's Events</h3>
-                        <div class="stat">8</div>
-                        <p>Training sessions and matches</p>
-                    </div>
-                    <div class="card">
-                        <h3>Pending Orders</h3>
-                        <div class="stat">5</div>
-                        <p>Grocery orders awaiting delivery</p>
+                        <p>Pending approvals & alerts</p>
+                        <small>Practice excuses, meal requests</small>
                     </div>
                 </div>
-                
+
+                <!-- House Competition Leaderboard -->
                 <div class="form-section">
-                    <h3>Recent Activity</h3>
-                    <p>• New player registration: Ahmed Hassan</p>
-                    <p>• Chore assignment completed: Kitchen cleaning - Widdersdorf 1</p>
-                    <p>• Food order delivered: House 2 weekly groceries</p>
-                    <p>• Training session scheduled: Monday 3:00 PM</p>
+                    <h3>🏆 House Competition Leaderboard</h3>
+                    <div class="leaderboard">
+                        <div class="leaderboard-item leader">
+                            <span class="rank">1st</span>
+                            <span class="house-name">Widdersdorf 2</span>
+                            <span class="points">425 pts</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <span class="rank">2nd</span>
+                            <span class="house-name">Widdersdorf 1</span>
+                            <span class="points">380 pts</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 89%;"></div>
+                            </div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <span class="rank">3rd</span>
+                            <span class="house-name">Widdersdorf 3</span>
+                            <span class="points">345 pts</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 81%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>This Week:</strong> Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)</p>
+                </div>
+
+                <!-- Smart Alerts & Notifications -->
+                <div class="form-section">
+                    <h3>🔔 Smart Alerts & Pending Actions</h3>
+                    <div class="alerts-grid">
+                        <div class="alert-item urgent">
+                            <strong>Practice Excuse:</strong> Max Mueller - Family emergency
+                            <button class="btn-mini">Review</button>
+                        </div>
+                        <div class="alert-item warning">
+                            <strong>Chore Overdue:</strong> Bathroom cleaning - Widdersdorf 3
+                            <button class="btn-mini">Reassign</button>
+                        </div>
+                        <div class="alert-item info">
+                            <strong>Food Request:</strong> Dietary accommodation - Ahmed Hassan
+                            <button class="btn-mini">Approve</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="form-section">
+                    <h3>🤖 AI Performance Insights</h3>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <h4>Training Optimization</h4>
+                            <p>Players show 15% better performance on Wednesdays. Consider scheduling key drills mid-week.</p>
+                        </div>
+                        <div class="insight-card">
+                            <h4>House Dynamics</h4>
+                            <p>Widdersdorf 2's success correlates with balanced chore rotation and peer mentoring system.</p>
+                        </div>
+                        <div class="insight-card">
+                            <h4>Nutrition Impact</h4>
+                            <p>Players with consistent meal timing show 8% better stamina scores in afternoon sessions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="form-section">
+                    <h3>📊 Recent Activity & Analytics</h3>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <span class="timestamp">2 min ago</span>
+                            <strong>Smart Chore Assignment:</strong> AI assigned kitchen duties based on availability and fairness
+                        </div>
+                        <div class="activity-item">
+                            <span class="timestamp">15 min ago</span>
+                            <strong>Performance Update:</strong> Carlos Rodriguez improved sprint time by 0.3 seconds
+                        </div>
+                        <div class="activity-item">
+                            <span class="timestamp">1 hour ago</span>
+                            <strong>House Points:</strong> Widdersdorf 1 earned 25 points for team meal preparation
+                        </div>
+                        <div class="activity-item">
+                            <span class="timestamp">3 hours ago</span>
+                            <strong>Attendance Alert:</strong> 100% attendance achieved for morning training session
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Players Page -->
             <div id="players" class="page">
-                <h1>Player Management</h1>
+                <h1>Player Management & Analytics</h1>
+                
+                <!-- Advanced Filters & Search -->
                 <div class="form-section">
-                    <h3>Add New Player</h3>
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" placeholder="Enter player name">
-                    </div>
-                    <div class="form-group">
-                        <label>Position</label>
-                        <select>
+                    <h3>🔍 Advanced Player Search & Filters</h3>
+                    <div class="filter-grid">
+                        <input type="text" placeholder="Search players..." class="filter-input">
+                        <select class="filter-input">
+                            <option>All Houses</option>
+                            <option>Widdersdorf 1</option>
+                            <option>Widdersdorf 2</option>
+                            <option>Widdersdorf 3</option>
+                        </select>
+                        <select class="filter-input">
+                            <option>All Positions</option>
                             <option>Goalkeeper</option>
                             <option>Defender</option>
                             <option>Midfielder</option>
                             <option>Forward</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label>House Assignment</label>
-                        <select>
-                            <option>Widdersdorf 1</option>
-                            <option>Widdersdorf 2</option>
-                            <option>Widdersdorf 3</option>
+                        <select class="filter-input">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Injured</option>
+                            <option>On Leave</option>
                         </select>
                     </div>
-                    <button class="btn">Add Player</button>
                 </div>
-                
-                <div class="players-grid">
-                    <div class="player-card">
-                        <div class="player-name">Max Mueller</div>
-                        <div class="player-details">
-                            Position: Midfielder<br>
-                            House: Widdersdorf 1<br>
-                            Nationality: Germany<br>
-                            Age: 17
+
+                <!-- Player Statistics Overview -->
+                <div class="form-section">
+                    <h3>📈 Performance Analytics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Attendance Rate</h4>
+                            <div class="stat-large">94.2%</div>
+                            <small>Avg. across all players</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Fitness Score</h4>
+                            <div class="stat-large">8.6/10</div>
+                            <small>Based on recent assessments</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>House Points Earned</h4>
+                            <div class="stat-large">1,150</div>
+                            <small>Total points this month</small>
                         </div>
                     </div>
-                    <div class="player-card">
-                        <div class="player-name">Ahmed Hassan</div>
-                        <div class="player-details">
-                            Position: Forward<br>
-                            House: Widdersdorf 2<br>
-                            Nationality: Egypt<br>
-                            Age: 18
+                </div>
+
+                <!-- Enhanced Player Table -->
+                <div class="form-section">
+                    <h3>👥 Player Database</h3>
+                    <div class="table-container">
+                        <table class="player-table">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Position</th>
+                                    <th>House</th>
+                                    <th>Attendance</th>
+                                    <th>Fitness</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <strong>Max Mueller</strong><br>
+                                            <small>Germany, Age 17</small>
+                                        </div>
+                                    </td>
+                                    <td>Midfielder</td>
+                                    <td><span class="house-badge w1">W1</span></td>
+                                    <td><span class="attendance-good">96%</span></td>
+                                    <td><span class="fitness-score">9.2</span></td>
+                                    <td><span class="status-active">Active</span></td>
+                                    <td>
+                                        <button class="btn-mini">View</button>
+                                        <button class="btn-mini">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <strong>Ahmed Hassan</strong><br>
+                                            <small>Egypt, Age 18</small>
+                                        </div>
+                                    </td>
+                                    <td>Forward</td>
+                                    <td><span class="house-badge w2">W2</span></td>
+                                    <td><span class="attendance-good">94%</span></td>
+                                    <td><span class="fitness-score">8.8</span></td>
+                                    <td><span class="status-active">Active</span></td>
+                                    <td>
+                                        <button class="btn-mini">View</button>
+                                        <button class="btn-mini">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <strong>Carlos Rodriguez</strong><br>
+                                            <small>Spain, Age 17</small>
+                                        </div>
+                                    </td>
+                                    <td>Defender</td>
+                                    <td><span class="house-badge w3">W3</span></td>
+                                    <td><span class="attendance-warning">88%</span></td>
+                                    <td><span class="fitness-score">8.1</span></td>
+                                    <td><span class="status-injured">Injured</span></td>
+                                    <td>
+                                        <button class="btn-mini">View</button>
+                                        <button class="btn-mini">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <strong>Luis Garcia</strong><br>
+                                            <small>Argentina, Age 16</small>
+                                        </div>
+                                    </td>
+                                    <td>Midfielder</td>
+                                    <td><span class="house-badge w2">W2</span></td>
+                                    <td><span class="attendance-good">98%</span></td>
+                                    <td><span class="fitness-score">9.5</span></td>
+                                    <td><span class="status-active">Active</span></td>
+                                    <td>
+                                        <button class="btn-mini">View</button>
+                                        <button class="btn-mini">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="player-info">
+                                            <strong>Alex Schmidt</strong><br>
+                                            <small>Germany, Age 17</small>
+                                        </div>
+                                    </td>
+                                    <td>Goalkeeper</td>
+                                    <td><span class="house-badge w1">W1</span></td>
+                                    <td><span class="attendance-good">92%</span></td>
+                                    <td><span class="fitness-score">8.7</span></td>
+                                    <td><span class="status-active">Active</span></td>
+                                    <td>
+                                        <button class="btn-mini">View</button>
+                                        <button class="btn-mini">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Practice Excuse Management -->
+                <div class="form-section">
+                    <h3>📝 Practice Excuse Statistics</h3>
+                    <div class="excuse-stats">
+                        <div class="excuse-category">
+                            <h4>Illness</h4>
+                            <div class="excuse-count">8 requests</div>
+                            <small>Most common this month</small>
+                        </div>
+                        <div class="excuse-category">
+                            <h4>Family Emergency</h4>
+                            <div class="excuse-count">3 requests</div>
+                            <small>All approved</small>
+                        </div>
+                        <div class="excuse-category">
+                            <h4>Academic Conflict</h4>
+                            <div class="excuse-count">5 requests</div>
+                            <small>Exam periods</small>
+                        </div>
+                        <div class="excuse-category">
+                            <h4>Medical Appointment</h4>
+                            <div class="excuse-count">4 requests</div>
+                            <small>Routine check-ups</small>
                         </div>
                     </div>
-                    <div class="player-card">
-                        <div class="player-name">Carlos Rodriguez</div>
-                        <div class="player-details">
-                            Position: Defender<br>
-                            House: Widdersdorf 3<br>
-                            Nationality: Spain<br>
-                            Age: 17
+                    
+                    <div class="recent-excuses">
+                        <h4>Recent Excuse Requests</h4>
+                        <div class="excuse-item pending">
+                            <strong>Max Mueller</strong> - Family emergency (Today)
+                            <button class="btn-mini">Approve</button>
+                            <button class="btn-mini">Decline</button>
+                        </div>
+                        <div class="excuse-item approved">
+                            <strong>Carlos Rodriguez</strong> - Medical appointment (Yesterday) - Approved
                         </div>
                     </div>
                 </div>
@@ -509,27 +1227,177 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Chores Page -->
             <div id="chores" class="page">
-                <h1>House Chores Management</h1>
+                <h1>🤖 Smart Chore Management System</h1>
+
+                <!-- AI Rotation Controls -->
                 <div class="form-section">
-                    <h3>Weekly Chore Assignments</h3>
-                    <div class="dashboard-grid">
-                        <div class="card">
-                            <h3>Widdersdorf 1</h3>
-                            <p>Kitchen cleaning: Max Mueller</p>
-                            <p>Bathroom: Alex Schmidt</p>
-                            <p>Common area: Jan Weber</p>
+                    <h3>🧠 AI-Powered Chore Rotation</h3>
+                    <p>Our smart system automatically assigns chores based on fairness, skill level, availability, and house points balance.</p>
+                    <div class="ai-controls">
+                        <button class="btn">🔄 Generate New Rotation</button>
+                        <button class="btn btn-secondary">⚖️ Balance Workload</button>
+                        <button class="btn btn-secondary">📊 View Fairness Report</button>
+                    </div>
+                    <div class="ai-status">
+                        <p><strong>Last AI Update:</strong> Today at 6:00 AM</p>
+                        <p><strong>Fairness Score:</strong> 94% (Excellent balance across all houses)</p>
+                        <p><strong>Next Auto-Rotation:</strong> Sunday 11:59 PM</p>
+                    </div>
+                </div>
+
+                <!-- Smart Chore Assignments -->
+                <div class="form-section">
+                    <h3>📋 Current Week Assignments (AI Optimized)</h3>
+                    <div class="chore-houses-grid">
+                        <div class="house-chores">
+                            <h4>🏠 Widdersdorf 1 <span class="completion-rate good">95% Complete</span></h4>
+                            <div class="chore-list">
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Kitchen Deep Clean</span>
+                                    <span class="assigned-to">Max Mueller</span>
+                                    <span class="chore-points">+15 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Bathroom Maintenance</span>
+                                    <span class="assigned-to">Alex Schmidt</span>
+                                    <span class="chore-points">+10 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item in-progress">
+                                    <span class="chore-name">Common Area Vacuum</span>
+                                    <span class="assigned-to">Jan Weber</span>
+                                    <span class="chore-points">+8 pts</span>
+                                    <span class="status-badge progress">⏳ In Progress</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Trash & Recycling</span>
+                                    <span class="assigned-to">Tom Fischer</span>
+                                    <span class="chore-points">+5 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card">
-                            <h3>Widdersdorf 2</h3>
-                            <p>Kitchen cleaning: Ahmed Hassan</p>
-                            <p>Bathroom: Luis Garcia</p>
-                            <p>Common area: Tom Johnson</p>
+
+                        <div class="house-chores">
+                            <h4>🏠 Widdersdorf 2 <span class="completion-rate excellent">100% Complete</span></h4>
+                            <div class="chore-list">
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Kitchen Deep Clean</span>
+                                    <span class="assigned-to">Ahmed Hassan</span>
+                                    <span class="chore-points">+15 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Bathroom Maintenance</span>
+                                    <span class="assigned-to">Luis Garcia</span>
+                                    <span class="chore-points">+10 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Common Area Vacuum</span>
+                                    <span class="assigned-to">Omar Al-Rashid</span>
+                                    <span class="chore-points">+8 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Laundry Room</span>
+                                    <span class="assigned-to">Marco Silva</span>
+                                    <span class="chore-points">+7 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card">
-                            <h3>Widdersdorf 3</h3>
-                            <p>Kitchen cleaning: Carlos Rodriguez</p>
-                            <p>Bathroom: Mike Brown</p>
-                            <p>Common area: Jean Dupont</p>
+
+                        <div class="house-chores">
+                            <h4>🏠 Widdersdorf 3 <span class="completion-rate warning">75% Complete</span></h4>
+                            <div class="chore-list">
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Kitchen Deep Clean</span>
+                                    <span class="assigned-to">Carlos Rodriguez</span>
+                                    <span class="chore-points">+15 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item overdue">
+                                    <span class="chore-name">Bathroom Maintenance</span>
+                                    <span class="assigned-to">Mike Brown</span>
+                                    <span class="chore-points">+10 pts</span>
+                                    <span class="status-badge overdue">⚠️ Overdue</span>
+                                </div>
+                                <div class="chore-item completed">
+                                    <span class="chore-name">Garden Maintenance</span>
+                                    <span class="assigned-to">Jean Dupont</span>
+                                    <span class="chore-points">+12 pts</span>
+                                    <span class="status-badge done">✓ Done</span>
+                                </div>
+                                <div class="chore-item pending">
+                                    <span class="chore-name">Equipment Storage</span>
+                                    <span class="assigned-to">Erik Johansson</span>
+                                    <span class="chore-points">+6 pts</span>
+                                    <span class="status-badge pending">📅 Scheduled</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chore Analytics & Insights -->
+                <div class="form-section">
+                    <h3>📊 Chore Performance Analytics</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Completion Trends</h4>
+                            <div class="trend-chart">
+                                <div class="chart-bar" style="height: 80%;">Mon</div>
+                                <div class="chart-bar" style="height: 95%;">Tue</div>
+                                <div class="chart-bar" style="height: 100%;">Wed</div>
+                                <div class="chart-bar" style="height: 88%;">Thu</div>
+                                <div class="chart-bar" style="height: 92%;">Fri</div>
+                                <div class="chart-bar" style="height: 85%;">Sat</div>
+                                <div class="chart-bar" style="height: 78%;">Sun</div>
+                            </div>
+                            <p>Peak performance: Wednesday</p>
+                        </div>
+                        
+                        <div class="analytics-card">
+                            <h4>AI Fairness Score</h4>
+                            <div class="fairness-meter">
+                                <div class="meter-fill" style="width: 94%;"></div>
+                            </div>
+                            <p>94% - Excellent balance</p>
+                            <small>Based on workload distribution, player skills, and rotation history</small>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h4>House Points Impact</h4>
+                            <div class="points-breakdown">
+                                <div class="points-item">W1: +158 pts</div>
+                                <div class="points-item">W2: +170 pts</div>
+                                <div class="points-item">W3: +142 pts</div>
+                            </div>
+                            <p>Chore completion contribution to house competition</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Recommendations -->
+                <div class="form-section">
+                    <h3>💡 AI Recommendations</h3>
+                    <div class="recommendations">
+                        <div class="recommendation-item">
+                            <h4>Workload Balancing</h4>
+                            <p>Mike Brown has missed 2 bathroom cleanings. System suggests reassigning to Luis Garcia with bonus points.</p>
+                            <button class="btn-mini">Apply Suggestion</button>
+                        </div>
+                        <div class="recommendation-item">
+                            <h4>Skill Optimization</h4>
+                            <p>Ahmed Hassan shows excellent kitchen management. Consider assigning complex cooking prep tasks.</p>
+                            <button class="btn-mini">Update Profile</button>
+                        </div>
+                        <div class="recommendation-item">
+                            <h4>Motivation Boost</h4>
+                            <p>Widdersdorf 3 completion rate dropped 10%. Suggest team building chore activity with bonus points.</p>
+                            <button class="btn-mini">Schedule Activity</button>
                         </div>
                     </div>
                 </div>
