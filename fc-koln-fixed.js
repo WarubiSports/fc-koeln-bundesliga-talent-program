@@ -1375,35 +1375,25 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <input type="tel" id="staffPhone" required>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Current Position *</label>
-                                    <select id="staffPosition" required>
-                                        <option value="">Select position</option>
-                                        <option>Head Coach</option>
-                                        <option>Assistant Coach</option>
-                                        <option>Fitness Coach</option>
-                                        <option>Goalkeeper Coach</option>
-                                        <option>Youth Development Coach</option>
-                                        <option>Sports Psychologist</option>
-                                        <option>Physiotherapist</option>
-                                        <option>Nutritionist</option>
-                                        <option>House Manager</option>
-                                        <option>Administrative Staff</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Years of Experience *</label>
-                                    <input type="number" id="staffExperience" min="0" max="50" required>
-                                </div>
+                            <div class="form-group">
+                                <label>Current Position *</label>
+                                <select id="staffPosition" required>
+                                    <option value="">Select position</option>
+                                    <option>Head Coach</option>
+                                    <option>Assistant Coach</option>
+                                    <option>Fitness Coach</option>
+                                    <option>Goalkeeper Coach</option>
+                                    <option>Youth Development Coach</option>
+                                    <option>Sports Psychologist</option>
+                                    <option>Physiotherapist</option>
+                                    <option>Nutritionist</option>
+                                    <option>House Manager</option>
+                                    <option>Administrative Staff</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Additional Information *</label>
                                 <textarea rows="3" id="staffExperienceDetail" placeholder="Any updates to your role, special requirements, or information we should know" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Qualifications</label>
-                                <input type="text" id="staffQualifications" placeholder="UEFA licenses, degrees, certifications">
                             </div>
                             
                             <button type="button" class="btn btn-primary" onclick="submitStaffApplication()">Complete Registration</button>
@@ -2719,14 +2709,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 email: document.getElementById('staffEmail').value,
                 phone: document.getElementById('staffPhone').value,
                 position: document.getElementById('staffPosition').value,
-                experience: document.getElementById('staffExperience').value,
-                experienceDetail: document.getElementById('staffExperienceDetail').value,
-                qualifications: document.getElementById('staffQualifications').value,
+                additionalInfo: document.getElementById('staffExperienceDetail').value,
                 submittedAt: new Date().toISOString()
             };
 
             // Basic validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.experienceDetail) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.additionalInfo) {
                 alert('Please fill in all required fields.');
                 return;
             }
