@@ -976,6 +976,117 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             gap: 0.5rem;
             font-weight: normal;
         }
+
+        /* Login Page Auth Tabs */
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+        
+        .auth-tab-btn {
+            flex: 1;
+            background: #f1f5f9;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .auth-tab-btn.active {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .auth-tab-content {
+            display: none;
+        }
+        
+        .auth-tab-content.active {
+            display: block;
+        }
+
+        /* Public Registration Styles */
+        .registration-intro {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 16px;
+        }
+        
+        .public-registration-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .public-registration-type-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .public-registration-type-btn.active {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .public-registration-type-btn:hover {
+            border-color: #dc2626;
+        }
+        
+        .registration-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .public-registration-type-btn h4 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .public-registration-type-btn p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .public-registration-form {
+            display: none;
+        }
+        
+        .public-registration-form.active {
+            display: block;
+        }
+        
+        .quick-registration-form {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .quick-registration-form h3 {
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-note {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
@@ -1060,21 +1171,188 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <div class="login-logo">FC Köln</div>
             <div class="login-subtitle">International Talent Program<br>Management System</div>
             
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" value="max.bisinger@warubi-sports.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" value="ITP2024" required>
-                </div>
-                
-                <button type="submit" class="btn">Sign In</button>
-            </form>
+            <!-- Login/Registration Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
+            </div>
             
-            <div id="loginMessage"></div>
+            <!-- Login Form -->
+            <div id="login-auth-tab" class="auth-tab-content active">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" value="max.bisinger@warubi-sports.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" value="ITP2024" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                
+                <div id="loginMessage"></div>
+            </div>
+            
+            <!-- Public Registration Tab -->
+            <div id="register-auth-tab" class="auth-tab-content">
+                <div class="public-registration">
+                    <p class="registration-intro">Join the FC Köln International Talent Program</p>
+                    
+                    <!-- Registration Type Selection -->
+                    <div class="public-registration-types">
+                        <button class="public-registration-type-btn active" onclick="showPublicRegistrationType('player')">
+                            <div class="registration-icon">⚽</div>
+                            <h4>Player Application</h4>
+                            <p>Ages 16-20, International talent program</p>
+                        </button>
+                        <button class="public-registration-type-btn" onclick="showPublicRegistrationType('staff')">
+                            <div class="registration-icon">👨‍🏫</div>
+                            <h4>Staff Application</h4>
+                            <p>Coaching, admin, and support positions</p>
+                        </button>
+                    </div>
+
+                    <!-- Quick Player Registration -->
+                    <div id="public-player-registration" class="public-registration-form active">
+                        <h3>Player Application Form</h3>
+                        <form class="quick-registration-form" id="playerApplicationForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" id="playerFirstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" id="playerLastName" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email Address *</label>
+                                    <input type="email" id="playerEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number *</label>
+                                    <input type="tel" id="playerPhone" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date of Birth *</label>
+                                    <input type="date" id="playerBirth" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nationality *</label>
+                                    <select id="playerNationality" required>
+                                        <option value="">Select nationality</option>
+                                        <option>Germany</option>
+                                        <option>Spain</option>
+                                        <option>France</option>
+                                        <option>Brazil</option>
+                                        <option>Argentina</option>
+                                        <option>Portugal</option>
+                                        <option>Netherlands</option>
+                                        <option>Italy</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Primary Position *</label>
+                                    <select id="playerPosition" required>
+                                        <option value="">Select position</option>
+                                        <option>Goalkeeper</option>
+                                        <option>Centre-Back</option>
+                                        <option>Left-Back</option>
+                                        <option>Right-Back</option>
+                                        <option>Defensive Midfielder</option>
+                                        <option>Central Midfielder</option>
+                                        <option>Attacking Midfielder</option>
+                                        <option>Left Winger</option>
+                                        <option>Right Winger</option>
+                                        <option>Striker</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Previous Club</label>
+                                    <input type="text" id="playerPreviousClub" placeholder="Most recent club">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Why do you want to join FC Köln? *</label>
+                                <textarea rows="3" id="playerMotivation" placeholder="Tell us about your football ambitions and why you're interested in our program" required></textarea>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary" onclick="submitPlayerApplication()">Submit Player Application</button>
+                            <p class="form-note">* After submission, you'll receive an email with next steps and a detailed application form.</p>
+                        </form>
+                    </div>
+
+                    <!-- Quick Staff Registration -->
+                    <div id="public-staff-registration" class="public-registration-form">
+                        <h3>Staff Application Form</h3>
+                        <form class="quick-registration-form" id="staffApplicationForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" id="staffFirstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" id="staffLastName" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email Address *</label>
+                                    <input type="email" id="staffEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number *</label>
+                                    <input type="tel" id="staffPhone" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Position Applied For *</label>
+                                    <select id="staffPosition" required>
+                                        <option value="">Select position</option>
+                                        <option>Head Coach</option>
+                                        <option>Assistant Coach</option>
+                                        <option>Fitness Coach</option>
+                                        <option>Goalkeeper Coach</option>
+                                        <option>Youth Development Coach</option>
+                                        <option>Sports Psychologist</option>
+                                        <option>Physiotherapist</option>
+                                        <option>Nutritionist</option>
+                                        <option>House Manager</option>
+                                        <option>Administrative Staff</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Years of Experience *</label>
+                                    <input type="number" id="staffExperience" min="0" max="50" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Relevant Experience *</label>
+                                <textarea rows="3" id="staffExperienceDetail" placeholder="Describe your football coaching/management experience" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Qualifications</label>
+                                <input type="text" id="staffQualifications" placeholder="UEFA licenses, degrees, certifications">
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary" onclick="submitStaffApplication()">Submit Staff Application</button>
+                            <p class="form-note">* After submission, you'll be contacted for an interview and detailed application process.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2301,6 +2579,115 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Add active to clicked button
             event.target.classList.add('active');
+        }
+
+        // Auth tab management for login page
+        function showAuthTab(tabId) {
+            // Hide all auth tabs
+            const tabs = document.querySelectorAll('.auth-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active from tab buttons
+            const buttons = document.querySelectorAll('.auth-tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId + '-auth-tab').classList.add('active');
+            
+            // Add active to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Public registration type management
+        function showPublicRegistrationType(type) {
+            // Hide all public registration forms
+            const forms = document.querySelectorAll('.public-registration-form');
+            forms.forEach(form => form.classList.remove('active'));
+            
+            // Remove active from type buttons
+            const buttons = document.querySelectorAll('.public-registration-type-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected form
+            document.getElementById('public-' + type + '-registration').classList.add('active');
+            
+            // Add active to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Submit player application
+        function submitPlayerApplication() {
+            const formData = {
+                type: 'player',
+                firstName: document.getElementById('playerFirstName').value,
+                lastName: document.getElementById('playerLastName').value,
+                email: document.getElementById('playerEmail').value,
+                phone: document.getElementById('playerPhone').value,
+                dateOfBirth: document.getElementById('playerBirth').value,
+                nationality: document.getElementById('playerNationality').value,
+                position: document.getElementById('playerPosition').value,
+                previousClub: document.getElementById('playerPreviousClub').value,
+                motivation: document.getElementById('playerMotivation').value,
+                submittedAt: new Date().toISOString()
+            };
+
+            // Basic validation
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.motivation) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message success';
+            successDiv.innerHTML = `
+                <h3>✅ Application Submitted Successfully!</h3>
+                <p>Thank you ${formData.firstName}! Your player application has been received.</p>
+                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
+                <p>🏆 Our talent scouts will review your application and contact you for next steps.</p>
+            `;
+            
+            // Replace the form with success message
+            document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
+            
+            console.log('Player Application Submitted:', formData);
+        }
+
+        // Submit staff application
+        function submitStaffApplication() {
+            const formData = {
+                type: 'staff',
+                firstName: document.getElementById('staffFirstName').value,
+                lastName: document.getElementById('staffLastName').value,
+                email: document.getElementById('staffEmail').value,
+                phone: document.getElementById('staffPhone').value,
+                position: document.getElementById('staffPosition').value,
+                experience: document.getElementById('staffExperience').value,
+                experienceDetail: document.getElementById('staffExperienceDetail').value,
+                qualifications: document.getElementById('staffQualifications').value,
+                submittedAt: new Date().toISOString()
+            };
+
+            // Basic validation
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.experienceDetail) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message success';
+            successDiv.innerHTML = `
+                <h3>✅ Application Submitted Successfully!</h3>
+                <p>Thank you ${formData.firstName}! Your staff application has been received.</p>
+                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
+                <p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>
+            `;
+            
+            // Replace the form with success message
+            document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
+            
+            console.log('Staff Application Submitted:', formData);
         }
 
         // Logout
