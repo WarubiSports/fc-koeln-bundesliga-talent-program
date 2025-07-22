@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the working server
-const serverProcess = spawn('node', ['server.js'], {
+// Start the working server with registration portal
+const serverProcess = spawn('node', ['fc-koln-fixed.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });

@@ -2640,12 +2640,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = `
-                <h3>✅ Application Submitted Successfully!</h3>
-                <p>Thank you ${formData.firstName}! Your player application has been received.</p>
-                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
-                <p>🏆 Our talent scouts will review your application and contact you for next steps.</p>
-            `;
+            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your player application has been received.</p>' +
+                '<p>📧 You will receive a confirmation email at ' + formData.email + ' within 24 hours.</p>' +
+                '<p>🏆 Our talent scouts will review your application and contact you for next steps.</p>';
             
             // Replace the form with success message
             document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
@@ -2677,12 +2675,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = `
-                <h3>✅ Application Submitted Successfully!</h3>
-                <p>Thank you ${formData.firstName}! Your staff application has been received.</p>
-                <p>📧 You will receive a confirmation email at ${formData.email} within 24 hours.</p>
-                <p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>
-            `;
+            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your staff application has been received.</p>' +
+                '<p>📧 You will receive a confirmation email at ' + formData.email + ' within 24 hours.</p>' +
+                '<p>📞 Our HR team will contact you to schedule an interview within 3-5 business days.</p>';
             
             // Replace the form with success message
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
