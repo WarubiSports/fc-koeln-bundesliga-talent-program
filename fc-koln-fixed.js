@@ -2354,10 +2354,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                         <option>Striker</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label>Previous Club</label>
-                                    <input type="text" id="playerPreviousClub" placeholder="Most recent club">
-                                </div>
+
                             </div>
                             <div class="form-group">
                                 <label>Additional Information *</label>
@@ -2397,16 +2394,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 <label>Current Position *</label>
                                 <select id="staffPosition" required>
                                     <option value="">Select position</option>
-                                    <option>Head Coach</option>
-                                    <option>Assistant Coach</option>
-                                    <option>Fitness Coach</option>
-                                    <option>Goalkeeper Coach</option>
-                                    <option>Youth Development Coach</option>
-                                    <option>Sports Psychologist</option>
-                                    <option>Physiotherapist</option>
-                                    <option>Nutritionist</option>
-                                    <option>House Manager</option>
-                                    <option>Administrative Staff</option>
+                                    <option>Staff</option>
+                                    <option>Coach</option>
+                                    <option>Admin</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -4012,10 +4002,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <input type="number" min="150" max="220">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Previous Club(s)</label>
-                                <textarea rows="3" placeholder="List your previous football clubs and years played"></textarea>
-                            </div>
+
                         </div>
 
                         <!-- Housing Preferences -->
