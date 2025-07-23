@@ -2,6 +2,8 @@
 
 const http = require('http');
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 
 console.log('Starting 1.FC Köln Bundesliga Talent Program Management System...');
 
@@ -4959,6 +4961,34 @@ const server = http.createServer((req, res) => {
             system: 'FC Köln Management - Complete Application',
             timestamp: new Date().toISOString()
         }));
+        return;
+    }
+    
+    // Serve static assets (images, logos, etc.)
+    if (parsedUrl.pathname.startsWith('/attached_assets/')) {
+        const filePath = path.join(__dirname, parsedUrl.pathname);
+        
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end('<h1>404 - Asset Not Found</h1>');
+                return;
+            }
+            
+            // Set appropriate content type for images
+            const ext = path.extname(filePath).toLowerCase();
+            let contentType = 'application/octet-stream';
+            if (ext === '.png') contentType = 'image/png';
+            else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+            else if (ext === '.gif') contentType = 'image/gif';
+            else if (ext === '.svg') contentType = 'image/svg+xml';
+            
+            res.writeHead(200, { 
+                'Content-Type': contentType,
+                'Cache-Control': 'public, max-age=86400' // Cache images for 1 day
+            });
+            res.end(data);
+        });
         return;
     }
     
