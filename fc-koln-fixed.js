@@ -41,6 +41,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
+            gap: 4rem;
         }
         
         .logo {
@@ -50,6 +51,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-size: 20px;
             font-weight: bold;
             letter-spacing: 0.5px;
+            margin-right: 3rem;
         }
 
         .header-logo {
