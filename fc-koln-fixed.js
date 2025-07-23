@@ -3,7 +3,7 @@
 const http = require('http');
 const url = require('url');
 
-console.log('Starting Complete FC Köln Management System...');
+console.log('Starting 1.FC Köln Bundesliga Talent Program Management System...');
 
 // Complete FC Köln Management System HTML
 const FC_KOLN_APP = `<!DOCTYPE html>
@@ -11,7 +11,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FC Köln International Talent Program</title>
+    <title>1.FC Köln Bundesliga Talent Program</title>
     <style>
         * {
             margin: 0;
@@ -42,10 +42,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
         
         .logo {
-            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 20px;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo {
+            height: 50px;
+            width: auto;
         }
         
         .user-info {
@@ -2144,12 +2151,21 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
         
         .login-logo {
+            margin-bottom: 2rem;
+        }
+
+        .fc-koln-logo {
+            height: 120px;
+            width: auto;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
             color: #dc2626;
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
         
         .login-subtitle {
@@ -2165,8 +2181,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
     <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-card">
-            <div class="login-logo">FC Köln</div>
-            <div class="login-subtitle">International Talent Program<br>Management System</div>
+            <div class="login-logo">
+                <img src="attached_assets/NewCologneLogo_1753281112388.png" alt="1.FC Köln Logo" class="fc-koln-logo">
+            </div>
+            <h1>1.FC Köln Bundesliga Talent Program</h1>
+            <div class="login-subtitle">Management System</div>
             
             <!-- Login/Registration Tabs -->
             <div class="auth-tabs">
@@ -2196,7 +2215,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <!-- Public Registration Tab -->
             <div id="register-auth-tab" class="auth-tab-content">
                 <div class="public-registration">
-                    <p class="registration-intro">FC Köln International Talent Program Registration</p>
+                    <p class="registration-intro">1.FC Köln Bundesliga Talent Program Registration</p>
                     
                     <!-- Registration Type Selection -->
                     <div class="public-registration-types">
@@ -2407,7 +2426,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="logo">FC Köln Management</div>
+                <div class="logo">
+                    <img src="attached_assets/NewCologneLogo_1753281112388.png" alt="1.FC Köln Logo" class="header-logo">
+                    1.FC Köln Bundesliga Talent Program
+                </div>
                 <div class="user-info">
                     <span id="userName">Welcome</span>
                     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -2434,7 +2456,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         <main class="main">
             <!-- Dashboard Page -->
             <div id="dashboard" class="page active">
-                <h1>FC Köln Dashboard</h1>
+                <h1>1.FC Köln Bundesliga Talent Program Dashboard</h1>
                 
                 <!-- Key Metrics -->
                 <div class="dashboard-grid">
@@ -4411,7 +4433,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         });
 
-        console.log('FC Köln Management System loaded successfully');
+        console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
 
         // Enhanced Interactive Functions
@@ -4954,7 +4976,7 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, '0.0.0.0', () => {
-    console.log('FC Köln Management System running on port ' + PORT);
+    console.log('1.FC Köln Bundesliga Talent Program running on port ' + PORT);
     console.log('Admin credentials: max.bisinger@warubi-sports.com / ITP2024');
     console.log('Staff credentials: thomas.ellinger@warubi-sports.com / ITP2024');
     console.log('Features: Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, Admin');
