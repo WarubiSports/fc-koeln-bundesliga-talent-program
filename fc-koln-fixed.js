@@ -1709,6 +1709,257 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             background: #b91c1c;
             transform: translateY(-2px);
         }
+
+        /* Dashboard Content Styles */
+        .dashboard-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .dashboard-section {
+            min-height: 400px;
+        }
+
+        .player-overview-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .player-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s;
+        }
+
+        .player-card:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .player-info {
+            flex-grow: 1;
+        }
+
+        .player-name {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-position {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-house {
+            color: #dc2626;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .player-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .player-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .player-status.training {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .player-status.rest {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .view-all-link {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .view-all-link a {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-all-link a:hover {
+            text-decoration: underline;
+        }
+
+        .activity-timeline {
+            margin: 1rem 0;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: #64748b;
+            font-size: 0.85rem;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex-grow: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-btn:hover {
+            border-color: #dc2626;
+            background: #fef2f2;
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+        }
+
+        .action-text {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .leaderboard-item.first-place {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+        }
+
+        .leaderboard-item.second-place {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-color: #9ca3af;
+        }
+
+        .leaderboard-item.third-place {
+            background: linear-gradient(135deg, #fef2f2, #fecaca);
+            border-color: #f87171;
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .house-info {
+            flex-grow: 1;
+        }
+
+        .house-name {
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .house-details {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .points {
+            font-weight: bold;
+            color: #dc2626;
+            font-size: 1.1rem;
+        }
+
+        .weekly-challenge {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         
         .trend-chart {
             display: flex;
@@ -2455,59 +2706,198 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <div class="card">
                         <h3>Total Players</h3>
                         <div class="stat">24</div>
-                        <p>Active talent program participants</p>
-                        <small>↗ +2 new this week</small>
+                        <p>Active in program</p>
                     </div>
                     <div class="card">
-                        <h3>House Competition</h3>
-                        <div class="stat">🏆 W2</div>
-                        <p>Widdersdorf 2 leading with 425 pts</p>
-                        <small>Weekly challenge: Fitness Goals</small>
+                        <h3>Training Today</h3>
+                        <div class="stat">18</div>
+                        <p>Players attending</p>
                     </div>
                     <div class="card">
-                        <h3>Attendance Rate</h3>
-                        <div class="stat">92%</div>
-                        <p>Training session participation</p>
-                        <small>↗ +5% from last month</small>
-                    </div>
-                    <div class="card">
-                        <h3>Smart Notifications</h3>
+                        <h3>Houses</h3>
                         <div class="stat">3</div>
-                        <p>Pending approvals & alerts</p>
-                        <small>Practice excuses, meal requests</small>
+                        <p>Widdersdorf locations</p>
+                    </div>
+                    <div class="card">
+                        <h3>Activities Today</h3>
+                        <div class="stat">5</div>
+                        <p>Scheduled events</p>
                     </div>
                 </div>
 
-                <!-- House Competition Leaderboard -->
-                <div class="form-section">
-                    <h3>🏆 House Competition Leaderboard</h3>
-                    <div class="leaderboard">
-                        <div class="leaderboard-item leader">
-                            <span class="rank">1st</span>
-                            <span class="house-name">Widdersdorf 2</span>
-                            <span class="points">425 pts</span>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 100%;"></div>
+                <!-- Dashboard Content Grid -->
+                <div class="dashboard-content-grid">
+                    <!-- Player Overview -->
+                    <div class="dashboard-section">
+                        <div class="card">
+                            <h3>🏆 Player Overview</h3>
+                            <div class="player-overview-grid">
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Max Finkgräfe</div>
+                                        <div class="player-position">Striker</div>
+                                        <div class="player-house">Widdersdorf 1</div>
+                                    </div>
+                                    <div class="player-status active">Active</div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Tim Lemperle</div>
+                                        <div class="player-position">Winger</div>
+                                        <div class="player-house">Widdersdorf 2</div>
+                                    </div>
+                                    <div class="player-status active">Active</div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Mark Uth</div>
+                                        <div class="player-position">Midfielder</div>
+                                        <div class="player-house">Widdersdorf 1</div>
+                                    </div>
+                                    <div class="player-status training">Training</div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Steffen Tigges</div>
+                                        <div class="player-position">Striker</div>
+                                        <div class="player-house">Widdersdorf 3</div>
+                                    </div>
+                                    <div class="player-status active">Active</div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Linton Maina</div>
+                                        <div class="player-position">Winger</div>
+                                        <div class="player-house">Widdersdorf 2</div>
+                                    </div>
+                                    <div class="player-status training">Training</div>
+                                </div>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <div class="player-name">Florian Kainz</div>
+                                        <div class="player-position">Midfielder</div>
+                                        <div class="player-house">Widdersdorf 1</div>
+                                    </div>
+                                    <div class="player-status rest">Rest Day</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="leaderboard-item">
-                            <span class="rank">2nd</span>
-                            <span class="house-name">Widdersdorf 1</span>
-                            <span class="points">380 pts</span>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 89%;"></div>
-                            </div>
-                        </div>
-                        <div class="leaderboard-item">
-                            <span class="rank">3rd</span>
-                            <span class="house-name">Widdersdorf 3</span>
-                            <span class="points">345 pts</span>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 81%;"></div>
+                            <div class="view-all-link">
+                                <a href="#" onclick="showPage('players')">View All Players →</a>
                             </div>
                         </div>
                     </div>
-                    <p><strong>This Week:</strong> Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)</p>
+
+                    <!-- Recent Activity -->
+                    <div class="dashboard-section">
+                        <div class="card">
+                            <h3>📈 Recent Activity</h3>
+                            <div class="activity-timeline">
+                                <div class="activity-item">
+                                    <div class="activity-time">10:30 AM</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Training Session Completed</div>
+                                        <div class="activity-description">Morning fitness training - 18 players attended</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-time">9:15 AM</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">New Player Registration</div>
+                                        <div class="activity-description">Dennis Huseinbašić completed profile setup</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-time">8:45 AM</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Meal Orders Submitted</div>
+                                        <div class="activity-description">22 players submitted lunch preferences</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-time">Yesterday</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">House Chores Completed</div>
+                                        <div class="activity-description">Widdersdorf 2 finished all weekly tasks</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-time">Yesterday</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Medical Check-up</div>
+                                        <div class="activity-description">5 players completed monthly health assessments</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- House Competition Leaderboard -->
+                    <div class="dashboard-section">
+                        <div class="card">
+                            <h3>🏠 House Competition Leaderboard</h3>
+                            <div class="leaderboard">
+                                <div class="leaderboard-item first-place">
+                                    <div class="rank">🥇</div>
+                                    <div class="house-info">
+                                        <div class="house-name">Widdersdorf 2</div>
+                                        <div class="house-details">8 players • Clean record</div>
+                                    </div>
+                                    <div class="points">945 pts</div>
+                                </div>
+                                <div class="leaderboard-item second-place">
+                                    <div class="rank">🥈</div>
+                                    <div class="house-info">
+                                        <div class="house-name">Widdersdorf 1</div>
+                                        <div class="house-details">9 players • 2 pending tasks</div>
+                                    </div>
+                                    <div class="points">920 pts</div>
+                                </div>
+                                <div class="leaderboard-item third-place">
+                                    <div class="rank">🥉</div>
+                                    <div class="house-info">
+                                        <div class="house-name">Widdersdorf 3</div>
+                                        <div class="house-details">7 players • 1 pending task</div>
+                                    </div>
+                                    <div class="points">885 pts</div>
+                                </div>
+                            </div>
+                            <div class="weekly-challenge">
+                                <p><strong>This Week:</strong> Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h3>⚡ Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <button class="action-btn" onclick="markAttendance()">
+                            <span class="action-icon">✅</span>
+                            <span class="action-text">Mark Attendance</span>
+                        </button>
+                        <button class="action-btn" onclick="scheduleTraining()">
+                            <span class="action-icon">📅</span>
+                            <span class="action-text">Schedule Training</span>
+                        </button>
+                        <button class="action-btn" onclick="viewMealPlan()">
+                            <span class="action-icon">🍽️</span>
+                            <span class="action-text">View Meal Plan</span>
+                        </button>
+                        <button class="action-btn" onclick="submitReport()">
+                            <span class="action-icon">📋</span>
+                            <span class="action-text">Submit Report</span>
+                        </button>
+                        <button class="action-btn" onclick="showPage('communications')">
+                            <span class="action-icon">💬</span>
+                            <span class="action-text">Send Message</span>
+                        </button>
+                        <button class="action-btn" onclick="showPage('calendar')">
+                            <span class="action-icon">📆</span>
+                            <span class="action-text">Check Calendar</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Smart Alerts & Notifications -->
