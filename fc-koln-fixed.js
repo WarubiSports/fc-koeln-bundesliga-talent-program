@@ -2900,66 +2900,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Smart Alerts & Notifications -->
-                <div class="form-section">
-                    <h3>🔔 Smart Alerts & Pending Actions</h3>
-                    <div class="alerts-grid">
-                        <div class="alert-item urgent">
-                            <strong>Practice Excuse:</strong> Max Mueller - Family emergency
-                            <button class="btn-mini">Review</button>
-                        </div>
-                        <div class="alert-item warning">
-                            <strong>Chore Overdue:</strong> Bathroom cleaning - Widdersdorf 3
-                            <button class="btn-mini">Reassign</button>
-                        </div>
-                        <div class="alert-item info">
-                            <strong>Food Request:</strong> Dietary accommodation - Ahmed Hassan
-                            <button class="btn-mini">Approve</button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- AI Insights -->
-                <div class="form-section">
-                    <h3>🤖 AI Performance Insights</h3>
-                    <div class="insights-grid">
-                        <div class="insight-card">
-                            <h4>Training Optimization</h4>
-                            <p>Players show 15% better performance on Wednesdays. Consider scheduling key drills mid-week.</p>
-                        </div>
-                        <div class="insight-card">
-                            <h4>House Dynamics</h4>
-                            <p>Widdersdorf 2's success correlates with balanced chore rotation and peer mentoring system.</p>
-                        </div>
-                        <div class="insight-card">
-                            <h4>Nutrition Impact</h4>
-                            <p>Players with consistent meal timing show 8% better stamina scores in afternoon sessions.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity Feed -->
-                <div class="form-section">
-                    <h3>📊 Recent Activity & Analytics</h3>
-                    <div class="activity-timeline">
-                        <div class="activity-item">
-                            <span class="timestamp">2 min ago</span>
-                            <strong>Smart Chore Assignment:</strong> AI assigned kitchen duties based on availability and fairness
-                        </div>
-                        <div class="activity-item">
-                            <span class="timestamp">15 min ago</span>
-                            <strong>Performance Update:</strong> Carlos Rodriguez improved sprint time by 0.3 seconds
-                        </div>
-                        <div class="activity-item">
-                            <span class="timestamp">1 hour ago</span>
-                            <strong>House Points:</strong> Widdersdorf 1 earned 25 points for team meal preparation
-                        </div>
-                        <div class="activity-item">
-                            <span class="timestamp">3 hours ago</span>
-                            <strong>Attendance Alert:</strong> 100% attendance achieved for morning training session
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Players Page -->

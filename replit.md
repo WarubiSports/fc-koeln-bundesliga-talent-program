@@ -118,5 +118,7 @@ Preferred communication style: Simple, everyday language.
 - **Comprehensive Admin Controls**: Added full administrator control panel with 5 categories of system management
 - **Security & Emergency Features**: Implemented security controls, emergency protocols, and system monitoring
 - **Enhanced UI/UX**: Professional styling with official FC Köln branding and visual identity
+- **Dashboard Overhaul**: Streamlined dashboard with player overview, recent activity timeline, and house competition leaderboard
+- **User Preference**: Dashboard simplified to focus on core essentials rather than complex features
 
 The application follows a monorepo structure with clear separation between client and server code, shared type definitions, and comprehensive tooling for development and deployment.
