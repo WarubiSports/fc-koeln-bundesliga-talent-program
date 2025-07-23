@@ -2436,13 +2436,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <div class="nav-content">
                 <a class="nav-item active" onclick="showPage('dashboard')">Dashboard</a>
                 <a class="nav-item" onclick="showPage('players')">Players</a>
-                <a class="nav-item" onclick="showPage('chores')">Chores</a>
-                <a class="nav-item" onclick="showPage('calendar')">Calendar</a>
+                <a class="nav-item" onclick="showPage('house-management')">Housing</a>
                 <a class="nav-item" onclick="showPage('food-orders')">Food Orders</a>
                 <a class="nav-item" onclick="showPage('communications')">Communications</a>
-                <a class="nav-item" onclick="showPage('house-management')">House Management</a>
-                <a class="nav-item" onclick="showPage('admin')">Admin</a>
-                <a class="nav-item" onclick="showPage('registration')">Registration</a>
+                <a class="nav-item" onclick="showPage('calendar')">Calendar</a>
+                <a class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">Member Management</a>
             </div>
         </nav>
 
@@ -4241,6 +4239,18 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userName').textContent = 'Welcome, ' + currentUser.name;
+            
+            // Show admin-only navigation items for admins
+            const adminOnlyItems = document.querySelectorAll('.admin-only');
+            if (currentUser.role === 'admin') {
+                adminOnlyItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+            } else {
+                adminOnlyItems.forEach(item => {
+                    item.style.display = 'none';
+                });
+            }
         }
 
         // Navigation
@@ -4339,7 +4349,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 dateOfBirth: document.getElementById('playerBirth').value,
                 nationality: document.getElementById('playerNationality').value,
                 position: document.getElementById('playerPosition').value,
-                previousClub: document.getElementById('playerPreviousClub').value,
+
                 motivation: document.getElementById('playerMotivation').value,
                 submittedAt: new Date().toISOString()
             };
