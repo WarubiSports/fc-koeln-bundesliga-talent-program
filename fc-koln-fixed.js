@@ -7085,7 +7085,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 nationality: document.getElementById('editNationality').value
             };
             
-            alert('Player changes saved successfully!\\nUpdated: ' + formData.firstName + ' ' + formData.lastName);
+            alert('Player changes saved successfully!\\n' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
             closePlayerEditModal();
         }
 
