@@ -30,37 +30,47 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         /* Login Page */
         .login-container {
             min-height: 100vh;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            padding: 20px;
         }
         
         .login-card {
             background: white;
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            padding: 60px 50px;
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
             text-align: center;
         }
         
         .login-logo {
-            height: 80px;
             margin-bottom: 2rem;
         }
-        
-        .login-title {
+
+        .fc-koln-logo {
+            height: 120px;
+            width: auto;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
             color: #dc2626;
-            font-size: 1.8rem;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
         
         .login-subtitle {
-            color: #6b7280;
-            margin-bottom: 2rem;
+            color: #666666;
+            font-size: 18px;
+            margin-bottom: 50px;
+            font-weight: 400;
+            line-height: 1.4;
         }
         
         .form-group {
@@ -237,18 +247,23 @@ const FC_KOLN_APP = `<!DOCTYPE html>
     <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-card">
-            <img src="attached_assets/NewCologneLogo_1753281112388.png" alt="1.FC Köln Logo" class="login-logo">
-            <h1 class="login-title">1.FC Köln</h1>
-            <p class="login-subtitle">Bundesliga Talent Program</p>
+            <div class="login-logo">
+                <img src="attached_assets/NewCologneLogo_1753281112388.png" alt="1.FC Köln Logo" class="fc-koln-logo">
+            </div>
+            <h1>1.FC Köln Bundesliga Talent Program</h1>
+            <div class="login-subtitle">Management System</div>
+            
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-input" required>
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-input" required>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
                 </div>
+                
                 <button type="submit" class="btn">Sign In</button>
             </form>
         </div>
