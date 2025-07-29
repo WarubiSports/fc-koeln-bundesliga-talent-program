@@ -5894,6 +5894,48 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
+        // Auth tab management (login/register)
+        function showAuthTab(tabType) {
+            const loginTab = document.getElementById('login-auth-tab');
+            const registerTab = document.getElementById('register-auth-tab');
+            const tabButtons = document.querySelectorAll('.auth-tab-btn');
+            
+            // Remove active from all tabs and buttons
+            loginTab.classList.remove('active');
+            registerTab.classList.remove('active');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            if (tabType === 'login') {
+                loginTab.classList.add('active');
+                event.target.classList.add('active');
+            } else if (tabType === 'register') {
+                registerTab.classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        // Public registration type management  
+        function showPublicRegistrationType(type) {
+            const playerForm = document.getElementById('public-player-registration');
+            const staffForm = document.getElementById('public-staff-registration');
+            const typeButtons = document.querySelectorAll('.public-registration-type-btn');
+            
+            // Remove active from all forms and buttons
+            playerForm.style.display = 'none';
+            staffForm.style.display = 'none';
+            typeButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected form
+            if (type === 'player') {
+                playerForm.style.display = 'block';
+                event.target.classList.add('active');
+            } else if (type === 'staff') {
+                staffForm.style.display = 'block';
+                event.target.classList.add('active');
+            }
+        }
+
         // Registration type management
         function showRegistrationType(type) {
             // Hide all registration forms
