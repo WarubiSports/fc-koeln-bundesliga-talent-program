@@ -1846,42 +1846,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-size: 0.9rem;
         }
 
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
 
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1.5rem 1rem;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .action-btn:hover {
-            border-color: #dc2626;
-            background: #fef2f2;
-            transform: translateY(-2px);
-        }
-
-        .action-icon {
-            font-size: 1.5rem;
-        }
-
-        .action-text {
-            font-weight: 500;
-            color: #374151;
-        }
 
         /* Leaderboard Styles */
         .leaderboard-item {
@@ -1956,9 +1921,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 grid-template-columns: 1fr;
             }
             
-            .quick-actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+
         }
         
         .trend-chart {
@@ -2869,36 +2832,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
                 
-                <!-- Quick Actions -->
-                <div class="card">
-                    <h3>⚡ Quick Actions</h3>
-                    <div class="quick-actions-grid">
-                        <button class="action-btn" onclick="markAttendance()">
-                            <span class="action-icon">✅</span>
-                            <span class="action-text">Mark Attendance</span>
-                        </button>
-                        <button class="action-btn" onclick="scheduleTraining()">
-                            <span class="action-icon">📅</span>
-                            <span class="action-text">Schedule Training</span>
-                        </button>
-                        <button class="action-btn" onclick="viewMealPlan()">
-                            <span class="action-icon">🍽️</span>
-                            <span class="action-text">View Meal Plan</span>
-                        </button>
-                        <button class="action-btn" onclick="submitReport()">
-                            <span class="action-icon">📋</span>
-                            <span class="action-text">Submit Report</span>
-                        </button>
-                        <button class="action-btn" onclick="showPage('communications')">
-                            <span class="action-icon">💬</span>
-                            <span class="action-text">Send Message</span>
-                        </button>
-                        <button class="action-btn" onclick="showPage('calendar')">
-                            <span class="action-icon">📆</span>
-                            <span class="action-text">Check Calendar</span>
-                        </button>
-                    </div>
-                </div>
+
 
 
             </div>
@@ -3440,17 +3374,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="form-section">
-                    <h3>⚡ Calendar Management</h3>
-                    <div class="calendar-actions">
-                        <button class="btn btn-primary" onclick="markAttendance()">📝 Mark Attendance</button>
-                        <button class="btn" onclick="scheduleTraining()">⏰ Schedule Training</button>
-                        <button class="btn" onclick="reportAbsence()">🚫 Report Absence</button>
-                        <button class="btn" onclick="sendReminders()">📢 Send Reminders</button>
-                        <button class="btn" onclick="exportSchedule()">📋 Export Schedule</button>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Food Orders Page -->
