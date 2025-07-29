@@ -5899,8 +5899,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // Auth tab management (login/register)
-        function showAuthTab(tabType) {
+        // Auth tab management (login/register) - make globally accessible
+        window.showAuthTab = function(tabType) {
             const loginTab = document.getElementById('login-auth-tab');
             const registerTab = document.getElementById('register-auth-tab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
@@ -5918,7 +5918,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 registerTab.classList.add('active');
                 event.target.classList.add('active');
             }
-        }
+        };
 
         // Public registration type management  
         function showPublicRegistrationType(type) {
