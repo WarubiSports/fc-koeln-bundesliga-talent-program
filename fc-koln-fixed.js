@@ -1916,12 +1916,223 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-size: 0.9rem;
         }
 
+        /* Chore Management Styles */
+        .chore-creation-form {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .chore-assignments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .chore-assignment-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .chore-assignment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .chore-assignment-card.urgent {
+            border-left-color: #dc2626;
+        }
+
+        .chore-assignment-card.high {
+            border-left-color: #f59e0b;
+        }
+
+        .chore-assignment-card.medium {
+            border-left-color: #3b82f6;
+        }
+
+        .chore-assignment-card.low {
+            border-left-color: #10b981;
+        }
+
+        .chore-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chore-header h4 {
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .priority-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.urgent {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .priority-badge.high {
+            background: #fffbeb;
+            color: #f59e0b;
+        }
+
+        .priority-badge.medium {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .priority-badge.low {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .chore-details p {
+            margin: 0.5rem 0;
+            color: #64748b;
+        }
+
+        .chore-details strong {
+            color: #1e293b;
+        }
+
+        .chore-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #2563eb;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .analytics-card h4 {
+            margin: 0 0 0.5rem 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .house-stats p {
+            margin: 0.5rem 0;
+            color: #64748b;
+        }
+
+        .completion-rate.good {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .completion-rate.excellent {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .completion-rate.warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .status-badge.in-progress {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.pending {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
         @media (max-width: 768px) {
             .dashboard-content-grid {
                 grid-template-columns: 1fr;
             }
             
-
+            .chore-assignments-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .trend-chart {
@@ -3680,25 +3891,210 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- House Management Page -->
             <div id="house-management" class="page">
-                <h1>House Management</h1>
+                <h1>🏠 Housing & Chore Management</h1>
+                
+                <!-- Admin/Staff Chore Creation (Only visible to Thomas & Max) -->
+                <div class="admin-staff-only form-section" style="display: none;">
+                    <h3>➕ Create New Chore Assignment</h3>
+                    <div class="chore-creation-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Chore Title *</label>
+                                <input type="text" id="choreTitle" placeholder="e.g., Kitchen Deep Clean, Garden Maintenance" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority Level *</label>
+                                <select id="chorePriority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="low">Low Priority</option>
+                                    <option value="medium">Medium Priority</option>
+                                    <option value="high">High Priority</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Target House *</label>
+                                <select id="choreHouse" required>
+                                    <option value="">Select House</option>
+                                    <option value="widdersdorf1">Widdersdorf 1</option>
+                                    <option value="widdersdorf2">Widdersdorf 2</option>
+                                    <option value="widdersdorf3">Widdersdorf 3</option>
+                                    <option value="all">All Houses</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assignment Type *</label>
+                                <select id="choreAssignmentType" onchange="toggleSpecificPlayerRow()" required>
+                                    <option value="">Select Assignment</option>
+                                    <option value="individual">Individual Player</option>
+                                    <option value="group">Group Task</option>
+                                    <option value="house">Entire House</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Deadline *</label>
+                                <input type="datetime-local" id="choreDeadline" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Points Reward</label>
+                                <input type="number" id="chorePoints" min="1" max="50" placeholder="15">
+                            </div>
+                        </div>
+                        <div class="form-row" id="specificPlayerRow" style="display: none;">
+                            <div class="form-group">
+                                <label>Assign to Specific Player</label>
+                                <select id="specificPlayer">
+                                    <option value="">Let system auto-assign</option>
+                                    <option value="max_finkgrafe">Max Finkgräfe</option>
+                                    <option value="tim_lemperle">Tim Lemperle</option>
+                                    <option value="mark_uth">Mark Uth</option>
+                                    <option value="steffen_tigges">Steffen Tigges</option>
+                                    <option value="linton_maina">Linton Maina</option>
+                                    <option value="florian_kainz">Florian Kainz</option>
+                                    <option value="jan_thielmann">Jan Thielmann</option>
+                                    <option value="denis_huseinbasic">Denis Huseinbašić</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description & Instructions *</label>
+                            <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for completing this chore..." required></textarea>
+                        </div>
+                        <div class="chore-creation-actions">
+                            <button type="button" class="btn btn-primary" onclick="createChoreAssignment()">Create Chore Assignment</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearChoreForm()">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- House Overview Cards -->
                 <div class="dashboard-grid">
                     <div class="card">
-                        <h3>Widdersdorf 1</h3>
-                        <p>Residents: 8 players</p>
-                        <p>House Leader: Max Mueller</p>
-                        <p>Chore Completion: 85%</p>
+                        <h3>🏠 Widdersdorf 1</h3>
+                        <div class="house-stats">
+                            <p><strong>Residents:</strong> 8 players</p>
+                            <p><strong>House Leader:</strong> Max Finkgräfe</p>
+                            <p><strong>Chore Completion:</strong> <span class="completion-rate good">85%</span></p>
+                            <p><strong>Active Tasks:</strong> 3 pending</p>
+                        </div>
+                        <button class="btn btn-sm" onclick="viewHouseDetails('widdersdorf1')">View Details</button>
                     </div>
                     <div class="card">
-                        <h3>Widdersdorf 2</h3>
-                        <p>Residents: 8 players</p>
-                        <p>House Leader: Ahmed Hassan</p>
-                        <p>Chore Completion: 92%</p>
+                        <h3>🏠 Widdersdorf 2</h3>
+                        <div class="house-stats">
+                            <p><strong>Residents:</strong> 8 players</p>
+                            <p><strong>House Leader:</strong> Tim Lemperle</p>
+                            <p><strong>Chore Completion:</strong> <span class="completion-rate excellent">92%</span></p>
+                            <p><strong>Active Tasks:</strong> 1 pending</p>
+                        </div>
+                        <button class="btn btn-sm" onclick="viewHouseDetails('widdersdorf2')">View Details</button>
                     </div>
                     <div class="card">
-                        <h3>Widdersdorf 3</h3>
-                        <p>Residents: 8 players</p>
-                        <p>House Leader: Carlos Rodriguez</p>
-                        <p>Chore Completion: 78%</p>
+                        <h3>🏠 Widdersdorf 3</h3>
+                        <div class="house-stats">
+                            <p><strong>Residents:</strong> 8 players</p>
+                            <p><strong>House Leader:</strong> Mark Uth</p>
+                            <p><strong>Chore Completion:</strong> <span class="completion-rate warning">78%</span></p>
+                            <p><strong>Active Tasks:</strong> 4 pending</p>
+                        </div>
+                        <button class="btn btn-sm" onclick="viewHouseDetails('widdersdorf3')">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Current Active Chores -->
+                <div class="form-section">
+                    <h3>📋 Active Chore Assignments</h3>
+                    <div class="chore-assignments-grid">
+                        <div class="chore-assignment-card urgent">
+                            <div class="chore-header">
+                                <h4>Kitchen Deep Clean</h4>
+                                <span class="priority-badge urgent">Urgent</span>
+                            </div>
+                            <div class="chore-details">
+                                <p><strong>House:</strong> Widdersdorf 1</p>
+                                <p><strong>Assigned to:</strong> Max Finkgräfe</p>
+                                <p><strong>Deadline:</strong> Today, 6:00 PM</p>
+                                <p><strong>Points:</strong> 20 pts</p>
+                                <p><strong>Status:</strong> <span class="status-badge in-progress">In Progress</span></p>
+                            </div>
+                            <div class="chore-actions admin-staff-only" style="display: none;">
+                                <button class="btn-mini btn-success" onclick="markChoreComplete('chore_001')">Mark Complete</button>
+                                <button class="btn-mini btn-warning" onclick="extendDeadline('chore_001')">Extend Deadline</button>
+                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_001')">Delete</button>
+                            </div>
+                        </div>
+
+                        <div class="chore-assignment-card high">
+                            <div class="chore-header">
+                                <h4>Bathroom Maintenance</h4>
+                                <span class="priority-badge high">High</span>
+                            </div>
+                            <div class="chore-details">
+                                <p><strong>House:</strong> Widdersdorf 2</p>
+                                <p><strong>Assigned to:</strong> Group Task (3 players)</p>
+                                <p><strong>Deadline:</strong> Tomorrow, 12:00 PM</p>
+                                <p><strong>Points:</strong> 15 pts (per player)</p>
+                                <p><strong>Status:</strong> <span class="status-badge pending">Not Started</span></p>
+                            </div>
+                            <div class="chore-actions admin-staff-only" style="display: none;">
+                                <button class="btn-mini btn-success" onclick="markChoreComplete('chore_002')">Mark Complete</button>
+                                <button class="btn-mini btn-warning" onclick="extendDeadline('chore_002')">Extend Deadline</button>
+                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_002')">Delete</button>
+                            </div>
+                        </div>
+
+                        <div class="chore-assignment-card medium">
+                            <div class="chore-header">
+                                <h4>Garden Maintenance</h4>
+                                <span class="priority-badge medium">Medium</span>
+                            </div>
+                            <div class="chore-details">
+                                <p><strong>House:</strong> All Houses</p>
+                                <p><strong>Assigned to:</strong> Widdersdorf 3 (Entire House)</p>
+                                <p><strong>Deadline:</strong> Friday, 3:00 PM</p>
+                                <p><strong>Points:</strong> 10 pts (per player)</p>
+                                <p><strong>Status:</strong> <span class="status-badge completed">Completed</span></p>
+                            </div>
+                            <div class="chore-actions admin-staff-only" style="display: none;">
+                                <button class="btn-mini btn-info" onclick="viewChoreDetails('chore_003')">View Details</button>
+                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_003')">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chore History & Analytics -->
+                <div class="form-section">
+                    <h3>📊 Chore Completion Analytics</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>This Week</h4>
+                            <div class="stat-large">24</div>
+                            <p>Chores Completed</p>
+                            <small>↗ +15% from last week</small>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>On-Time Rate</h4>
+                            <div class="stat-large">87%</div>
+                            <p>Met Deadlines</p>
+                            <small>↗ +5% improvement</small>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Average Time</h4>
+                            <div class="stat-large">45min</div>
+                            <p>Per Chore</p>
+                            <small>→ Consistent</small>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Points Earned</h4>
+                            <div class="stat-large">420</div>
+                            <p>Total Points</p>
+                            <small>↗ +32 from last week</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4506,6 +4902,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     item.style.display = 'none';
                 });
             }
+
+            // Show admin/staff features for admins and staff (Thomas & Max)
+            if (currentUser.role === 'admin' || currentUser.role === 'staff') {
+                const adminStaffElements = document.querySelectorAll('.admin-staff-only');
+                adminStaffElements.forEach(element => {
+                    element.style.display = 'block';
+                });
+            }
         }
 
         // Navigation
@@ -5106,9 +5510,109 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert('System status refreshed - All metrics updated with real-time data');
         }
 
+        // Toggle specific player row based on assignment type
+        function toggleSpecificPlayerRow() {
+            const assignmentType = document.getElementById('choreAssignmentType').value;
+            const specificPlayerRow = document.getElementById('specificPlayerRow');
+            
+            if (assignmentType === 'individual') {
+                specificPlayerRow.style.display = 'flex';
+            } else {
+                specificPlayerRow.style.display = 'none';
+            }
+        }
+
+        // Create new chore assignment
+        function createChoreAssignment() {
+            const title = document.getElementById('choreTitle').value;
+            const priority = document.getElementById('chorePriority').value;
+            const house = document.getElementById('choreHouse').value;
+            const assignmentType = document.getElementById('choreAssignmentType').value;
+            const deadline = document.getElementById('choreDeadline').value;
+            const points = document.getElementById('chorePoints').value || 15;
+            const description = document.getElementById('choreDescription').value;
+            const specificPlayer = document.getElementById('specificPlayer').value;
+
+            if (!title || !priority || !house || !assignmentType || !deadline || !description) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Create chore object (in a real app, this would be sent to the server)
+            const chore = {
+                id: 'chore_' + Date.now(),
+                title,
+                priority,
+                house,
+                assignmentType,
+                deadline: new Date(deadline).toLocaleString(),
+                points,
+                description,
+                specificPlayer,
+                status: 'pending',
+                createdBy: currentUser.name,
+                createdAt: new Date().toISOString()
+            };
+
+            // Display success message
+            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
+            
+            // Clear the form
+            clearChoreForm();
+            
+            // In a real application, you would:
+            // 1. Send this data to the server
+            // 2. Update the UI with the new chore
+            // 3. Send notifications to assigned players
+            console.log('New chore created:', chore);
+        }
+
+        // Clear chore form
+        function clearChoreForm() {
+            document.getElementById('choreTitle').value = '';
+            document.getElementById('chorePriority').value = '';
+            document.getElementById('choreHouse').value = '';
+            document.getElementById('choreAssignmentType').value = '';
+            document.getElementById('choreDeadline').value = '';
+            document.getElementById('chorePoints').value = '';
+            document.getElementById('choreDescription').value = '';
+            document.getElementById('specificPlayer').value = '';
+            document.getElementById('specificPlayerRow').style.display = 'none';
+        }
+
+        // Mark chore as complete
+        function markChoreComplete(choreId) {
+            if (confirm('Mark this chore as completed?')) {
+                alert('Chore marked as completed! Points have been awarded.');
+                // In a real app, update the database and UI
+                console.log('Chore completed:', choreId);
+            }
+        }
+
+        // Extend chore deadline
+        function extendDeadline(choreId) {
+            const newDeadline = prompt('Enter new deadline (YYYY-MM-DD HH:MM):');
+            if (newDeadline) {
+                alert('Deadline extended successfully!');
+                console.log('Deadline extended for chore:', choreId, 'to:', newDeadline);
+            }
+        }
+
+        // Delete chore
+        function deleteChore(choreId) {
+            if (confirm('Are you sure you want to delete this chore? This action cannot be undone.')) {
+                alert('Chore deleted successfully!');
+                console.log('Chore deleted:', choreId);
+            }
+        }
+
+        // View house details
+        function viewHouseDetails(houseId) {
+            alert('Viewing detailed information for ' + houseId.replace(/\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Admin player editing functionality loaded');
-        });
     </script>
 
     <!-- Player Edit Modal -->

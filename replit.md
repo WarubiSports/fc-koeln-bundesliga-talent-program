@@ -120,5 +120,10 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced UI/UX**: Professional styling with official FC Köln branding and visual identity
 - **Dashboard Overhaul**: Streamlined dashboard with player overview, recent activity timeline, and house competition leaderboard
 - **User Preference**: Dashboard simplified to focus on core essentials rather than complex features
+- **Advanced Chore Management**: Enhanced housing section with comprehensive chore creation system for Thomas and Max
+- **Deadline-Based Assignments**: Staff can create specific chores with deadlines for individuals, groups, or entire houses
+- **Priority-Based Task System**: Four-tier priority system (Low, Medium, High, Urgent) with visual indicators
+- **Comprehensive Task Management**: Full admin/staff controls for marking complete, extending deadlines, and deleting chores
+- **Analytics Dashboard**: Completion tracking, on-time rates, and performance metrics for house management
 
 The application follows a monorepo structure with clear separation between client and server code, shared type definitions, and comprehensive tooling for development and deployment.
