@@ -6084,7 +6084,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function sendTrainingReminder() {
-            alert('Training reminder sent to all active players for tomorrow\'s sessions');
+            alert('Training reminder sent to all active players for tomorrow\\'s sessions');
         }
 
         function sendMealAnnouncement() {
