@@ -5613,6 +5613,23 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Admin player editing functionality loaded');
+            
+            // Check for saved authentication
+            const savedAuth = localStorage.getItem('fc-koln-auth');
+            if (savedAuth) {
+                try {
+                    const authData = JSON.parse(savedAuth);
+                    currentUser = authData.user;
+                    showMainApp();
+                } catch (e) {
+                    console.log('Starting fresh session');
+                }
+            }
+        });
+
+        console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
+        console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
+        console.log('Enhanced features initialized successfully');
     </script>
 
     <!-- Player Edit Modal -->
