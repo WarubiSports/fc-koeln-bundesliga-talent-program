@@ -1981,6 +1981,100 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             margin: 0.25rem 0 0.5rem 0;
         }
 
+        /* Player Management Styles */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .player-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #dc2626;
+        }
+
+        .player-card.injured {
+            border-left-color: #f59e0b;
+        }
+
+        .player-card.suspended {
+            border-left-color: #ef4444;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .player-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #374151;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .player-position {
+            color: #6b7280;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+
+        .player-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .player-status.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .player-status.injured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .player-status.suspended {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .player-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .player-detail {
+            display: flex;
+            justify-content: between;
+        }
+
+        .player-detail strong {
+            color: #374151;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .player-actions button {
+            flex: 1;
+        }
+
         .chore-assignments-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -3106,73 +3200,80 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Players Page -->
             <div id="players" class="page">
-                <h1>Player Management & Analytics</h1>
+                <h1>Player Management</h1>
                 
-                <!-- Advanced Filters & Search -->
+                <!-- Player Search and Filters -->
                 <div class="form-section">
-                    <h3>🔍 Advanced Player Search & Filters</h3>
                     <div class="filter-grid">
-                        <input type="text" placeholder="Search players..." class="filter-input">
-                        <select class="filter-input">
-                            <option>All Houses</option>
-                            <option>Widdersdorf 1</option>
-                            <option>Widdersdorf 2</option>
-                            <option>Widdersdorf 3</option>
-                        </select>
-                        <select class="filter-input">
-                            <option>All Positions</option>
-                            <option>Goalkeeper</option>
-                            <option>Defender</option>
-                            <option>Midfielder</option>
-                            <option>Forward</option>
-                        </select>
-                        <select class="filter-input">
-                            <option>All Status</option>
-                            <option>Active</option>
-                            <option>Injured</option>
-                            <option>On Leave</option>
-                        </select>
+                        <div class="form-group">
+                            <label>Search Players</label>
+                            <input type="text" id="playerSearch" placeholder="Search by name, position, or house..." onkeyup="filterPlayers()">
+                        </div>
+                        <div class="form-group">
+                            <label>Filter by Position</label>
+                            <select id="positionFilter" onchange="filterPlayers()">
+                                <option value="">All Positions</option>
+                                <option value="goalkeeper">Goalkeeper</option>
+                                <option value="defender">Defender</option>
+                                <option value="midfielder">Midfielder</option>
+                                <option value="forward">Forward</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Filter by House</label>
+                            <select id="houseFilter" onchange="filterPlayers()">
+                                <option value="">All Houses</option>
+                                <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                <option value="Widdersdorf 3">Widdersdorf 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Filter by Status</label>
+                            <select id="statusFilter" onchange="filterPlayers()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="injured">Injured</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Player Statistics Overview -->
                 <div class="form-section">
-                    <h3>📈 Performance Analytics</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h4>Attendance Rate</h4>
-                            <div class="stat-large">94.2%</div>
-                            <small>Avg. across all players</small>
+                    <h3>📊 Player Overview</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Total Players</h4>
+                            <div class="stat-large" id="totalPlayers">6</div>
+                            <p>Currently in Program</p>
                         </div>
-                        <div class="stat-card">
-                            <h4>Fitness Score</h4>
-                            <div class="stat-large">8.6/10</div>
-                            <small>Based on recent assessments</small>
+                        <div class="analytics-card">
+                            <h4>Active Players</h4>
+                            <div class="stat-large" id="activePlayers">5</div>
+                            <p>Ready for Training</p>
                         </div>
-                        <div class="stat-card">
-                            <h4>House Points Earned</h4>
-                            <div class="stat-large">1,150</div>
-                            <small>Total points this month</small>
+                        <div class="analytics-card">
+                            <h4>Injured Players</h4>
+                            <div class="stat-large" id="injuredPlayers">1</div>
+                            <p>Under Treatment</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Houses Occupied</h4>
+                            <div class="stat-large">3</div>
+                            <p>All Locations</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Enhanced Player Table -->
+                <!-- Player List -->
                 <div class="form-section">
-                    <h3>👥 Player Database</h3>
-                    <div class="table-container">
-                        <table class="player-table">
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Position</th>
-                                    <th>House</th>
-                                    <th>Attendance</th>
-                                    <th>Fitness</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                    <h3>👥 Player Directory</h3>
+                    <div class="players-grid" id="playersGrid">
+                        <!-- Players will be dynamically loaded here -->
+                    </div>
+                </div>
                             <tbody>
                                 <tr>
                                     <td>
@@ -4910,6 +5011,112 @@ const FC_KOLN_APP = `<!DOCTYPE html>
     <script>
         let currentUser = null;
         let choreStorage = [];
+        
+        // Player data storage
+        let playerStorage = [
+            {
+                id: 'player_001',
+                firstName: 'Max',
+                lastName: 'Finkgräfe',
+                position: 'forward',
+                age: 20,
+                nationality: 'Germany',
+                house: 'Widdersdorf 1',
+                room: '12A',
+                contractPeriod: '2024-2026',
+                status: 'active',
+                specialNotes: 'Team captain, excellent leadership skills',
+                joinDate: '2024-01-15',
+                phoneNumber: '+49 221 123 4567',
+                emergencyContact: 'Hans Finkgräfe (+49 221 987 6543)',
+                medicalInfo: 'No known allergies'
+            },
+            {
+                id: 'player_002',
+                firstName: 'Tim',
+                lastName: 'Lemperle',
+                position: 'midfielder',
+                age: 19,
+                nationality: 'Germany',
+                house: 'Widdersdorf 2',
+                room: '8B',
+                contractPeriod: '2024-2025',
+                status: 'active',
+                specialNotes: 'Excellent ball control, prefers morning training',
+                joinDate: '2024-02-01',
+                phoneNumber: '+49 221 234 5678',
+                emergencyContact: 'Maria Lemperle (+49 221 876 5432)',
+                medicalInfo: 'Lactose intolerant'
+            },
+            {
+                id: 'player_003',
+                firstName: 'Florian',
+                lastName: 'Kainz',
+                position: 'midfielder',
+                age: 21,
+                nationality: 'Germany',
+                house: 'Widdersdorf 1',
+                room: '15C',
+                contractPeriod: '2023-2025',
+                status: 'active',
+                specialNotes: 'Strong left foot, creative playmaker',
+                joinDate: '2023-08-01',
+                phoneNumber: '+49 221 345 6789',
+                emergencyContact: 'Klaus Kainz (+49 221 765 4321)',
+                medicalInfo: 'Previous ankle injury - requires special warm-up'
+            },
+            {
+                id: 'player_004',
+                firstName: 'Steffen',
+                lastName: 'Tigges',
+                position: 'forward',
+                age: 22,
+                nationality: 'Germany',
+                house: 'Widdersdorf 3',
+                room: '20A',
+                contractPeriod: '2024-2026',
+                status: 'active',
+                specialNotes: 'Physical striker, good in the air',
+                joinDate: '2024-01-10',
+                phoneNumber: '+49 221 456 7890',
+                emergencyContact: 'Petra Tigges (+49 221 654 3210)',
+                medicalInfo: 'No medical concerns'
+            },
+            {
+                id: 'player_005',
+                firstName: 'Denis',
+                lastName: 'Huseinbašić',
+                position: 'midfielder',
+                age: 20,
+                nationality: 'Germany',
+                house: 'Widdersdorf 2',
+                room: '11B',
+                contractPeriod: '2024-2025',
+                status: 'injured',
+                specialNotes: 'Versatile player, recovering from knee injury',
+                joinDate: '2024-03-01',
+                phoneNumber: '+49 221 567 8901',
+                emergencyContact: 'Amela Huseinbašić (+49 221 543 2109)',
+                medicalInfo: 'Knee injury - physiotherapy required'
+            },
+            {
+                id: 'player_006',
+                firstName: 'Timo',
+                lastName: 'Horn',
+                position: 'goalkeeper',
+                age: 23,
+                nationality: 'Germany',
+                house: 'Widdersdorf 3',
+                room: '5A',
+                contractPeriod: '2023-2026',
+                status: 'active',
+                specialNotes: 'Experienced goalkeeper, leadership qualities',
+                joinDate: '2023-07-15',
+                phoneNumber: '+49 221 678 9012',
+                emergencyContact: 'Sandra Horn (+49 221 432 1098)',
+                medicalInfo: 'Regular eye check-ups required'
+            }
+        ];
 
         // Login functionality
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -5868,7 +6075,124 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Load initial chore assignments
             updateChoreAssignments();
+            
+            // Load initial player data
+            updatePlayerDisplay();
         });
+
+        // Player management functions
+        let filteredPlayers = playerStorage;
+
+        function updatePlayerDisplay() {
+            const playersGrid = document.getElementById('playersGrid');
+            if (!playersGrid) return;
+            
+            let html = '';
+            filteredPlayers.forEach(function(player) {
+                const statusClass = player.status === 'active' ? 'active' : player.status;
+                
+                html += '<div class="player-card ' + statusClass + '">' +
+                    '<div class="player-header">' +
+                        '<div>' +
+                            '<h3 class="player-name">' + player.firstName + ' ' + player.lastName + '</h3>' +
+                            '<p class="player-position">' + player.position + '</p>' +
+                        '</div>' +
+                        '<span class="player-status ' + statusClass + '">' + player.status + '</span>' +
+                    '</div>' +
+                    '<div class="player-details">' +
+                        '<div class="player-detail"><span>Age:</span> <strong>' + player.age + '</strong></div>' +
+                        '<div class="player-detail"><span>Nationality:</span> <strong>' + player.nationality + '</strong></div>' +
+                        '<div class="player-detail"><span>House:</span> <strong>' + player.house + '</strong></div>' +
+                        '<div class="player-detail"><span>Room:</span> <strong>' + player.room + '</strong></div>' +
+                        '<div class="player-detail"><span>Contract:</span> <strong>' + player.contractPeriod + '</strong></div>' +
+                        '<div class="player-detail"><span>Joined:</span> <strong>' + formatDate(player.joinDate) + '</strong></div>' +
+                    '</div>' +
+                    '<div class="player-actions">' +
+                        '<button class="btn-mini" onclick="viewPlayer(\\'' + player.id + '\\')">View Details</button>' +
+                        '<button class="btn-mini" onclick="editPlayer(\\'' + player.id + '\\')">Edit</button>' +
+                    '</div>' +
+                '</div>';
+            });
+            
+            if (filteredPlayers.length === 0) {
+                html = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No players match the current filters.</p>';
+            }
+            
+            playersGrid.innerHTML = html;
+            updatePlayerStats();
+        }
+
+        function filterPlayers() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const positionFilter = document.getElementById('positionFilter').value;
+            const houseFilter = document.getElementById('houseFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredPlayers = playerStorage.filter(function(player) {
+                const matchesSearch = !searchTerm || 
+                    player.firstName.toLowerCase().includes(searchTerm) ||
+                    player.lastName.toLowerCase().includes(searchTerm) ||
+                    player.position.toLowerCase().includes(searchTerm) ||
+                    player.house.toLowerCase().includes(searchTerm);
+                
+                const matchesPosition = !positionFilter || player.position === positionFilter;
+                const matchesHouse = !houseFilter || player.house === houseFilter;
+                const matchesStatus = !statusFilter || player.status === statusFilter;
+
+                return matchesSearch && matchesPosition && matchesHouse && matchesStatus;
+            });
+
+            updatePlayerDisplay();
+        }
+
+        function updatePlayerStats() {
+            const totalPlayersEl = document.getElementById('totalPlayers');
+            const activePlayersEl = document.getElementById('activePlayers');
+            const injuredPlayersEl = document.getElementById('injuredPlayers');
+
+            if (totalPlayersEl) totalPlayersEl.textContent = playerStorage.length;
+            if (activePlayersEl) activePlayersEl.textContent = playerStorage.filter(p => p.status === 'active').length;
+            if (injuredPlayersEl) injuredPlayersEl.textContent = playerStorage.filter(p => p.status === 'injured').length;
+        }
+
+        function viewPlayer(playerId) {
+            const player = playerStorage.find(p => p.id === playerId);
+            if (!player) return;
+
+            alert('Player Details:\\n\\n' +
+                'Name: ' + player.firstName + ' ' + player.lastName + '\\n' +
+                'Position: ' + player.position + '\\n' +
+                'Age: ' + player.age + '\\n' +
+                'Nationality: ' + player.nationality + '\\n' +
+                'House: ' + player.house + ' (Room ' + player.room + ')\\n' +
+                'Contract: ' + player.contractPeriod + '\\n' +
+                'Status: ' + player.status + '\\n' +
+                'Phone: ' + player.phoneNumber + '\\n' +
+                'Emergency Contact: ' + player.emergencyContact + '\\n' +
+                'Medical Info: ' + player.medicalInfo + '\\n' +
+                'Notes: ' + player.specialNotes);
+        }
+
+        function editPlayer(playerId) {
+            const player = playerStorage.find(p => p.id === playerId);
+            if (!player) return;
+
+            const newStatus = prompt('Edit player status (active/injured/suspended):', player.status);
+            if (newStatus && ['active', 'injured', 'suspended'].includes(newStatus.toLowerCase())) {
+                player.status = newStatus.toLowerCase();
+                updatePlayerDisplay();
+                alert('Player status updated successfully!');
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            });
+        }
 
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
