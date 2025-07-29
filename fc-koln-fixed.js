@@ -6084,7 +6084,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function sendTrainingReminder() {
-            alert('Training reminder sent to all active players for tomorrow\\'s sessions');
+            alert('Training reminder sent to all active players for tomorrow\'s sessions');
         }
 
         function sendMealAnnouncement() {
@@ -6315,12 +6315,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Full Admin Control Functions
         function fullUserControl() {
-            alert('FULL USER CONTROL ACTIVATED\\n\\nAdmin now has complete control over:\\n• All user accounts\\n• Account creation and deletion\\n• Profile modifications\\n• Access level changes\\n• Password resets\\n\\nAll user management operations are now available.');
+            alert('FULL USER CONTROL ACTIVATED\n\nAdmin now has complete control over:\n• All user accounts\n• Account creation and deletion\n• Profile modifications\n• Access level changes\n• Password resets\n\nAll user management operations are now available.');
         }
 
         function passwordManagement() {
             if(confirm('Enable global password management? This will allow you to reset any user password and view security information.')) {
-                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\\n\\nYou can now:\\n• Reset any user password\\n• Force password changes\\n• View login history\\n• Manage security settings\\n• Access encrypted data');
+                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\n\nYou can now:\n• Reset any user password\n• Force password changes\n• View login history\n• Manage security settings\n• Access encrypted data');
             }
         }
 
@@ -6867,17 +6867,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const player = playerStorage.find(p => p.id === playerId);
             if (!player) return;
 
-            alert('Player Details:\\n\\n' +
-                'Name: ' + player.firstName + ' ' + player.lastName + '\\n' +
-                'Position: ' + player.position + '\\n' +
-                'Age: ' + player.age + '\\n' +
-                'Nationality: ' + player.nationality + '\\n' +
-                'House: ' + player.house + ' (Room ' + player.room + ')\\n' +
-                'Contract: ' + player.contractPeriod + '\\n' +
-                'Status: ' + player.status + '\\n' +
-                'Phone: ' + player.phoneNumber + '\\n' +
-                'Emergency Contact: ' + player.emergencyContact + '\\n' +
-                'Medical Info: ' + player.medicalInfo + '\\n' +
+            alert('Player Details:\n\n' +
+                'Name: ' + player.firstName + ' ' + player.lastName + '\n' +
+                'Position: ' + player.position + '\n' +
+                'Age: ' + player.age + '\n' +
+                'Nationality: ' + player.nationality + '\n' +
+                'House: ' + player.house + ' (Room ' + player.room + ')\n' +
+                'Contract: ' + player.contractPeriod + '\n' +
+                'Status: ' + player.status + '\n' +
+                'Phone: ' + player.phoneNumber + '\n' +
+                'Emergency Contact: ' + player.emergencyContact + '\n' +
+                'Medical Info: ' + player.medicalInfo + '\n' +
                 'Notes: ' + player.specialNotes);
         }
 
