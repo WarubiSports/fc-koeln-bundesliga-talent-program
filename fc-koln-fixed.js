@@ -6269,30 +6269,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('playerEditModal').style.display = 'none';
         }
 
-        function savePlayerChanges() {
-            const playerId = document.getElementById('playerEditModal').getAttribute('data-player-id');
-            const playerData = {
-                firstName: document.getElementById('editFirstName').value,
-                lastName: document.getElementById('editLastName').value,
-                position: document.getElementById('editPosition').value,
-                status: document.getElementById('editStatus').value,
-                age: document.getElementById('editAge').value,
-                nationality: document.getElementById('editNationality').value,
-                house: document.getElementById('editHouse').value,
-                room: document.getElementById('editRoom').value,
-                contract: document.getElementById('editContract').value,
-                notes: document.getElementById('editNotes').value
-            };
-            
-            // In real implementation, save to database here
-            alert('Player profile updated successfully!\\nPlayer: ' + playerData.firstName + ' ' + playerData.lastName + '\\nPosition: ' + playerData.position + '\\nStatus: ' + playerData.status + '\\nHouse: ' + playerData.house + ' - Room ' + playerData.room);
-            
-            closePlayerEditModal();
-            
-            // Refresh player list display
-            updatePlayerDisplay(playerId, playerData);
-        }
-
         function updatePlayerDisplay(playerId, playerData) {
             // Update the visual display of the player in the admin grid
             console.log('Updated player profile for: ' + playerId);
@@ -6936,7 +6912,36 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('playerEditModal').style.display = 'none';
         }
 
-
+        function savePlayerChanges() {
+            const playerId = document.getElementById('playerEditForm').getAttribute('data-player-id');
+            const player = playerStorage.find(p => p.id === playerId);
+            
+            if (!player) return;
+            
+            // Update player data from form
+            player.firstName = document.getElementById('editFirstName').value;
+            player.lastName = document.getElementById('editLastName').value;
+            player.position = document.getElementById('editPosition').value;
+            player.age = parseInt(document.getElementById('editAge').value);
+            player.nationality = document.getElementById('editNationality').value;
+            player.status = document.getElementById('editStatus').value;
+            player.house = document.getElementById('editHouse').value;
+            player.room = document.getElementById('editRoom').value;
+            player.contractPeriod = document.getElementById('editContractPeriod').value;
+            player.joinDate = document.getElementById('editJoinDate').value;
+            player.phoneNumber = document.getElementById('editPhoneNumber').value;
+            player.emergencyContact = document.getElementById('editEmergencyContact').value;
+            player.medicalInfo = document.getElementById('editMedicalInfo').value;
+            player.specialNotes = document.getElementById('editSpecialNotes').value;
+            
+            // Refresh the players display
+            showPlayers();
+            
+            // Close the modal
+            closePlayerEditModal();
+            
+            alert('Player profile updated successfully!');
+        }
 
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -7220,7 +7225,7 @@ const server = http.createServer((req, res) => {
     res.end(FC_KOLN_APP);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log('1.FC Köln Bundesliga Talent Program running on port ' + PORT);
