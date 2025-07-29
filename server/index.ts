@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the simple working server
-const serverProcess = spawn('node', ['fc-koln-simple-working.js'], {
+// Start the complete pre-Google Sheets server
+const serverProcess = spawn('node', ['fc-koln-complete.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
