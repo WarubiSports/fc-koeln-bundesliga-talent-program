@@ -3774,44 +3774,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Practice Excuse Management -->
-                <div class="form-section">
-                    <h3>📝 Practice Excuse Statistics</h3>
-                    <div class="excuse-stats">
-                        <div class="excuse-category">
-                            <h4>Illness</h4>
-                            <div class="excuse-count">8 requests</div>
-                            <small>Most common this month</small>
-                        </div>
-                        <div class="excuse-category">
-                            <h4>Family Emergency</h4>
-                            <div class="excuse-count">3 requests</div>
-                            <small>All approved</small>
-                        </div>
-                        <div class="excuse-category">
-                            <h4>Academic Conflict</h4>
-                            <div class="excuse-count">5 requests</div>
-                            <small>Exam periods</small>
-                        </div>
-                        <div class="excuse-category">
-                            <h4>Medical Appointment</h4>
-                            <div class="excuse-count">4 requests</div>
-                            <small>Routine check-ups</small>
-                        </div>
-                    </div>
-                    
-                    <div class="recent-excuses">
-                        <h4>Recent Excuse Requests</h4>
-                        <div class="excuse-item pending">
-                            <strong>Max Mueller</strong> - Family emergency (Today)
-                            <button class="btn-mini">Approve</button>
-                            <button class="btn-mini">Decline</button>
-                        </div>
-                        <div class="excuse-item approved">
-                            <strong>Carlos Rodriguez</strong> - Medical appointment (Yesterday) - Approved
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Chores Page -->
