@@ -115,70 +115,116 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
         
         .header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            color: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .logo {
-            height: 40px;
+            height: 50px;
+            filter: brightness(0) invert(1);
         }
         
         .nav {
             display: flex;
-            gap: 2rem;
+            gap: 1rem;
         }
         
         .nav-item {
-            padding: 0.5rem 1rem;
-            background: none;
-            border: none;
-            color: #6b7280;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
             cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
         
-        .nav-item:hover, .nav-item.active {
-            background: #dc2626;
-            color: white;
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active {
+            background: white;
+            color: #dc2626;
+            font-weight: 600;
         }
         
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
+            color: white;
         }
         
         .page {
             display: none;
             padding: 2rem;
+            min-height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
         
         .page.active {
             display: block;
         }
         
+        .page h2 {
+            color: #dc2626;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin-bottom: 2rem;
         }
         
         .card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.15);
         }
         
         .card h3 {
             color: #dc2626;
             margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            font-size: 1.2rem;
+            opacity: 0.9;
         }
         
         .grocery-section {
@@ -281,37 +327,117 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         <!-- Dashboard Page -->
         <div id="dashboard" class="page active">
-            <h2>Dashboard</h2>
+            <h2>1.FC Köln Bundesliga Talent Program Dashboard</h2>
             <div class="dashboard-grid">
+                <div class="card stat-card">
+                    <h3>21</h3>
+                    <p>Total Players</p>
+                </div>
+                <div class="card stat-card">
+                    <h3>18</h3>
+                    <p>Active Players</p>
+                </div>
+                <div class="card stat-card">
+                    <h3>3</h3>
+                    <p>Houses</p>
+                </div>
                 <div class="card">
-                    <h3>Player Overview</h3>
-                    <p>Total Players: <strong>6</strong></p>
-                    <p>Active: <strong>5</strong></p>
-                    <p>Injured: <strong>1</strong></p>
+                    <h3>Recent Activity</h3>
+                    <div style="space-y: 0.5rem;">
+                        <p>• Max Finkgräfe completed kitchen cleaning</p>
+                        <p>• Tim Lemperle submitted grocery order</p>
+                        <p>• Widdersdorf 1 weekly meeting scheduled</p>
+                        <p>• Training session attendance updated</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>House Competition Leaderboard</h3>
+                    <div style="space-y: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <span>🥇 Widdersdorf 1</span>
+                            <span style="font-weight: 600; color: #dc2626;">485 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <span>🥈 Widdersdorf 3</span>
+                            <span style="font-weight: 600; color: #dc2626;">467 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #f3f4f6; border-radius: 6px;">
+                            <span>🥉 Widdersdorf 2</span>
+                            <span style="font-weight: 600; color: #dc2626;">441 pts</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="card">
                     <h3>System Status</h3>
-                    <p>All systems operational</p>
+                    <p style="color: #059669; font-weight: 600;">✅ All systems operational</p>
                     <p>Last updated: <span id="lastUpdate"></span></p>
+                    <p>Active sessions: 12</p>
+                    <p>Database status: Healthy</p>
                 </div>
             </div>
         </div>
 
         <!-- Players Page -->
         <div id="players" class="page">
-            <h2>Players</h2>
-            <div class="card">
-                <h3>Player Management</h3>
-                <p>Manage player profiles, contracts, and status updates.</p>
-                <div style="margin-top: 1rem;">
-                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
-                        <strong>Max Finkgräfe</strong> - Forward (Active)
+            <h2>Player Management</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Max Finkgräfe</h3>
+                    <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-weight: 600;">Forward • Active</p>
+                        <p style="margin: 0; opacity: 0.9;">Age: 19 • Germany</p>
                     </div>
-                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
-                        <strong>Tim Lemperle</strong> - Midfielder (Active)
+                    <p><strong>House:</strong> Widdersdorf 1, Room 8A</p>
+                    <p><strong>Contract:</strong> 2024-2026</p>
+                    <p><strong>Join Date:</strong> 2024-01-15</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn" style="width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">View Profile</button>
+                        <button class="btn admin-staff-only" onclick="editPlayer('max')" style="width: auto; margin-left: 0.5rem; background: #f59e0b; font-size: 0.9rem; padding: 0.5rem 1rem;">Edit</button>
                     </div>
-                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
-                        <strong>Timo Horn</strong> - Goalkeeper (Active)
+                </div>
+                
+                <div class="card">
+                    <h3>Tim Lemperle</h3>
+                    <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-weight: 600;">Midfielder • Active</p>
+                        <p style="margin: 0; opacity: 0.9;">Age: 20 • Germany</p>
+                    </div>
+                    <p><strong>House:</strong> Widdersdorf 2, Room 3B</p>
+                    <p><strong>Contract:</strong> 2023-2025</p>
+                    <p><strong>Join Date:</strong> 2023-08-01</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn" style="width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">View Profile</button>
+                        <button class="btn admin-staff-only" onclick="editPlayer('tim')" style="width: auto; margin-left: 0.5rem; background: #f59e0b; font-size: 0.9rem; padding: 0.5rem 1rem;">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Timo Horn</h3>
+                    <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-weight: 600;">Goalkeeper • Active</p>
+                        <p style="margin: 0; opacity: 0.9;">Age: 23 • Germany</p>
+                    </div>
+                    <p><strong>House:</strong> Widdersdorf 3, Room 5A</p>
+                    <p><strong>Contract:</strong> 2023-2026</p>
+                    <p><strong>Join Date:</strong> 2023-07-15</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn" style="width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">View Profile</button>
+                        <button class="btn admin-staff-only" onclick="editPlayer('timo')" style="width: auto; margin-left: 0.5rem; background: #f59e0b; font-size: 0.9rem; padding: 0.5rem 1rem;">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Amela Huseinbašić</h3>
+                    <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-weight: 600;">Midfielder • Injured</p>
+                        <p style="margin: 0; opacity: 0.9;">Age: 18 • Germany</p>
+                    </div>
+                    <p><strong>House:</strong> Widdersdorf 2, Room 11B</p>
+                    <p><strong>Contract:</strong> 2024-2025</p>
+                    <p><strong>Status:</strong> Knee injury recovery</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn" style="width: auto; font-size: 0.9rem; padding: 0.5rem 1rem;">View Profile</button>
+                        <button class="btn admin-staff-only" onclick="editPlayer('amela')" style="width: auto; margin-left: 0.5rem; background: #f59e0b; font-size: 0.9rem; padding: 0.5rem 1rem;">Edit</button>
                     </div>
                 </div>
             </div>
@@ -319,45 +445,117 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         <!-- Food Orders Page -->
         <div id="food-orders" class="page">
-            <h2>Food Orders</h2>
-            <div class="grocery-section">
-                <h3>Real Grocery Shopping List</h3>
-                <p>Select items for your grocery order. Orders are processed Tuesday/Friday.</p>
+            <h2>Food Orders & Grocery Management</h2>
+            
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3>📅 Delivery Schedule</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border-left: 4px solid #dc2626;">
+                        <h4 style="color: #dc2626; margin-bottom: 0.5rem;">Tuesday Delivery</h4>
+                        <p style="font-size: 0.9rem;">Order deadline: Monday 6 PM</p>
+                        <p style="font-size: 0.9rem;">Delivery: Tuesday 8-10 AM</p>
+                    </div>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border-left: 4px solid #dc2626;">
+                        <h4 style="color: #dc2626; margin-bottom: 0.5rem;">Friday Delivery</h4>
+                        <p style="font-size: 0.9rem;">Order deadline: Thursday 6 PM</p>
+                        <p style="font-size: 0.9rem;">Delivery: Friday 8-10 AM</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>🥬 Vegetables & Fruit</h3>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Bananas</span>
+                        <span class="qty">x1 kg</span>
+                        <span class="item-price">€2.49</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Organic Apples</span>
+                        <span class="qty">x2 kg</span>
+                        <span class="item-price">€4.98</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Fresh Spinach</span>
+                        <span class="qty">x300g</span>
+                        <span class="item-price">€2.19</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Cherry Tomatoes</span>
+                        <span class="qty">x500g</span>
+                        <span class="item-price">€3.29</span>
+                    </div>
+                </div>
                 
-                <div class="grocery-item">
-                    <input type="checkbox" onchange="updateTotal()">
-                    <span class="item-name">Bananas</span>
-                    <span class="qty">x1 kg</span>
-                    <span class="item-price">€2.49</span>
-                </div>
-                <div class="grocery-item">
-                    <input type="checkbox" onchange="updateTotal()">
-                    <span class="item-name">Chicken Breast</span>
-                    <span class="qty">x500g</span>
-                    <span class="item-price">€5.99</span>
-                </div>
-                <div class="grocery-item">
-                    <input type="checkbox" onchange="updateTotal()">
-                    <span class="item-name">Whole Milk</span>
-                    <span class="qty">x1 L</span>
-                    <span class="item-price">€1.29</span>
-                </div>
-                <div class="grocery-item">
-                    <input type="checkbox" onchange="updateTotal()">
-                    <span class="item-name">Rice (Basmati)</span>
-                    <span class="qty">x1 kg</span>
-                    <span class="item-price">€3.49</span>
-                </div>
-                <div class="grocery-item">
-                    <input type="checkbox" onchange="updateTotal()">
-                    <span class="item-name">Olive Oil</span>
-                    <span class="qty">x500ml</span>
-                    <span class="item-price">€4.99</span>
+                <div class="card">
+                    <h3>🥩 Meat & Protein</h3>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Chicken Breast</span>
+                        <span class="qty">x500g</span>
+                        <span class="item-price">€5.99</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Ground Turkey</span>
+                        <span class="qty">x400g</span>
+                        <span class="item-price">€4.79</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Salmon Fillet</span>
+                        <span class="qty">x300g</span>
+                        <span class="item-price">€7.99</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Greek Yogurt</span>
+                        <span class="qty">x2 cups</span>
+                        <span class="item-price">€3.99</span>
+                    </div>
                 </div>
                 
-                <div class="order-total">
-                    <div>Order Total: <span class="total-amount" id="orderTotal">€0.00</span></div>
-                    <button class="btn" onclick="submitOrder()" style="margin-top: 1rem; width: auto; padding: 0.5rem 2rem;">Submit Order</button>
+                <div class="card">
+                    <h3>🥛 Dairy & Essentials</h3>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Whole Milk</span>
+                        <span class="qty">x1 L</span>
+                        <span class="item-price">€1.29</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Organic Eggs</span>
+                        <span class="qty">x12 pcs</span>
+                        <span class="item-price">€3.49</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Rice (Basmati)</span>
+                        <span class="qty">x1 kg</span>
+                        <span class="item-price">€3.49</span>
+                    </div>
+                    <div class="grocery-item">
+                        <input type="checkbox" onchange="updateTotal()">
+                        <span class="item-name">Olive Oil</span>
+                        <span class="qty">x500ml</span>
+                        <span class="item-price">€4.99</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-total">
+                <div>Total Budget: <span style="color: #6b7280;">€50.00 weekly per house</span></div>
+                <div>Current Order: <span class="total-amount" id="orderTotal">€0.00</span></div>
+                <div style="margin-top: 1rem;">
+                    <button class="btn" onclick="selectAllItems()" style="width: auto; margin-right: 0.5rem; background: #6b7280;">Select All</button>
+                    <button class="btn" onclick="clearSelection()" style="width: auto; margin-right: 0.5rem; background: #6b7280;">Clear All</button>
+                    <button class="btn" onclick="submitOrder()" style="width: auto; padding: 0.5rem 2rem;">Submit Order</button>
                 </div>
             </div>
         </div>
@@ -529,6 +727,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     element.style.display = 'block';
                 });
             }
+            
+            // Show admin/staff features for admins and staff
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'staff')) {
+                const adminStaffElements = document.querySelectorAll('.admin-staff-only');
+                adminStaffElements.forEach(element => {
+                    element.style.display = 'block';
+                });
+            }
         }
 
         // Navigation
@@ -638,6 +844,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             if (confirm('Create system backup?')) {
                 alert('System backup initiated - Data backup in progress');
             }
+        }
+
+        function editPlayer(playerId) {
+            alert('Player Edit System - Opening detailed player profile editor for ' + playerId);
         }
 
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
