@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the restored clean server
-const serverProcess = spawn('node', ['fc-koln-restored.js'], {
+// Start the comprehensive original server - fixed
+const serverProcess = spawn('node', ['fc-koln-final.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
