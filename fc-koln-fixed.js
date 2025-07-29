@@ -4123,62 +4123,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <!-- Current Active Chores -->
                 <div class="form-section">
                     <h3>📋 Active Chore Assignments</h3>
-                    <div class="chore-assignments-grid">
-                        <div class="chore-assignment-card urgent">
-                            <div class="chore-header">
-                                <h4>Kitchen Deep Clean</h4>
-                                <span class="priority-badge urgent">Urgent</span>
-                            </div>
-                            <div class="chore-details">
-                                <p><strong>House:</strong> Widdersdorf 1</p>
-                                <p><strong>Assigned to:</strong> Max Finkgräfe</p>
-                                <p><strong>Deadline:</strong> Today, 6:00 PM</p>
-                                <p><strong>Points:</strong> 20 pts</p>
-                                <p><strong>Status:</strong> <span class="status-badge in-progress">In Progress</span></p>
-                            </div>
-                            <div class="chore-actions admin-staff-only" style="display: none;">
-                                <button class="btn-mini btn-success" onclick="markChoreComplete('chore_001')">Mark Complete</button>
-                                <button class="btn-mini btn-warning" onclick="extendDeadline('chore_001')">Extend Deadline</button>
-                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_001')">Delete</button>
-                            </div>
-                        </div>
-
-                        <div class="chore-assignment-card high">
-                            <div class="chore-header">
-                                <h4>Bathroom Maintenance</h4>
-                                <span class="priority-badge high">High</span>
-                            </div>
-                            <div class="chore-details">
-                                <p><strong>House:</strong> Widdersdorf 2</p>
-                                <p><strong>Assigned to:</strong> Tim Lemperle, Florian Kainz, Jan Thielmann</p>
-                                <p><strong>Deadline:</strong> Tomorrow, 12:00 PM</p>
-                                <p><strong>Points:</strong> 15 pts (per player)</p>
-                                <p><strong>Status:</strong> <span class="status-badge pending">Not Started</span></p>
-                            </div>
-                            <div class="chore-actions admin-staff-only" style="display: none;">
-                                <button class="btn-mini btn-success" onclick="markChoreComplete('chore_002')">Mark Complete</button>
-                                <button class="btn-mini btn-warning" onclick="extendDeadline('chore_002')">Extend Deadline</button>
-                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_002')">Delete</button>
-                            </div>
-                        </div>
-
-                        <div class="chore-assignment-card medium">
-                            <div class="chore-header">
-                                <h4>Garden Maintenance</h4>
-                                <span class="priority-badge medium">Medium</span>
-                            </div>
-                            <div class="chore-details">
-                                <p><strong>House:</strong> All Houses</p>
-                                <p><strong>Assigned to:</strong> Widdersdorf 3 (Entire House)</p>
-                                <p><strong>Deadline:</strong> Friday, 3:00 PM</p>
-                                <p><strong>Points:</strong> 10 pts (per player)</p>
-                                <p><strong>Status:</strong> <span class="status-badge completed">Completed</span></p>
-                            </div>
-                            <div class="chore-actions admin-staff-only" style="display: none;">
-                                <button class="btn-mini btn-info" onclick="viewChoreDetails('chore_003')">View Details</button>
-                                <button class="btn-mini btn-danger" onclick="deleteChore('chore_003')">Delete</button>
-                            </div>
-                        </div>
+                    <div class="chore-assignments-grid" id="activeChoresList">
+                        <!-- Chores will be dynamically loaded here -->
                     </div>
                 </div>
 
@@ -4963,6 +4909,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
     <script>
         let currentUser = null;
+        let choreStorage = [];
 
         // Login functionality
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -5744,10 +5691,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Clear the form
             clearChoreForm();
             
+            // Store the chore locally
+            choreStorage.push(chore);
+            
+            // Update the UI with the new chore
+            updateChoreAssignments();
+            
             // In a real application, you would:
             // 1. Send this data to the server
-            // 2. Update the UI with the new chore
-            // 3. Send notifications to assigned players
+            // 2. Send notifications to assigned players
             console.log('New chore created:', chore);
         }
 
@@ -5781,8 +5733,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Mark chore as complete
         function markChoreComplete(choreId) {
             if (confirm('Mark this chore as completed?')) {
-                alert('Chore marked as completed! Points have been awarded.');
-                // In a real app, update the database and UI
+                // Find and update the chore
+                const choreIndex = choreStorage.findIndex(function(chore) {
+                    return chore.id === choreId;
+                });
+                if (choreIndex !== -1) {
+                    choreStorage[choreIndex].status = 'completed';
+                    updateChoreAssignments();
+                    alert('Chore marked as completed! Points have been awarded.');
+                }
                 console.log('Chore completed:', choreId);
             }
         }
@@ -5791,7 +5750,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         function extendDeadline(choreId) {
             const newDeadline = prompt('Enter new deadline (YYYY-MM-DD HH:MM):');
             if (newDeadline) {
-                alert('Deadline extended successfully!');
+                // Find and update the chore deadline
+                const choreIndex = choreStorage.findIndex(function(chore) {
+                    return chore.id === choreId;
+                });
+                if (choreIndex !== -1) {
+                    choreStorage[choreIndex].deadline = new Date(newDeadline).toLocaleString();
+                    updateChoreAssignments();
+                    alert('Deadline extended successfully!');
+                }
                 console.log('Deadline extended for chore:', choreId, 'to:', newDeadline);
             }
         }
@@ -5799,7 +5766,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Delete chore
         function deleteChore(choreId) {
             if (confirm('Are you sure you want to delete this chore? This action cannot be undone.')) {
-                alert('Chore deleted successfully!');
+                // Remove chore from storage
+                const choreIndex = choreStorage.findIndex(function(chore) {
+                    return chore.id === choreId;
+                });
+                if (choreIndex !== -1) {
+                    choreStorage.splice(choreIndex, 1);
+                    updateChoreAssignments();
+                    alert('Chore deleted successfully!');
+                }
                 console.log('Chore deleted:', choreId);
             }
         }
@@ -5807,6 +5782,73 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // View house details
         function viewHouseDetails(houseId) {
             alert('Viewing detailed information for ' + houseId.replace(/\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
+        }
+
+        // Update chore assignments display
+        function updateChoreAssignments() {
+            const activeChoresList = document.getElementById('activeChoresList');
+            if (!activeChoresList) return;
+            
+            if (choreStorage.length === 0) {
+                activeChoresList.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No active chores assigned yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            choreStorage.forEach(function(chore) {
+                const assignedText = getAssignedPlayersText(chore);
+                const houseText = getHouseDisplayName(chore.house);
+                const statusText = chore.status === 'pending' ? 'Not Started' : chore.status;
+                const priorityCapitalized = chore.priority.charAt(0).toUpperCase() + chore.priority.slice(1);
+                const actionsDisplay = (currentUser && (currentUser.role === 'admin' || currentUser.role === 'staff')) ? 'block' : 'none';
+                
+                html += '<div class="chore-assignment-card ' + chore.priority + '">' +
+                    '<div class="chore-header">' +
+                        '<h4>' + chore.title + '</h4>' +
+                        '<span class="priority-badge ' + chore.priority + '">' + priorityCapitalized + '</span>' +
+                    '</div>' +
+                    '<div class="chore-details">' +
+                        '<p><strong>House:</strong> ' + houseText + '</p>' +
+                        '<p><strong>Assigned to:</strong> ' + assignedText + '</p>' +
+                        '<p><strong>Deadline:</strong> ' + chore.deadline + '</p>' +
+                        '<p><strong>Points:</strong> ' + chore.points + ' pts</p>' +
+                        '<p><strong>Status:</strong> <span class="status-badge ' + chore.status + '">' + statusText + '</span></p>' +
+                        '<p><strong>Description:</strong> ' + chore.description + '</p>' +
+                    '</div>' +
+                    '<div class="chore-actions admin-staff-only" style="display: ' + actionsDisplay + ';">' +
+                        '<button class="btn-mini btn-success" onclick="markChoreComplete(\'' + chore.id + '\')">Mark Complete</button>' +
+                        '<button class="btn-mini btn-warning" onclick="extendDeadline(\'' + chore.id + '\')">Extend Deadline</button>' +
+                        '<button class="btn-mini btn-danger" onclick="deleteChore(\'' + chore.id + '\')">Delete</button>' +
+                    '</div>' +
+                '</div>';
+            });
+            
+            activeChoresList.innerHTML = html;
+        }
+
+        // Helper function to get assigned players text
+        function getAssignedPlayersText(chore) {
+            if (chore.assignmentType === 'individual' && chore.assignedPlayers.length > 0) {
+                return chore.assignedPlayers[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            } else if (chore.assignmentType === 'multiple' && chore.assignedPlayers.length > 0) {
+                return chore.assignedPlayers.map(p => p.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())).join(', ');
+            } else if (chore.assignmentType === 'group') {
+                return 'Group Task (Auto-assigned)';
+            } else if (chore.assignmentType === 'house') {
+                return 'Entire House';
+            }
+            return 'Not Assigned';
+        }
+
+        // Helper function to get house display name
+        function getHouseDisplayName(houseId) {
+            const houses = {
+                'widdersdorf1': 'Widdersdorf 1',
+                'widdersdorf2': 'Widdersdorf 2',
+                'widdersdorf3': 'Widdersdorf 3',
+                'all': 'All Houses'
+            };
+            return houses[houseId] || houseId;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -5823,6 +5865,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     console.log('Starting fresh session');
                 }
             }
+            
+            // Load initial chore assignments
+            updateChoreAssignments();
         });
 
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
