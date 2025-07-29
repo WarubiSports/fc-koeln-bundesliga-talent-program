@@ -2075,6 +2075,98 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             flex: 1;
         }
 
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #374151;
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+        }
+
         .chore-assignments-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -3272,6 +3364,101 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <h3>👥 Player Directory</h3>
                     <div class="players-grid" id="playersGrid">
                         <!-- Players will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Player Edit Modal -->
+                <div id="playerEditModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Player Profile</h3>
+                            <button class="close-btn" onclick="closePlayerEditModal()">&times;</button>
+                        </div>
+                        <form id="playerEditForm" class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" id="editFirstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" id="editLastName" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Position *</label>
+                                    <select id="editPosition" required>
+                                        <option value="goalkeeper">Goalkeeper</option>
+                                        <option value="defender">Defender</option>
+                                        <option value="midfielder">Midfielder</option>
+                                        <option value="forward">Forward</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Age *</label>
+                                    <input type="number" id="editAge" min="16" max="25" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nationality *</label>
+                                    <input type="text" id="editNationality" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="editStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="injured">Injured</option>
+                                        <option value="suspended">Suspended</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>House *</label>
+                                    <select id="editHouse" required>
+                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Room *</label>
+                                    <input type="text" id="editRoom" placeholder="e.g., 12A" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Contract Period *</label>
+                                    <input type="text" id="editContractPeriod" placeholder="e.g., 2024-2026" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Join Date *</label>
+                                    <input type="date" id="editJoinDate" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="editPhoneNumber" placeholder="+49 221 123 4567" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Emergency Contact *</label>
+                                <input type="text" id="editEmergencyContact" placeholder="Name and phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Medical Information</label>
+                                <textarea id="editMedicalInfo" rows="3" placeholder="Any medical conditions, allergies, or special requirements"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Special Notes</label>
+                                <textarea id="editSpecialNotes" rows="3" placeholder="Performance notes, preferences, or other relevant information"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closePlayerEditModal()">Cancel</button>
+                                <button type="submit" class="btn">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                             <tbody>
@@ -6078,6 +6265,41 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Load initial player data
             updatePlayerDisplay();
+            
+            // Handle player edit form submission
+            const playerEditForm = document.getElementById('playerEditForm');
+            if (playerEditForm) {
+                playerEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const playerId = this.getAttribute('data-player-id');
+                    const player = playerStorage.find(p => p.id === playerId);
+                    
+                    if (!player) return;
+
+                    // Update player data from form
+                    player.firstName = document.getElementById('editFirstName').value;
+                    player.lastName = document.getElementById('editLastName').value;
+                    player.position = document.getElementById('editPosition').value;
+                    player.age = parseInt(document.getElementById('editAge').value);
+                    player.nationality = document.getElementById('editNationality').value;
+                    player.status = document.getElementById('editStatus').value;
+                    player.house = document.getElementById('editHouse').value;
+                    player.room = document.getElementById('editRoom').value;
+                    player.contractPeriod = document.getElementById('editContractPeriod').value;
+                    player.joinDate = document.getElementById('editJoinDate').value;
+                    player.phoneNumber = document.getElementById('editPhoneNumber').value;
+                    player.emergencyContact = document.getElementById('editEmergencyContact').value;
+                    player.medicalInfo = document.getElementById('editMedicalInfo').value;
+                    player.specialNotes = document.getElementById('editSpecialNotes').value;
+
+                    // Update displays
+                    updatePlayerDisplay();
+                    closePlayerEditModal();
+                    
+                    alert('Player profile updated successfully!');
+                });
+            }
         });
 
         // Player management functions
@@ -6177,13 +6399,34 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const player = playerStorage.find(p => p.id === playerId);
             if (!player) return;
 
-            const newStatus = prompt('Edit player status (active/injured/suspended):', player.status);
-            if (newStatus && ['active', 'injured', 'suspended'].includes(newStatus.toLowerCase())) {
-                player.status = newStatus.toLowerCase();
-                updatePlayerDisplay();
-                alert('Player status updated successfully!');
-            }
+            // Populate the edit form with current player data
+            document.getElementById('editFirstName').value = player.firstName;
+            document.getElementById('editLastName').value = player.lastName;
+            document.getElementById('editPosition').value = player.position;
+            document.getElementById('editAge').value = player.age;
+            document.getElementById('editNationality').value = player.nationality;
+            document.getElementById('editStatus').value = player.status;
+            document.getElementById('editHouse').value = player.house;
+            document.getElementById('editRoom').value = player.room;
+            document.getElementById('editContractPeriod').value = player.contractPeriod;
+            document.getElementById('editJoinDate').value = player.joinDate;
+            document.getElementById('editPhoneNumber').value = player.phoneNumber;
+            document.getElementById('editEmergencyContact').value = player.emergencyContact;
+            document.getElementById('editMedicalInfo').value = player.medicalInfo;
+            document.getElementById('editSpecialNotes').value = player.specialNotes;
+
+            // Store the current player ID for saving
+            document.getElementById('playerEditForm').setAttribute('data-player-id', playerId);
+
+            // Show the modal
+            document.getElementById('playerEditModal').style.display = 'flex';
         }
+
+        function closePlayerEditModal() {
+            document.getElementById('playerEditModal').style.display = 'none';
+        }
+
+
 
         function formatDate(dateString) {
             const date = new Date(dateString);
