@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the original sophisticated application - minimal Google Sheets damage repair
-const serverProcess = spawn('node', ['fc-koln-original-restore.js'], {
+// Start the login-fixed application - essential function accessibility repair
+const serverProcess = spawn('node', ['fc-koln-login-fix.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
