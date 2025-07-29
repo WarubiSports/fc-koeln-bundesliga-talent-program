@@ -6140,7 +6140,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Add hover effects for interactive elements
             document.querySelectorAll('.calendar-event').forEach(event => {
                 event.addEventListener('click', function() {
-                    alert('Event details: ' + this.querySelector('.event-title').textContent);
+                    alert('Event details: ' + this.querySelector(\'.event-title\').textContent);
                 });
             });
 
@@ -6548,7 +6548,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             };
 
             // Display success message
-            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + assignmentText + '\\nHouse: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
+            alert('Chore "' + title + '" has been created successfully!\n\nAssigned to: ' + assignmentText + '\nHouse: ' + house + '\nDeadline: ' + chore.deadline + '\nPoints: ' + points);
             
             // Clear the form
             clearChoreForm();
@@ -6643,7 +6643,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // View house details
         function viewHouseDetails(houseId) {
-            alert('Viewing detailed information for ' + houseId.replace(/\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
+            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.\n\nThis would show:\n- Individual player assignments\n- Completion rates\n- Point rankings\n- Chore history');
         }
 
         // Update chore assignments display
