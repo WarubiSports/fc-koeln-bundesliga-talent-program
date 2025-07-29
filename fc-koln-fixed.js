@@ -2297,6 +2297,272 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             transform: translateY(-1px);
         }
 
+        /* Grocery Management Styles */
+        .delivery-schedule {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .delivery-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .delivery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .delivery-card.tuesday::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .delivery-card.friday::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #059669 0%, #047857 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .delivery-card {
+            position: relative;
+        }
+
+        .deadline-info strong {
+            color: #dc2626;
+            font-size: 1.1rem;
+        }
+
+        .budget-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .budget-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            text-align: center;
+        }
+
+        .budget-amount.large {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1rem 0;
+        }
+
+        .budget-limit {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .budget-remaining {
+            color: #059669;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .budget-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .category-budget {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(220, 38, 38, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .category-budget:hover {
+            background: rgba(220, 38, 38, 0.05);
+            transform: translateX(5px);
+        }
+
+        .grocery-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .category-section {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .category-title {
+            color: #374151;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .grocery-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(220, 38, 38, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .grocery-item:hover {
+            background: rgba(220, 38, 38, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #374151;
+            flex: 1;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: #dc2626;
+            margin: 0 1rem;
+            font-size: 1.1rem;
+        }
+
+        .grocery-item input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2);
+        }
+
+        .qty {
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .order-actions button {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .order-status {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            position: relative;
+        }
+
+        .order-card.pending::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .order-card.confirmed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #059669 0%, #047857 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .status-badge.confirmed {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+        }
+
+        .order-details p {
+            margin: 0.25rem 0;
+            color: #6b7280;
+        }
+
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -4030,273 +4296,403 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Food Orders Page -->
             <div id="food-orders" class="page">
-                <h1>🍽️ Nutrition & Meal Management</h1>
+                <h1>🛒 House Grocery Management</h1>
                 
-                <!-- Daily Nutrition Overview -->
+                <!-- Delivery Schedule & Deadlines -->
                 <div class="form-section">
-                    <h3>🎯 Daily Nutrition Targets</h3>
-                    <div class="nutrition-overview">
-                        <div class="nutrition-stats">
-                            <div class="nutrition-stat">
-                                <h4>Calories Target</h4>
-                                <div class="stat-value">3,200</div>
-                                <div class="stat-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 78%"></div>
-                                    </div>
-                                    <span>2,496 consumed (78%)</span>
-                                </div>
+                    <h3>📅 Delivery Schedule & Order Deadlines</h3>
+                    <div class="delivery-schedule">
+                        <div class="delivery-card tuesday">
+                            <h4>Tuesday Delivery</h4>
+                            <div class="deadline-info">
+                                <strong>Order Deadline: Monday 8:00 AM</strong>
+                                <p>Delivery arrives between 6-8 PM</p>
                             </div>
-                            <div class="nutrition-stat">
-                                <h4>Protein Target</h4>
-                                <div class="stat-value">180g</div>
-                                <div class="stat-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 85%"></div>
-                                    </div>
-                                    <span>153g consumed (85%)</span>
-                                </div>
+                            <div class="next-delivery">
+                                <span>Next Order Due: Monday, July 29</span>
                             </div>
-                            <div class="nutrition-stat">
-                                <h4>Hydration</h4>
-                                <div class="stat-value">3.5L</div>
-                                <div class="stat-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 92%"></div>
-                                    </div>
-                                    <span>3.2L consumed (92%)</span>
-                                </div>
+                        </div>
+                        <div class="delivery-card friday">
+                            <h4>Friday Delivery</h4>
+                            <div class="deadline-info">
+                                <strong>Order Deadline: Thursday 8:00 AM</strong>
+                                <p>Delivery arrives between 6-8 PM</p>
+                            </div>
+                            <div class="next-delivery">
+                                <span>Next Order Due: Thursday, August 1</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Weekly Meal Plan -->
+                <!-- Current Budget Overview -->
                 <div class="form-section">
-                    <h3>📋 Weekly Meal Schedule</h3>
-                    <div class="meal-schedule">
-                        <div class="meal-day">
-                            <h4>Monday - High Intensity Training Day</h4>
-                            <div class="meal-slot breakfast">
-                                <span class="meal-time">7:00 AM</span>
-                                <div>
-                                    <div class="meal-name">High-Protein Breakfast</div>
-                                    <div class="meal-details">Oatmeal, Greek Yogurt, Mixed Berries, Almonds</div>
-                                </div>
-                            </div>
-                            <div class="meal-slot lunch">
-                                <span class="meal-time">12:30 PM</span>
-                                <div>
-                                    <div class="meal-name">Training Day Lunch</div>
-                                    <div class="meal-details">Grilled Chicken, Quinoa, Steamed Vegetables</div>
-                                </div>
-                            </div>
-                            <div class="meal-slot dinner">
-                                <span class="meal-time">7:00 PM</span>
-                                <div>
-                                    <div class="meal-name">Recovery Dinner</div>
-                                    <div class="meal-details">Salmon, Sweet Potato, Mixed Greens</div>
-                                </div>
-                            </div>
+                    <h3>💰 Budget Overview</h3>
+                    <div class="budget-overview">
+                        <div class="budget-card">
+                            <h4>Total Current Cart</h4>
+                            <div class="budget-amount large">€168.16</div>
+                            <div class="budget-limit">Budget: €210.00</div>
+                            <div class="budget-remaining">€41.84 remaining</div>
                         </div>
-                        <div class="meal-day">
-                            <h4>Tuesday - Recovery Day</h4>
-                            <div class="meal-slot breakfast">
-                                <span class="meal-time">7:30 AM</span>
-                                <div>
-                                    <div class="meal-name">Light Energy Breakfast</div>
-                                    <div class="meal-details">Smoothie Bowl, Granola, Fresh Fruits</div>
-                                </div>
+                        <div class="budget-breakdown">
+                            <div class="category-budget">
+                                <span>Vegetables & Fruits</span>
+                                <span>€21.45</span>
                             </div>
-                            <div class="meal-slot lunch">
-                                <span class="meal-time">1:00 PM</span>
-                                <div>
-                                    <div class="meal-name">Balanced Recovery Lunch</div>
-                                    <div class="meal-details">Turkey, Brown Rice, Roasted Vegetables</div>
-                                </div>
+                            <div class="category-budget">
+                                <span>Meat & Protein</span>
+                                <span>€35.92</span>
                             </div>
-                            <div class="meal-slot dinner">
-                                <span class="meal-time">7:30 PM</span>
-                                <div>
-                                    <div class="meal-name">Light Dinner</div>
-                                    <div class="meal-details">Grilled Fish, Quinoa Salad, Avocado</div>
-                                </div>
+                            <div class="category-budget">
+                                <span>Dairy Products</span>
+                                <span>€19.83</span>
+                            </div>
+                            <div class="category-budget">
+                                <span>Household Items</span>
+                                <span>€28.15</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dietary Management -->
+                <!-- Interactive Grocery Shopping -->
                 <div class="form-section">
-                    <h3>🥗 Dietary Preferences & Special Requirements</h3>
-                    <div class="dietary-info">
-                        <div class="dietary-card">
-                            <h4>Vegetarian Players</h4>
-                            <p>4 players following vegetarian diet</p>
-                            <p><strong>Players:</strong> Marco Silva, Luis García, Ahmad Hassan, Jonas Weber</p>
-                            <span class="dietary-status active">Menu Adapted ✓</span>
+                    <h3>🛍️ Grocery Shopping List</h3>
+                    <div class="grocery-categories">
+                        <!-- Household Items -->
+                        <div class="category-section">
+                            <h4 class="category-title">🧽 Household Items</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Laundry Detergent</span>
+                                    <span class="item-price">€4.49</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Baking Paper</span>
+                                    <span class="item-price">€0.95</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Dish Soap</span>
+                                    <span class="item-price">€0.95</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Paper Towels</span>
+                                    <span class="item-price">€2.85</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Toilet Paper</span>
+                                    <span class="item-price">€4.15</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="dietary-card">
-                            <h4>Food Allergies</h4>
-                            <p><strong>Gluten-free:</strong> 2 players<br><strong>Lactose-free:</strong> 3 players<br><strong>Nut allergies:</strong> 1 player</p>
-                            <span class="dietary-status monitored">Actively Monitored</span>
+
+                        <!-- Vegetables & Fruits -->
+                        <div class="category-section">
+                            <h4 class="category-title">🥕 Vegetables & Fruits</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Avocados</span>
+                                    <span class="item-price">€1.59</span>
+                                    <input type="checkbox" checked> <span class="qty">3x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Bananas</span>
+                                    <span class="item-price">€0.40</span>
+                                    <input type="checkbox" checked> <span class="qty">5x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Cucumber</span>
+                                    <span class="item-price">€0.69</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Strawberries</span>
+                                    <span class="item-price">€4.99</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Apples</span>
+                                    <span class="item-price">€1.89</span>
+                                    <input type="checkbox"> <span class="qty">1kg</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Broccoli</span>
+                                    <span class="item-price">€1.69</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="dietary-card">
-                            <h4>Weight Management</h4>
-                            <p>6 players on specialized nutrition plans</p>
-                            <p><strong>Goals:</strong> Muscle gain (4), Weight loss (1), Maintenance (1)</p>
-                            <span class="dietary-status customized">Custom Portions</span>
+
+                        <!-- Meat & Protein -->
+                        <div class="category-section">
+                            <h4 class="category-title">🥩 Meat & Protein</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Bacon</span>
+                                    <span class="item-price">€1.39</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Chicken</span>
+                                    <span class="item-price">€6.49</span>
+                                    <input type="checkbox" checked> <span class="qty">3x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Ground Beef</span>
+                                    <span class="item-price">€3.49</span>
+                                    <input type="checkbox" checked> <span class="qty">7x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Eggs</span>
+                                    <span class="item-price">€1.99</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Steak</span>
+                                    <span class="item-price">€6.50</span>
+                                    <input type="checkbox" checked> <span class="qty">4x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dairy Products -->
+                        <div class="category-section">
+                            <h4 class="category-title">🧀 Dairy Products</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Butter</span>
+                                    <span class="item-price">€2.19</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Blueberry Yogurt</span>
+                                    <span class="item-price">€0.65</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Cream Cheese</span>
+                                    <span class="item-price">€1.69</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Greek Vanilla Yogurt</span>
+                                    <span class="item-price">€1.99</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">High Protein Ice Cream</span>
+                                    <span class="item-price">€2.79</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Vanilla Yogurt</span>
+                                    <span class="item-price">€0.65</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carbohydrates -->
+                        <div class="category-section">
+                            <h4 class="category-title">🍞 Carbohydrates</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Bagels</span>
+                                    <span class="item-price">€1.79</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Bread</span>
+                                    <span class="item-price">€2.29</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Hamburger Buns</span>
+                                    <span class="item-price">€1.19</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Oats</span>
+                                    <span class="item-price">€0.85</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Rice</span>
+                                    <span class="item-price">€2.99</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Tortilla</span>
+                                    <span class="item-price">€1.29</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Waffles</span>
+                                    <span class="item-price">€1.35</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Drinks -->
+                        <div class="category-section">
+                            <h4 class="category-title">🥤 Drinks</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Chocolate Milk</span>
+                                    <span class="item-price">€3.29</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Milk</span>
+                                    <span class="item-price">€0.99</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Sparkling Water</span>
+                                    <span class="item-price">€2.34</span>
+                                    <input type="checkbox" checked> <span class="qty">4x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Apple Juice</span>
+                                    <span class="item-price">€1.29</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Orange Juice</span>
+                                    <span class="item-price">€2.49</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Spices & Sauces -->
+                        <div class="category-section">
+                            <h4 class="category-title">🧂 Spices & Sauces</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Basil</span>
+                                    <span class="item-price">€1.45</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Basilico Sauce</span>
+                                    <span class="item-price">€1.59</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Garlic Powder</span>
+                                    <span class="item-price">€2.29</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Mayo</span>
+                                    <span class="item-price">€3.39</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Orange Pesto (Paprika)</span>
+                                    <span class="item-price">€1.09</span>
+                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Salt</span>
+                                    <span class="item-price">€1.29</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Frozen Items -->
+                        <div class="category-section">
+                            <h4 class="category-title">🧊 Frozen Items</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Frozen Blueberries</span>
+                                    <span class="item-price">€2.99</span>
+                                    <input type="checkbox" checked> <span class="qty">3x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Frozen Mango</span>
+                                    <span class="item-price">€3.29</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Frozen Raspberries</span>
+                                    <span class="item-price">€3.69</span>
+                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Ice (Not Crushed)</span>
+                                    <span class="item-price">€2.49</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Snacks & Extras -->
+                        <div class="category-section">
+                            <h4 class="category-title">🍿 Snacks & Extras</h4>
+                            <div class="items-grid">
+                                <div class="grocery-item">
+                                    <span class="item-name">Power System High Protein</span>
+                                    <span class="item-price">€1.09</span>
+                                    <input type="checkbox" checked> <span class="qty">4x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Dark Chocolate</span>
+                                    <span class="item-price">€0.99</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                                <div class="grocery-item">
+                                    <span class="item-name">Pretzels</span>
+                                    <span class="item-price">€0.99</span>
+                                    <input type="checkbox"> <span class="qty">1x</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn btn-secondary" onclick="selectAllItems()">Select All</button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">Clear All</button>
+                        <button class="btn btn-primary" onclick="submitGroceryOrder()">Submit Order (€168.16)</button>
+                    </div>
+                </div>
+
+                <!-- Active Orders Status -->
+                <div class="form-section">
+                    <h3>📦 Current Orders & Deliveries</h3>
+                    <div class="order-status">
+                        <div class="order-card pending">
+                            <div class="order-header">
+                                <h4>Tuesday Delivery - July 30</h4>
+                                <span class="status-badge pending">Order Submitted</span>
+                            </div>
+                            <div class="order-details">
+                                <p>Houses: W1, W2, W3 • Total: €168.16</p>
+                                <p>Estimated delivery: 6:00-8:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="order-card confirmed">
+                            <div class="order-header">
+                                <h4>Friday Delivery - July 26</h4>
+                                <span class="status-badge confirmed">Delivered</span>
+                            </div>
+                            <div class="order-details">
+                                <p>Houses: W1, W2, Frechen • Total: €392.45</p>
+                                <p>Delivered: 7:15 PM</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grocery Orders -->
-                <div class="form-section">
-                    <h3>🛒 House Grocery Orders</h3>
-                    <div class="meal-requests">
-                        <div class="request-form">
-                            <h4>Place New Grocery Order</h4>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>House</label>
-                                    <select class="form-control">
-                                        <option>Widdersdorf 1</option>
-                                        <option>Widdersdorf 2</option>
-                                        <option>Widdersdorf 3</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Delivery Date</label>
-                                    <select class="form-control">
-                                        <option>Tuesday</option>
-                                        <option>Friday</option>
-                                        <option>Sunday (Emergency)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Special Items</label>
-                                <textarea placeholder="List any special dietary items, supplements, or specific requests..." class="form-control" rows="3"></textarea>
-                            </div>
-                            <button class="btn btn-primary" onclick="createGroceryOrder()">Create Grocery Order</button>
-                        </div>
-                        
-                        <div class="recent-requests">
-                            <h4>Active Grocery Orders</h4>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Widdersdorf 1</strong> - Weekly Groceries
-                                    <p>Delivery: Tuesday, July 23 • €340</p>
-                                </div>
-                                <span class="request-status approved">Confirmed</span>
-                            </div>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Widdersdorf 2</strong> - Weekly Groceries
-                                    <p>Delivery: Friday, July 26 • €385</p>
-                                </div>
-                                <span class="request-status pending">Pending</span>
-                            </div>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Widdersdorf 3</strong> - Special Diet Items
-                                    <p>Delivery: Thursday, July 25 • €95</p>
-                                </div>
-                                <span class="request-status approved">Confirmed</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Meal Requests -->
-                <div class="form-section">
-                    <h3>📝 Special Meal Requests</h3>
-                    <div class="meal-requests">
-                        <div class="request-form">
-                            <h4>Request Special Meal</h4>
-                            <div class="form-row">
-                                <select class="form-control">
-                                    <option>Pre-match energy meal</option>
-                                    <option>Post-training recovery</option>
-                                    <option>Birthday celebration</option>
-                                    <option>Cultural/religious meal</option>
-                                    <option>Medical dietary requirement</option>
-                                </select>
-                                <input type="date" class="form-control" placeholder="Date">
-                            </div>
-                            <textarea placeholder="Describe your specific meal requirements..." class="form-control" rows="3"></textarea>
-                            <button class="btn btn-primary" onclick="submitMealRequest()">Submit Meal Request</button>
-                        </div>
-                        
-                        <div class="recent-requests">
-                            <h4>Recent Meal Requests</h4>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Carlos Rodriguez</strong> - Pre-match energy meal
-                                    <p>Saturday match preparation</p>
-                                </div>
-                                <span class="request-status approved">Approved</span>
-                            </div>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Marco Silva</strong> - Gluten-free pasta
-                                    <p>Weekly dietary accommodation</p>
-                                </div>
-                                <span class="request-status pending">Pending</span>
-                            </div>
-                            <div class="request-item">
-                                <div>
-                                    <strong>Team Kitchen</strong> - Extra training camp portions
-                                    <p>3-day camp in Düsseldorf</p>
-                                </div>
-                                <span class="request-status approved">Approved</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Team Nutrition Analytics -->
-                <div class="form-section">
-                    <h3>📊 Team Nutrition Analytics</h3>
-                    <div class="goals-grid">
-                        <div class="goal-card">
-                            <h4>Team Hydration Goal</h4>
-                            <div class="goal-progress">
-                                <div class="progress-circle" style="--percentage: 94%">
-                                    <span>94%</span>
-                                </div>
-                                <p>Excellent team hydration this week</p>
-                            </div>
-                        </div>
-                        <div class="goal-card">
-                            <h4>Meal Attendance</h4>
-                            <div class="goal-progress">
-                                <div class="progress-circle" style="--percentage: 89%">
-                                    <span>89%</span>
-                                </div>
-                                <p>Team meals attendance rate</p>
-                            </div>
-                        </div>
-                        <div class="goal-card">
-                            <h4>Supplement Compliance</h4>
-                            <div class="goal-progress">
-                                <div class="progress-circle" style="--percentage: 96%">
-                                    <span>96%</span>
-                                </div>
-                                <p>Players following supplement schedule</p>
-                            </div>
-                        </div>
-                        <div class="goal-card">
-                            <h4>Nutrition Score</h4>
-                            <div class="goal-progress">
-                                <div class="progress-circle" style="--percentage: 91%">
-                                    <span>91%</span>
-                                </div>
-                                <p>Overall team nutrition quality</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Communications Page -->
@@ -6551,9 +6947,113 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
         }
 
+        // Grocery Management Functions
+        function selectAllItems() {
+            const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateOrderTotal();
+        }
+
+        function clearSelection() {
+            const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateOrderTotal();
+        }
+
+        function updateOrderTotal() {
+            let total = 0;
+            const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
+            
+            checkedItems.forEach(checkbox => {
+                const priceElement = checkbox.closest('.grocery-item').querySelector('.item-price');
+                const price = parseFloat(priceElement.textContent.replace('€', ''));
+                const qtyElement = checkbox.closest('.grocery-item').querySelector('.qty');
+                const qty = parseInt(qtyElement.textContent.replace('x', '')) || 1;
+                total += price * qty;
+            });
+
+            // Update the submit button
+            const submitButton = document.querySelector('button[onclick="submitGroceryOrder()"]');
+            if (submitButton) {
+                submitButton.textContent = 'Submit Order (€' + total.toFixed(2) + ')';
+            }
+
+            // Update the budget display
+            const budgetAmountElement = document.querySelector('.budget-amount.large');
+            if (budgetAmountElement) {
+                budgetAmountElement.textContent = '€' + total.toFixed(2);
+            }
+
+            const budgetRemaining = document.querySelector('.budget-remaining');
+            if (budgetRemaining) {
+                const remaining = 210.00 - total;
+                budgetRemaining.textContent = '€' + remaining.toFixed(2) + ' remaining';
+                
+                if (remaining < 0) {
+                    budgetRemaining.style.color = '#dc2626';
+                    budgetRemaining.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2);
+                } else {
+                    budgetRemaining.style.color = '#059669';
+                }
+            }
+        }
+
+        function submitGroceryOrder() {
+            const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
+            
+            if (checkedItems.length === 0) {
+                alert('Please select at least one item before submitting your order.');
+                return;
+            }
+
+            const orderItems = [];
+            let total = 0;
+
+            checkedItems.forEach(checkbox => {
+                const itemRow = checkbox.closest('.grocery-item');
+                const itemName = itemRow.querySelector('.item-name').textContent;
+                const price = parseFloat(itemRow.querySelector('.item-price').textContent.replace('€', ''));
+                const qty = parseInt(itemRow.querySelector('.qty').textContent.replace('x', '')) || 1;
+                
+                orderItems.push({
+                    name: itemName,
+                    price: price,
+                    quantity: qty,
+                    total: price * qty
+                });
+                
+                total += price * qty;
+            });
+
+            // Simulate order submission
+            alert('Grocery order submitted successfully!\n\nItems: ' + orderItems.length + '\nTotal: €' + total.toFixed(2) + '\n\nYour order will be processed for the next available delivery slot.');
+            
+            // Clear selections after successful submission
+            clearSelection();
+        }
+
+        // Initialize grocery functionality on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to checkboxes when they exist
+            setTimeout(() => {
+                const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateOrderTotal);
+                });
+                
+                // Initialize the order total
+                updateOrderTotal();
+            }, 500);
+        });
+
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
         console.log('Enhanced features initialized successfully');
+        console.log('Admin player editing functionality loaded');
     </script>
 
     <!-- Player Edit Modal -->
