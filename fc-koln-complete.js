@@ -266,8 +266,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <nav class="nav">
                 <button class="nav-item active" onclick="showPage('dashboard')">Dashboard</button>
                 <button class="nav-item" onclick="showPage('players')">Players</button>
+                <button class="nav-item" onclick="showPage('chores')">Chores</button>
+                <button class="nav-item" onclick="showPage('calendar')">Calendar</button>
                 <button class="nav-item" onclick="showPage('food-orders')">Food Orders</button>
                 <button class="nav-item" onclick="showPage('communications')">Communications</button>
+                <button class="nav-item admin-only" onclick="showPage('house-management')" style="display: none;">House Management</button>
+                <button class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">Admin</button>
             </nav>
             <div class="user-info">
                 <span id="userName">Welcome</span>
@@ -358,6 +362,44 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             </div>
         </div>
 
+        <!-- Chores Page -->
+        <div id="chores" class="page">
+            <h2>House Management - Chores</h2>
+            <div class="card">
+                <h3>Current Chores</h3>
+                <p>Manage house assignments and track completion status.</p>
+                <div style="margin-top: 1rem;">
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Kitchen Cleaning</strong> - Assigned to Widdersdorf 1<br>
+                        <small>Due: Today | Priority: High</small>
+                    </div>
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Grocery Shopping</strong> - Assigned to Max Finkgräfe<br>
+                        <small>Due: Tomorrow | Priority: Medium</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Page -->
+        <div id="calendar" class="page">
+            <h2>Calendar & Events</h2>
+            <div class="card">
+                <h3>Upcoming Events</h3>
+                <p>Training sessions, matches, and important dates.</p>
+                <div style="margin-top: 1rem;">
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Training Session</strong><br>
+                        <small>Today 15:00 - RheinEnergie Stadium</small>
+                    </div>
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Team Meeting</strong><br>
+                        <small>Tomorrow 10:00 - Conference Room</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Communications Page -->
         <div id="communications" class="page">
             <h2>Communications</h2>
@@ -367,6 +409,43 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <div style="margin-top: 1rem;">
                     <button class="btn" onclick="sendMessage()" style="width: auto; margin-right: 1rem;">Send Message</button>
                     <button class="btn" onclick="sendAlert()" style="width: auto; background: #f59e0b;">Send Alert</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- House Management Page -->
+        <div id="house-management" class="page">
+            <h2>House Management</h2>
+            <div class="card">
+                <h3>Housing Overview</h3>
+                <p>Manage house assignments, chores, and facilities.</p>
+                <div style="margin-top: 1rem;">
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Widdersdorf 1</strong> - 8 players<br>
+                        <small>Status: All assignments current</small>
+                    </div>
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Widdersdorf 2</strong> - 7 players<br>
+                        <small>Status: 2 pending chores</small>
+                    </div>
+                    <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>Widdersdorf 3</strong> - 6 players<br>
+                        <small>Status: All clear</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Page -->
+        <div id="admin" class="page">
+            <h2>System Administration</h2>
+            <div class="card">
+                <h3>Admin Controls</h3>
+                <p>Full system management and oversight capabilities.</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn" onclick="systemMonitoring()" style="width: auto; margin-right: 1rem; margin-bottom: 0.5rem;">System Monitoring</button>
+                    <button class="btn" onclick="userManagement()" style="width: auto; margin-right: 1rem; margin-bottom: 0.5rem;">User Management</button>
+                    <button class="btn" onclick="dataBackup()" style="width: auto; margin-right: 1rem; margin-bottom: 0.5rem;">Data Backup</button>
                 </div>
             </div>
         </div>
@@ -441,6 +520,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const userNameEl = document.getElementById('userName');
             if (userNameEl && currentUser) {
                 userNameEl.textContent = 'Welcome, ' + currentUser.name;
+            }
+            
+            // Show admin-only sections for admin users
+            if (currentUser && currentUser.role === 'admin') {
+                const adminElements = document.querySelectorAll('.admin-only');
+                adminElements.forEach(element => {
+                    element.style.display = 'block';
+                });
             }
         }
 
@@ -535,6 +622,21 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         function sendAlert() {
             if (confirm('Send emergency alert to all team members?')) {
                 alert('Emergency alert sent to all team members');
+            }
+        }
+
+        // Admin function definitions
+        function systemMonitoring() {
+            alert('System Monitoring - Real-time system health and performance metrics');
+        }
+
+        function userManagement() {
+            alert('User Management - Manage user accounts, roles, and permissions');
+        }
+
+        function dataBackup() {
+            if (confirm('Create system backup?')) {
+                alert('System backup initiated - Data backup in progress');
             }
         }
 
