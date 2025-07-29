@@ -1981,98 +1981,320 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             margin: 0.25rem 0 0.5rem 0;
         }
 
-        /* Player Management Styles */
+        /* Enhanced Player Management Styles */
         .players-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin: 1rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .player-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #dc2626;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
         }
 
-        .player-card.injured {
-            border-left-color: #f59e0b;
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+            transition: all 0.3s ease;
         }
 
-        .player-card.suspended {
-            border-left-color: #ef4444;
+        .player-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .player-card:hover::before {
+            height: 8px;
+            background: linear-gradient(90deg, #dc2626 0%, #f59e0b 50%, #dc2626 100%);
+        }
+
+        .player-card.injured::before {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .player-card.suspended::before {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
         }
 
         .player-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .player-info-section {
+            flex: 1;
         }
 
         .player-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #374151;
-            margin: 0 0 0.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(135deg, #374151 0%, #6b7280 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .player-position {
-            color: #6b7280;
+            color: #dc2626;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .player-position::before {
+            content: '⚽';
             font-size: 0.9rem;
-            text-transform: capitalize;
         }
 
         .player-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .player-status:hover::before {
+            left: 100%;
         }
 
         .player-status.active {
-            background: #d1fae5;
-            color: #065f46;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
         }
 
         .player-status.injured {
-            background: #fef3c7;
-            color: #92400e;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
         }
 
         .player-status.suspended {
-            background: #fecaca;
-            color: #991b1b;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
         }
 
         .player-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            font-size: 0.9rem;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(220, 38, 38, 0.05);
         }
 
         .player-detail {
             display: flex;
-            justify-content: between;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
-        .player-detail strong {
+        .player-detail:hover {
+            background: rgba(220, 38, 38, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .player-detail-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-detail-value {
+            font-size: 0.95rem;
+            font-weight: 700;
             color: #374151;
         }
 
         .player-actions {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 0.75rem;
+            margin-top: 2rem;
         }
 
         .player-actions button {
             flex: 1;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-actions button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.4s;
+        }
+
+        .player-actions button:hover::before {
+            left: 100%;
+        }
+
+        .player-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-mini {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-mini:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+
+        /* Player Statistics Cards Enhancement */
+        .analytics-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .analytics-card h4 {
+            color: #374151;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .stat-large {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Enhanced Filter Section */
+        .filter-grid {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filter-grid .form-group input,
+        .filter-grid .form-group select {
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+        }
+
+        .filter-grid .form-group input:focus,
+        .filter-grid .form-group select:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
         }
 
         /* Modal Styles */
@@ -6315,23 +6537,41 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 
                 html += '<div class="player-card ' + statusClass + '">' +
                     '<div class="player-header">' +
-                        '<div>' +
+                        '<div class="player-info-section">' +
                             '<h3 class="player-name">' + player.firstName + ' ' + player.lastName + '</h3>' +
                             '<p class="player-position">' + player.position + '</p>' +
                         '</div>' +
                         '<span class="player-status ' + statusClass + '">' + player.status + '</span>' +
                     '</div>' +
                     '<div class="player-details">' +
-                        '<div class="player-detail"><span>Age:</span> <strong>' + player.age + '</strong></div>' +
-                        '<div class="player-detail"><span>Nationality:</span> <strong>' + player.nationality + '</strong></div>' +
-                        '<div class="player-detail"><span>House:</span> <strong>' + player.house + '</strong></div>' +
-                        '<div class="player-detail"><span>Room:</span> <strong>' + player.room + '</strong></div>' +
-                        '<div class="player-detail"><span>Contract:</span> <strong>' + player.contractPeriod + '</strong></div>' +
-                        '<div class="player-detail"><span>Joined:</span> <strong>' + formatDate(player.joinDate) + '</strong></div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">Age</span>' +
+                            '<span class="player-detail-value">' + player.age + ' years</span>' +
+                        '</div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">Nationality</span>' +
+                            '<span class="player-detail-value">' + player.nationality + '</span>' +
+                        '</div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">House</span>' +
+                            '<span class="player-detail-value">' + player.house + '</span>' +
+                        '</div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">Room</span>' +
+                            '<span class="player-detail-value">' + player.room + '</span>' +
+                        '</div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">Contract</span>' +
+                            '<span class="player-detail-value">' + player.contractPeriod + '</span>' +
+                        '</div>' +
+                        '<div class="player-detail">' +
+                            '<span class="player-detail-label">Joined</span>' +
+                            '<span class="player-detail-value">' + formatDate(player.joinDate) + '</span>' +
+                        '</div>' +
                     '</div>' +
                     '<div class="player-actions">' +
-                        '<button class="btn-mini" onclick="viewPlayer(\\'' + player.id + '\\')">View Details</button>' +
-                        '<button class="btn-mini" onclick="editPlayer(\\'' + player.id + '\\')">Edit</button>' +
+                        '<button class="btn-mini" onclick="viewPlayer(\\'' + player.id + '\\')">👁️ View Details</button>' +
+                        '<button class="btn-mini" onclick="editPlayer(\\'' + player.id + '\\')">✏️ Edit Profile</button>' +
                     '</div>' +
                 '</div>';
             });
