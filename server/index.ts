@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the exact restore - built from scratch matching screenshots
-const serverProcess = spawn('node', ['fc-koln-exact-restore.js'], {
+// Start the original sophisticated application - minimal Google Sheets damage repair
+const serverProcess = spawn('node', ['fc-koln-original-restore.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
