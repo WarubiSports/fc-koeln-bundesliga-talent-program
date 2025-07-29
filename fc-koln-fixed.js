@@ -5958,39 +5958,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // Auth tab management for login page
-        function showAuthTab(tabId) {
-            // Hide all auth tabs
-            const tabs = document.querySelectorAll('.auth-tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Remove active from tab buttons
-            const buttons = document.querySelectorAll('.auth-tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById(tabId + '-auth-tab').classList.add('active');
-            
-            // Add active to clicked button
-            event.target.classList.add('active');
-        }
 
-        // Public registration type management
-        function showPublicRegistrationType(type) {
-            // Hide all public registration forms
-            const forms = document.querySelectorAll('.public-registration-form');
-            forms.forEach(form => form.classList.remove('active'));
-            
-            // Remove active from type buttons
-            const buttons = document.querySelectorAll('.public-registration-type-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Show selected form
-            document.getElementById('public-' + type + '-registration').classList.add('active');
-            
-            // Add active to clicked button
-            event.target.classList.add('active');
-        }
 
         // Submit player application
         function submitPlayerApplication() {
