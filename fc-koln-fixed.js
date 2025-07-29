@@ -5797,39 +5797,44 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         ];
 
-        // Login functionality
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('loginMessage');
-            
-            messageDiv.innerHTML = '';
-            
-            if (password === 'ITP2024') {
-                let userData = null;
-                
-                if (email === 'max.bisinger@warubi-sports.com') {
-                    userData = { name: 'Max Bisinger', email: email, role: 'admin' };
-                } else if (email === 'thomas.ellinger@warubi-sports.com') {
-                    userData = { name: 'Thomas Ellinger', email: email, role: 'staff' };
-                } else {
-                    messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Email not recognized. Please try again.</div>';
-                    return;
-                }
-                
-                currentUser = userData;
-                localStorage.setItem('fc-koln-auth', JSON.stringify({
-                    token: userData.role + '_' + Date.now(),
-                    user: userData,
-                    loginTime: new Date().toISOString()
-                }));
-                
-                showMainApp();
-                
-            } else {
-                messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Invalid password. Please try again.</div>';
+        // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value;
+                    const messageDiv = document.getElementById('loginMessage');
+                    
+                    if (messageDiv) messageDiv.innerHTML = '';
+                    
+                    if (password === 'ITP2024') {
+                        let userData = null;
+                        
+                        if (email === 'max.bisinger@warubi-sports.com') {
+                            userData = { name: 'Max Bisinger', email: email, role: 'admin' };
+                        } else if (email === 'thomas.ellinger@warubi-sports.com') {
+                            userData = { name: 'Thomas Ellinger', email: email, role: 'staff' };
+                        } else {
+                            if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Email not recognized. Please try again.</div>';
+                            return;
+                        }
+                        
+                        currentUser = userData;
+                        localStorage.setItem('fc-koln-auth', JSON.stringify({
+                            token: userData.role + '_' + Date.now(),
+                            user: userData,
+                            loginTime: new Date().toISOString()
+                        }));
+                        
+                        showMainApp();
+                        
+                    } else {
+                        if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Invalid password. Please try again.</div>';
+                    }
+                });
             }
         });
 
