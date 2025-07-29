@@ -5816,9 +5816,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         '<p><strong>Description:</strong> ' + chore.description + '</p>' +
                     '</div>' +
                     '<div class="chore-actions admin-staff-only" style="display: ' + actionsDisplay + ';">' +
-                        '<button class="btn-mini btn-success" onclick="markChoreComplete(\'' + chore.id + '\')">Mark Complete</button>' +
-                        '<button class="btn-mini btn-warning" onclick="extendDeadline(\'' + chore.id + '\')">Extend Deadline</button>' +
-                        '<button class="btn-mini btn-danger" onclick="deleteChore(\'' + chore.id + '\')">Delete</button>' +
+                        '<button class="btn-mini btn-success" onclick="markChoreComplete(\\'' + chore.id + '\\')">Mark Complete</button>' +
+                        '<button class="btn-mini btn-warning" onclick="extendDeadline(\\'' + chore.id + '\\')">Extend Deadline</button>' +
+                        '<button class="btn-mini btn-danger" onclick="deleteChore(\\'' + chore.id + '\\')">Delete</button>' +
                     '</div>' +
                 '</div>';
             });
