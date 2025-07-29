@@ -1925,6 +1925,62 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             margin: 1rem 0;
         }
 
+        .players-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #f1f5f9;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-item span {
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .selection-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .selected-count {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin: 0.25rem 0 0.5rem 0;
+        }
+
         .chore-assignments-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -3926,10 +3982,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             <div class="form-group">
                                 <label>Assignment Type *</label>
-                                <select id="choreAssignmentType" onchange="toggleSpecificPlayerRow()" required>
+                                <select id="choreAssignmentType" onchange="togglePlayerSelection()" required>
                                     <option value="">Select Assignment</option>
-                                    <option value="individual">Individual Player</option>
-                                    <option value="group">Group Task</option>
+                                    <option value="individual">Specific Individual Player</option>
+                                    <option value="multiple">Multiple Specific Players</option>
+                                    <option value="group">Group Task (Auto-assign)</option>
                                     <option value="house">Entire House</option>
                                 </select>
                             </div>
@@ -3944,11 +4001,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 <input type="number" id="chorePoints" min="1" max="50" placeholder="15">
                             </div>
                         </div>
-                        <div class="form-row" id="specificPlayerRow" style="display: none;">
+                        <!-- Individual Player Selection -->
+                        <div class="form-row" id="individualPlayerRow" style="display: none;">
                             <div class="form-group">
-                                <label>Assign to Specific Player</label>
-                                <select id="specificPlayer">
-                                    <option value="">Let system auto-assign</option>
+                                <label>Select Individual Player *</label>
+                                <select id="individualPlayer">
+                                    <option value="">Choose specific player</option>
                                     <option value="max_finkgrafe">Max Finkgräfe</option>
                                     <option value="tim_lemperle">Tim Lemperle</option>
                                     <option value="mark_uth">Mark Uth</option>
@@ -3957,7 +4015,64 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <option value="florian_kainz">Florian Kainz</option>
                                     <option value="jan_thielmann">Jan Thielmann</option>
                                     <option value="denis_huseinbasic">Denis Huseinbašić</option>
+                                    <option value="luca_waldschmidt">Luca Waldschmidt</option>
+                                    <option value="timo_horn">Timo Horn</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Players Selection -->
+                        <div class="form-section" id="multiplePlayersRow" style="display: none;">
+                            <div class="form-group">
+                                <label>Select Multiple Players *</label>
+                                <p class="form-help">Check all players who should complete this chore</p>
+                                <div class="players-checkbox-grid">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="max_finkgrafe">
+                                        <span>Max Finkgräfe</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="tim_lemperle">
+                                        <span>Tim Lemperle</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="mark_uth">
+                                        <span>Mark Uth</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="steffen_tigges">
+                                        <span>Steffen Tigges</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="linton_maina">
+                                        <span>Linton Maina</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="florian_kainz">
+                                        <span>Florian Kainz</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="jan_thielmann">
+                                        <span>Jan Thielmann</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="denis_huseinbasic">
+                                        <span>Denis Huseinbašić</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="luca_waldschmidt">
+                                        <span>Luca Waldschmidt</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="selectedPlayers" value="timo_horn">
+                                        <span>Timo Horn</span>
+                                    </label>
+                                </div>
+                                <div class="selection-actions">
+                                    <button type="button" class="btn-mini" onclick="selectAllPlayers()">Select All</button>
+                                    <button type="button" class="btn-mini" onclick="clearAllPlayers()">Clear All</button>
+                                    <span id="selectedCount" class="selected-count">0 players selected</span>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -4035,7 +4150,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             <div class="chore-details">
                                 <p><strong>House:</strong> Widdersdorf 2</p>
-                                <p><strong>Assigned to:</strong> Group Task (3 players)</p>
+                                <p><strong>Assigned to:</strong> Tim Lemperle, Florian Kainz, Jan Thielmann</p>
                                 <p><strong>Deadline:</strong> Tomorrow, 12:00 PM</p>
                                 <p><strong>Points:</strong> 15 pts (per player)</p>
                                 <p><strong>Status:</strong> <span class="status-badge pending">Not Started</span></p>
@@ -5510,17 +5625,60 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert('System status refreshed - All metrics updated with real-time data');
         }
 
-        // Toggle specific player row based on assignment type
-        function toggleSpecificPlayerRow() {
+        // Toggle player selection based on assignment type
+        function togglePlayerSelection() {
             const assignmentType = document.getElementById('choreAssignmentType').value;
-            const specificPlayerRow = document.getElementById('specificPlayerRow');
+            const individualPlayerRow = document.getElementById('individualPlayerRow');
+            const multiplePlayersRow = document.getElementById('multiplePlayersRow');
             
+            // Hide all selection rows first
+            individualPlayerRow.style.display = 'none';
+            multiplePlayersRow.style.display = 'none';
+            
+            // Show appropriate selection based on type
             if (assignmentType === 'individual') {
-                specificPlayerRow.style.display = 'flex';
-            } else {
-                specificPlayerRow.style.display = 'none';
+                individualPlayerRow.style.display = 'flex';
+            } else if (assignmentType === 'multiple') {
+                multiplePlayersRow.style.display = 'block';
+                updateSelectedCount();
             }
         }
+
+        // Select all players
+        function selectAllPlayers() {
+            const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateSelectedCount();
+        }
+
+        // Clear all player selections
+        function clearAllPlayers() {
+            const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedCount();
+        }
+
+        // Update selected count display
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]:checked');
+            const count = checkboxes.length;
+            const countDisplay = document.getElementById('selectedCount');
+            if (countDisplay) {
+                countDisplay.textContent = count + ' player' + (count === 1 ? '' : 's') + ' selected';
+            }
+        }
+
+        // Add event listeners to checkboxes for real-time count updates
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedCount);
+            });
+        });
 
         // Create new chore assignment
         function createChoreAssignment() {
@@ -5531,11 +5689,37 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const deadline = document.getElementById('choreDeadline').value;
             const points = document.getElementById('chorePoints').value || 15;
             const description = document.getElementById('choreDescription').value;
-            const specificPlayer = document.getElementById('specificPlayer').value;
 
             if (!title || !priority || !house || !assignmentType || !deadline || !description) {
                 alert('Please fill in all required fields.');
                 return;
+            }
+
+            let assignedPlayers = [];
+            let assignmentText = '';
+
+            // Get assigned players based on assignment type
+            if (assignmentType === 'individual') {
+                const individualPlayer = document.getElementById('individualPlayer').value;
+                if (!individualPlayer) {
+                    alert('Please select a specific player for individual assignment.');
+                    return;
+                }
+                assignedPlayers = [individualPlayer];
+                assignmentText = individualPlayer.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            } else if (assignmentType === 'multiple') {
+                const selectedCheckboxes = document.querySelectorAll('input[name="selectedPlayers"]:checked');
+                if (selectedCheckboxes.length === 0) {
+                    alert('Please select at least one player for multiple player assignment.');
+                    return;
+                }
+                assignedPlayers = Array.from(selectedCheckboxes).map(cb => cb.value);
+                assignmentText = assignedPlayers.length + ' specific players: ' + 
+                    assignedPlayers.map(p => p.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())).join(', ');
+            } else if (assignmentType === 'group') {
+                assignmentText = 'Group Task (Auto-assigned)';
+            } else if (assignmentType === 'house') {
+                assignmentText = 'Entire House';
             }
 
             // Create chore object (in a real app, this would be sent to the server)
@@ -5545,17 +5729,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 priority,
                 house,
                 assignmentType,
+                assignedPlayers,
                 deadline: new Date(deadline).toLocaleString(),
                 points,
                 description,
-                specificPlayer,
                 status: 'pending',
                 createdBy: currentUser.name,
                 createdAt: new Date().toISOString()
             };
 
             // Display success message
-            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
+            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + assignmentText + '\\nHouse: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
             
             // Clear the form
             clearChoreForm();
@@ -5576,8 +5760,22 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('choreDeadline').value = '';
             document.getElementById('chorePoints').value = '';
             document.getElementById('choreDescription').value = '';
-            document.getElementById('specificPlayer').value = '';
-            document.getElementById('specificPlayerRow').style.display = 'none';
+            
+            // Clear individual player selection
+            document.getElementById('individualPlayer').value = '';
+            
+            // Clear multiple player selections
+            const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Hide all selection rows
+            document.getElementById('individualPlayerRow').style.display = 'none';
+            document.getElementById('multiplePlayersRow').style.display = 'none';
+            
+            // Reset selected count
+            updateSelectedCount();
         }
 
         // Mark chore as complete
