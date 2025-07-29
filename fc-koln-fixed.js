@@ -7130,13 +7130,31 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             <input type="text" id="editRoom" class="form-control" placeholder="e.g., 12A">
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contract Period</label>
+                            <input type="text" id="editContractPeriod" class="form-control" placeholder="e.g., 2024-2026">
+                        </div>
+                        <div class="form-group">
+                            <label>Join Date</label>
+                            <input type="date" id="editJoinDate" class="form-control">
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <label>Contract Period</label>
-                        <input type="text" id="editContract" class="form-control" placeholder="e.g., 2024-2026">
+                        <label>Phone Number</label>
+                        <input type="tel" id="editPhoneNumber" class="form-control" placeholder="+49 221 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Contact</label>
+                        <input type="text" id="editEmergencyContact" class="form-control" placeholder="Name and phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Medical Information</label>
+                        <textarea id="editMedicalInfo" class="form-control" rows="2" placeholder="Allergies, medical conditions, etc."></textarea>
                     </div>
                     <div class="form-group">
                         <label>Special Notes</label>
-                        <textarea id="editNotes" class="form-control" rows="3" placeholder="Medical conditions, dietary requirements, etc."></textarea>
+                        <textarea id="editSpecialNotes" class="form-control" rows="3" placeholder="Additional notes, preferences, etc."></textarea>
                     </div>
                 </div>
             </div>
