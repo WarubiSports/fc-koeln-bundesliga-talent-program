@@ -5820,54 +5820,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Individual food orders storage
         let individualOrders = [];
-        
-        // Food items catalog
-        const foodCatalog = {
-            'vegetables': [
-                { id: 'avocado', name: 'Avocado', price: 1.99, category: 'vegetables' },
-                { id: 'bell-pepper', name: 'Bell Pepper', price: 2.49, category: 'vegetables' },
-                { id: 'broccoli', name: 'Broccoli', price: 2.29, category: 'vegetables' },
-                { id: 'carrot', name: 'Carrots (1kg)', price: 1.19, category: 'vegetables' },
-                { id: 'cucumber', name: 'Cucumber', price: 0.99, category: 'vegetables' },
-                { id: 'onion', name: 'Onions (1kg)', price: 1.49, category: 'vegetables' },
-                { id: 'tomato', name: 'Tomatoes (500g)', price: 2.99, category: 'vegetables' },
-                { id: 'banana', name: 'Bananas (1kg)', price: 1.89, category: 'vegetables' },
-                { id: 'apple', name: 'Apples (1kg)', price: 2.49, category: 'vegetables' }
-            ],
-            'meat': [
-                { id: 'chicken-breast', name: 'Chicken Breast (500g)', price: 6.49, category: 'meat' },
-                { id: 'ground-beef', name: 'Ground Beef (500g)', price: 4.99, category: 'meat' },
-                { id: 'salmon', name: 'Salmon Fillet (300g)', price: 8.99, category: 'meat' },
-                { id: 'turkey', name: 'Turkey Breast (400g)', price: 5.49, category: 'meat' },
-                { id: 'eggs', name: 'Eggs (12 pack)', price: 2.79, category: 'meat' }
-            ],
-            'dairy': [
-                { id: 'milk', name: 'Milk (1L)', price: 1.29, category: 'dairy' },
-                { id: 'yogurt', name: 'Greek Yogurt (500g)', price: 2.49, category: 'dairy' },
-                { id: 'cheese', name: 'Gouda Cheese (200g)', price: 3.99, category: 'dairy' },
-                { id: 'butter', name: 'Butter (250g)', price: 2.19, category: 'dairy' },
-                { id: 'cream-cheese', name: 'Cream Cheese (200g)', price: 1.89, category: 'dairy' }
-            ],
-            'carbs': [
-                { id: 'bread', name: 'Whole Grain Bread', price: 2.49, category: 'carbs' },
-                { id: 'rice', name: 'Basmati Rice (1kg)', price: 3.29, category: 'carbs' },
-                { id: 'pasta', name: 'Pasta (500g)', price: 1.79, category: 'carbs' },
-                { id: 'oats', name: 'Oats (500g)', price: 1.99, category: 'carbs' },
-                { id: 'potatoes', name: 'Potatoes (2kg)', price: 2.99, category: 'carbs' }
-            ],
-            'drinks': [
-                { id: 'sparkling-water', name: 'Sparkling Water (6x500ml)', price: 2.99, category: 'drinks' },
-                { id: 'orange-juice', name: 'Orange Juice (1L)', price: 2.49, category: 'drinks' },
-                { id: 'protein-shake', name: 'Protein Shake', price: 3.99, category: 'drinks' },
-                { id: 'energy-drink', name: 'Energy Drink', price: 1.99, category: 'drinks' }
-            ],
-            'snacks': [
-                { id: 'protein-bar', name: 'Protein Bar', price: 2.29, category: 'snacks' },
-                { id: 'nuts', name: 'Mixed Nuts (200g)', price: 4.49, category: 'snacks' },
-                { id: 'granola', name: 'Granola (400g)', price: 3.79, category: 'snacks' },
-                { id: 'fruit-cups', name: 'Fruit Cups (4 pack)', price: 3.29, category: 'snacks' }
-            ]
-        };
 
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
