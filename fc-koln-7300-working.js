@@ -4607,40 +4607,296 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
                     <!-- Players Admin Grid -->
                     <div class="players-admin-grid">
-                                    <span class="item-name">Ground Beef</span>
-                                    <span class="item-price">€3.49</span>
-                                    <input type="checkbox" checked> <span class="qty">7x</span>
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Marco Schmidt</h4>
+                                    <span class="player-position">Midfielder</span>
+                                    <span class="player-status status-active">Active</span>
                                 </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Eggs</span>
-                                    <span class="item-price">€1.99</span>
-                                    <input type="checkbox" checked> <span class="qty">2x</span>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('marco-schmidt')">✏️ Edit</button>
+                                    <button class="btn-small btn-warning" onclick="suspendPlayer('marco-schmidt')">⚠️ Suspend</button>
                                 </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Steak</span>
-                                    <span class="item-price">€6.50</span>
-                                    <input type="checkbox" checked> <span class="qty">4x</span>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Germany</p>
+                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 12A</p>
+                                <p><strong>Contract:</strong> 2024-2026 • <strong>Performance:</strong> 8.2/10</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="user-management" class="admin-section">
+                    <h2>User Management & Access Control</h2>
+                    
+                    <!-- Active Users List -->
+                    <div class="form-section">
+                        <h3>Current Users</h3>
+                        <div class="users-list">
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <h4>Max Bisinger</h4>
+                                    <p>Administrator • Last active: 5 minutes ago</p>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <div class="user-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small btn-warning">Suspend</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Dairy Products -->
+                <!-- Full Admin Control Section -->
+                <div id="full-control" class="admin-section">
+                    <h2>🛡️ Full Administrator Control Panel</h2>
+                    
+                    <!-- Super Admin Powers -->
+                    <div class="form-section">
+                        <h3>⚡ Super Administrator Powers</h3>
+                        <div class="super-admin-controls">
+                            <div class="control-category">
+                                <h4>🔐 Security & Access Control</h4>
+                                <button class="btn btn-primary" onclick="fullUserControl()">👥 Complete User Account Control</button>
+                                <button class="btn btn-primary" onclick="passwordManagement()">🔑 Global Password Management</button>
+                                <button class="btn btn-primary" onclick="sessionControl()">🔐 Force Logout All Users</button>
+                                <button class="btn btn-warning" onclick="lockdownMode()">🚨 System Lockdown Mode</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Communications Page -->
+            <div id="communications" class="page">
+                <h1>Team Communications</h1>
+                <div class="form-section">
+                    <h3>Send Team Message</h3>
+                    <div class="form-group">
+                        <label>Recipient Group</label>
+                        <select>
+                            <option>All Players</option>
+                            <option>Widdersdorf 1</option>
+                            <option>Widdersdorf 2</option>
+                            <option>Widdersdorf 3</option>
+                            <option>Coaching Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="4" placeholder="Enter your message..."></textarea>
+                    </div>
+                    <button class="btn">Send Message</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Recent Messages</h3>
+                    <p><strong>Training Update:</strong> Tomorrow's session moved to 4:00 PM</p>
+                    <p><strong>House Reminder:</strong> Please complete weekly chores by Sunday</p>
+                    <p><strong>Match Announcement:</strong> Home match this Saturday vs. Borussia Dortmund U19</p>
+                </div>
+            </div>
+
+            <!-- House Management Page -->
+            <div id="house-management" class="page">
+                <h1>🏠 Housing & Chore Management</h1>
+                
+                <!-- Admin/Staff Chore Creation -->
+                <div class="admin-staff-only form-section" style="display: none;">
+                    <h3>➕ Create New Chore Assignment</h3>
+                    <div class="chore-creation-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Chore Title *</label>
+                                <input type="text" id="choreTitle" placeholder="e.g., Clean Kitchen" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Page -->
+            <div id="calendar" class="page">
+                <h1>📅 Team Calendar & Events</h1>
+                <div class="form-section">
+                    <h3>Upcoming Events</h3>
+                    <div class="event-list">
+                        <div class="event-item">
+                            <div class="event-date">Today</div>
+                            <div class="event-details">
+                                <h4>Training Session</h4>
+                                <p>3:00 PM - 5:00 PM • Training Ground A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Orders Page -->
+            <div id="food-orders" class="page">
+                <h1>🛒 Individual Food Orders</h1>
+                
+                <!-- Player vs Admin View Toggle -->
+                <div class="form-section" id="orderViewToggle" style="display: none;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button onclick="showPlayerOrdering()" class="btn btn-primary" id="playerOrderBtn">My Orders</button>
+                        <button onclick="showAdminSummary()" class="btn" id="adminSummaryBtn">House Summaries</button>
+                    </div>
+                </div>
+
+                <!-- Delivery Schedule & Deadlines -->
+                <div class="form-section">
+                    <h3>📅 Delivery Schedule & Order Deadlines</h3>
+                    <div class="delivery-schedule">
+                        <div class="delivery-day">
+                            <h4>Tuesday Deliveries</h4>
+                            <p>Order by: Monday 6:00 PM</p>
+                            <p>Delivery: Tuesday 6:00-8:00 PM</p>
+                        </div>
+                        <div class="delivery-day">
+                            <h4>Friday Deliveries</h4>
+                            <p>Order by: Thursday 6:00 PM</p>
+                            <p>Delivery: Friday 6:00-8:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Individual Ordering Section -->
+                <div id="playerOrderingSection" class="form-section">
+                    <h3>🛒 Place Your Individual Order</h3>
+                    
+                    <!-- Weekly Budget Display -->
+                    <div class="budget-display">
+                        <div class="budget-info">
+                            <span class="budget-label">Weekly Food Budget:</span>
+                            <div class="budget-amount" id="playerBudgetTotal">€75.00</div>
+                            <div class="budget-remaining" id="playerBudgetRemaining">€50.00 remaining</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Food Categories for Individual Ordering -->
+                    <div class="grocery-categories" id="individualFoodCatalog">
+                        <div class="category-section">
+                            <h4 class="category-title">🥬 Vegetables & Fruits</h4>
+                            <div class="items-grid" id="vegetables-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🥩 Meat & Protein</h4>
+                            <div class="items-grid" id="meat-items"></div>
+                        </div>
                         <div class="category-section">
                             <h4 class="category-title">🧀 Dairy Products</h4>
-                            <div class="items-grid">
-                                <div class="grocery-item">
-                                    <span class="item-name">Butter</span>
-                                    <span class="item-price">€2.19</span>
-                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                            <div class="items-grid" id="dairy-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🍞 Carbohydrates</h4>
+                            <div class="items-grid" id="carbs-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🥤 Drinks</h4>
+                            <div class="items-grid" id="drinks-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🍿 Snacks</h4>
+                            <div class="items-grid" id="snacks-items"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn btn-secondary" onclick="clearPlayerCart()">Clear Cart</button>
+                        <button class="btn btn-primary" onclick="submitPlayerOrder()" id="submitPlayerOrderBtn">Place Order (€0.00)</button>
+                    </div>
+                </div>
+
+                <!-- Admin House Summary Section -->
+                <div id="adminSummarySection" class="form-section" style="display: none;">
+                    <h3>📊 House Order Summaries</h3>
+                    <div id="houseSummaries">
+                        <div class="house-summary-tabs">
+                            <button onclick="showHouseSummary('Widdersdorf 1')" class="house-tab active" id="w1-tab">Widdersdorf 1</button>
+                            <button onclick="showHouseSummary('Widdersdorf 2')" class="house-tab" id="w2-tab">Widdersdorf 2</button>
+                            <button onclick="showHouseSummary('Widdersdorf 3')" class="house-tab" id="w3-tab">Widdersdorf 3</button>
+                        </div>
+                        <div id="houseSummaryContent"></div>
+                    </div>
+                </div>
+
+                <!-- Individual Orders History -->
+                <div class="form-section">
+                    <h3>📦 Your Order History</h3>
+                    <div id="playerOrderHistory">
+                        <div class="order-card pending">
+                            <div class="order-header">
+                                <h4>Tuesday Delivery - July 30</h4>
+                                <span class="status-badge pending">Submitted</span>
+                            </div>
+                            <div class="order-details">
+                                <p>3 items • Total: €12.47</p>
+                                <p>Delivery: Tuesday 6-8 PM to Widdersdorf 1</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Admin Page -->
+            <div id="admin" class="page">
+                <h1>System Administration</h1>
+                
+                <!-- Admin Navigation -->
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('full-control')">🛡️ Full Admin Control</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
+                </div>
+
+                <!-- Player Management Section -->
+                <div id="player-management" class="admin-section active">
+                    <h2>Player Management & Editing</h2>
+                    
+                    <!-- Player Search and Filters -->
+                    <div class="admin-controls">
+                        <div class="search-bar">
+                            <input type="text" id="playerSearch" placeholder="Search players..." class="form-control">
+                            <button class="btn" onclick="searchPlayers()">🔍 Search</button>
+                        </div>
+                    </div>
+
+                    <!-- Players Admin Grid -->
+                    <div class="players-admin-grid">
+                        <div class="player-admin-card">
+                            <div class="player-header">
+                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
+                                <div class="player-info">
+                                    <h4>Marco Schmidt</h4>
+                                    <span class="player-position">Midfielder</span>
+                                    <span class="player-status status-active">Active</span>
                                 </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Blueberry Yogurt</span>
-                                    <span class="item-price">€0.65</span>
-                                    <input type="checkbox" checked> <span class="qty">1x</span>
+                                <div class="player-actions">
+                                    <button class="btn-small" onclick="editPlayer('marco-schmidt')">✏️ Edit</button>
+                                    <button class="btn-small btn-warning" onclick="suspendPlayer('marco-schmidt')">⚠️ Suspend</button>
                                 </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Cream Cheese</span>
-                                    <span class="item-price">€1.69</span>
+                            </div>
+                            <div class="player-details">
+                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Germany</p>
+                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 12A</p>
+                                <p><strong>Contract:</strong> 2024-2026 • <strong>Performance:</strong> 8.2/10</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
                                     <input type="checkbox" checked> <span class="qty">1x</span>
                                 </div>
                                 <div class="grocery-item">
