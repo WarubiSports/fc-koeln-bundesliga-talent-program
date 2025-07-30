@@ -774,1130 +774,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #374151;
         }
 
-        /* Enhanced House Summary Styles */
-        .house-summary-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            padding: 8px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .house-summary-tabs .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #64748b;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .house-summary-tabs .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s;
-        }
-
-        .house-summary-tabs .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.15);
-        }
-
-        .house-summary-tabs .tab-btn:hover::before {
-            left: 100%;
-        }
-
-        .house-summary-tabs .tab-btn.active {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .house-summary-content {
-            min-height: 400px;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .house-summary-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(220, 38, 38, 0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .house-summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #dc2626 0%, #f59e0b 50%, #dc2626 100%);
-            background-size: 200% 100%;
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .house-summary-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-        }
-
-        .house-summary-card h4 {
-            margin: 0 0 20px 0;
-            color: #1f2937;
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .house-summary-card h4::before {
-            content: '🏠';
-            font-size: 24px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .player-order-summary {
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-            padding: 18px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .player-order-summary::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 0 4px 4px 0;
-        }
-
-        .player-order-summary:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .player-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .player-info strong {
-            color: #1f2937;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .order-details {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .order-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .item-tag {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #374151;
-            font-weight: 600;
-            border: 1px solid #d1d5db;
-            transition: all 0.2s ease;
-        }
-
-        .item-tag:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .house-total {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            margin-top: 20px;
-            font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .house-total::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .no-orders {
-            color: #9ca3af;
-            font-style: italic;
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            border-radius: 16px;
-            border: 2px dashed #d1d5db;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .no-orders::before {
-            content: '📦';
-            display: block;
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .single-house-summary h4 {
-            color: #dc2626;
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: 800;
-            text-align: center;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        .single-house-summary h4::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, #dc2626 0%, #f59e0b 100%);
-            border-radius: 2px;
-        }
-
-        .detailed-player-order {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(220, 38, 38, 0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .detailed-player-order::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-        }
-
-        .detailed-player-order:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-        }
-
-        .detailed-player-order h5 {
-            margin: 0 0 20px 0;
-            color: #1f2937;
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .detailed-player-order h5::before {
-            content: '👤';
-            font-size: 20px;
-        }
-
-        .player-items-detail {
-            margin-bottom: 20px;
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .item-detail {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e5e7eb;
-            color: #374151;
-            font-weight: 500;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .item-detail:hover {
-            background: #f3f4f6;
-            transform: translateX(5px);
-        }
-
-        .item-detail:last-child {
-            border-bottom: none;
-        }
-
-        .item-detail::before {
-            content: '🛒';
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        .player-total {
-            font-weight: 700;
-            color: #dc2626;
-            text-align: right;
-            padding: 20px;
-            border-top: 3px solid #dc2626;
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border-radius: 0 0 12px 12px;
-            font-size: 16px;
-        }
-
-        .consolidated-list {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            padding: 30px;
-            border-radius: 20px;
-            margin-top: 30px;
-            border: 3px solid #dc2626;
-            box-shadow: 0 15px 50px rgba(220, 38, 38, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .consolidated-list::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #dc2626, #f59e0b, #dc2626);
-            background-size: 300% 300%;
-            border-radius: 20px;
-            z-index: -1;
-            animation: gradientShift 4s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .consolidated-list h5 {
-            margin: 0 0 25px 0;
-            color: #dc2626;
-            font-size: 20px;
-            font-weight: 800;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .consolidated-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .consolidated-item {
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-            padding: 15px 20px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            font-weight: 600;
-            color: #374151;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .consolidated-item::before {
-            content: '📦';
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .consolidated-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-        }
-
-        .house-grand-total {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 800;
-            box-shadow: 0 10px 40px rgba(220, 38, 38, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .house-grand-total::before {
-            content: '💰';
-            display: block;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .house-grand-total::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        /* WhatsApp-Style Chat System */
-        .chat-container {
-            display: flex;
-            height: calc(100vh - 120px);
-            background: #f0f2f5;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .chat-sidebar {
-            width: 350px;
-            background: white;
-            border-right: 1px solid #e9edef;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            padding: 20px;
-            background: #00a884;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .new-chat-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .new-chat-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-        .chat-search {
-            padding: 15px;
-            background: #f0f2f5;
-        }
-
-        .chat-search input {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 25px;
-            background: white;
-            font-size: 14px;
-            outline: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .chat-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .chat-item {
-            padding: 16px 20px;
-            border-bottom: 1px solid #f0f2f5;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .chat-item:hover {
-            background: #f5f6f6;
-        }
-
-        .chat-item.active {
-            background: #e7f3ff;
-            border-right: 3px solid #00a884;
-        }
-
-        .chat-item-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00a884, #128c7e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .chat-item-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .chat-item-name {
-            font-weight: 600;
-            font-size: 16px;
-            color: #111b21;
-            margin-bottom: 2px;
-        }
-
-        .chat-item-preview {
-            font-size: 14px;
-            color: #667781;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .chat-item-time {
-            font-size: 12px;
-            color: #667781;
-            white-space: nowrap;
-        }
-
-        .chat-item-unread {
-            background: #00a884;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .quick-groups {
-            padding: 20px;
-            border-top: 1px solid #e9edef;
-        }
-
-        .quick-groups h4 {
-            margin: 0 0 12px 0;
-            font-size: 14px;
-            color: #667781;
-            font-weight: 600;
-        }
-
-        .group-shortcuts {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .group-shortcut {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            font-size: 14px;
-            color: #111b21;
-        }
-
-        .group-shortcut:hover {
-            background: #f5f6f6;
-        }
-
-        .group-shortcut span:first-child {
-            font-size: 18px;
-        }
-
-        .chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #efeae2;
-            position: relative;
-        }
-
-        .chat-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="chat-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="%23ffffff" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23chat-pattern)"/></svg>');
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .chat-main-header {
-            background: #f0f2f5;
-            padding: 16px 20px;
-            border-bottom: 1px solid #d1d7db;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chat-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .chat-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00a884, #128c7e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-        }
-
-        .chat-details h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #111b21;
-        }
-
-        .chat-details span {
-            font-size: 13px;
-            color: #667781;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-actions button {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s ease;
-        }
-
-        .chat-actions button:hover {
-            background: rgba(0,0,0,0.1);
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .empty-chat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            color: #667781;
-        }
-
-        .empty-chat-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-chat h3 {
-            margin: 0 0 8px 0;
-            font-size: 20px;
-            color: #111b21;
-        }
-
-        .empty-chat p {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .message-bubble {
-            max-width: 70%;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message-bubble.sent {
-            align-self: flex-end;
-            align-items: flex-end;
-        }
-
-        .message-bubble.received {
-            align-self: flex-start;
-            align-items: flex-start;
-        }
-
-        .message-content {
-            background: white;
-            padding: 8px 12px;
-            border-radius: 7px;
-            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
-            position: relative;
-            word-wrap: break-word;
-        }
-
-        .message-bubble.sent .message-content {
-            background: #d9fdd3;
-        }
-
-        .message-bubble.received .message-content {
-            background: white;
-        }
-
-        .message-info {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 2px;
-            font-size: 11px;
-            color: #667781;
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: #667781;
-        }
-
-        .message-status {
-            font-size: 12px;
-            color: #53bdeb;
-        }
-
-        .message-bubble.sent .message-status.read {
-            color: #53bdeb;
-        }
-
-        .message-attachment {
-            background: #f0f2f5;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .attachment-icon {
-            font-size: 24px;
-        }
-
-        .attachment-info {
-            flex: 1;
-        }
-
-        .attachment-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: #111b21;
-        }
-
-        .attachment-size {
-            font-size: 12px;
-            color: #667781;
-        }
-
-        .chat-input-area {
-            background: #f0f2f5;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chat-input-container {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: white;
-            border-radius: 25px;
-            padding: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .attach-btn, .emoji-btn, .send-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s ease;
-            color: #54656f;
-        }
-
-        .attach-btn:hover, .emoji-btn:hover {
-            background: #f5f6f6;
-        }
-
-        .send-btn {
-            background: #00a884;
-            color: white;
-        }
-
-        .send-btn:hover {
-            background: #128c7e;
-        }
-
-        .send-btn:disabled {
-            background: #d1d7db;
-            cursor: not-allowed;
-        }
-
-        #messageInput {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 8px 12px;
-            font-size: 15px;
-            background: transparent;
-            resize: none;
-        }
-
-        #messageInput:disabled {
-            color: #8696a0;
-        }
-
-        .attach-menu {
-            position: absolute;
-            bottom: 100%;
-            left: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            padding: 8px 0;
-            margin-bottom: 8px;
-            min-width: 150px;
-        }
-
-        .attach-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            font-size: 14px;
-            color: #111b21;
-        }
-
-        .attach-option:hover {
-            background: #f5f6f6;
-        }
-
-        .attach-option span:first-child {
-            font-size: 18px;
-        }
-
-        /* New Chat Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 500px;
-            max-width: 90vw;
-            max-height: 80vh;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            background: #00a884;
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.2s ease;
-        }
-
-        .close:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .modal-body {
-            padding: 20px;
-            max-height: calc(80vh - 80px);
-            overflow-y: auto;
-        }
-
-        .new-chat-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 20px;
-            background: #f0f2f5;
-            border-radius: 8px;
-            padding: 4px;
-        }
-
-        .new-chat-tabs .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            color: #667781;
-        }
-
-        .new-chat-tabs .tab-btn.active {
-            background: white;
-            color: #00a884;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .contact-search {
-            margin-bottom: 16px;
-        }
-
-        .contact-search input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d7db;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .contact-search input:focus {
-            border-color: #00a884;
-        }
-
-        .contact-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .contact-item:hover {
-            background: #f5f6f6;
-        }
-
-        .contact-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00a884, #128c7e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .contact-info {
-            flex: 1;
-        }
-
-        .contact-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: #111b21;
-        }
-
-        .contact-role {
-            font-size: 12px;
-            color: #667781;
-        }
-
-        .member-selection {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #d1d7db;
-            border-radius: 8px;
-            padding: 8px;
-        }
-
-        .member-selection label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .member-selection label:hover {
-            background: #f5f6f6;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .chat-container {
-                height: calc(100vh - 80px);
-            }
-
-            .chat-sidebar {
-                width: 100%;
-                position: absolute;
-                left: 0;
-                z-index: 2;
-                transition: transform 0.3s ease;
-            }
-
-            .chat-sidebar.hidden {
-                transform: translateX(-100%);
-            }
-
-            .chat-main {
-                width: 100%;
-            }
-        }
-
         .event-title {
             display: block;
             margin: 0.25rem 0;
@@ -4472,8 +3348,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             <!-- Login/Registration Tabs -->
             <div class="auth-tabs">
-                <button class="auth-tab-btn active" onclick="window.showAuthTab('login')">Sign In</button>
-                <button class="auth-tab-btn" onclick="window.showAuthTab('register')">Join Program</button>
+                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
             </div>
             
             <!-- Login Form -->
@@ -4489,7 +3365,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <input type="password" id="password" value="ITP2024" required>
                     </div>
                     
-                    <button type="button" onclick="window.performLogin()" class="btn">Sign In</button>
+                    <button type="submit" class="btn">Sign In</button>
                 </form>
                 
                 <div id="loginMessage"></div>
@@ -5420,21 +4296,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Food Orders Page -->
             <div id="food-orders" class="page">
-                <h1>🛒 Individual Food Orders</h1>
-                
-                <!-- Admin House Summary View -->
-                <div class="admin-only form-section" style="display: none;">
-                    <h3>🏠 House Order Summary (Admin View)</h3>
-                    <div class="house-summary-tabs">
-                        <button class="tab-btn active" onclick="showHouseSummary('all')">All Houses</button>
-                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf1')">Widdersdorf 1</button>
-                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf2')">Widdersdorf 2</button>
-                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf3')">Widdersdorf 3</button>
-                    </div>
-                    <div id="houseSummaryContent" class="house-summary-content">
-                        <!-- Dynamic content will be loaded here -->
-                    </div>
-                </div>
+                <h1>🛒 House Grocery Management</h1>
                 
                 <!-- Delivery Schedule & Deadlines -->
                 <div class="form-section">
@@ -5443,7 +4305,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <div class="delivery-card tuesday">
                             <h4>Tuesday Delivery</h4>
                             <div class="deadline-info">
-                                <strong>Order Deadline: Monday 12:00 AM</strong>
+                                <strong>Order Deadline: Monday 8:00 AM</strong>
                                 <p>Delivery arrives between 6-8 PM</p>
                             </div>
                             <div class="next-delivery">
@@ -5453,7 +4315,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <div class="delivery-card friday">
                             <h4>Friday Delivery</h4>
                             <div class="deadline-info">
-                                <strong>Order Deadline: Thursday 12:00 AM</strong>
+                                <strong>Order Deadline: Thursday 8:00 AM</strong>
                                 <p>Delivery arrives between 6-8 PM</p>
                             </div>
                             <div class="next-delivery">
@@ -5463,41 +4325,40 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Personal Order Overview -->
+                <!-- Current Budget Overview -->
                 <div class="form-section">
-                    <h3>💰 Your Personal Order Budget</h3>
+                    <h3>💰 Budget Overview</h3>
                     <div class="budget-overview">
                         <div class="budget-card">
-                            <h4>Current Cart Total</h4>
-                            <div class="budget-amount large" id="personalOrderTotal">€0.00</div>
-                            <div class="budget-limit">Personal Limit: €35.00</div>
-                            <div class="budget-remaining" id="personalBudgetRemaining">€35.00 remaining</div>
+                            <h4>Total Current Cart</h4>
+                            <div class="budget-amount large">€168.16</div>
+                            <div class="budget-limit">Budget: €210.00</div>
+                            <div class="budget-remaining">€41.84 remaining</div>
                         </div>
-                        <div class="order-status">
-                            <div class="status-item">
-                                <span>Order Status:</span>
-                                <span class="status-badge" id="orderStatus">Not Submitted</span>
+                        <div class="budget-breakdown">
+                            <div class="category-budget">
+                                <span>Vegetables & Fruits</span>
+                                <span>€21.45</span>
                             </div>
-                            <div class="status-item">
-                                <span>Items Selected:</span>
-                                <span id="itemsCount">0</span>
+                            <div class="category-budget">
+                                <span>Meat & Protein</span>
+                                <span>€35.92</span>
+                            </div>
+                            <div class="category-budget">
+                                <span>Dairy Products</span>
+                                <span>€19.83</span>
+                            </div>
+                            <div class="category-budget">
+                                <span>Household Items</span>
+                                <span>€28.15</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Personal Order Status Check -->
-                <div class="form-section" id="orderDeadlineCheck">
-                    <div class="deadline-alert" id="deadlineAlert" style="display: none;">
-                        <h4>⚠️ Order Deadline Passed</h4>
-                        <p>The deadline for the next delivery has passed. You can place orders for the following delivery slot.</p>
-                    </div>
-                </div>
-
-                <!-- Individual Grocery Shopping -->
+                <!-- Interactive Grocery Shopping -->
                 <div class="form-section">
-                    <h3>🛍️ Personal Grocery Selection</h3>
-                    <p class="order-info">Select items for your individual order. Maximum budget: €35.00</p>
+                    <h3>🛍️ Grocery Shopping List</h3>
                     <div class="grocery-categories">
                         <!-- Household Items -->
                         <div class="category-section">
@@ -5799,21 +4660,34 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                     
                     <div class="order-actions">
-                        <button class="btn btn-secondary" onclick="clearPersonalSelection()">Clear All Selections</button>
-                        <button class="btn btn-primary" onclick="submitPersonalGroceryOrder()" id="submitPersonalOrder" disabled>Submit Personal Order (€0.00)</button>
+                        <button class="btn btn-secondary" onclick="selectAllItems()">Select All</button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">Clear All</button>
+                        <button class="btn btn-primary" onclick="submitGroceryOrder()">Submit Order (€168.16)</button>
                     </div>
                 </div>
 
-                <!-- Personal Order History -->
+                <!-- Active Orders Status -->
                 <div class="form-section">
-                    <h3>📦 Your Order History</h3>
-                    <div class="order-status" id="personalOrderHistory">
-                        <div class="order-card info" id="noOrdersMessage">
+                    <h3>📦 Current Orders & Deliveries</h3>
+                    <div class="order-status">
+                        <div class="order-card pending">
                             <div class="order-header">
-                                <h4>No Previous Orders</h4>
+                                <h4>Tuesday Delivery - July 30</h4>
+                                <span class="status-badge pending">Order Submitted</span>
                             </div>
                             <div class="order-details">
-                                <p>Your individual orders will appear here once submitted.</p>
+                                <p>Houses: W1, W2, W3 • Total: €168.16</p>
+                                <p>Estimated delivery: 6:00-8:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="order-card confirmed">
+                            <div class="order-header">
+                                <h4>Friday Delivery - July 26</h4>
+                                <span class="status-badge confirmed">Delivered</span>
+                            </div>
+                            <div class="order-details">
+                                <p>Houses: W1, W2, Frechen • Total: €392.45</p>
+                                <p>Delivered: 7:15 PM</p>
                             </div>
                         </div>
                     </div>
@@ -5821,147 +4695,33 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             </div>
 
-            <!-- Communications Page - WhatsApp Style Chat -->
+            <!-- Communications Page -->
             <div id="communications" class="page">
-                <div class="chat-container">
-                    <!-- Chat Sidebar -->
-                    <div class="chat-sidebar">
-                        <div class="chat-header">
-                            <h2>💬 Messages</h2>
-                            <button class="new-chat-btn" onclick="showNewChatModal()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="chat-search">
-                            <input type="text" placeholder="Search messages..." id="chatSearch" oninput="filterChats()">
-                        </div>
-                        
-                        <div class="chat-list" id="chatList">
-                            <!-- Chat list items will be populated here -->
-                        </div>
-                        
-                        <div class="quick-groups">
-                            <h4>Quick Groups</h4>
-                            <div class="group-shortcuts">
-                                <div class="group-shortcut" onclick="openGroupChat('all-players')">
-                                    <span>👥</span>
-                                    <span>All Players</span>
-                                </div>
-                                <div class="group-shortcut" onclick="openGroupChat('staff')">
-                                    <span>👨‍💼</span>
-                                    <span>Staff</span>
-                                </div>
-                                <div class="group-shortcut" onclick="openGroupChat('widdersdorf1')">
-                                    <span>🏠</span>
-                                    <span>Widdersdorf 1</span>
-                                </div>
-                                <div class="group-shortcut" onclick="openGroupChat('widdersdorf2')">
-                                    <span>🏠</span>
-                                    <span>Widdersdorf 2</span>
-                                </div>
-                                <div class="group-shortcut" onclick="openGroupChat('widdersdorf3')">
-                                    <span>🏠</span>
-                                    <span>Widdersdorf 3</span>
-                                </div>
-                            </div>
-                        </div>
+                <h1>Team Communications</h1>
+                <div class="form-section">
+                    <h3>Send Team Message</h3>
+                    <div class="form-group">
+                        <label>Recipient Group</label>
+                        <select>
+                            <option>All Players</option>
+                            <option>Widdersdorf 1</option>
+                            <option>Widdersdorf 2</option>
+                            <option>Widdersdorf 3</option>
+                            <option>Coaching Staff</option>
+                        </select>
                     </div>
-                    
-                    <!-- Chat Main Area -->
-                    <div class="chat-main">
-                        <div class="chat-main-header" id="chatMainHeader">
-                            <div class="chat-info">
-                                <div class="chat-avatar">👥</div>
-                                <div class="chat-details">
-                                    <h3>Select a chat</h3>
-                                    <span>Choose a conversation to start messaging</span>
-                                </div>
-                            </div>
-                            <div class="chat-actions">
-                                <button onclick="toggleChatInfo()" title="Chat Info">ℹ️</button>
-                                <button onclick="toggleAttachMenu()" title="Attach Files">📎</button>
-                            </div>
-                        </div>
-                        
-                        <div class="chat-messages" id="chatMessages">
-                            <div class="empty-chat">
-                                <div class="empty-chat-icon">💬</div>
-                                <h3>Start a conversation</h3>
-                                <p>Select a chat from the sidebar or create a new one to begin messaging</p>
-                            </div>
-                        </div>
-                        
-                        <div class="chat-input-area" id="chatInputArea">
-                            <div class="chat-input-container">
-                                <button class="attach-btn" onclick="toggleAttachMenu()" title="Attach files">📎</button>
-                                <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleMessageInput(event)" disabled>
-                                <button class="emoji-btn" onclick="toggleEmojiPicker()" title="Emojis">😊</button>
-                                <button class="send-btn" onclick="sendMessage()" id="sendBtn" disabled>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            
-                            <!-- Attachment Menu -->
-                            <div class="attach-menu" id="attachMenu" style="display: none;">
-                                <div class="attach-option" onclick="attachImage()">
-                                    <span>🖼️</span>
-                                    <span>Image</span>
-                                </div>
-                                <div class="attach-option" onclick="attachDocument()">
-                                    <span>📄</span>
-                                    <span>Document</span>
-                                </div>
-                                <div class="attach-option" onclick="attachLink()">
-                                    <span>🔗</span>
-                                    <span>Link</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="4" placeholder="Enter your message..."></textarea>
                     </div>
+                    <button class="btn">Send Message</button>
                 </div>
                 
-                <!-- New Chat Modal -->
-                <div class="modal" id="newChatModal" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>New Chat</h3>
-                            <span class="close" onclick="closeNewChatModal()">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <div class="new-chat-tabs">
-                                <button class="tab-btn active" onclick="showNewChatTab('individual')">Individual</button>
-                                <button class="tab-btn" onclick="showNewChatTab('group')">Group</button>
-                            </div>
-                            
-                            <div class="new-chat-content" id="individualChatContent">
-                                <div class="contact-search">
-                                    <input type="text" placeholder="Search contacts..." id="contactSearch" oninput="filterContacts()">
-                                </div>
-                                <div class="contact-list" id="contactList">
-                                    <!-- Contacts will be populated here -->
-                                </div>
-                            </div>
-                            
-                            <div class="new-chat-content" id="groupChatContent" style="display: none;">
-                                <div class="form-group">
-                                    <label>Group Name</label>
-                                    <input type="text" id="groupName" placeholder="Enter group name...">
-                                </div>
-                                <div class="form-group">
-                                    <label>Select Members</label>
-                                    <div class="member-selection" id="memberSelection">
-                                        <!-- Member checkboxes will be populated here -->
-                                    </div>
-                                </div>
-                                <button class="btn-primary" onclick="createGroupChat()">Create Group</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="form-section">
+                    <h3>Recent Messages</h3>
+                    <p><strong>Training Update:</strong> Tomorrow's session moved to 4:00 PM</p>
+                    <p><strong>House Reminder:</strong> Please complete weekly chores by Sunday</p>
+                    <p><strong>Match Announcement:</strong> Home match this Saturday vs. Borussia Dortmund U19</p>
                 </div>
             </div>
 
@@ -7078,8 +5838,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         });
 
-        // Show main application - Make globally accessible
-        window.showMainApp = function() {
+        // Show main application
+        function showMainApp() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userName').textContent = 'Welcome, ' + currentUser.name;
@@ -7269,28 +6029,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             console.log('Staff Application Submitted:', formData);
         }
 
-        // Essential authentication functions that must be globally accessible
-        window.showAuthTab = function(tab) {
-            // Hide all auth tabs
-            document.querySelectorAll('.auth-tab-content').forEach(function(content) {
-                content.style.display = 'none';
-            });
-            
-            // Remove active class from all tab buttons
-            document.querySelectorAll('.auth-tab-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected tab
-            const targetTab = document.getElementById(tab + '-auth-tab');
-            if (targetTab) {
-                targetTab.style.display = 'block';
-            }
-            
-            // Add active class to selected button
-            event.target.classList.add('active');
-        }
-
         // Logout
         window.logout = function() {
             currentUser = null;
@@ -7302,35 +6040,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('email').value = 'max.bisinger@warubi-sports.com';
             document.getElementById('password').value = 'ITP2024';
             document.getElementById('loginMessage').innerHTML = '';
-        }
-
-        // Make showPage globally accessible for navigation
-        window.showPage = function(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(function(page) {
-                page.style.display = 'none';
-            });
-            
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.nav-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected page
-            document.getElementById(pageId).style.display = 'block';
-            
-            // Add active class to corresponding nav button
-            const navButton = document.querySelector('[onclick="showPage(\'' + pageId + '\')"]');
-            if (navButton) {
-                navButton.classList.add('active');
-            }
-            
-            // Initialize page-specific functionality
-            if (pageId === 'communications') {
-                setTimeout(function() {
-                    window.initializeChatSystem();
-                }, 100);
-            }
         }
 
         // Check for existing login on page load
@@ -7373,473 +6082,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         function createGroceryOrder() {
             alert('Grocery ordering system - Automated house-specific grocery orders with dietary requirements');
-        }
-
-        // WhatsApp-Style Chat System Implementation
-        let currentChat = null;
-        let chatData = {
-            chats: [],
-            messages: {},
-            contacts: [
-                { id: 'max-bisinger', name: 'Max Bisinger', role: 'Admin', avatar: 'MB' },
-                { id: 'thomas-ellinger', name: 'Thomas Ellinger', role: 'Staff', avatar: 'TE' },
-                { id: 'marco-silva', name: 'Marco Silva', role: 'Player', avatar: 'MS' },
-                { id: 'luis-garcia', name: 'Luis García', role: 'Player', avatar: 'LG' },
-                { id: 'ahmad-hassan', name: 'Ahmad Hassan', role: 'Player', avatar: 'AH' },
-                { id: 'jonas-weber', name: 'Jonas Weber', role: 'Player', avatar: 'JW' }
-            ]
-        };
-
-        window.initializeChatSystem = function() {
-            chatData.chats = [
-                {
-                    id: 'all-players',
-                    name: 'All Players',
-                    type: 'group',
-                    avatar: '👥',
-                    lastMessage: 'Training session moved to 4:00 PM',
-                    lastTime: '2 hours ago',
-                    unread: 2
-                },
-                {
-                    id: 'widdersdorf1',
-                    name: 'Widdersdorf 1',
-                    type: 'group',
-                    avatar: '🏠',
-                    lastMessage: 'Please complete weekly chores',
-                    lastTime: '1 day ago',
-                    unread: 0
-                },
-                {
-                    id: 'staff',
-                    name: 'Staff Team',
-                    type: 'group',
-                    avatar: '👨‍💼',
-                    lastMessage: 'Weekly meeting scheduled',
-                    lastTime: '3 days ago',
-                    unread: 1
-                }
-            ];
-
-            chatData.messages['all-players'] = [
-                {
-                    id: 1,
-                    sender: 'Max Bisinger',
-                    content: 'Training session moved to 4:00 PM today due to weather conditions.',
-                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                    type: 'text',
-                    isOwn: false
-                },
-                {
-                    id: 2,
-                    sender: 'You',
-                    content: 'Got it, thanks for the update!',
-                    timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000),
-                    type: 'text',
-                    isOwn: true,
-                    status: 'read'
-                }
-            ];
-
-            window.renderChatList();
-        }
-
-        window.renderChatList = function() {
-            const chatList = document.getElementById('chatList');
-            if (!chatList) return;
-
-            chatList.innerHTML = chatData.chats.map(chat => 
-                '<div class="chat-item" onclick="window.openChat(\'' + chat.id + '\')">' +
-                    '<div class="chat-item-avatar">' + chat.avatar + '</div>' +
-                    '<div class="chat-item-info">' +
-                        '<div class="chat-item-name">' + chat.name + '</div>' +
-                        '<div class="chat-item-preview">' + chat.lastMessage + '</div>' +
-                    '</div>' +
-                    '<div>' +
-                        '<div class="chat-item-time">' + chat.lastTime + '</div>' +
-                        (chat.unread > 0 ? '<div class="chat-item-unread">' + chat.unread + '</div>' : '') +
-                    '</div>' +
-                '</div>'
-            ).join('');
-        }
-
-        window.openChat = function(chatId) {
-            currentChat = chatId;
-            const chat = chatData.chats.find(c => c.id === chatId);
-            if (!chat) return;
-
-            const header = document.getElementById('chatMainHeader');
-            header.innerHTML = 
-                '<div class="chat-info">' +
-                    '<div class="chat-avatar">' + chat.avatar + '</div>' +
-                    '<div class="chat-details">' +
-                        '<h3>' + chat.name + '</h3>' +
-                        '<span>' + (chat.type === 'group' ? 'Group chat' : 'Online') + '</span>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="chat-actions">' +
-                    '<button onclick="window.toggleChatInfo()" title="Chat Info">ℹ️</button>' +
-                    '<button onclick="window.toggleAttachMenu()" title="Attach Files">📎</button>' +
-                '</div>';
-
-            document.getElementById('messageInput').disabled = false;
-            document.getElementById('sendBtn').disabled = false;
-            window.renderMessages(chatId);
-
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-            event.currentTarget?.classList.add('active');
-        }
-
-        window.renderMessages = function(chatId) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messages = chatData.messages[chatId] || [];
-
-            if (messages.length === 0) {
-                messagesContainer.innerHTML = 
-                    '<div class="empty-chat">' +
-                        '<div class="empty-chat-icon">💬</div>' +
-                        '<h3>Start the conversation</h3>' +
-                        '<p>Send your first message to begin chatting</p>' +
-                    '</div>';
-                return;
-            }
-
-            messagesContainer.innerHTML = messages.map(message => {
-                const timeStr = message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                if (message.type === 'attachment') {
-                    return '<div class="message-bubble ' + (message.isOwn ? 'sent' : 'received') + '">' +
-                            '<div class="message-content">' +
-                                '<div class="message-attachment">' +
-                                    '<div class="attachment-icon">' + (message.attachmentType === 'image' ? '🖼️' : '📄') + '</div>' +
-                                    '<div class="attachment-info">' +
-                                        '<div class="attachment-name">' + message.fileName + '</div>' +
-                                        '<div class="attachment-size">' + message.fileSize + '</div>' +
-                                    '</div>' +
-                                '</div>' +
-                            '</div>' +
-                            '<div class="message-info">' +
-                                '<span class="message-time">' + timeStr + '</span>' +
-                                (message.isOwn ? '<span class="message-status ' + message.status + '">✓✓</span>' : '') +
-                            '</div>' +
-                        '</div>';
-                }
-
-                return '<div class="message-bubble ' + (message.isOwn ? 'sent' : 'received') + '">' +
-                        '<div class="message-content">' + message.content + '</div>' +
-                        '<div class="message-info">' +
-                            '<span class="message-time">' + timeStr + '</span>' +
-                            (message.isOwn ? '<span class="message-status ' + message.status + '">✓✓</span>' : '') +
-                        '</div>' +
-                    '</div>';
-            }).join('');
-
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        window.sendMessage = function() {
-            if (!currentChat) return;
-
-            const messageInput = document.getElementById('messageInput');
-            const content = messageInput.value.trim();
-            if (!content) return;
-
-            const newMessage = {
-                id: Date.now(),
-                sender: 'You',
-                content: content,
-                timestamp: new Date(),
-                type: 'text',
-                isOwn: true,
-                status: 'sent'
-            };
-
-            if (!chatData.messages[currentChat]) {
-                chatData.messages[currentChat] = [];
-            }
-            chatData.messages[currentChat].push(newMessage);
-
-            const chat = chatData.chats.find(c => c.id === currentChat);
-            if (chat) {
-                chat.lastMessage = content;
-                chat.lastTime = 'now';
-            }
-
-            messageInput.value = '';
-            window.renderMessages(currentChat);
-            window.renderChatList();
-
-            setTimeout(() => {
-                newMessage.status = 'delivered';
-                window.renderMessages(currentChat);
-            }, 1000);
-
-            setTimeout(() => {
-                newMessage.status = 'read';
-                window.renderMessages(currentChat);
-            }, 3000);
-        }
-
-        window.handleMessageInput = function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                window.sendMessage();
-            }
-        }
-
-        window.openGroupChat = function(groupId) {
-            let chat = chatData.chats.find(c => c.id === groupId);
-            
-            if (!chat) {
-                const groupNames = {
-                    'all-players': { name: 'All Players', avatar: '👥' },
-                    'staff': { name: 'Staff Team', avatar: '👨‍💼' },
-                    'widdersdorf1': { name: 'Widdersdorf 1', avatar: '🏠' },
-                    'widdersdorf2': { name: 'Widdersdorf 2', avatar: '🏠' },
-                    'widdersdorf3': { name: 'Widdersdorf 3', avatar: '🏠' }
-                };
-
-                chat = {
-                    id: groupId,
-                    name: groupNames[groupId]?.name || groupId,
-                    type: 'group',
-                    avatar: groupNames[groupId]?.avatar || '👥',
-                    lastMessage: 'Group created',
-                    lastTime: 'now',
-                    unread: 0
-                };
-
-                chatData.chats.unshift(chat);
-                window.renderChatList();
-            }
-
-            window.openChat(groupId);
-        }
-
-        window.showNewChatModal = function() {
-            document.getElementById('newChatModal').style.display = 'flex';
-            window.renderContacts();
-        }
-
-        window.closeNewChatModal = function() {
-            document.getElementById('newChatModal').style.display = 'none';
-        }
-
-        window.showNewChatTab = function(type) {
-            document.querySelectorAll('.new-chat-tabs .tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-
-            document.getElementById('individualChatContent').style.display = type === 'individual' ? 'block' : 'none';
-            document.getElementById('groupChatContent').style.display = type === 'group' ? 'block' : 'none';
-
-            if (type === 'group') {
-                window.renderMemberSelection();
-            }
-        }
-
-        window.renderContacts = function() {
-            const contactList = document.getElementById('contactList');
-            contactList.innerHTML = chatData.contacts.map(contact => 
-                '<div class="contact-item" onclick="window.startDirectChat(\'' + contact.id + '\')">' +
-                    '<div class="contact-avatar">' + contact.avatar + '</div>' +
-                    '<div class="contact-info">' +
-                        '<div class="contact-name">' + contact.name + '</div>' +
-                        '<div class="contact-role">' + contact.role + '</div>' +
-                    '</div>' +
-                '</div>'
-            ).join('');
-        }
-
-        window.startDirectChat = function(contactId) {
-            const contact = chatData.contacts.find(c => c.id === contactId);
-            if (!contact) return;
-
-            let chat = chatData.chats.find(c => c.id === contactId);
-            
-            if (!chat) {
-                chat = {
-                    id: contactId,
-                    name: contact.name,
-                    type: 'direct',
-                    avatar: contact.avatar,
-                    lastMessage: 'Start a conversation',
-                    lastTime: 'now',
-                    unread: 0
-                };
-
-                chatData.chats.unshift(chat);
-                window.renderChatList();
-            }
-
-            window.closeNewChatModal();
-            window.openChat(contactId);
-        }
-
-        window.filterChats = function() {
-            const searchTerm = document.getElementById('chatSearch').value.toLowerCase();
-            const chatItems = document.querySelectorAll('.chat-item');
-            
-            chatItems.forEach(item => {
-                const name = item.querySelector('.chat-item-name').textContent.toLowerCase();
-                const preview = item.querySelector('.chat-item-preview').textContent.toLowerCase();
-                const matches = name.includes(searchTerm) || preview.includes(searchTerm);
-                item.style.display = matches ? 'flex' : 'none';
-            });
-        }
-
-        window.filterContacts = function() {
-            const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
-            const contactItems = document.querySelectorAll('.contact-item');
-            
-            contactItems.forEach(item => {
-                const name = item.querySelector('.contact-name').textContent.toLowerCase();
-                const role = item.querySelector('.contact-role').textContent.toLowerCase();
-                const matches = name.includes(searchTerm) || role.includes(searchTerm);
-                item.style.display = matches ? 'flex' : 'none';
-            });
-        }
-
-        window.toggleAttachMenu = function() {
-            const menu = document.getElementById('attachMenu');
-            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-        }
-
-        window.attachImage = function() {
-            window.toggleAttachMenu();
-            const fileName = 'training_photo.jpg';
-            const fileSize = '2.3 MB';
-            window.addAttachmentMessage('image', fileName, fileSize);
-        }
-
-        window.attachDocument = function() {
-            window.toggleAttachMenu();
-            const fileName = 'training_schedule.pdf';
-            const fileSize = '156 KB';
-            window.addAttachmentMessage('document', fileName, fileSize);
-        }
-
-        window.attachLink = function() {
-            window.toggleAttachMenu();
-            const url = prompt('Enter URL:');
-            if (url) {
-                window.sendMessage(url);
-            }
-        }
-
-        window.addAttachmentMessage = function(type, fileName, fileSize) {
-            if (!currentChat) return;
-
-            const newMessage = {
-                id: Date.now(),
-                sender: 'You',
-                type: 'attachment',
-                attachmentType: type,
-                fileName: fileName,
-                fileSize: fileSize,
-                timestamp: new Date(),
-                isOwn: true,
-                status: 'sent'
-            };
-
-            if (!chatData.messages[currentChat]) {
-                chatData.messages[currentChat] = [];
-            }
-            chatData.messages[currentChat].push(newMessage);
-
-            const chat = chatData.chats.find(c => c.id === currentChat);
-            if (chat) {
-                chat.lastMessage = '📎 ' + fileName;
-                chat.lastTime = 'now';
-            }
-
-            window.renderMessages(currentChat);
-            window.renderChatList();
-        }
-
-        window.renderMemberSelection = function() {
-            const memberSelection = document.getElementById('memberSelection');
-            memberSelection.innerHTML = chatData.contacts.map(contact => 
-                '<label>' +
-                    '<input type="checkbox" value="' + contact.id + '">' +
-                    contact.name + ' (' + contact.role + ')' +
-                '</label>'
-            ).join('');
-        }
-
-        window.createGroupChat = function() {
-            const groupName = document.getElementById('groupName').value.trim();
-            const selectedMembers = Array.from(document.querySelectorAll('#memberSelection input:checked'))
-                .map(input => input.value);
-
-            if (!groupName || selectedMembers.length === 0) {
-                alert('Please enter a group name and select at least one member.');
-                return;
-            }
-
-            const groupId = 'group-' + Date.now();
-            const newGroup = {
-                id: groupId,
-                name: groupName,
-                type: 'group',
-                avatar: '👥',
-                lastMessage: 'Group created',
-                lastTime: 'now',
-                unread: 0,
-                members: selectedMembers
-            };
-
-            chatData.chats.unshift(newGroup);
-            window.renderChatList();
-            window.closeNewChatModal();
-            window.openChat(groupId);
-        }
-
-        window.toggleChatInfo = function() {
-            alert('Chat info panel would open here');
-        }
-
-        window.toggleEmojiPicker = function() {
-            const messageInput = document.getElementById('messageInput');
-            const emojis = ['😊', '😂', '❤️', '👍', '🔥', '💯', '😎', '🚀', '⚽', '🏆'];
-            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            messageInput.value += emoji;
-            messageInput.focus();
-        }
-
-        // Manual login function for onclick handlers
-        window.performLogin = function() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('loginMessage');
-            
-            if (messageDiv) messageDiv.innerHTML = '';
-            
-            if (password === 'ITP2024') {
-                let userData = null;
-                
-                if (email === 'max.bisinger@warubi-sports.com') {
-                    userData = { name: 'Max Bisinger', email: email, role: 'admin' };
-                } else if (email === 'thomas.ellinger@warubi-sports.com') {
-                    userData = { name: 'Thomas Ellinger', email: email, role: 'staff' };
-                } else {
-                    if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Email not recognized. Please try again.</div>';
-                    return;
-                }
-                
-                currentUser = userData;
-                localStorage.setItem('fc-koln-auth', JSON.stringify({
-                    token: userData.role + '_' + Date.now(),
-                    user: userData,
-                    loginTime: new Date().toISOString()
-                }));
-                
-                showMainApp();
-                
-            } else {
-                if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Invalid password. Please try again.</div>';
-            }
         }
 
         function submitMealRequest() {
@@ -7927,13 +6169,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
 
             console.log('Enhanced features initialized successfully');
-            
-            // Initialize chat system when communications page is shown
-            setTimeout(function() {
-                if (document.getElementById('chatList')) {
-                    window.initializeChatSystem();
-                }
-            }, 1000);
         }
 
         // Start enhanced features when system loads
@@ -8741,7 +6976,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             updateOrderTotal();
         }
 
-        function clearPersonalSelection() {
+        function clearSelection() {
             const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = false;
@@ -8749,98 +6984,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             updateOrderTotal();
         }
 
-        // Deadline checking function
-        function checkOrderDeadline() {
-            const now = new Date();
-            const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-            const currentHour = now.getHours();
-            
-            // Check if we're in a valid ordering window
-            // Sunday (0): Can order for Tuesday and Friday
-            // Monday before midnight: Can order for Tuesday and Friday
-            // Monday after midnight (1, hour >= 0): Can't order for Tuesday, can order for Friday
-            // Tuesday (2): Can't order for Tuesday, can order for Friday
-            // Wednesday (3): Can't order for Tuesday, can order for Friday
-            // Thursday before midnight: Can't order for Tuesday, can order for Friday
-            // Thursday after midnight (4, hour >= 0): Can't order for Tuesday or Friday
-            // Friday (5): Can't order for Tuesday or Friday
-            // Saturday (6): Can't order for Tuesday or Friday
-            
-            // If it's Thursday midnight or later, or Friday/Saturday, no orders allowed
-            if ((currentDay === 4 && currentHour >= 0) || currentDay >= 5) {
-                return false;
-            }
-            
-            // Otherwise, at least Friday orders are available
-            return true;
-        }
-
-        // Get next available delivery date
-        function getNextDeliveryDate() {
-            const now = new Date();
-            const currentDay = now.getDay();
-            const currentHour = now.getHours();
-            
-            // If it's Sunday or Monday before midnight, Tuesday is available
-            if (currentDay === 0 || (currentDay === 1 && currentHour < 0)) {
-                const tuesday = new Date(now);
-                tuesday.setDate(now.getDate() + (2 - currentDay));
-                return tuesday.toLocaleDateString('en-GB');
-            }
-            // If it's Monday after midnight through Thursday before midnight, Friday is available
-            else if (currentDay <= 3 || (currentDay === 4 && currentHour < 0)) {
-                const friday = new Date(now);
-                const daysToFriday = currentDay <= 5 ? (5 - currentDay) : (7 + 5 - currentDay);
-                friday.setDate(now.getDate() + daysToFriday);
-                return friday.toLocaleDateString('en-GB');
-            }
-            // If it's Thursday after midnight or later, next Tuesday
-            else {
-                const nextTuesday = new Date(now);
-                const daysToTuesday = currentDay <= 2 ? (2 - currentDay) : (7 + 2 - currentDay);
-                nextTuesday.setDate(now.getDate() + daysToTuesday);
-                return nextTuesday.toLocaleDateString('en-GB');
-            }
-        }
-
-        // Update personal order history
-        function updatePersonalOrderHistory() {
-            if (!currentUser) return;
-            
-            const personalOrders = JSON.parse(localStorage.getItem('personalOrders-' + currentUser.email) || '[]');
-            const historyContainer = document.getElementById('personalOrderHistory');
-            const noOrdersMessage = document.getElementById('noOrdersMessage');
-            
-            if (personalOrders.length === 0) {
-                noOrdersMessage.style.display = 'block';
-                return;
-            }
-            
-            noOrdersMessage.style.display = 'none';
-            
-            // Clear existing orders except the no orders message
-            const existingOrders = historyContainer.querySelectorAll('.order-card:not(#noOrdersMessage)');
-            existingOrders.forEach(order => order.remove());
-            
-            // Add recent orders
-            personalOrders.slice(-3).reverse().forEach(order => {
-                const orderCard = document.createElement('div');
-                orderCard.className = 'order-card ' + (order.status === 'delivered' ? 'confirmed' : 'pending');
-                orderCard.innerHTML = '<div class="order-header">' +
-                    '<h4>Personal Order - ' + order.deliveryDate + '</h4>' +
-                    '<span class="status-badge ' + order.status + '">' + order.status.charAt(0).toUpperCase() + order.status.slice(1) + '</span>' +
-                    '</div>' +
-                    '<div class="order-details">' +
-                    '<p>Items: ' + order.items.length + ' • Total: €' + order.total.toFixed(2) + '</p>' +
-                    '<p>Ordered: ' + new Date(order.timestamp).toLocaleDateString('en-GB') + '</p>' +
-                    '</div>';
-                historyContainer.appendChild(orderCard);
-            });
-        }
-
         function updateOrderTotal() {
             let total = 0;
-            let itemCount = 0;
             const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
             
             checkedItems.forEach(checkbox => {
@@ -8849,59 +6994,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 const qtyElement = checkbox.closest('.grocery-item').querySelector('.qty');
                 const qty = parseInt(qtyElement.textContent.replace('x', '')) || 1;
                 total += price * qty;
-                itemCount++;
             });
 
-            // Update personal order total display
-            const personalOrderTotal = document.getElementById('personalOrderTotal');
-            if (personalOrderTotal) {
-                personalOrderTotal.textContent = '€' + total.toFixed(2);
+            // Update the submit button
+            const submitButton = document.querySelector('button[onclick="submitGroceryOrder()"]');
+            if (submitButton) {
+                submitButton.textContent = 'Submit Order (€' + total.toFixed(2) + ')';
             }
 
-            // Update items count
-            const itemsCount = document.getElementById('itemsCount');
-            if (itemsCount) {
-                itemsCount.textContent = itemCount;
+            // Update the budget display
+            const budgetAmountElement = document.querySelector('.budget-amount.large');
+            if (budgetAmountElement) {
+                budgetAmountElement.textContent = '€' + total.toFixed(2);
             }
 
-            // Update remaining budget
-            const personalBudgetRemaining = document.getElementById('personalBudgetRemaining');
-            if (personalBudgetRemaining) {
-                const remaining = 35.00 - total;
-                personalBudgetRemaining.textContent = '€' + remaining.toFixed(2) + ' remaining';
+            const budgetRemaining = document.querySelector('.budget-remaining');
+            if (budgetRemaining) {
+                const remaining = 210.00 - total;
+                budgetRemaining.textContent = '€' + remaining.toFixed(2) + ' remaining';
                 
                 if (remaining < 0) {
-                    personalBudgetRemaining.style.color = '#dc2626';
-                } else if (remaining < 10) {
-                    personalBudgetRemaining.style.color = '#f59e0b';
+                    budgetRemaining.style.color = '#dc2626';
+                    budgetRemaining.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2);
                 } else {
-                    personalBudgetRemaining.style.color = '#059669';
-                }
-            }
-
-            // Update submit button
-            const submitButton = document.getElementById('submitPersonalOrder');
-            if (submitButton) {
-                submitButton.textContent = 'Submit Personal Order (€' + total.toFixed(2) + ')';
-                
-                // Enable/disable button based on total and deadline
-                const withinBudget = total <= 35.00 && total > 0;
-                const withinDeadline = checkOrderDeadline();
-                submitButton.disabled = !withinBudget || !withinDeadline;
-                
-                if (total > 35.00) {
-                    submitButton.textContent = 'Over Budget - €' + total.toFixed(2);
-                    submitButton.style.backgroundColor = '#dc2626';
-                } else if (!withinDeadline) {
-                    submitButton.textContent = 'Deadline Passed';
-                    submitButton.style.backgroundColor = '#6b7280';
-                } else {
-                    submitButton.style.backgroundColor = '';
+                    budgetRemaining.style.color = '#059669';
                 }
             }
         }
 
-        function submitPersonalGroceryOrder() {
+        function submitGroceryOrder() {
             const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
             
             if (checkedItems.length === 0) {
@@ -8909,27 +7030,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 return;
             }
 
-            // Check if within budget
-            let total = 0;
-            checkedItems.forEach(checkbox => {
-                const itemRow = checkbox.closest('.grocery-item');
-                const price = parseFloat(itemRow.querySelector('.item-price').textContent.replace('€', ''));
-                const qty = parseInt(itemRow.querySelector('.qty').textContent.replace('x', '')) || 1;
-                total += price * qty;
-            });
-
-            if (total > 35.00) {
-                alert('Order exceeds your €35.00 budget limit. Please remove some items.');
-                return;
-            }
-
-            // Check deadline
-            if (!checkOrderDeadline()) {
-                alert('Order deadline has passed. Please place your order for the next available delivery slot.');
-                return;
-            }
-
             const orderItems = [];
+            let total = 0;
+
             checkedItems.forEach(checkbox => {
                 const itemRow = checkbox.closest('.grocery-item');
                 const itemName = itemRow.querySelector('.item-name').textContent;
@@ -8942,201 +7045,18 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     quantity: qty,
                     total: price * qty
                 });
+                
+                total += price * qty;
             });
 
-            // Store personal order
-            const personalOrder = {
-                items: orderItems,
-                total: total,
-                timestamp: new Date().toISOString(),
-                deliveryDate: getNextDeliveryDate(),
-                status: 'submitted'
-            };
-
-            // Save to localStorage (in real app, this would be saved to database)
-            let personalOrders = JSON.parse(localStorage.getItem('personalOrders-' + currentUser.email) || '[]');
-            personalOrders.push(personalOrder);
-            localStorage.setItem('personalOrders-' + currentUser.email, JSON.stringify(personalOrders));
-
-            // Update order status
-            document.getElementById('orderStatus').textContent = 'Submitted';
-            document.getElementById('orderStatus').className = 'status-badge submitted';
-
-            alert('Personal grocery order submitted successfully!\\n\\nItems: ' + orderItems.length + '\\nTotal: €' + total.toFixed(2) + '\\n\\nDelivery: ' + personalOrder.deliveryDate);
+            // Simulate order submission
+            alert('Grocery order submitted successfully!\\n\\nItems: ' + orderItems.length + '\\nTotal: €' + total.toFixed(2) + '\\n\\nYour order will be processed for the next available delivery slot.');
             
-            // Clear selections and update history
-            clearPersonalSelection();
-            updatePersonalOrderHistory();
+            // Clear selections after successful submission
+            clearSelection();
         }
 
-        // House assignment data (in real app, this would come from database)
-        const playerHouseAssignments = {
-            'max.bisinger@warubi-sports.com': 'widdersdorf1',
-            'thomas.ellinger@warubi-sports.com': 'widdersdorf1',
-            'marco.schmidt@fckoeln.com': 'widdersdorf2',
-            // Add more player-house assignments as needed
-        };
-
-        // Admin house summary functions
-        function showHouseSummary(houseFilter) {
-            if (!currentUser || currentUser.role !== 'admin') return;
-            
-            // Update active tab
-            document.querySelectorAll('.house-summary-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-            if (window.event && window.event.target) {
-                window.event.target.classList.add('active');
-            } else {
-                // Default to first tab if no event
-                const firstTab = document.querySelector('.house-summary-tabs .tab-btn');
-                if (firstTab) firstTab.classList.add('active');
-            }
-            
-            const summaryContent = document.getElementById('houseSummaryContent');
-            const allOrders = getAllPlayerOrders();
-            
-            if (houseFilter === 'all') {
-                displayAllHousesSummary(summaryContent, allOrders);
-            } else {
-                displaySingleHouseSummary(summaryContent, allOrders, houseFilter);
-            }
-        }
-
-        function getAllPlayerOrders() {
-            const allOrders = {};
-            
-            // Get orders for all players
-            Object.keys(playerHouseAssignments).forEach(playerEmail => {
-                const playerOrders = JSON.parse(localStorage.getItem('personalOrders-' + playerEmail) || '[]');
-                if (playerOrders.length > 0) {
-                    allOrders[playerEmail] = {
-                        orders: playerOrders,
-                        house: playerHouseAssignments[playerEmail],
-                        name: getPlayerName(playerEmail)
-                    };
-                }
-            });
-            
-            return allOrders;
-        }
-
-        function getPlayerName(email) {
-            if (email === 'max.bisinger@warubi-sports.com') return 'Max Bisinger';
-            if (email === 'thomas.ellinger@warubi-sports.com') return 'Thomas Ellinger';
-            if (email === 'marco.schmidt@fckoeln.com') return 'Marco Schmidt';
-            return email.split('@')[0].replace('.', ' ');
-        }
-
-        function displayAllHousesSummary(container, allOrders) {
-            const houses = ['widdersdorf1', 'widdersdorf2', 'widdersdorf3'];
-            let summaryHtml = '';
-            
-            houses.forEach(house => {
-                const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
-                const houseName = house === 'widdersdorf1' ? 'Widdersdorf 1' : 
-                                 house === 'widdersdorf2' ? 'Widdersdorf 2' : 
-                                 house === 'widdersdorf3' ? 'Widdersdorf 3' : house;
-                
-                summaryHtml += '<div class="house-summary-card">' +
-                    '<h4>🏠 ' + houseName + '</h4>' +
-                    '<div class="house-players">';
-                
-                if (houseOrders.length === 0) {
-                    summaryHtml += '<p class="no-orders">No active orders</p>';
-                } else {
-                    let houseTotalItems = 0;
-                    let houseTotalCost = 0;
-                    
-                    houseOrders.forEach(([email, playerData]) => {
-                        const latestOrder = playerData.orders[playerData.orders.length - 1];
-                        if (latestOrder && latestOrder.status === 'submitted') {
-                            houseTotalItems += latestOrder.items.length;
-                            houseTotalCost += latestOrder.total;
-                            
-                            summaryHtml += '<div class="player-order-summary">' +
-                                '<div class="player-info">' +
-                                '<strong>' + playerData.name + '</strong>' +
-                                '<span class="order-details">' + latestOrder.items.length + ' items • €' + latestOrder.total.toFixed(2) + '</span>' +
-                                '</div>' +
-                                '<div class="order-items">' +
-                                latestOrder.items.map(item => '<span class="item-tag">' + item.quantity + 'x ' + item.name + '</span>').join('') +
-                                '</div>' +
-                                '</div>';
-                        }
-                    });
-                    
-                    summaryHtml += '<div class="house-total">' +
-                        '<strong>House Total: ' + houseTotalItems + ' items • €' + houseTotalCost.toFixed(2) + '</strong>' +
-                        '</div>';
-                }
-                
-                summaryHtml += '</div>' +
-                    '</div>';
-            });
-            
-            container.innerHTML = summaryHtml;
-        }
-
-        function displaySingleHouseSummary(container, allOrders, house) {
-            const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
-            const houseName = house === 'widdersdorf1' ? 'Widdersdorf 1' : 
-                              house === 'widdersdorf2' ? 'Widdersdorf 2' : 
-                              house === 'widdersdorf3' ? 'Widdersdorf 3' : house;
-            
-            let summaryHtml = '<div class="single-house-summary"><h4>🏠 ' + houseName + ' - Detailed Orders</h4>';
-            
-            if (houseOrders.length === 0) {
-                summaryHtml += '<p class="no-orders">No active orders for this house</p>';
-            } else {
-                const consolidatedItems = {};
-                let totalCost = 0;
-                
-                houseOrders.forEach(([email, playerData]) => {
-                    const latestOrder = playerData.orders[playerData.orders.length - 1];
-                    if (latestOrder && latestOrder.status === 'submitted') {
-                        totalCost += latestOrder.total;
-                        
-                        summaryHtml += '<div class="detailed-player-order">' +
-                            '<h5>' + playerData.name + '</h5>' +
-                            '<div class="player-items-detail">';
-                        
-                        latestOrder.items.forEach(item => {
-                            summaryHtml += '<div class="item-detail">' + item.quantity + 'x ' + item.name + ' - €' + item.total.toFixed(2) + '</div>';
-                            
-                            // Consolidate items for house total
-                            if (consolidatedItems[item.name]) {
-                                consolidatedItems[item.name] += item.quantity;
-                            } else {
-                                consolidatedItems[item.name] = item.quantity;
-                            }
-                        });
-                        
-                        summaryHtml += '<div class="player-total">Player Total: €' + latestOrder.total.toFixed(2) + '</div>' +
-                                '</div>' +
-                            '</div>';
-                    }
-                });
-                
-                // Add consolidated shopping list
-                summaryHtml += '<div class="consolidated-list">' +
-                    '<h5>📋 Consolidated Shopping List</h5>' +
-                    '<div class="consolidated-items">';
-                
-                Object.entries(consolidatedItems).forEach(([itemName, quantity]) => {
-                    summaryHtml += '<div class="consolidated-item">' + quantity + 'x ' + itemName + '</div>';
-                });
-                
-                summaryHtml += '</div>' +
-                        '<div class="house-grand-total">' +
-                            '<strong>House Grand Total: €' + totalCost.toFixed(2) + '</strong>' +
-                        '</div>' +
-                    '</div>';
-            }
-            
-            summaryHtml += '</div>';
-            container.innerHTML = summaryHtml;
-        }
-
-        // Initialize personal ordering functionality on page load
+        // Initialize grocery functionality on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners to checkboxes when they exist
             setTimeout(() => {
@@ -9145,26 +7065,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     checkbox.addEventListener('change', updateOrderTotal);
                 });
                 
-                // Initialize the order total and history
+                // Initialize the order total
                 updateOrderTotal();
-                updatePersonalOrderHistory();
-                
-                // Check and display deadline status
-                if (!checkOrderDeadline()) {
-                    const deadlineAlert = document.getElementById('deadlineAlert');
-                    if (deadlineAlert) {
-                        deadlineAlert.style.display = 'block';
-                    }
-                }
-                
-                // Initialize admin house summary if admin user
-                if (currentUser && currentUser.role === 'admin') {
-                    const adminSummary = document.querySelector('.admin-only');
-                    if (adminSummary) {
-                        adminSummary.style.display = 'block';
-                        showHouseSummary('all');
-                    }
-                }
             }, 500);
         });
 
