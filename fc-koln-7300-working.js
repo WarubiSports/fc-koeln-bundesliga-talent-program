@@ -3203,6 +3203,128 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #374151;
         }
 
+        /* Individual Food Order Styles */
+        .budget-card.individual {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #dc2626;
+        }
+
+        .budget-warning {
+            color: #dc2626;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #fef2f2;
+            border-radius: 4px;
+        }
+
+        .validation-message {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .validation-message.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .validation-message.warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .validation-message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .order-preview {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #dc2626;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .order-history {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-history-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #22c55e;
+        }
+
+        .order-history-item.delivered {
+            border-left-color: #22c55e;
+        }
+
+        .order-date {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .order-total {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #dc2626;
+        }
+
+        .order-status {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .order-items {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .deadline-status {
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: #f0fdf4;
+            color: #166534;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .btn.disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -4354,8 +4476,22 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Food Orders Page -->
             <div id="food-orders" class="page">
-                <h1>🛒 House Grocery Management</h1>
+                <h1>🛒 Individual Food Orders</h1>
                 
+                <!-- Personal Budget & Status -->
+                <div class="form-section">
+                    <h3>💰 Your Personal Budget</h3>
+                    <div class="budget-overview">
+                        <div class="budget-card individual">
+                            <h4 id="playerNameBudget">Max Bisinger - Personal Order</h4>
+                            <div class="budget-amount large" id="currentOrderTotal">€23.45</div>
+                            <div class="budget-limit">Maximum Budget: €35.00</div>
+                            <div class="budget-remaining" id="budgetRemaining">€11.55 remaining</div>
+                            <div class="budget-warning" id="budgetWarning" style="display: none;">⚠️ Approaching budget limit!</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Delivery Schedule & Deadlines -->
                 <div class="form-section">
                     <h3>📅 Delivery Schedule & Order Deadlines</h3>
@@ -4363,60 +4499,50 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <div class="delivery-card tuesday">
                             <h4>Tuesday Delivery</h4>
                             <div class="deadline-info">
-                                <strong>Order Deadline: Monday 8:00 AM</strong>
+                                <strong>Order Deadline: Monday 12:00 AM</strong>
                                 <p>Delivery arrives between 6-8 PM</p>
                             </div>
                             <div class="next-delivery">
-                                <span>Next Order Due: Monday, July 29</span>
+                                <span id="tuesdayDeadline">Next Order Due: Monday, July 29 - 12:00 AM</span>
                             </div>
+                            <div class="deadline-status" id="tuesdayStatus">⏰ 2 days, 14 hours remaining</div>
                         </div>
                         <div class="delivery-card friday">
                             <h4>Friday Delivery</h4>
                             <div class="deadline-info">
-                                <strong>Order Deadline: Thursday 8:00 AM</strong>
+                                <strong>Order Deadline: Thursday 12:00 AM</strong>
                                 <p>Delivery arrives between 6-8 PM</p>
                             </div>
                             <div class="next-delivery">
-                                <span>Next Order Due: Thursday, August 1</span>
+                                <span id="fridayDeadline">Next Order Due: Thursday, August 1 - 12:00 AM</span>
                             </div>
+                            <div class="deadline-status" id="fridayStatus">⏰ 5 days, 14 hours remaining</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Current Budget Overview -->
+                <!-- Order History (Personal) -->
                 <div class="form-section">
-                    <h3>💰 Budget Overview</h3>
-                    <div class="budget-overview">
-                        <div class="budget-card">
-                            <h4>Total Current Cart</h4>
-                            <div class="budget-amount large">€168.16</div>
-                            <div class="budget-limit">Budget: €210.00</div>
-                            <div class="budget-remaining">€41.84 remaining</div>
+                    <h3>📋 Your Recent Orders</h3>
+                    <div class="order-history">
+                        <div class="order-history-item delivered">
+                            <div class="order-date">July 23, 2025 - Tuesday Delivery</div>
+                            <div class="order-total">€31.20</div>
+                            <div class="order-status">✅ Delivered</div>
+                            <div class="order-items">8 items: Chicken, Rice, Vegetables, Yogurt...</div>
                         </div>
-                        <div class="budget-breakdown">
-                            <div class="category-budget">
-                                <span>Vegetables & Fruits</span>
-                                <span>€21.45</span>
-                            </div>
-                            <div class="category-budget">
-                                <span>Meat & Protein</span>
-                                <span>€35.92</span>
-                            </div>
-                            <div class="category-budget">
-                                <span>Dairy Products</span>
-                                <span>€19.83</span>
-                            </div>
-                            <div class="category-budget">
-                                <span>Household Items</span>
-                                <span>€28.15</span>
-                            </div>
+                        <div class="order-history-item delivered">
+                            <div class="order-date">July 19, 2025 - Friday Delivery</div>
+                            <div class="order-total">€28.95</div>
+                            <div class="order-status">✅ Delivered</div>
+                            <div class="order-items">6 items: Fish, Pasta, Fruits, Milk...</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Grocery Shopping -->
+                <!-- Individual Grocery Shopping -->
                 <div class="form-section">
-                    <h3>🛍️ Grocery Shopping List</h3>
+                    <h3>🛍️ Build Your Personal Order</h3>
                     <div class="grocery-categories">
                         <!-- Household Items -->
                         <div class="category-section">
@@ -4718,35 +4844,46 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                     
                     <div class="order-actions">
-                        <button class="btn btn-secondary" onclick="selectAllItems()">Select All</button>
                         <button class="btn btn-secondary" onclick="clearSelection()">Clear All</button>
-                        <button class="btn btn-primary" onclick="submitGroceryOrder()">Submit Order (€168.16)</button>
+                        <button class="btn btn-primary" id="submitOrderBtn" onclick="submitIndividualOrder()">Submit Personal Order (<span id="orderTotalBtn">€23.45</span>)</button>
+                        <div class="budget-validation" id="budgetValidation">
+                            <div class="validation-message success" id="budgetOk" style="display: block;">✅ Within budget limit</div>
+                            <div class="validation-message warning" id="budgetWarning" style="display: none;">⚠️ Approaching €35 limit</div>
+                            <div class="validation-message error" id="budgetExceeded" style="display: none;">❌ Exceeds €35 budget limit</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Active Orders Status -->
+                <!-- Current Order Preview -->
                 <div class="form-section">
-                    <h3>📦 Current Orders & Deliveries</h3>
-                    <div class="order-status">
-                        <div class="order-card pending">
-                            <div class="order-header">
-                                <h4>Tuesday Delivery - July 30</h4>
-                                <span class="status-badge pending">Order Submitted</span>
-                            </div>
-                            <div class="order-details">
-                                <p>Houses: W1, W2, W3 • Total: €168.16</p>
-                                <p>Estimated delivery: 6:00-8:00 PM</p>
-                            </div>
+                    <h3>📋 Your Current Order</h3>
+                    <div class="order-preview" id="orderPreview">
+                        <div class="order-item">
+                            <span>Power System High Protein (4x)</span>
+                            <span>€4.36</span>
                         </div>
-                        <div class="order-card confirmed">
-                            <div class="order-header">
-                                <h4>Friday Delivery - July 26</h4>
-                                <span class="status-badge confirmed">Delivered</span>
-                            </div>
-                            <div class="order-details">
-                                <p>Houses: W1, W2, Frechen • Total: €392.45</p>
-                                <p>Delivered: 7:15 PM</p>
-                            </div>
+                        <div class="order-item">
+                            <span>Ground Beef (2x)</span>
+                            <span>€6.98</span>
+                        </div>
+                        <div class="order-item">
+                            <span>Avocados (3x)</span>
+                            <span>€4.77</span>
+                        </div>
+                        <div class="order-item">
+                            <span>Rice (1x)</span>
+                            <span>€2.99</span>
+                        </div>
+                        <div class="order-item">
+                            <span>Bananas (5x)</span>
+                            <span>€2.00</span>
+                        </div>
+                        <div class="order-item">
+                            <span>Greek Vanilla Yogurt (2x)</span>
+                            <span>€2.35</span>
+                        </div>
+                        <div class="order-total">
+                            <strong>Total: €23.45 / €35.00</strong>
                         </div>
                     </div>
                 </div>
@@ -7172,23 +7309,187 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
 
             // Simulate order submission
-            alert('Grocery order submitted successfully!\\n\\nItems: ' + orderItems.length + '\\nTotal: €' + total.toFixed(2) + '\\n\\nYour order will be processed for the next available delivery slot.');
+            // Individual Player Order System with €35 Budget Limit
+            let currentPlayerOrder = {
+                items: [],
+                total: 0,
+                maxBudget: 35.00,
+                playerName: 'Max Bisinger'
+            };
+
+            function updateOrderTotal() {
+                const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
+                currentPlayerOrder.items = [];
+                currentPlayerOrder.total = 0;
+                
+                checkboxes.forEach(function(checkbox) {
+                    const item = checkbox.closest('.grocery-item');
+                    const name = item.querySelector('.item-name').textContent;
+                    const priceText = item.querySelector('.item-price').textContent;
+                    const price = parseFloat(priceText.replace('€', ''));
+                    const qtyText = item.querySelector('.qty').textContent;
+                    const qty = parseInt(qtyText.replace('x', ''));
+                    const itemTotal = price * qty;
+                    
+                    currentPlayerOrder.items.push({
+                        name: name,
+                        price: price,
+                        quantity: qty,
+                        total: itemTotal
+                    });
+                    
+                    currentPlayerOrder.total += itemTotal;
+                });
+                
+                // Update display elements
+                const totalElement = document.getElementById('currentOrderTotal');
+                const remainingElement = document.getElementById('budgetRemaining');
+                const warningElement = document.getElementById('budgetWarning');
+                const orderTotalBtn = document.getElementById('orderTotalBtn');
+                const submitBtn = document.getElementById('submitOrderBtn');
+                
+                if (totalElement) totalElement.textContent = '€' + currentPlayerOrder.total.toFixed(2);
+                if (orderTotalBtn) orderTotalBtn.textContent = '€' + currentPlayerOrder.total.toFixed(2);
+                
+                const remaining = currentPlayerOrder.maxBudget - currentPlayerOrder.total;
+                if (remainingElement) remainingElement.textContent = '€' + remaining.toFixed(2) + ' remaining';
+                
+                // Budget validation
+                if (currentPlayerOrder.total > currentPlayerOrder.maxBudget) {
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('disabled');
+                        submitBtn.innerHTML = 'Exceeds Budget Limit (€' + currentPlayerOrder.total.toFixed(2) + ')';
+                    }
+                    showBudgetValidation('error');
+                } else if (currentPlayerOrder.total > currentPlayerOrder.maxBudget * 0.8) {
+                    if (warningElement) warningElement.style.display = 'block';
+                    showBudgetValidation('warning');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('disabled');
+                        submitBtn.innerHTML = 'Submit Personal Order (€' + currentPlayerOrder.total.toFixed(2) + ')';
+                    }
+                } else {
+                    if (warningElement) warningElement.style.display = 'none';
+                    showBudgetValidation('success');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('disabled');
+                        submitBtn.innerHTML = 'Submit Personal Order (€' + currentPlayerOrder.total.toFixed(2) + ')';
+                    }
+                }
+                
+                updateOrderPreview();
+            }
+
+            function showBudgetValidation(type) {
+                const okMsg = document.getElementById('budgetOk');
+                const warningMsg = document.getElementById('budgetWarning');
+                const errorMsg = document.getElementById('budgetExceeded');
+                
+                if (okMsg) okMsg.style.display = type === 'success' ? 'block' : 'none';
+                if (warningMsg) warningMsg.style.display = type === 'warning' ? 'block' : 'none';
+                if (errorMsg) errorMsg.style.display = type === 'error' ? 'block' : 'none';
+            }
+
+            function updateOrderPreview() {
+                const previewElement = document.getElementById('orderPreview');
+                if (!previewElement) return;
+                
+                let previewHTML = '';
+                currentPlayerOrder.items.forEach(function(item) {
+                    previewHTML += '<div class="order-item">';
+                    previewHTML += '<span>' + item.name + ' (' + item.quantity + 'x)</span>';
+                    previewHTML += '<span>€' + item.total.toFixed(2) + '</span>';
+                    previewHTML += '</div>';
+                });
+                
+                previewHTML += '<div class="order-total">';
+                previewHTML += '<strong>Total: €' + currentPlayerOrder.total.toFixed(2) + ' / €' + currentPlayerOrder.maxBudget.toFixed(2) + '</strong>';
+                previewHTML += '</div>';
+                
+                previewElement.innerHTML = previewHTML;
+            }
+
+            function submitIndividualOrder() {
+                // Check if within deadline
+                const now = new Date();
+                const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                const currentHour = now.getHours();
+                
+                let canOrderTuesday = true;
+                let canOrderFriday = true;
+                
+                // Monday 12:00 AM deadline for Tuesday delivery
+                if (currentDay > 1 || (currentDay === 1 && currentHour >= 0)) {
+                    // Past Monday 12:00 AM, cannot order for Tuesday
+                    canOrderTuesday = false;
+                }
+                
+                // Thursday 12:00 AM deadline for Friday delivery  
+                if (currentDay > 4 || (currentDay === 4 && currentHour >= 0)) {
+                    // Past Thursday 12:00 AM, cannot order for Friday
+                    canOrderFriday = false;
+                }
+                
+                if (!canOrderTuesday && !canOrderFriday) {
+                    alert('Order deadline has passed. Next available order window opens after the weekend.');
+                    return;
+                }
+                
+                if (currentPlayerOrder.total > currentPlayerOrder.maxBudget) {
+                    alert('Cannot submit order: Budget limit of €35.00 exceeded.\\nCurrent total: €' + currentPlayerOrder.total.toFixed(2));
+                    return;
+                }
+                
+                if (currentPlayerOrder.items.length === 0) {
+                    alert('Please select items before submitting your order.');
+                    return;
+                }
+                
+                const deliveryDay = canOrderTuesday ? 'Tuesday' : 'Friday';
+                const orderSummary = 'Personal Order Submitted Successfully!\\n\\n' +
+                                   'Player: ' + currentPlayerOrder.playerName + '\\n' +
+                                   'Items: ' + currentPlayerOrder.items.length + '\\n' +
+                                   'Total: €' + currentPlayerOrder.total.toFixed(2) + ' / €35.00\\n' +
+                                   'Delivery: ' + deliveryDay + '\\n\\n' +
+                                   'Your order is private and only visible to you.';
+                
+                alert(orderSummary);
+                
+                // Clear the order after submission
+                document.querySelectorAll('.grocery-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+                updateOrderTotal();
+            }
+
+            // Make functions globally accessible
+            window.updateOrderTotal = updateOrderTotal;
+            window.showBudgetValidation = showBudgetValidation;
+            window.updateOrderPreview = updateOrderPreview;
+            window.submitIndividualOrder = submitIndividualOrder;
             
             // Clear selections after successful submission
             clearSelection();
         }
 
-        // Initialize grocery functionality on page load
+        // Initialize individual food order functionality on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners to checkboxes when they exist
             setTimeout(() => {
                 const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateOrderTotal);
+                    checkbox.addEventListener('change', function() {
+                        if (window.updateOrderTotal) {
+                            window.updateOrderTotal();
+                        }
+                    });
                 });
                 
-                // Initialize the order total
-                updateOrderTotal();
+                // Initialize the order total display
+                if (window.updateOrderTotal) {
+                    window.updateOrderTotal();
+                }
             }, 500);
         });
 
