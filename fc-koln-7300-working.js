@@ -3611,16 +3611,22 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: white;
         }
 
-        .chat-avatar {
+        .chat-avatar-simple {
             position: relative;
             margin-right: 0.75rem;
-        }
-
-        .chat-avatar img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-initials {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .chat-avatar.group, .chat-avatar.house {
@@ -3743,16 +3749,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             align-items: center;
         }
 
-        .contact-avatar {
+        .contact-avatar-simple {
             position: relative;
             margin-right: 0.75rem;
-        }
-
-        .contact-avatar img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .contact-name {
@@ -3799,15 +3805,21 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             justify-content: flex-end;
         }
 
-        .message-avatar {
+        .message-avatar-simple {
             margin-right: 0.5rem;
-        }
-
-        .message-avatar img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            object-fit: cover;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-initials-small {
+            color: white;
+            font-weight: 600;
+            font-size: 0.7rem;
         }
 
         .message-content {
@@ -4064,10 +4076,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             background: #f3f4f6;
         }
 
-        .contact-item img {
+        .contact-item .contact-avatar-simple {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 0.75rem;
         }
 
@@ -6033,8 +6049,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <!-- Direct Messages List -->
                         <div id="direct-chats" class="chat-list-container active">
                             <div class="chat-item active" onclick="openChat('thomas-ellinger')">
-                                <div class="chat-avatar">
-                                    <img src="https://via.placeholder.com/40x40" alt="Thomas">
+                                <div class="chat-avatar-simple">
+                                    <div class="avatar-initials">TE</div>
                                     <div class="status-indicator online"></div>
                                 </div>
                                 <div class="chat-info">
@@ -6048,8 +6064,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             
                             <div class="chat-item" onclick="openChat('coach-martinez')">
-                                <div class="chat-avatar">
-                                    <img src="https://via.placeholder.com/40x40" alt="Coach">
+                                <div class="chat-avatar-simple">
+                                    <div class="avatar-initials">CM</div>
                                     <div class="status-indicator online"></div>
                                 </div>
                                 <div class="chat-info">
@@ -6063,14 +6079,26 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             
                             <div class="chat-item" onclick="openChat('ahmad-hassan')">
-                                <div class="chat-avatar">
-                                    <img src="https://via.placeholder.com/40x40" alt="Ahmad">
+                                <div class="chat-avatar-simple">
+                                    <div class="avatar-initials">AH</div>
                                     <div class="status-indicator away"></div>
                                 </div>
                                 <div class="chat-info">
                                     <div class="chat-name">Ahmad Hassan</div>
                                     <div class="chat-preview">Thanks for the assist today 👍</div>
                                     <div class="chat-time">3 hours ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('jonas-weber')">
+                                <div class="chat-avatar-simple">
+                                    <div class="avatar-initials">JW</div>
+                                    <div class="status-indicator online"></div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Jonas Weber</div>
+                                    <div class="chat-preview">Ready for tomorrow's match!</div>
+                                    <div class="chat-time">5 hours ago</div>
                                 </div>
                             </div>
                         </div>
@@ -6148,19 +6176,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <!-- Chat Header -->
                         <div class="chat-window-header">
                             <div class="chat-contact-info">
-                                <div class="contact-avatar">
-                                    <img src="https://via.placeholder.com/40x40" alt="Thomas">
+                                <div class="contact-avatar-simple">
+                                    <div class="avatar-initials">TE</div>
                                     <div class="status-indicator online"></div>
                                 </div>
                                 <div class="contact-details">
                                     <div class="contact-name">Thomas Ellinger</div>
                                     <div class="contact-status">Online • House Manager</div>
                                 </div>
-                            </div>
-                            <div class="chat-actions">
-                                <button class="btn-icon" onclick="callContact()" title="Voice Call">📞</button>
-                                <button class="btn-icon" onclick="videoCall()" title="Video Call">📹</button>
-                                <button class="btn-icon" onclick="chatSettings()" title="Chat Settings">⚙️</button>
                             </div>
                         </div>
                         
@@ -6173,8 +6196,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             
                             <!-- Received Message -->
                             <div class="message received">
-                                <div class="message-avatar">
-                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                <div class="message-avatar-simple">
+                                    <div class="avatar-initials-small">TE</div>
                                 </div>
                                 <div class="message-content">
                                     <div class="message-bubble">
@@ -6185,8 +6208,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             
                             <div class="message received">
-                                <div class="message-avatar">
-                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                <div class="message-avatar-simple">
+                                    <div class="avatar-initials-small">TE</div>
                                 </div>
                                 <div class="message-content">
                                     <div class="message-bubble">
@@ -6223,8 +6246,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             
                             <!-- Image Message -->
                             <div class="message received">
-                                <div class="message-avatar">
-                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                <div class="message-avatar-simple">
+                                    <div class="avatar-initials-small">TE</div>
                                 </div>
                                 <div class="message-content">
                                     <div class="message-bubble image">
@@ -6237,8 +6260,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             
                             <!-- File Message -->
                             <div class="message received">
-                                <div class="message-avatar">
-                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                <div class="message-avatar-simple">
+                                    <div class="avatar-initials-small">TE</div>
                                 </div>
                                 <div class="message-content">
                                     <div class="message-bubble file">
@@ -6257,8 +6280,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             
                             <!-- Typing Indicator -->
                             <div class="message received typing" id="typingIndicator" style="display: none;">
-                                <div class="message-avatar">
-                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                <div class="message-avatar-simple">
+                                    <div class="avatar-initials-small">TE</div>
                                 </div>
                                 <div class="message-content">
                                     <div class="message-bubble">
@@ -6313,15 +6336,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             </div>
                             <div class="contact-list">
                                 <div class="contact-item" onclick="startChatWith('coach-martinez')">
-                                    <img src="https://via.placeholder.com/40x40" alt="Coach">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">CM</div>
+                                    </div>
                                     <div class="contact-info">
                                         <div class="contact-name">Coach Martinez</div>
                                         <div class="contact-role">Head Coach</div>
                                     </div>
                                     <div class="contact-status online"></div>
                                 </div>
+                                <div class="contact-item" onclick="startChatWith('thomas-ellinger')">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">TE</div>
+                                    </div>
+                                    <div class="contact-info">
+                                        <div class="contact-name">Thomas Ellinger</div>
+                                        <div class="contact-role">House Manager</div>
+                                    </div>
+                                    <div class="contact-status online"></div>
+                                </div>
                                 <div class="contact-item" onclick="startChatWith('ahmad-hassan')">
-                                    <img src="https://via.placeholder.com/40x40" alt="Ahmad">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">AH</div>
+                                    </div>
                                     <div class="contact-info">
                                         <div class="contact-name">Ahmad Hassan</div>
                                         <div class="contact-role">Player - Defender</div>
@@ -6329,12 +6366,34 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <div class="contact-status away"></div>
                                 </div>
                                 <div class="contact-item" onclick="startChatWith('luis-garcia')">
-                                    <img src="https://via.placeholder.com/40x40" alt="Luis">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">LG</div>
+                                    </div>
                                     <div class="contact-info">
                                         <div class="contact-name">Luis García</div>
                                         <div class="contact-role">Player - Forward</div>
                                     </div>
                                     <div class="contact-status offline"></div>
+                                </div>
+                                <div class="contact-item" onclick="startChatWith('jonas-weber')">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">JW</div>
+                                    </div>
+                                    <div class="contact-info">
+                                        <div class="contact-name">Jonas Weber</div>
+                                        <div class="contact-role">Player - Goalkeeper</div>
+                                    </div>
+                                    <div class="contact-status online"></div>
+                                </div>
+                                <div class="contact-item" onclick="startChatWith('marco-silva')">
+                                    <div class="contact-avatar-simple">
+                                        <div class="avatar-initials">MS</div>
+                                    </div>
+                                    <div class="contact-info">
+                                        <div class="contact-name">Marco Silva</div>
+                                        <div class="contact-role">Player - Midfielder</div>
+                                    </div>
+                                    <div class="contact-status online"></div>
                                 </div>
                             </div>
                         </div>
@@ -9163,17 +9222,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }, 100);
         };
 
-        window.callContact = function() {
-            alert('📞 Voice Call\\n\\nInitiating voice call with Thomas Ellinger...\\n\\nThis feature will connect to the integrated communication system for real-time voice calls.');
-        };
-
-        window.videoCall = function() {
-            alert('📹 Video Call\\n\\nStarting video call with Thomas Ellinger...\\n\\nThis feature will open the video calling interface for face-to-face communication.');
-        };
-
-        window.chatSettings = function() {
-            alert('⚙️ Chat Settings\\n\\nChat customization options:\\n• Notification preferences\\n• Chat background themes\\n• Message history settings\\n• Privacy controls\\n• Block/unblock contacts');
-        };
+        // Simplified - removed call and settings functions
 
         function loadChatMessages(chatId) {
             // Update header based on selected chat
@@ -9192,6 +9241,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 case 'ahmad-hassan':
                     contactName.textContent = 'Ahmad Hassan';
                     contactStatus.textContent = 'Away • Player - Defender';
+                    break;
+                case 'jonas-weber':
+                    contactName.textContent = 'Jonas Weber';
+                    contactStatus.textContent = 'Online • Player - Goalkeeper';
                     break;
                 case 'widdersdorf-1':
                     contactName.textContent = 'Widdersdorf 1';
