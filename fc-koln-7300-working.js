@@ -803,6 +803,107 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
+        }
+
+        /* Player Selection Styles */
+        .player-selection-container {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .selection-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-mini {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-mini:hover {
+            background: #e5e7eb;
+        }
+
+        .player-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .player-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .player-checkbox-item:hover {
+            background: #f9fafb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .player-checkbox-item input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .player-info-mini {
+            flex: 1;
+        }
+
+        .player-name-mini {
+            font-weight: 600;
+            color: #111827;
+            font-size: 0.875rem;
+        }
+
+        .player-details-mini {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .house-filter-section {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+
+        .house-filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .house-filter-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .house-filter-btn:hover {
+            background: #b91c1c;
             padding: 1.5rem;
             text-align: center;
         }
@@ -5318,7 +5419,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Attendance Required</label>
-                                    <select id="eventAttendance">
+                                    <select id="eventAttendance" onchange="togglePlayerSelection()">
                                         <option value="all">All Players</option>
                                         <option value="squad">Squad Only</option>
                                         <option value="optional">Optional</option>
@@ -5332,6 +5433,21 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                         <option value="high">High Priority</option>
                                         <option value="urgent">Urgent</option>
                                     </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Player Selection Section -->
+                            <div id="playerSelectionSection" class="form-group" style="display: none;">
+                                <label>Select Players for This Event</label>
+                                <div class="player-selection-container">
+                                    <div class="selection-controls">
+                                        <button type="button" class="btn-mini" onclick="selectAllPlayers()">Select All</button>
+                                        <button type="button" class="btn-mini" onclick="clearAllPlayers()">Clear All</button>
+                                        <button type="button" class="btn-mini" onclick="selectByHouse()">Select by House</button>
+                                    </div>
+                                    <div id="playerCheckboxList" class="player-checkbox-grid">
+                                        <!-- Player checkboxes will be populated here -->
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-actions">
@@ -7821,8 +7937,99 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('eventDate').value = today;
             
+            // Populate player selection list
+            populatePlayerSelection();
+            
             // Show the modal
             document.getElementById('createEventModal').style.display = 'flex';
+        };
+
+        window.populatePlayerSelection = function() {
+            const playerList = document.getElementById('playerCheckboxList');
+            if (!playerList) return;
+            
+            let html = '';
+            
+            // Use the existing player storage data
+            if (typeof playerStorage !== 'undefined' && playerStorage.length > 0) {
+                playerStorage.forEach(player => {
+                    html += 
+                        '<div class="player-checkbox-item">' +
+                            '<input type="checkbox" id="player_' + player.id + '" value="' + player.id + '">' +
+                            '<div class="player-info-mini">' +
+                                '<div class="player-name-mini">' + player.firstName + ' ' + player.lastName + '</div>' +
+                                '<div class="player-details-mini">' + player.position + ' • ' + player.house + ' • Room ' + player.room + '</div>' +
+                            '</div>' +
+                        '</div>';
+                });
+            } else {
+                // Fallback sample players if playerStorage not available
+                const samplePlayers = [
+                    {id: 1, firstName: 'Max', lastName: 'Bisinger', position: 'Midfielder', house: 'Widdersdorf 1', room: '12A'},
+                    {id: 2, firstName: 'Luis', lastName: 'García', position: 'Forward', house: 'Widdersdorf 1', room: '12B'},
+                    {id: 3, firstName: 'Ahmed', lastName: 'Hassan', position: 'Defender', house: 'Widdersdorf 1', room: '13A'},
+                    {id: 4, firstName: 'Jonas', lastName: 'Mueller', position: 'Goalkeeper', house: 'Widdersdorf 1', room: '13B'},
+                    {id: 5, firstName: 'Mike', lastName: 'Brown', position: 'Midfielder', house: 'Widdersdorf 2', room: '14A'},
+                    {id: 6, firstName: 'David', lastName: 'Kim', position: 'Defender', house: 'Widdersdorf 2', room: '14B'},
+                    {id: 7, firstName: 'Carlos', lastName: 'Ruiz', position: 'Forward', house: 'Widdersdorf 2', room: '15A'},
+                    {id: 8, firstName: 'Tom', lastName: 'Wilson', position: 'Midfielder', house: 'Widdersdorf 3', room: '16A'},
+                    {id: 9, firstName: 'Alex', lastName: 'Chen', position: 'Defender', house: 'Widdersdorf 3', room: '16B'}
+                ];
+                
+                samplePlayers.forEach(player => {
+                    html += 
+                        '<div class="player-checkbox-item">' +
+                            '<input type="checkbox" id="player_' + player.id + '" value="' + player.id + '">' +
+                            '<div class="player-info-mini">' +
+                                '<div class="player-name-mini">' + player.firstName + ' ' + player.lastName + '</div>' +
+                                '<div class="player-details-mini">' + player.position + ' • ' + player.house + ' • Room ' + player.room + '</div>' +
+                            '</div>' +
+                        '</div>';
+                });
+            }
+            
+            playerList.innerHTML = html;
+        };
+
+        window.togglePlayerSelection = function() {
+            const attendanceType = document.getElementById('eventAttendance').value;
+            const playerSection = document.getElementById('playerSelectionSection');
+            
+            if (attendanceType === 'selected') {
+                playerSection.style.display = 'block';
+            } else {
+                playerSection.style.display = 'none';
+            }
+        };
+
+        window.selectAllPlayers = function() {
+            const checkboxes = document.querySelectorAll('#playerCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        };
+
+        window.clearAllPlayers = function() {
+            const checkboxes = document.querySelectorAll('#playerCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        };
+
+        window.selectByHouse = function() {
+            // Create a simple house selection interface
+            const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
+            const house = prompt('Select house (enter 1, 2, or 3):\\n\\n1 - Widdersdorf 1\\n2 - Widdersdorf 2\\n3 - Widdersdorf 3');
+            
+            if (house && (house === '1' || house === '2' || house === '3')) {
+                const targetHouse = 'Widdersdorf ' + house;
+                const checkboxes = document.querySelectorAll('#playerCheckboxList .player-checkbox-item');
+                
+                checkboxes.forEach(item => {
+                    const details = item.querySelector('.player-details-mini').textContent;
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    
+                    if (details.includes(targetHouse)) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
         };
 
         window.closeCreateEventModal = function() {
@@ -7844,6 +8051,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const attendance = document.getElementById('eventAttendance').value;
             const priority = document.getElementById('eventPriority').value;
             
+            // Get selected players if attendance is 'selected'
+            let selectedPlayers = [];
+            if (attendance === 'selected') {
+                const checkedBoxes = document.querySelectorAll('#playerCheckboxList input[type="checkbox"]:checked');
+                checkedBoxes.forEach(checkbox => {
+                    const playerId = checkbox.value;
+                    const playerItem = checkbox.closest('.player-checkbox-item');
+                    const playerName = playerItem.querySelector('.player-name-mini').textContent;
+                    const playerDetails = playerItem.querySelector('.player-details-mini').textContent;
+                    
+                    selectedPlayers.push({
+                        id: playerId,
+                        name: playerName,
+                        details: playerDetails
+                    });
+                });
+                
+                if (selectedPlayers.length === 0) {
+                    alert('Please select at least one player for this event.');
+                    return;
+                }
+            }
+            
             // Create event object
             const newEvent = {
                 id: Date.now().toString(),
@@ -7856,6 +8086,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 description: description,
                 attendance: attendance,
                 priority: priority,
+                selectedPlayers: selectedPlayers,
                 createdBy: currentUser.email,
                 createdAt: new Date().toISOString(),
                 attendees: []
@@ -7867,12 +8098,25 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
             window.calendarEvents.push(newEvent);
             
-            // Show success message
-            alert('Event "' + title + '" created successfully!\\n\\n' +
+            // Show success message with player info
+            let successMessage = 'Event "' + title + '" created successfully!\\n\\n' +
                   'Date: ' + new Date(date).toLocaleDateString() + '\\n' +
                   'Time: ' + time + '\\n' +
                   'Type: ' + type + '\\n' +
-                  'Location: ' + location);
+                  'Location: ' + location + '\\n\\n';
+            
+            if (attendance === 'selected' && selectedPlayers.length > 0) {
+                successMessage += 'Assigned Players (' + selectedPlayers.length + '):';
+                selectedPlayers.forEach(player => {
+                    successMessage += '\\n• ' + player.name;
+                });
+            } else if (attendance === 'all') {
+                successMessage += 'Attendance: All Players Required';
+            } else {
+                successMessage += 'Attendance: ' + attendance;
+            }
+            
+            alert(successMessage);
             
             // Close modal and refresh calendar
             closeCreateEventModal();
