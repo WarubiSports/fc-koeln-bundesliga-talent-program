@@ -5096,7 +5096,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Calendar Page -->
             <div id="calendar" class="page">
-                <h1>Training Calendar & Schedule Management</h1>
+                <div class="page-header">
+                    <h1>Training Calendar & Schedule Management</h1>
+                    <div class="page-actions">
+                        <button class="btn" onclick="openCreateEventModal()" id="createEventBtn" style="display: none;">
+                            ➕ Create New Event
+                        </button>
+                    </div>
+                </div>
                 
                 <!-- Weekly Overview -->
                 <div class="form-section">
@@ -5253,6 +5260,87 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
+                <!-- Create Event Modal -->
+                <div id="createEventModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>➕ Create New Event</h3>
+                            <button class="close-btn" onclick="closeCreateEventModal()">&times;</button>
+                        </div>
+                        <form id="createEventForm" class="modal-body" onsubmit="createNewEvent(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Event Title *</label>
+                                    <input type="text" id="eventTitle" required placeholder="e.g., Morning Training Session">
+                                </div>
+                                <div class="form-group">
+                                    <label>Event Type *</label>
+                                    <select id="eventType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="training">Training Session</option>
+                                        <option value="match">Match</option>
+                                        <option value="tactical">Tactical Session</option>
+                                        <option value="fitness">Fitness Training</option>
+                                        <option value="recovery">Recovery Session</option>
+                                        <option value="technical">Technical Skills</option>
+                                        <option value="match-prep">Match Preparation</option>
+                                        <option value="analysis">Video Analysis</option>
+                                        <option value="meeting">Team Meeting</option>
+                                        <option value="medical">Medical</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date *</label>
+                                    <input type="date" id="eventDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Time *</label>
+                                    <input type="time" id="eventTime" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Duration (minutes)</label>
+                                    <input type="number" id="eventDuration" min="15" max="300" placeholder="90" value="90">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input type="text" id="eventLocation" placeholder="e.g., Training Ground A">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="eventDescription" rows="3" placeholder="Additional details about the event..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Attendance Required</label>
+                                    <select id="eventAttendance">
+                                        <option value="all">All Players</option>
+                                        <option value="squad">Squad Only</option>
+                                        <option value="optional">Optional</option>
+                                        <option value="selected">Selected Players</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select id="eventPriority">
+                                        <option value="normal">Normal</option>
+                                        <option value="high">High Priority</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeCreateEventModal()">Cancel</button>
+                                <button type="submit" class="btn">Create Event</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
             </div>
 
@@ -7710,6 +7798,106 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             console.log('Staff Application Submitted:', formData);
         }
+
+        // Event Management Functions
+        window.openCreateEventModal = function() {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').value = today;
+            
+            // Show the modal
+            document.getElementById('createEventModal').style.display = 'flex';
+        };
+
+        window.closeCreateEventModal = function() {
+            document.getElementById('createEventModal').style.display = 'none';
+            document.getElementById('createEventForm').reset();
+        };
+
+        window.createNewEvent = function(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const title = document.getElementById('eventTitle').value;
+            const type = document.getElementById('eventType').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const duration = document.getElementById('eventDuration').value;
+            const location = document.getElementById('eventLocation').value;
+            const description = document.getElementById('eventDescription').value;
+            const attendance = document.getElementById('eventAttendance').value;
+            const priority = document.getElementById('eventPriority').value;
+            
+            // Create event object
+            const newEvent = {
+                id: Date.now().toString(),
+                title: title,
+                type: type,
+                date: date,
+                time: time,
+                duration: duration || 90,
+                location: location,
+                description: description,
+                attendance: attendance,
+                priority: priority,
+                createdBy: currentUser.email,
+                createdAt: new Date().toISOString(),
+                attendees: []
+            };
+            
+            // Add to calendar (in real app would save to database)
+            if (!window.calendarEvents) {
+                window.calendarEvents = [];
+            }
+            window.calendarEvents.push(newEvent);
+            
+            // Show success message
+            alert('Event "' + title + '" created successfully!\\n\\n' +
+                  'Date: ' + new Date(date).toLocaleDateString() + '\\n' +
+                  'Time: ' + time + '\\n' +
+                  'Type: ' + type + '\\n' +
+                  'Location: ' + location);
+            
+            // Close modal and refresh calendar
+            closeCreateEventModal();
+            refreshCalendarEvents();
+            
+            console.log('New event created:', newEvent);
+        };
+
+        window.refreshCalendarEvents = function() {
+            // In a real application, this would refresh the calendar display
+            // For now, we'll just log the events
+            if (window.calendarEvents && window.calendarEvents.length > 0) {
+                console.log('Calendar events updated. Total events:', window.calendarEvents.length);
+                
+                // Add visual indicator that events were updated
+                const calendarPage = document.getElementById('calendar');
+                if (calendarPage && !calendarPage.classList.contains('page-hidden')) {
+                    const notification = document.createElement('div');
+                    notification.className = 'success-notification';
+                    notification.textContent = 'Calendar updated with new event!';
+                    notification.style.cssText = 
+                        'position: fixed;' +
+                        'top: 20px;' +
+                        'right: 20px;' +
+                        'background: #10b981;' +
+                        'color: white;' +
+                        'padding: 1rem;' +
+                        'border-radius: 8px;' +
+                        'z-index: 1000;' +
+                        'box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+                    
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 3000);
+                }
+            }
+        };
 
         // Logout
         window.logout = function() {
