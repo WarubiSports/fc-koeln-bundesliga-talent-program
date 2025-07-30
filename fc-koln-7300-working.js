@@ -8414,9 +8414,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 html += '</div>';
                 html += '</div>';
                 html += '<div class="application-actions">';
-                html += '<button class="btn btn-success" onclick="approveApplication(\'' + app.id + '\')">✅ Approve</button>';
-                html += '<button class="btn btn-danger" onclick="rejectApplication(\'' + app.id + '\')">❌ Reject</button>';
-                html += '<button class="btn btn-secondary" onclick="viewApplicationDetails(\'' + app.id + '\')">👁️ Details</button>';
+                html += '<button class="btn btn-success" onclick="approveApplication(' + JSON.stringify(app.id) + ')">✅ Approve</button>';
+                html += '<button class="btn btn-danger" onclick="rejectApplication(' + JSON.stringify(app.id) + ')">❌ Reject</button>';
+                html += '<button class="btn btn-secondary" onclick="viewApplicationDetails(' + JSON.stringify(app.id) + ')">👁️ Details</button>';
                 html += '</div>';
                 html += '</div>';
             });
@@ -8535,27 +8535,31 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Auth tab management (login/register)
         window.showAuthTab = function(tabType) {
-            const loginTab = document.getElementById('login-auth-tab');
-            const registerTab = document.getElementById('register-auth-tab');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const forgotPasswordTab = document.getElementById('forgotPasswordTab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
             
-            // Remove active from all tabs and buttons
-            loginTab.classList.remove('active');
-            registerTab.classList.remove('active');
+            // Hide all tabs
+            if (loginTab) loginTab.style.display = 'none';
+            if (registerTab) registerTab.style.display = 'none';
+            if (forgotPasswordTab) forgotPasswordTab.style.display = 'none';
+            
+            // Remove active from tab buttons
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab
-            if (tabType === 'login') {
-                loginTab.classList.add('active');
-                event.target.classList.add('active');
-            } else if (tabType === 'register') {
-                registerTab.classList.add('active');
-                event.target.classList.add('active');
+            if (tabType === 'login' && loginTab) {
+                loginTab.style.display = 'block';
+                if (event && event.target) event.target.classList.add('active');
+            } else if (tabType === 'register' && registerTab) {
+                registerTab.style.display = 'block';
+                if (event && event.target) event.target.classList.add('active');
             }
-        }
+        };
 
         // Public registration type management  
-        function showPublicRegistrationType(type) {
+        window.showPublicRegistrationType = function(type) {
             const playerForm = document.getElementById('public-player-registration');
             const staffForm = document.getElementById('public-staff-registration');
             const typeButtons = document.querySelectorAll('.public-registration-type-btn');
@@ -8573,10 +8577,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 staffForm.style.display = 'block';
                 event.target.classList.add('active');
             }
-        }
+        };
 
         // Registration type management
-        function showRegistrationType(type) {
+        window.showRegistrationType = function(type) {
             // Hide all registration forms
             const forms = document.querySelectorAll('.registration-form');
             forms.forEach(form => form.classList.remove('active'));
@@ -8590,7 +8594,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Add active to clicked button
             event.target.classList.add('active');
-        }
+        };
 
 
 
