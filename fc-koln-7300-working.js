@@ -6978,32 +6978,51 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
             const currentHour = now.getHours();
             
-            // Monday 12:00 AM deadline for Tuesday delivery
-            if (currentDay === 1 && currentHour >= 0) return false; // After Monday midnight
-            if (currentDay > 1 && currentDay < 4) return false; // Tuesday, Wednesday
+            // Check if we're in a valid ordering window
+            // Sunday (0): Can order for Tuesday and Friday
+            // Monday before midnight: Can order for Tuesday and Friday
+            // Monday after midnight (1, hour >= 0): Can't order for Tuesday, can order for Friday
+            // Tuesday (2): Can't order for Tuesday, can order for Friday
+            // Wednesday (3): Can't order for Tuesday, can order for Friday
+            // Thursday before midnight: Can't order for Tuesday, can order for Friday
+            // Thursday after midnight (4, hour >= 0): Can't order for Tuesday or Friday
+            // Friday (5): Can't order for Tuesday or Friday
+            // Saturday (6): Can't order for Tuesday or Friday
             
-            // Thursday 12:00 AM deadline for Friday delivery  
-            if (currentDay === 4 && currentHour >= 0) return false; // After Thursday midnight
-            if (currentDay > 4) return false; // Friday, Saturday
+            // If it's Thursday midnight or later, or Friday/Saturday, no orders allowed
+            if ((currentDay === 4 && currentHour >= 0) || currentDay >= 5) {
+                return false;
+            }
             
-            return true; // Within ordering window
+            // Otherwise, at least Friday orders are available
+            return true;
         }
 
-        // Get next delivery date
+        // Get next available delivery date
         function getNextDeliveryDate() {
             const now = new Date();
             const currentDay = now.getDay();
+            const currentHour = now.getHours();
             
-            if (currentDay <= 1) {
-                // Before or on Monday - next delivery is Tuesday
+            // If it's Sunday or Monday before midnight, Tuesday is available
+            if (currentDay === 0 || (currentDay === 1 && currentHour < 0)) {
                 const tuesday = new Date(now);
                 tuesday.setDate(now.getDate() + (2 - currentDay));
                 return tuesday.toLocaleDateString('en-GB');
-            } else {
-                // After Monday - next delivery is Friday
+            }
+            // If it's Monday after midnight through Thursday before midnight, Friday is available
+            else if (currentDay <= 3 || (currentDay === 4 && currentHour < 0)) {
                 const friday = new Date(now);
-                friday.setDate(now.getDate() + (5 - currentDay));
+                const daysToFriday = currentDay <= 5 ? (5 - currentDay) : (7 + 5 - currentDay);
+                friday.setDate(now.getDate() + daysToFriday);
                 return friday.toLocaleDateString('en-GB');
+            }
+            // If it's Thursday after midnight or later, next Tuesday
+            else {
+                const nextTuesday = new Date(now);
+                const daysToTuesday = currentDay <= 2 ? (2 - currentDay) : (7 + 2 - currentDay);
+                nextTuesday.setDate(now.getDate() + daysToTuesday);
+                return nextTuesday.toLocaleDateString('en-GB');
             }
         }
 

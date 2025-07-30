@@ -146,6 +146,11 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Player Management UI**: Modern visual design with gradient cards, smooth animations, and professional styling
 - **Comprehensive Player Editing**: Full modal-based editing system for all player profile aspects
 - **Streamlined Interface**: Removed outdated "Practice Excuse Statistics" section to focus on core player management
+- **Individual Food Ordering System**: Completely redesigned food orders from group-based to individual player orders
+- **Personal Budget Limits**: Each player has €35.00 maximum budget with real-time tracking and validation
+- **Delivery Deadline Management**: Monday 12:00 AM deadline for Tuesday delivery, Thursday 12:00 AM for Friday delivery
+- **Private Order History**: Players can only view and manage their own orders, ensuring privacy
+- **Smart Deadline Logic**: Proper deadline checking allows Friday orders until Thursday midnight
 
 
 The application follows a monorepo structure with clear separation between client and server code, shared type definitions, and comprehensive tooling for development and deployment.
