@@ -774,6 +774,177 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #374151;
         }
 
+        /* House Summary Styles */
+        .house-summary-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .house-summary-tabs .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .house-summary-tabs .tab-btn.active {
+            border-bottom-color: #dc2626;
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .house-summary-content {
+            min-height: 300px;
+        }
+
+        .house-summary-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .house-summary-card h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .player-order-summary {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .order-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .item-tag {
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        .house-total {
+            background: #dc2626;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .no-orders {
+            color: #6b7280;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .single-house-summary h4 {
+            color: #dc2626;
+            margin-bottom: 20px;
+        }
+
+        .detailed-player-order {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .detailed-player-order h5 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .player-items-detail {
+            margin-bottom: 15px;
+        }
+
+        .item-detail {
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            color: #555;
+        }
+
+        .item-detail:last-child {
+            border-bottom: none;
+        }
+
+        .player-total {
+            font-weight: bold;
+            color: #dc2626;
+            text-align: right;
+            padding-top: 10px;
+            border-top: 2px solid #f3f4f6;
+        }
+
+        .consolidated-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #dc2626;
+        }
+
+        .consolidated-list h5 {
+            margin: 0 0 15px 0;
+            color: #dc2626;
+            font-size: 16px;
+        }
+
+        .consolidated-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .consolidated-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            font-weight: 500;
+        }
+
+        .house-grand-total {
+            background: #dc2626;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+        }
+
         .event-title {
             display: block;
             margin: 0.25rem 0;
@@ -4298,6 +4469,20 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <div id="food-orders" class="page">
                 <h1>🛒 Individual Food Orders</h1>
                 
+                <!-- Admin House Summary View -->
+                <div class="admin-only form-section" style="display: none;">
+                    <h3>🏠 House Order Summary (Admin View)</h3>
+                    <div class="house-summary-tabs">
+                        <button class="tab-btn active" onclick="showHouseSummary('all')">All Houses</button>
+                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf1')">Widdersdorf 1</button>
+                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf2')">Widdersdorf 2</button>
+                        <button class="tab-btn" onclick="showHouseSummary('widdersdorf3')">Widdersdorf 3</button>
+                    </div>
+                    <div id="houseSummaryContent" class="house-summary-content">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+                
                 <!-- Delivery Schedule & Deadlines -->
                 <div class="form-section">
                     <h3>📅 Delivery Schedule & Order Deadlines</h3>
@@ -7192,6 +7377,169 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             updatePersonalOrderHistory();
         }
 
+        // House assignment data (in real app, this would come from database)
+        const playerHouseAssignments = {
+            'max.bisinger@warubi-sports.com': 'widdersdorf1',
+            'thomas.ellinger@warubi-sports.com': 'widdersdorf1',
+            'marco.schmidt@fckoeln.com': 'widdersdorf2',
+            // Add more player-house assignments as needed
+        };
+
+        // Admin house summary functions
+        function showHouseSummary(houseFilter) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            
+            // Update active tab
+            document.querySelectorAll('.house-summary-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (window.event && window.event.target) {
+                window.event.target.classList.add('active');
+            } else {
+                // Default to first tab if no event
+                const firstTab = document.querySelector('.house-summary-tabs .tab-btn');
+                if (firstTab) firstTab.classList.add('active');
+            }
+            
+            const summaryContent = document.getElementById('houseSummaryContent');
+            const allOrders = getAllPlayerOrders();
+            
+            if (houseFilter === 'all') {
+                displayAllHousesSummary(summaryContent, allOrders);
+            } else {
+                displaySingleHouseSummary(summaryContent, allOrders, houseFilter);
+            }
+        }
+
+        function getAllPlayerOrders() {
+            const allOrders = {};
+            
+            // Get orders for all players
+            Object.keys(playerHouseAssignments).forEach(playerEmail => {
+                const playerOrders = JSON.parse(localStorage.getItem('personalOrders-' + playerEmail) || '[]');
+                if (playerOrders.length > 0) {
+                    allOrders[playerEmail] = {
+                        orders: playerOrders,
+                        house: playerHouseAssignments[playerEmail],
+                        name: getPlayerName(playerEmail)
+                    };
+                }
+            });
+            
+            return allOrders;
+        }
+
+        function getPlayerName(email) {
+            if (email === 'max.bisinger@warubi-sports.com') return 'Max Bisinger';
+            if (email === 'thomas.ellinger@warubi-sports.com') return 'Thomas Ellinger';
+            if (email === 'marco.schmidt@fckoeln.com') return 'Marco Schmidt';
+            return email.split('@')[0].replace('.', ' ');
+        }
+
+        function displayAllHousesSummary(container, allOrders) {
+            const houses = ['widdersdorf1', 'widdersdorf2', 'widdersdorf3'];
+            let summaryHtml = '';
+            
+            houses.forEach(house => {
+                const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
+                const houseName = house.charAt(0).toUpperCase() + house.slice(1).replace(/(\d)/, ' $1');
+                
+                summaryHtml += '<div class="house-summary-card">' +
+                    '<h4>🏠 ' + houseName + '</h4>' +
+                    '<div class="house-players">';
+                
+                if (houseOrders.length === 0) {
+                    summaryHtml += '<p class="no-orders">No active orders</p>';
+                } else {
+                    let houseTotalItems = 0;
+                    let houseTotalCost = 0;
+                    
+                    houseOrders.forEach(([email, playerData]) => {
+                        const latestOrder = playerData.orders[playerData.orders.length - 1];
+                        if (latestOrder && latestOrder.status === 'submitted') {
+                            houseTotalItems += latestOrder.items.length;
+                            houseTotalCost += latestOrder.total;
+                            
+                            summaryHtml += '<div class="player-order-summary">' +
+                                '<div class="player-info">' +
+                                '<strong>' + playerData.name + '</strong>' +
+                                '<span class="order-details">' + latestOrder.items.length + ' items • €' + latestOrder.total.toFixed(2) + '</span>' +
+                                '</div>' +
+                                '<div class="order-items">' +
+                                latestOrder.items.map(item => '<span class="item-tag">' + item.quantity + 'x ' + item.name + '</span>').join('') +
+                                '</div>' +
+                                '</div>';
+                        }
+                    });
+                    
+                    summaryHtml += '<div class="house-total">' +
+                        '<strong>House Total: ' + houseTotalItems + ' items • €' + houseTotalCost.toFixed(2) + '</strong>' +
+                        '</div>';
+                }
+                
+                summaryHtml += '</div>' +
+                    '</div>';
+            });
+            
+            container.innerHTML = summaryHtml;
+        }
+
+        function displaySingleHouseSummary(container, allOrders, house) {
+            const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
+            const houseName = house.charAt(0).toUpperCase() + house.slice(1).replace(/(\d)/, ' $1');
+            
+            let summaryHtml = '<div class="single-house-summary"><h4>🏠 ' + houseName + ' - Detailed Orders</h4>';
+            
+            if (houseOrders.length === 0) {
+                summaryHtml += '<p class="no-orders">No active orders for this house</p>';
+            } else {
+                const consolidatedItems = {};
+                let totalCost = 0;
+                
+                houseOrders.forEach(([email, playerData]) => {
+                    const latestOrder = playerData.orders[playerData.orders.length - 1];
+                    if (latestOrder && latestOrder.status === 'submitted') {
+                        totalCost += latestOrder.total;
+                        
+                        summaryHtml += '<div class="detailed-player-order">' +
+                            '<h5>' + playerData.name + '</h5>' +
+                            '<div class="player-items-detail">';
+                        
+                        latestOrder.items.forEach(item => {
+                            summaryHtml += '<div class="item-detail">' + item.quantity + 'x ' + item.name + ' - €' + item.total.toFixed(2) + '</div>';
+                            
+                            // Consolidate items for house total
+                            if (consolidatedItems[item.name]) {
+                                consolidatedItems[item.name] += item.quantity;
+                            } else {
+                                consolidatedItems[item.name] = item.quantity;
+                            }
+                        });
+                        
+                        summaryHtml += '<div class="player-total">Player Total: €' + latestOrder.total.toFixed(2) + '</div>' +
+                                '</div>' +
+                            '</div>';
+                    }
+                });
+                
+                // Add consolidated shopping list
+                summaryHtml += '<div class="consolidated-list">' +
+                    '<h5>📋 Consolidated Shopping List</h5>' +
+                    '<div class="consolidated-items">';
+                
+                Object.entries(consolidatedItems).forEach(([itemName, quantity]) => {
+                    summaryHtml += '<div class="consolidated-item">' + quantity + 'x ' + itemName + '</div>';
+                });
+                
+                summaryHtml += '</div>' +
+                        '<div class="house-grand-total">' +
+                            '<strong>House Grand Total: €' + totalCost.toFixed(2) + '</strong>' +
+                        '</div>' +
+                    '</div>';
+            }
+            
+            summaryHtml += '</div>';
+            container.innerHTML = summaryHtml;
+        }
+
         // Initialize personal ordering functionality on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners to checkboxes when they exist
@@ -7210,6 +7558,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     const deadlineAlert = document.getElementById('deadlineAlert');
                     if (deadlineAlert) {
                         deadlineAlert.style.display = 'block';
+                    }
+                }
+                
+                // Initialize admin house summary if admin user
+                if (currentUser && currentUser.role === 'admin') {
+                    const adminSummary = document.querySelector('.admin-only');
+                    if (adminSummary) {
+                        adminSummary.style.display = 'block';
+                        showHouseSummary('all');
                     }
                 }
             }, 500);
