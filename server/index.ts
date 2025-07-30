@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the login-fixed application - essential function accessibility repair
-const serverProcess = spawn('node', ['fc-koln-login-fix.js'], {
+// Start the complete application with Join Program tab - full 7300-line restore
+const serverProcess = spawn('node', ['fc-koln-complete-with-tabs.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
