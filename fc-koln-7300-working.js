@@ -8522,8 +8522,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 
                 html += '</div>';
                 html += '<div class="event-actions-menu">';
-                html += '<button class="action-btn" onclick="editEvent(\'' + event.id + '\')">✏️ Edit</button>';
-                html += '<button class="action-btn danger" onclick="deleteEvent(\'' + event.id + '\')">🗑️ Delete</button>';
+                html += '<button class="action-btn" onclick="editEvent(' + JSON.stringify(event.id) + ')">✏️ Edit</button>';
+                html += '<button class="action-btn danger" onclick="deleteEvent(' + JSON.stringify(event.id) + ')">🗑️ Delete</button>';
                 html += '</div>';
                 html += '</div>';
                 
@@ -8615,38 +8615,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('loginMessage').innerHTML = '';
         }
 
-        // Make authentication functions globally accessible
-        window.showAuthTab = function(tab) {
-            // Hide all auth tabs
-            document.querySelectorAll('.auth-tab-content').forEach(function(content) {
-                content.style.display = 'none';
-            });
-            
-            // Remove active class from all tab buttons
-            document.querySelectorAll('.auth-tab-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected tab
-            if (tab === 'login') {
-                const loginTab = document.getElementById('loginTab');
-                if (loginTab) {
-                    loginTab.style.display = 'block';
-                    const firstTabBtn = document.querySelector('.auth-tab-btn');
-                    if (firstTabBtn) firstTabBtn.classList.add('active');
-                }
-                // Hide forgot password tab if showing
-                const forgotTab = document.getElementById('forgotPasswordTab');
-                if (forgotTab) forgotTab.style.display = 'none';
-            } else if (tab === 'register') {
-                const registerTab = document.getElementById('registerTab');
-                if (registerTab) {
-                    registerTab.style.display = 'block';
-                    const secondTabBtn = document.querySelectorAll('.auth-tab-btn')[1];
-                    if (secondTabBtn) secondTabBtn.classList.add('active');
-                }
-            }
-        };
+        // Make authentication functions globally accessible (removed duplicate)
 
         // Make forgot password function globally accessible
         window.showForgotPassword = function() {
