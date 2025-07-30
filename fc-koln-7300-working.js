@@ -3390,7 +3390,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             </div>
             
             <!-- Login Form -->
-            <div id="loginTab" class="auth-tab-content active">
+            <div id="loginTab" class="auth-tab-content" style="display: block;">
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -3430,7 +3430,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             </div>
 
             <!-- Public Registration Tab -->
-            <div id="registerTab" class="auth-tab-content">
+            <div id="registerTab" class="auth-tab-content" style="display: none;">
                 <div class="public-registration">
                     <p class="registration-intro">1.FC Köln Bundesliga Talent Program Registration</p>
                     
@@ -6100,8 +6100,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('loginMessage').innerHTML = '';
         }
 
-        // Authentication Tab Management
-        function showAuthTab(tab) {
+        // Make authentication functions globally accessible
+        window.showAuthTab = function(tab) {
             // Hide all auth tabs
             document.querySelectorAll('.auth-tab-content').forEach(function(content) {
                 content.style.display = 'none';
@@ -6114,20 +6114,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Show selected tab
             if (tab === 'login') {
-                document.getElementById('loginTab').style.display = 'block';
-                document.querySelector('.auth-tab-btn').classList.add('active');
+                const loginTab = document.getElementById('loginTab');
+                if (loginTab) {
+                    loginTab.style.display = 'block';
+                    const firstTabBtn = document.querySelector('.auth-tab-btn');
+                    if (firstTabBtn) firstTabBtn.classList.add('active');
+                }
+                // Hide forgot password tab if showing
+                const forgotTab = document.getElementById('forgotPasswordTab');
+                if (forgotTab) forgotTab.style.display = 'none';
             } else if (tab === 'register') {
-                document.getElementById('registerTab').style.display = 'block';
-                document.querySelectorAll('.auth-tab-btn')[1].classList.add('active');
+                const registerTab = document.getElementById('registerTab');
+                if (registerTab) {
+                    registerTab.style.display = 'block';
+                    const secondTabBtn = document.querySelectorAll('.auth-tab-btn')[1];
+                    if (secondTabBtn) secondTabBtn.classList.add('active');
+                }
             }
-        }
+        };
 
-        // Show Forgot Password Form
-        function showForgotPassword() {
-            document.getElementById('loginTab').style.display = 'none';
-            document.getElementById('forgotPasswordTab').style.display = 'block';
+        // Make forgot password function globally accessible
+        window.showForgotPassword = function() {
+            const loginTab = document.getElementById('loginTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
+            
+            if (loginTab) loginTab.style.display = 'none';
+            if (forgotTab) forgotTab.style.display = 'block';
+            
             document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
-        }
+        };
 
         // Forgot Password Form Handler
         document.addEventListener('DOMContentLoaded', function() {
