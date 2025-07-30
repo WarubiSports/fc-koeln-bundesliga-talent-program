@@ -4472,8 +4472,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             <!-- Login/Registration Tabs -->
             <div class="auth-tabs">
-                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
-                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
+                <button class="auth-tab-btn active" onclick="window.showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" onclick="window.showAuthTab('register')">Join Program</button>
             </div>
             
             <!-- Login Form -->
@@ -4489,7 +4489,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <input type="password" id="password" value="ITP2024" required>
                     </div>
                     
-                    <button type="submit" class="btn">Sign In</button>
+                    <button type="button" onclick="window.performLogin()" class="btn">Sign In</button>
                 </form>
                 
                 <div id="loginMessage"></div>
@@ -7078,8 +7078,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         });
 
-        // Show main application
-        function showMainApp() {
+        // Show main application - Make globally accessible
+        window.showMainApp = function() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userName').textContent = 'Welcome, ' + currentUser.name;
@@ -7269,6 +7269,28 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             console.log('Staff Application Submitted:', formData);
         }
 
+        // Essential authentication functions that must be globally accessible
+        window.showAuthTab = function(tab) {
+            // Hide all auth tabs
+            document.querySelectorAll('.auth-tab-content').forEach(function(content) {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.auth-tab-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const targetTab = document.getElementById(tab + '-auth-tab');
+            if (targetTab) {
+                targetTab.style.display = 'block';
+            }
+            
+            // Add active class to selected button
+            event.target.classList.add('active');
+        }
+
         // Logout
         window.logout = function() {
             currentUser = null;
@@ -7280,6 +7302,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('email').value = 'max.bisinger@warubi-sports.com';
             document.getElementById('password').value = 'ITP2024';
             document.getElementById('loginMessage').innerHTML = '';
+        }
+
+        // Make showPage globally accessible for navigation
+        window.showPage = function(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(function(page) {
+                page.style.display = 'none';
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).style.display = 'block';
+            
+            // Add active class to corresponding nav button
+            const navButton = document.querySelector('[onclick="showPage(\'' + pageId + '\')"]');
+            if (navButton) {
+                navButton.classList.add('active');
+            }
+            
+            // Initialize page-specific functionality
+            if (pageId === 'communications') {
+                setTimeout(function() {
+                    window.initializeChatSystem();
+                }, 100);
+            }
         }
 
         // Check for existing login on page load
@@ -7398,7 +7449,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             if (!chatList) return;
 
             chatList.innerHTML = chatData.chats.map(chat => 
-                '<div class="chat-item" onclick="openChat(\'' + chat.id + '\')">' +
+                '<div class="chat-item" onclick="window.openChat(\'' + chat.id + '\')">' +
                     '<div class="chat-item-avatar">' + chat.avatar + '</div>' +
                     '<div class="chat-item-info">' +
                         '<div class="chat-item-name">' + chat.name + '</div>' +
@@ -7427,8 +7478,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     '</div>' +
                 '</div>' +
                 '<div class="chat-actions">' +
-                    '<button onclick="toggleChatInfo()" title="Chat Info">ℹ️</button>' +
-                    '<button onclick="toggleAttachMenu()" title="Attach Files">📎</button>' +
+                    '<button onclick="window.toggleChatInfo()" title="Chat Info">ℹ️</button>' +
+                    '<button onclick="window.toggleAttachMenu()" title="Attach Files">📎</button>' +
                 '</div>';
 
             document.getElementById('messageInput').disabled = false;
@@ -7591,7 +7642,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         window.renderContacts = function() {
             const contactList = document.getElementById('contactList');
             contactList.innerHTML = chatData.contacts.map(contact => 
-                '<div class="contact-item" onclick="startDirectChat(\'' + contact.id + '\')">' +
+                '<div class="contact-item" onclick="window.startDirectChat(\'' + contact.id + '\')">' +
                     '<div class="contact-avatar">' + contact.avatar + '</div>' +
                     '<div class="contact-info">' +
                         '<div class="contact-name">' + contact.name + '</div>' +
@@ -7755,6 +7806,40 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const emoji = emojis[Math.floor(Math.random() * emojis.length)];
             messageInput.value += emoji;
             messageInput.focus();
+        }
+
+        // Manual login function for onclick handlers
+        window.performLogin = function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+            
+            if (messageDiv) messageDiv.innerHTML = '';
+            
+            if (password === 'ITP2024') {
+                let userData = null;
+                
+                if (email === 'max.bisinger@warubi-sports.com') {
+                    userData = { name: 'Max Bisinger', email: email, role: 'admin' };
+                } else if (email === 'thomas.ellinger@warubi-sports.com') {
+                    userData = { name: 'Thomas Ellinger', email: email, role: 'staff' };
+                } else {
+                    if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Email not recognized. Please try again.</div>';
+                    return;
+                }
+                
+                currentUser = userData;
+                localStorage.setItem('fc-koln-auth', JSON.stringify({
+                    token: userData.role + '_' + Date.now(),
+                    user: userData,
+                    loginTime: new Date().toISOString()
+                }));
+                
+                showMainApp();
+                
+            } else {
+                if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Invalid password. Please try again.</div>';
+            }
         }
 
         function submitMealRequest() {
