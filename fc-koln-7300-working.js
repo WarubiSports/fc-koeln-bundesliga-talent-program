@@ -4485,48 +4485,128 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <!-- Admin/Staff Chore Creation (Only visible to Thomas & Max) -->
                 <div class="admin-staff-only form-section" style="display: none;">
                     <h3>➕ Create New Chore Assignment</h3>
-                                    <span class="item-name">Bananas</span>
-                                    <span class="item-price">€0.40</span>
-                                    <input type="checkbox" checked> <span class="qty">5x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Cucumber</span>
-                                    <span class="item-price">€0.69</span>
-                                    <input type="checkbox" checked> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Strawberries</span>
-                                    <span class="item-price">€4.99</span>
-                                    <input type="checkbox" checked> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Apples</span>
-                                    <span class="item-price">€1.89</span>
-                                    <input type="checkbox"> <span class="qty">1kg</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Broccoli</span>
-                                    <span class="item-price">€1.69</span>
-                                    <input type="checkbox"> <span class="qty">1x</span>
-                                </div>
+                    <div class="chore-creation-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Chore Title *</label>
+                                <input type="text" id="choreTitle" placeholder="e.g., Clean Kitchen" required>
+                            </div>
+                            <div class="form-group">
+                                <label>House Assignment *</label>
+                                <select id="choreHouse" required>
+                                    <option value="">Select House</option>
+                                    <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                    <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                    <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                    <option value="All Houses">All Houses</option>
+                                </select>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Specific Players (Optional)</label>
+                                <input type="text" id="choreAssignees" placeholder="Leave blank for entire house">
+                            </div>
+                            <div class="form-group">
+                                <label>Priority Level *</label>
+                                <select id="chorePriority" required>
+                                    <option value="Low">🟢 Low</option>
+                                    <option value="Medium">🟡 Medium</option>
+                                    <option value="High">🟠 High</option>
+                                    <option value="Urgent">🔴 Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description & Instructions *</label>
+                            <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for the chore..." required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Deadline *</label>
+                                <input type="datetime-local" id="choreDeadline" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Points Reward</label>
+                                <input type="number" id="chorePoints" value="10" min="1" max="100">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" onclick="createChore()" class="btn btn-primary">Create Chore Assignment</button>
+                            <button type="button" onclick="clearChoreForm()" class="btn btn-secondary">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Meat & Protein -->
-                        <div class="category-section">
-                            <h4 class="category-title">🥩 Meat & Protein</h4>
-                            <div class="items-grid">
-                                <div class="grocery-item">
-                                    <span class="item-name">Bacon</span>
-                                    <span class="item-price">€1.39</span>
-                                    <input type="checkbox" checked> <span class="qty">2x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Chicken</span>
-                                    <span class="item-price">€6.49</span>
-                                    <input type="checkbox" checked> <span class="qty">3x</span>
-                                </div>
-                                <div class="grocery-item">
+                <!-- Current Chore Assignments & Status -->
+                <div class="form-section">
+                    <h3>📋 Current Chore Assignments</h3>
+                    <div class="chore-cards-container">
+                        <div class="chore-card urgent">
+                            <div class="chore-header">
+                                <h4>🚨 Deep Kitchen Clean</h4>
+                                <span class="priority-badge urgent">Urgent</span>
+                            </div>
+                            <div class="chore-details">
+                                <p><strong>House:</strong> Widdersdorf 1</p>
+                                <p><strong>Assigned to:</strong> Thomas, Max</p>
+                                <p><strong>Deadline:</strong> Today 8:00 PM</p>
+                                <p><strong>Description:</strong> Complete deep clean including appliances, floors, and all surfaces</p>
+                            </div>
+                            <div class="chore-actions">
+                                <button onclick="markChoreComplete('kitchen-clean')" class="btn btn-success">Mark Complete</button>
+                                <button onclick="extendDeadline('kitchen-clean')" class="btn btn-secondary">Extend Deadline</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Admin Page -->
+            <div id="admin" class="page">
+                <h1>System Administration</h1>
+                
+                <!-- Admin Navigation -->
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('full-control')">🛡️ Full Admin Control</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
+                </div>
+
+                <!-- Player Management Section -->
+                <div id="player-management" class="admin-section active">
+                    <h2>Player Management & Editing</h2>
+                    
+                    <!-- Player Search and Filters -->
+                    <div class="admin-controls">
+                        <div class="search-bar">
+                            <input type="text" id="playerSearch" placeholder="Search players by name, position, or nationality..." class="form-control">
+                            <button class="btn" onclick="searchPlayers()">🔍 Search</button>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="statusFilter" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="injured">Injured</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="on-loan">On Loan</option>
+                            </select>
+                            <select id="positionFilter" class="form-control">
+                                <option value="">All Positions</option>
+                                <option value="goalkeeper">Goalkeeper</option>
+                                <option value="defender">Defender</option>
+                                <option value="midfielder">Midfielder</option>
+                                <option value="forward">Forward</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="addNewPlayer()">+ Add New Player</button>
+                        </div>
+                    </div>
+
+                    <!-- Players Admin Grid -->
+                    <div class="players-admin-grid">
                                     <span class="item-name">Ground Beef</span>
                                     <span class="item-price">€3.49</span>
                                     <input type="checkbox" checked> <span class="qty">7x</span>
