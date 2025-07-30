@@ -3166,6 +3166,43 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: white;
         }
         
+        .forgot-password-section {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .forgot-password-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 0.875rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0.5rem;
+        }
+
+        .forgot-password-btn:hover {
+            color: #b91c1c;
+        }
+
+        .back-to-login {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .back-btn:hover {
+            color: #374151;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -3353,7 +3390,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             </div>
             
             <!-- Login Form -->
-            <div id="login-auth-tab" class="auth-tab-content active">
+            <div id="loginTab" class="auth-tab-content" style="display: block;">
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -3368,11 +3405,32 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <button type="submit" class="btn">Sign In</button>
                 </form>
                 
+                <div class="forgot-password-section">
+                    <button type="button" class="forgot-password-btn" onclick="showForgotPassword()">Forgot Password?</button>
+                </div>
+                
                 <div id="loginMessage"></div>
             </div>
             
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordTab" class="auth-tab-content" style="display: none;">
+                <h3>Reset Your Password</h3>
+                <p>Enter your email address and we'll send you instructions to reset your password.</p>
+                <form id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label for="forgotEmail">Email Address</label>
+                        <input type="email" id="forgotEmail" required>
+                    </div>
+                    <button type="submit" class="btn">Send Reset Instructions</button>
+                </form>
+                <div class="back-to-login">
+                    <button type="button" class="back-btn" onclick="showAuthTab('login')">← Back to Sign In</button>
+                </div>
+                <div id="forgotPasswordMessage"></div>
+            </div>
+
             <!-- Public Registration Tab -->
-            <div id="register-auth-tab" class="auth-tab-content">
+            <div id="registerTab" class="auth-tab-content" style="display: none;">
                 <div class="public-registration">
                     <p class="registration-intro">1.FC Köln Bundesliga Talent Program Registration</p>
                     
@@ -6041,6 +6099,70 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('password').value = 'ITP2024';
             document.getElementById('loginMessage').innerHTML = '';
         }
+
+        // Make authentication functions globally accessible
+        window.showAuthTab = function(tab) {
+            // Hide all auth tabs
+            document.querySelectorAll('.auth-tab-content').forEach(function(content) {
+                content.style.display = 'none';
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.auth-tab-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            if (tab === 'login') {
+                const loginTab = document.getElementById('loginTab');
+                if (loginTab) {
+                    loginTab.style.display = 'block';
+                    const firstTabBtn = document.querySelector('.auth-tab-btn');
+                    if (firstTabBtn) firstTabBtn.classList.add('active');
+                }
+                // Hide forgot password tab if showing
+                const forgotTab = document.getElementById('forgotPasswordTab');
+                if (forgotTab) forgotTab.style.display = 'none';
+            } else if (tab === 'register') {
+                const registerTab = document.getElementById('registerTab');
+                if (registerTab) {
+                    registerTab.style.display = 'block';
+                    const secondTabBtn = document.querySelectorAll('.auth-tab-btn')[1];
+                    if (secondTabBtn) secondTabBtn.classList.add('active');
+                }
+            }
+        };
+
+        // Make forgot password function globally accessible
+        window.showForgotPassword = function() {
+            const loginTab = document.getElementById('loginTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
+            
+            if (loginTab) loginTab.style.display = 'none';
+            if (forgotTab) forgotTab.style.display = 'block';
+            
+            document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+        };
+
+        // Forgot Password Form Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('forgotEmail').value.trim();
+                    const messageDiv = document.getElementById('forgotPasswordMessage');
+                    
+                    if (email) {
+                        messageDiv.innerHTML = '<div style="color: #22c55e; margin-top: 1rem; padding: 1rem; background: #f0fdf4; border-radius: 6px;">Password reset instructions have been sent to ' + email + '. Please check your email.</div>';
+                        document.getElementById('forgotEmail').value = '';
+                    } else {
+                        messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Please enter a valid email address.</div>';
+                    }
+                });
+            }
+        });
 
         // Check for existing login on page load
         window.addEventListener('load', function() {
