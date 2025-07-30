@@ -3514,6 +3514,583 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             border: 2px dashed #d1d5db;
         }
 
+        /* WhatsApp-style Chat Interface */
+        .chat-container {
+            display: flex;
+            height: 70vh;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-sidebar {
+            width: 350px;
+            background: #f8f9fa;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: #dc2626;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-tabs {
+            display: flex;
+            background: #e5e7eb;
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .chat-tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .chat-tab-btn.active {
+            background: #ffffff;
+            color: #dc2626;
+            border-bottom: 2px solid #dc2626;
+        }
+
+        .chat-list-container {
+            flex: 1;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .chat-list-container.active {
+            display: block;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background: #f3f4f6;
+        }
+
+        .chat-item.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .chat-avatar {
+            position: relative;
+            margin-right: 0.75rem;
+        }
+
+        .chat-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-avatar.group, .chat-avatar.house {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+        }
+
+        .group-icon, .house-icon {
+            font-size: 1.2rem;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .status-indicator.online {
+            background: #10b981;
+        }
+
+        .status-indicator.away {
+            background: #f59e0b;
+        }
+
+        .status-indicator.offline {
+            background: #6b7280;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-preview {
+            font-size: 0.8rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item.active .chat-preview {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .chat-time {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .chat-item.active .chat-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .unread-count {
+            background: #dc2626;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .chat-item.active .unread-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .message-status {
+            color: #10b981;
+            font-size: 0.8rem;
+        }
+
+        .message-status.delivered {
+            color: #6b7280;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .chat-window-header {
+            padding: 1rem;
+            background: #dc2626;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-avatar {
+            position: relative;
+            margin-right: 0.75rem;
+        }
+
+        .contact-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .contact-status {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .date-separator span {
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            margin-right: 0.5rem;
+        }
+
+        .message-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .message.sent .message-content {
+            text-align: right;
+        }
+
+        .message-bubble {
+            background: #ffffff;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+
+        .message.sent .message-bubble {
+            background: #dcf8c6;
+        }
+
+        .message-bubble p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .message-bubble.image {
+            padding: 0.5rem;
+        }
+
+        .message-image {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-bubble.file {
+            padding: 1rem;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .file-size {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .file-download {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .file-download:hover {
+            background: #f3f4f6;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .message-input-container {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+        }
+
+        .message-input-area {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 0.5rem;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-send {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-send:hover {
+            background: #b91c1c;
+        }
+
+        .file-preview-container {
+            margin-top: 0.5rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .file-preview-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #dc2626;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1rem;
+            background: #dc2626;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .contact-search {
+            margin-bottom: 1rem;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .contact-item:hover {
+            background: #f3f4f6;
+        }
+
+        .contact-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-role {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .contact-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -5435,31 +6012,333 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Communications Page -->
             <div id="communications" class="page">
-                <h1>Team Communications</h1>
-                <div class="form-section">
-                    <h3>Send Team Message</h3>
-                    <div class="form-group">
-                        <label>Recipient Group</label>
-                        <select>
-                            <option>All Players</option>
-                            <option>Widdersdorf 1</option>
-                            <option>Widdersdorf 2</option>
-                            <option>Widdersdorf 3</option>
-                            <option>Coaching Staff</option>
-                        </select>
+                <h1>💬 Communications</h1>
+                
+                <!-- Chat Interface Layout -->
+                <div class="chat-container">
+                    <!-- Sidebar with Chat List -->
+                    <div class="chat-sidebar">
+                        <div class="chat-header">
+                            <h3>Messages</h3>
+                            <button class="btn-icon" onclick="startNewChat()" title="New Chat">💬</button>
+                        </div>
+                        
+                        <!-- Chat Tabs -->
+                        <div class="chat-tabs">
+                            <button class="chat-tab-btn active" onclick="showChatTab('direct')">Direct</button>
+                            <button class="chat-tab-btn" onclick="showChatTab('groups')">Groups</button>
+                            <button class="chat-tab-btn" onclick="showChatTab('channels')">Houses</button>
+                        </div>
+                        
+                        <!-- Direct Messages List -->
+                        <div id="direct-chats" class="chat-list-container active">
+                            <div class="chat-item active" onclick="openChat('thomas-ellinger')">
+                                <div class="chat-avatar">
+                                    <img src="https://via.placeholder.com/40x40" alt="Thomas">
+                                    <div class="status-indicator online"></div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Thomas Ellinger</div>
+                                    <div class="chat-preview">Kitchen inspection tomorrow at 9 AM</div>
+                                    <div class="chat-time">2 min ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <span class="unread-count">2</span>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('coach-martinez')">
+                                <div class="chat-avatar">
+                                    <img src="https://via.placeholder.com/40x40" alt="Coach">
+                                    <div class="status-indicator online"></div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Coach Martinez</div>
+                                    <div class="chat-preview">Great performance in today's training!</div>
+                                    <div class="chat-time">1 hour ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <span class="message-status read">✓✓</span>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('ahmad-hassan')">
+                                <div class="chat-avatar">
+                                    <img src="https://via.placeholder.com/40x40" alt="Ahmad">
+                                    <div class="status-indicator away"></div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Ahmad Hassan</div>
+                                    <div class="chat-preview">Thanks for the assist today 👍</div>
+                                    <div class="chat-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Group Chats List -->
+                        <div id="group-chats" class="chat-list-container">
+                            <div class="chat-item" onclick="openChat('team-captains')">
+                                <div class="chat-avatar group">
+                                    <div class="group-icon">👑</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Team Captains</div>
+                                    <div class="chat-preview">Jonas: Next match strategy discussion</div>
+                                    <div class="chat-time">30 min ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <span class="unread-count">5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('injured-players')">
+                                <div class="chat-avatar group">
+                                    <div class="group-icon">🏥</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Recovery Support</div>
+                                    <div class="chat-preview">Luis: Physio session rescheduled</div>
+                                    <div class="chat-time">2 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- House Channels List -->
+                        <div id="house-chats" class="chat-list-container">
+                            <div class="chat-item" onclick="openChat('widdersdorf-1')">
+                                <div class="chat-avatar house">
+                                    <div class="house-icon">🏠</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Widdersdorf 1</div>
+                                    <div class="chat-preview">Max: Kitchen roster updated</div>
+                                    <div class="chat-time">15 min ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <span class="unread-count">3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('widdersdorf-2')">
+                                <div class="chat-avatar house">
+                                    <div class="house-icon">🏠</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Widdersdorf 2</div>
+                                    <div class="chat-preview">Luis: Movie night Friday 8 PM!</div>
+                                    <div class="chat-time">1 hour ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('widdersdorf-3')">
+                                <div class="chat-avatar house">
+                                    <div class="house-icon">🏠</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Widdersdorf 3</div>
+                                    <div class="chat-preview">Jonas: Game room maintenance complete</div>
+                                    <div class="chat-time">4 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Message</label>
-                        <textarea rows="4" placeholder="Enter your message..."></textarea>
+                    
+                    <!-- Main Chat Window -->
+                    <div class="chat-main">
+                        <!-- Chat Header -->
+                        <div class="chat-window-header">
+                            <div class="chat-contact-info">
+                                <div class="contact-avatar">
+                                    <img src="https://via.placeholder.com/40x40" alt="Thomas">
+                                    <div class="status-indicator online"></div>
+                                </div>
+                                <div class="contact-details">
+                                    <div class="contact-name">Thomas Ellinger</div>
+                                    <div class="contact-status">Online • House Manager</div>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn-icon" onclick="callContact()" title="Voice Call">📞</button>
+                                <button class="btn-icon" onclick="videoCall()" title="Video Call">📹</button>
+                                <button class="btn-icon" onclick="chatSettings()" title="Chat Settings">⚙️</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Messages Container -->
+                        <div class="messages-container" id="messagesContainer">
+                            <!-- Date Separator -->
+                            <div class="date-separator">
+                                <span>Today</span>
+                            </div>
+                            
+                            <!-- Received Message -->
+                            <div class="message received">
+                                <div class="message-avatar">
+                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <p>Good morning Max! I wanted to remind you about the kitchen inspection tomorrow at 9 AM. 🏠</p>
+                                    </div>
+                                    <div class="message-time">09:15</div>
+                                </div>
+                            </div>
+                            
+                            <div class="message received">
+                                <div class="message-avatar">
+                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <p>Also, could you please check the grocery orders for this week? Some players haven't submitted yet.</p>
+                                    </div>
+                                    <div class="message-time">09:16</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sent Message -->
+                            <div class="message sent">
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <p>Thanks for the reminder! I'll be there at 9 AM sharp. ✅</p>
+                                    </div>
+                                    <div class="message-time">
+                                        <span>09:18</span>
+                                        <span class="message-status read">✓✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="message sent">
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <p>I'll check the grocery system now and send reminders to players who haven't ordered yet.</p>
+                                    </div>
+                                    <div class="message-time">
+                                        <span>09:19</span>
+                                        <span class="message-status delivered">✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Message -->
+                            <div class="message received">
+                                <div class="message-avatar">
+                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble image">
+                                        <img src="https://via.placeholder.com/300x200" alt="Kitchen inspection checklist" class="message-image">
+                                        <p>Here's the updated checklist for tomorrow's inspection 📋</p>
+                                    </div>
+                                    <div class="message-time">09:20</div>
+                                </div>
+                            </div>
+                            
+                            <!-- File Message -->
+                            <div class="message received">
+                                <div class="message-avatar">
+                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble file">
+                                        <div class="file-preview">
+                                            <div class="file-icon">📄</div>
+                                            <div class="file-info">
+                                                <div class="file-name">House_Rules_2025.pdf</div>
+                                                <div class="file-size">245 KB</div>
+                                            </div>
+                                            <button class="file-download">📥</button>
+                                        </div>
+                                    </div>
+                                    <div class="message-time">09:22</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Typing Indicator -->
+                            <div class="message received typing" id="typingIndicator" style="display: none;">
+                                <div class="message-avatar">
+                                    <img src="https://via.placeholder.com/32x32" alt="Thomas">
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        <div class="typing-dots">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Message Input -->
+                        <div class="message-input-container">
+                            <div class="message-input-area">
+                                <button class="btn-icon attachment" onclick="attachFile()" title="Attach File">📎</button>
+                                <button class="btn-icon camera" onclick="attachImage()" title="Camera/Image">📷</button>
+                                <input type="text" 
+                                       id="messageInput" 
+                                       class="message-input" 
+                                       placeholder="Type a message..." 
+                                       onkeypress="handleMessageKeyPress(event)"
+                                       oninput="handleTyping()">
+                                <button class="btn-icon emoji" onclick="showEmojis()" title="Emoji">😊</button>
+                                <button class="btn-send" onclick="sendNewMessage()" id="sendButton">
+                                    <span class="send-icon">📤</span>
+                                </button>
+                            </div>
+                            
+                            <!-- File Upload Preview -->
+                            <div id="filePreview" class="file-preview-container" style="display: none;">
+                                <div class="file-preview-item">
+                                    <span class="file-name">No file selected</span>
+                                    <button class="remove-file" onclick="removeFilePreview()">❌</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn">Send Message</button>
                 </div>
                 
-                <div class="form-section">
-                    <h3>Recent Messages</h3>
-                    <p><strong>Training Update:</strong> Tomorrow's session moved to 4:00 PM</p>
-                    <p><strong>House Reminder:</strong> Please complete weekly chores by Sunday</p>
-                    <p><strong>Match Announcement:</strong> Home match this Saturday vs. Borussia Dortmund U19</p>
+                <!-- New Chat Modal -->
+                <div id="newChatModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Start New Chat</h3>
+                            <button class="modal-close" onclick="closeNewChatModal()">❌</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="contact-search">
+                                <input type="text" id="contactSearch" placeholder="Search contacts..." class="form-control">
+                            </div>
+                            <div class="contact-list">
+                                <div class="contact-item" onclick="startChatWith('coach-martinez')">
+                                    <img src="https://via.placeholder.com/40x40" alt="Coach">
+                                    <div class="contact-info">
+                                        <div class="contact-name">Coach Martinez</div>
+                                        <div class="contact-role">Head Coach</div>
+                                    </div>
+                                    <div class="contact-status online"></div>
+                                </div>
+                                <div class="contact-item" onclick="startChatWith('ahmad-hassan')">
+                                    <img src="https://via.placeholder.com/40x40" alt="Ahmad">
+                                    <div class="contact-info">
+                                        <div class="contact-name">Ahmad Hassan</div>
+                                        <div class="contact-role">Player - Defender</div>
+                                    </div>
+                                    <div class="contact-status away"></div>
+                                </div>
+                                <div class="contact-item" onclick="startChatWith('luis-garcia')">
+                                    <img src="https://via.placeholder.com/40x40" alt="Luis">
+                                    <div class="contact-info">
+                                        <div class="contact-name">Luis García</div>
+                                        <div class="contact-role">Player - Forward</div>
+                                    </div>
+                                    <div class="contact-status offline"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -7793,11 +8672,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function updateOrderTotal() {
-            // Use the individual order logic instead
-            if (window.updateOrderTotal) {
-                window.updateOrderTotal();
-                return;
-            }
             
             let total = 0;
             const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
@@ -8079,6 +8953,295 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             if (confirm('Process all house orders for delivery?\\n\\nThis will:\\n• Submit orders for all houses\\n• Generate shopping lists for staff\\n• Send confirmations to all players\\n\\nContinue?')) {
                 alert('All House Orders Processed Successfully!\\n\\n✅ 9 individual orders submitted\\n✅ 3 house shopping lists generated\\n✅ Delivery scheduled for Tuesday & Friday\\n✅ Player confirmations sent\\n\\nTotal processed: €278.80');
             }
+        };
+
+        // WhatsApp-style Chat Functions
+        window.showChatTab = function(tabType) {
+            // Hide all chat containers
+            document.querySelectorAll('.chat-list-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Remove active from all tab buttons
+            document.querySelectorAll('.chat-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected container
+            const containerId = tabType + '-chats';
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.classList.add('active');
+            }
+            
+            // Activate clicked button
+            event.target.classList.add('active');
+        };
+
+        window.openChat = function(chatId) {
+            // Remove active from all chat items
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Activate clicked chat
+            event.currentTarget.classList.add('active');
+            
+            // Load chat messages for the selected contact
+            loadChatMessages(chatId);
+        };
+
+        window.startNewChat = function() {
+            document.getElementById('newChatModal').style.display = 'flex';
+        };
+
+        window.closeNewChatModal = function() {
+            document.getElementById('newChatModal').style.display = 'none';
+        };
+
+        window.startChatWith = function(contactId) {
+            // Close modal
+            closeNewChatModal();
+            
+            // Switch to direct chats tab
+            showChatTab('direct');
+            
+            // Find and activate the chat item (or create new one)
+            openChat(contactId);
+        };
+
+        window.handleMessageKeyPress = function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendNewMessage();
+            }
+        };
+
+        window.handleTyping = function() {
+            // Show typing indicator for other users
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.style.display = 'flex';
+                
+                // Hide after 2 seconds of no typing
+                clearTimeout(window.typingTimeout);
+                window.typingTimeout = setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                }, 2000);
+            }
+        };
+
+        window.sendNewMessage = function() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            // Create new message element
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            
+            const currentTime = new Date().toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            messageDiv.innerHTML = 
+                '<div class="message-content">' +
+                    '<div class="message-bubble">' +
+                        '<p>' + message + '</p>' +
+                    '</div>' +
+                    '<div class="message-time">' +
+                        '<span>' + currentTime + '</span>' +
+                        '<span class="message-status delivered">✓</span>' +
+                    '</div>' +
+                '</div>';
+            
+            // Add to messages container
+            messagesContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Hide typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.style.display = 'none';
+            }
+            
+            // Simulate message delivery after 1 second
+            setTimeout(() => {
+                const statusElement = messageDiv.querySelector('.message-status');
+                if (statusElement) {
+                    statusElement.textContent = '✓✓';
+                    statusElement.className = 'message-status read';
+                }
+            }, 1000);
+        };
+
+        window.attachFile = function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.txt,.xlsx,.ppt';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    showFilePreview(file);
+                }
+            };
+            input.click();
+        };
+
+        window.attachImage = function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    showImagePreview(file);
+                }
+            };
+            input.click();
+        };
+
+        window.showEmojis = function() {
+            // Simple emoji picker
+            const emojis = ['😊', '👍', '❤️', '😂', '😢', '😮', '😡', '🔥', '⚽', '🏆', '💪', '👏'];
+            const emojiPicker = document.createElement('div');
+            emojiPicker.style.cssText = 
+                'position: absolute;' +
+                'bottom: 70px;' +
+                'right: 20px;' +
+                'background: white;' +
+                'border: 1px solid #e5e7eb;' +
+                'border-radius: 8px;' +
+                'padding: 1rem;' +
+                'box-shadow: 0 4px 12px rgba(0,0,0,0.15);' +
+                'display: grid;' +
+                'grid-template-columns: repeat(6, 1fr);' +
+                'gap: 0.5rem;' +
+                'z-index: 100;';
+            
+            emojis.forEach(emoji => {
+                const emojiBtn = document.createElement('button');
+                emojiBtn.textContent = emoji;
+                emojiBtn.style.cssText = 
+                    'background: none;' +
+                    'border: none;' +
+                    'font-size: 1.2rem;' +
+                    'cursor: pointer;' +
+                    'padding: 0.25rem;' +
+                    'border-radius: 4px;';
+                emojiBtn.onmouseover = () => emojiBtn.style.background = '#f3f4f6';
+                emojiBtn.onmouseout = () => emojiBtn.style.background = 'none';
+                emojiBtn.onclick = () => {
+                    const messageInput = document.getElementById('messageInput');
+                    messageInput.value += emoji;
+                    messageInput.focus();
+                    document.body.removeChild(emojiPicker);
+                };
+                emojiPicker.appendChild(emojiBtn);
+            });
+            
+            document.body.appendChild(emojiPicker);
+            
+            // Remove on click outside
+            setTimeout(() => {
+                document.addEventListener('click', function removeEmojiPicker(e) {
+                    if (!emojiPicker.contains(e.target)) {
+                        if (document.body.contains(emojiPicker)) {
+                            document.body.removeChild(emojiPicker);
+                        }
+                        document.removeEventListener('click', removeEmojiPicker);
+                    }
+                });
+            }, 100);
+        };
+
+        window.callContact = function() {
+            alert('📞 Voice Call\\n\\nInitiating voice call with Thomas Ellinger...\\n\\nThis feature will connect to the integrated communication system for real-time voice calls.');
+        };
+
+        window.videoCall = function() {
+            alert('📹 Video Call\\n\\nStarting video call with Thomas Ellinger...\\n\\nThis feature will open the video calling interface for face-to-face communication.');
+        };
+
+        window.chatSettings = function() {
+            alert('⚙️ Chat Settings\\n\\nChat customization options:\\n• Notification preferences\\n• Chat background themes\\n• Message history settings\\n• Privacy controls\\n• Block/unblock contacts');
+        };
+
+        function loadChatMessages(chatId) {
+            // Update header based on selected chat
+            const contactName = document.querySelector('.contact-name');
+            const contactStatus = document.querySelector('.contact-status');
+            
+            switch(chatId) {
+                case 'thomas-ellinger':
+                    contactName.textContent = 'Thomas Ellinger';
+                    contactStatus.textContent = 'Online • House Manager';
+                    break;
+                case 'coach-martinez':
+                    contactName.textContent = 'Coach Martinez';
+                    contactStatus.textContent = 'Online • Head Coach';
+                    break;
+                case 'ahmad-hassan':
+                    contactName.textContent = 'Ahmad Hassan';
+                    contactStatus.textContent = 'Away • Player - Defender';
+                    break;
+                case 'widdersdorf-1':
+                    contactName.textContent = 'Widdersdorf 1';
+                    contactStatus.textContent = '12 members • House Group';
+                    break;
+                case 'team-captains':
+                    contactName.textContent = 'Team Captains';
+                    contactStatus.textContent = '4 members • Leadership Group';
+                    break;
+            }
+        }
+
+        function showFilePreview(file) {
+            const preview = document.getElementById('filePreview');
+            const fileName = preview.querySelector('.file-name');
+            fileName.textContent = file.name;
+            preview.style.display = 'block';
+        }
+
+        function showImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const messagesContainer = document.getElementById('messagesContainer');
+                const imageMessage = document.createElement('div');
+                imageMessage.className = 'message sent';
+                
+                const currentTime = new Date().toLocaleTimeString('en-GB', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                imageMessage.innerHTML = 
+                    '<div class="message-content">' +
+                        '<div class="message-bubble image">' +
+                            '<img src="' + e.target.result + '" alt="Shared image" class="message-image">' +
+                        '</div>' +
+                        '<div class="message-time">' +
+                            '<span>' + currentTime + '</span>' +
+                            '<span class="message-status delivered">✓</span>' +
+                        '</div>' +
+                    '</div>';
+                
+                messagesContainer.appendChild(imageMessage);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.removeFilePreview = function() {
+            document.getElementById('filePreview').style.display = 'none';
         };
 
         // Initialize individual food order functionality on page load
