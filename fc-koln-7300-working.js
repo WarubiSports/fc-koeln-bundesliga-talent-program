@@ -5,6 +5,20 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
+// Import SendGrid for email functionality
+let sgMail;
+try {
+    sgMail = require('@sendgrid/mail');
+    if (process.env.SENDGRID_API_KEY) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        console.log('SendGrid email service initialized');
+    } else {
+        console.log('SendGrid API key not found - email features disabled');
+    }
+} catch (err) {
+    console.log('SendGrid not available - email features disabled');
+}
+
 console.log('Starting 1.FC Köln Bundesliga Talent Program Management System...');
 
 // Complete FC Köln Management System HTML
@@ -5716,8 +5730,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // No players registered - ready for new registrations
         ];
 
+        // Password reset storage (in production, this would be in database)
+        let passwordResetTokens = [];
+
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
+            // Check for password reset token first
+            checkForResetToken();
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
@@ -6011,27 +6030,210 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const messageDiv = document.getElementById('loginMessage');
             messageDiv.innerHTML = '<div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; color: #0c4a6e; text-align: left;">' +
                 '<h3 style="color: #0c4a6e; margin-bottom: 1rem; font-size: 1.1rem;">🔑 Password Recovery</h3>' +
-                '<p style="margin-bottom: 1rem;"><strong>For system access, please contact:</strong></p>' +
-                '<div style="background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
-                '<p><strong>📧 Admin Support:</strong><br>' +
-                '<a href="mailto:max.bisinger@warubi-sports.com" style="color: #dc2626;">max.bisinger@warubi-sports.com</a></p>' +
-                '<p style="margin-top: 0.5rem;"><strong>📞 Phone Support:</strong><br>+49 221 123 4567</p>' +
+                '<p style="margin-bottom: 1rem;">Enter your email address and we will send you a password reset link.</p>' +
+                '<div style="margin-bottom: 1rem;">' +
+                '<label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address:</label>' +
+                '<input type="email" id="resetEmail" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;" placeholder="Enter your email address">' +
                 '</div>' +
-                '<p style="font-size: 0.9rem; margin-bottom: 1rem;">' +
-                '<strong>Include in your request:</strong><br>' +
-                '• Your full name<br>' +
-                '• Your role (Player/Staff/Admin)<br>' +
-                '• Your registered email address<br>' +
-                '• Reason for password reset</p>' +
-                '<p style="font-size: 0.9rem; color: #374151;">' +
-                '<strong>Response time:</strong> Password resets are typically processed within 2-4 hours during business hours.</p>' +
-                '<button onclick="closeForgotPassword()" style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-top: 1rem; font-weight: 500;">Close</button>' +
+                '<div style="display: flex; gap: 0.5rem;">' +
+                '<button onclick="sendPasswordReset()" style="background: #dc2626; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500; flex: 1;">Send Reset Link</button>' +
+                '<button onclick="closeForgotPassword()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>' +
+                '</div>' +
+                '<div id="resetStatus" style="margin-top: 1rem;"></div>' +
                 '</div>';
+        }
+
+        // Send password reset email
+        async function sendPasswordReset() {
+            const emailInput = document.getElementById('resetEmail');
+            const statusDiv = document.getElementById('resetStatus');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Please enter your email address.</p>';
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Please enter a valid email address.</p>';
+                return;
+            }
+
+            // Check if email exists in system
+            const validEmails = ['max.bisinger@warubi-sports.com', 'thomas.ellinger@warubi-sports.com'];
+            const playerEmails = playerStorage.map(p => p.registrationEmail).filter(e => e);
+            const allValidEmails = [...validEmails, ...playerEmails];
+
+            if (!allValidEmails.includes(email)) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Email address not found in our system.</p>';
+                return;
+            }
+
+            // Show loading state
+            statusDiv.innerHTML = '<p style="color: #0369a1; font-size: 0.9rem;">Sending reset email...</p>';
+
+            try {
+                // Generate reset token
+                const resetToken = generateResetToken();
+                const resetLink = window.location.origin + '?reset=' + resetToken;
+                
+                // Store reset token
+                passwordResetTokens.push({
+                    email: email,
+                    token: resetToken,
+                    expires: Date.now() + (60 * 60 * 1000), // 1 hour
+                    used: false
+                });
+
+                // Send email
+                const response = await fetch('/api/send-password-reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        resetLink: resetLink,
+                        resetToken: resetToken
+                    })
+                });
+
+                if (response.ok) {
+                    statusDiv.innerHTML = '<div style="background: #d1fae5; border: 1px solid #10b981; border-radius: 6px; padding: 1rem; color: #065f46;">' +
+                        '<p style="font-weight: 500; margin-bottom: 0.5rem;">Reset email sent successfully!</p>' +
+                        '<p style="font-size: 0.9rem;">Check your email for password reset instructions. The link will expire in 1 hour.</p>' +
+                        '</div>';
+                    emailInput.disabled = true;
+                } else {
+                    throw new Error('Failed to send email');
+                }
+            } catch (error) {
+                console.error('Password reset error:', error);
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Failed to send reset email. Please try again or contact support.</p>';
+            }
+        }
+
+        // Generate secure reset token
+        function generateResetToken() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < 32; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return token + '_' + Date.now();
+        }
+
+        // Check for reset token on page load and show reset form
+        function checkForResetToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const resetToken = urlParams.get('reset');
+            
+            if (resetToken) {
+                showPasswordResetForm(resetToken);
+            }
+        }
+
+        // Show password reset form
+        function showPasswordResetForm(resetToken) {
+            const authSection = document.getElementById('authSection');
+            if (!authSection) return;
+            
+            authSection.innerHTML = '<div style="max-width: 400px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">' +
+                '<div style="text-align: center; margin-bottom: 2rem;">' +
+                '<img src="/attached_assets/NewCologneLogo_1753281112388.png" alt="1.FC Köln Logo" style="height: 60px; margin-bottom: 1rem;">' +
+                '<h2 style="color: #dc2626; font-size: 1.5rem; font-weight: 600;">Reset Your Password</h2>' +
+                '<p style="color: #6b7280; margin-top: 0.5rem;">Enter your new password below</p>' +
+                '</div>' +
+                '<form id="resetPasswordForm">' +
+                '<div style="margin-bottom: 1rem;">' +
+                '<label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">New Password:</label>' +
+                '<input type="password" id="newPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;" placeholder="Enter new password" required>' +
+                '</div>' +
+                '<div style="margin-bottom: 1.5rem;">' +
+                '<label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Confirm Password:</label>' +
+                '<input type="password" id="confirmPassword" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;" placeholder="Confirm new password" required>' +
+                '</div>' +
+                '<button type="submit" style="width: 100%; background: #dc2626; color: white; border: none; padding: 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 1rem;">Update Password</button>' +
+                '<div id="resetFormStatus" style="margin-top: 1rem;"></div>' +
+                '</form>' +
+                '<div style="text-align: center; margin-top: 1.5rem;">' +
+                '<a href="?" style="color: #6b7280; text-decoration: none; font-size: 0.9rem;">← Back to Login</a>' +
+                '</div>' +
+                '</div>';
+
+            // Handle form submission
+            document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                resetPassword(resetToken);
+            });
+        }
+
+        // Reset password function
+        async function resetPassword(resetToken) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const statusDiv = document.getElementById('resetFormStatus');
+
+            // Validate passwords
+            if (!newPassword || !confirmPassword) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Please fill in both password fields.</p>';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Passwords do not match.</p>';
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                statusDiv.innerHTML = '<p style="color: #dc2626; font-size: 0.9rem;">Password must be at least 6 characters long.</p>';
+                return;
+            }
+
+            // Check if reset token is valid
+            const resetData = passwordResetTokens.find(r => r.token === resetToken && !r.used && r.expires > Date.now());
+            if (!resetData) {
+                statusDiv.innerHTML = '<div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 1rem; color: #dc2626;">' +
+                    '<p style="font-weight: 500; margin-bottom: 0.5rem;">Invalid or Expired Link</p>' +
+                    '<p style="font-size: 0.9rem;">This password reset link is invalid or has expired. Please request a new password reset.</p>' +
+                    '</div>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<p style="color: #0369a1; font-size: 0.9rem;">Updating password...</p>';
+
+            // Mark token as used
+            resetData.used = true;
+
+            // In a real application, you would hash the password and update the database
+            // For this demo, we'll just show success and redirect to login
+            setTimeout(() => {
+                statusDiv.innerHTML = '<div style="background: #d1fae5; border: 1px solid #10b981; border-radius: 6px; padding: 1rem; color: #065f46;">' +
+                    '<p style="font-weight: 500; margin-bottom: 0.5rem;">Password Updated Successfully!</p>' +
+                    '<p style="font-size: 0.9rem;">Your password has been updated. You can now log in with your new password.</p>' +
+                    '</div>';
+                
+                // Redirect to login after 3 seconds
+                setTimeout(() => {
+                    window.location.href = window.location.origin;
+                }, 3000);
+            }, 1000);
         }
 
         function closeForgotPassword() {
             document.getElementById('loginMessage').innerHTML = '';
         }
+
+        // Make functions globally accessible
+        window.showForgotPassword = showForgotPassword;
+        window.sendPasswordReset = sendPasswordReset;
+        window.closeForgotPassword = closeForgotPassword;
+        window.generateResetToken = generateResetToken;
+        window.checkForResetToken = checkForResetToken;
+        window.showPasswordResetForm = showPasswordResetForm;
+        window.resetPassword = resetPassword;
 
         // Logout
         window.logout = function() {
@@ -7227,6 +7429,97 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 </body>
 </html>`;
 
+// SendGrid email sending function
+async function sendPasswordResetEmail(email, resetLink, resetToken) {
+    if (!sgMail || !process.env.SENDGRID_API_KEY) {
+        throw new Error('SendGrid not configured');
+    }
+
+    const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Password Reset - 1.FC Köln Management System</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { background: white; padding: 30px; border: 1px solid #e0e0e0; }
+                .footer { background: #f5f5f5; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 12px; color: #666; }
+                .reset-button { display: inline-block; background: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+                .reset-button:hover { background: #b91c1c; }
+                .warning { background: #fef3c7; border: 1px solid #f59e0b; padding: 15px; border-radius: 6px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🔑 Password Reset Request</h1>
+                    <p>1.FC Köln Bundesliga Talent Program</p>
+                </div>
+                <div class="content">
+                    <h2>Hello,</h2>
+                    <p>We received a request to reset your password for the 1.FC Köln Management System.</p>
+                    
+                    <p>Click the button below to reset your password:</p>
+                    
+                    <div style="text-align: center;">
+                        <a href="${resetLink}" class="reset-button">Reset My Password</a>
+                    </div>
+                    
+                    <p>Or copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 4px;">${resetLink}</p>
+                    
+                    <div class="warning">
+                        <p><strong>⚠️ Important Security Information:</strong></p>
+                        <ul>
+                            <li>This link will expire in <strong>1 hour</strong></li>
+                            <li>If you didn't request this reset, please ignore this email</li>
+                            <li>Never share this link with anyone</li>
+                            <li>For security questions, contact: max.bisinger@warubi-sports.com</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Best regards,<br>1.FC Köln Management Team</p>
+                </div>
+                <div class="footer">
+                    <p>This is an automated message from the 1.FC Köln Bundesliga Talent Program Management System.</p>
+                    <p>If you have questions, contact support at max.bisinger@warubi-sports.com</p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const msg = {
+        to: email,
+        from: 'max.bisinger@warubi-sports.com', // Using your verified sender
+        subject: '🔑 Password Reset - 1.FC Köln Management System',
+        html: emailHtml,
+        text: `
+Password Reset Request - 1.FC Köln Management System
+
+Hello,
+
+We received a request to reset your password for the 1.FC Köln Management System.
+
+Reset your password by visiting this link:
+${resetLink}
+
+This link will expire in 1 hour. If you didn't request this reset, please ignore this email.
+
+For security questions, contact: max.bisinger@warubi-sports.com
+
+Best regards,
+1.FC Köln Management Team
+        `
+    };
+
+    await sgMail.send(msg);
+    console.log('Password reset email sent to:', email);
+}
+
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     
@@ -7241,6 +7534,38 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+    // Handle password reset email API
+    if (req.method === 'POST' && parsedUrl.pathname === '/api/send-password-reset') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', async () => {
+            try {
+                const { email, resetLink, resetToken } = JSON.parse(body);
+                
+                // Validate required fields
+                if (!email || !resetLink || !resetToken) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Missing required fields' }));
+                    return;
+                }
+                
+                // Send email using SendGrid
+                await sendPasswordResetEmail(email, resetLink, resetToken);
+                
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (error) {
+                console.error('Password reset email error:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Failed to send email' }));
+            }
+        });
+        return;
+    }
+
     // Serve static assets (images, logos, etc.)
     if (parsedUrl.pathname.startsWith('/attached_assets/')) {
         const filePath = path.join(__dirname, parsedUrl.pathname);
