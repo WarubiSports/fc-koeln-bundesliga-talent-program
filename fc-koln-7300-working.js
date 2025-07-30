@@ -5866,7 +5866,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         // Navigation
-        function showPage(pageId) {
+        window.showPage = function(pageId) {
             // Hide all pages
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.remove('active'));
@@ -5900,7 +5900,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         // Auth tab management (login/register)
-        function showAuthTab(tabType) {
+        window.showAuthTab = function(tabType) {
             const loginTab = document.getElementById('login-auth-tab');
             const registerTab = document.getElementById('register-auth-tab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
@@ -6030,7 +6030,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         // Logout
-        function logout() {
+        window.logout = function() {
             currentUser = null;
             localStorage.removeItem('fc-koln-auth');
             document.getElementById('loginPage').style.display = 'block';
@@ -6330,12 +6330,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Full Admin Control Functions
         function fullUserControl() {
-            alert('FULL USER CONTROL ACTIVATED\n\nAdmin now has complete control over:\n• All user accounts\n• Account creation and deletion\n• Profile modifications\n• Access level changes\n• Password resets\n\nAll user management operations are now available.');
+            alert('FULL USER CONTROL ACTIVATED\\n\\nAdmin now has complete control over:\\n• All user accounts\\n• Account creation and deletion\\n• Profile modifications\\n• Access level changes\\n• Password resets\\n\\nAll user management operations are now available.');
         }
 
         function passwordManagement() {
             if(confirm('Enable global password management? This will allow you to reset any user password and view security information.')) {
-                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\n\nYou can now:\n• Reset any user password\n• Force password changes\n• View login history\n• Manage security settings\n• Access encrypted data');
+                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\\n\\nYou can now:\\n• Reset any user password\\n• Force password changes\\n• View login history\\n• Manage security settings\\n• Access encrypted data');
             }
         }
 
@@ -6563,7 +6563,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             };
 
             // Display success message
-            alert('Chore "' + title + '" has been created successfully!\n\nAssigned to: ' + assignmentText + '\nHouse: ' + house + '\nDeadline: ' + chore.deadline + '\nPoints: ' + points);
+            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + assignmentText + '\\nHouse: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
             
             // Clear the form
             clearChoreForm();
@@ -6658,7 +6658,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // View house details
         function viewHouseDetails(houseId) {
-            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.\n\nThis would show:\n- Individual player assignments\n- Completion rates\n- Point rankings\n- Chore history');
+            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
         }
 
         // Update chore assignments display
@@ -6882,17 +6882,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const player = playerStorage.find(p => p.id === playerId);
             if (!player) return;
 
-            alert('Player Details:\n\n' +
-                'Name: ' + player.firstName + ' ' + player.lastName + '\n' +
-                'Position: ' + player.position + '\n' +
-                'Age: ' + player.age + '\n' +
-                'Nationality: ' + player.nationality + '\n' +
-                'House: ' + player.house + ' (Room ' + player.room + ')\n' +
-                'Contract: ' + player.contractPeriod + '\n' +
-                'Status: ' + player.status + '\n' +
-                'Phone: ' + player.phoneNumber + '\n' +
-                'Emergency Contact: ' + player.emergencyContact + '\n' +
-                'Medical Info: ' + player.medicalInfo + '\n' +
+            alert('Player Details:\\n\\n' +
+                'Name: ' + player.firstName + ' ' + player.lastName + '\\n' +
+                'Position: ' + player.position + '\\n' +
+                'Age: ' + player.age + '\\n' +
+                'Nationality: ' + player.nationality + '\\n' +
+                'House: ' + player.house + ' (Room ' + player.room + ')\\n' +
+                'Contract: ' + player.contractPeriod + '\\n' +
+                'Status: ' + player.status + '\\n' +
+                'Phone: ' + player.phoneNumber + '\\n' +
+                'Emergency Contact: ' + player.emergencyContact + '\\n' +
+                'Medical Info: ' + player.medicalInfo + '\\n' +
                 'Notes: ' + player.specialNotes);
         }
 
@@ -7050,7 +7050,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
 
             // Simulate order submission
-            alert('Grocery order submitted successfully!\n\nItems: ' + orderItems.length + '\nTotal: €' + total.toFixed(2) + '\n\nYour order will be processed for the next available delivery slot.');
+            alert('Grocery order submitted successfully!\\n\\nItems: ' + orderItems.length + '\\nTotal: €' + total.toFixed(2) + '\\n\\nYour order will be processed for the next available delivery slot.');
             
             // Clear selections after successful submission
             clearSelection();
