@@ -3462,6 +3462,48 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             border-top: 2px solid #e5e7eb;
         }
 
+        .player-order-summary.expanded {
+            margin-bottom: 1.5rem;
+        }
+
+        .detailed-order-items {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #dc2626;
+        }
+
+        .detailed-order-items .order-item {
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detailed-order-items .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .consolidated-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-category {
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+        }
+
+        .item-category strong {
+            color: #dc2626;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -5037,6 +5079,271 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     
                     <!-- All Houses Summary -->
                     <div id="allHousesSummary" class="house-summary-content active">
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 1 (4 orders)</h4>
+                                <div class="house-total">Total: €127.85</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Max Bisinger</span>
+                                    <span class="order-total">€31.45</span>
+                                    <div class="order-items-preview">Chicken (2x), Rice, Yogurt, Protein bars...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Luis Garcia</span>
+                                    <span class="order-total">€28.90</span>
+                                    <div class="order-items-preview">Fish, Pasta, Vegetables, Milk...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Chicken (8x), Rice (3x), Yogurt (6x), Fish (4x), Pasta (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 2 (3 orders)</h4>
+                                <div class="house-total">Total: €89.65</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Mike Brown</span>
+                                    <span class="order-total">€29.85</span>
+                                    <div class="order-items-preview">Salmon, Sweet potatoes, Spinach...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">David Kim</span>
+                                    <span class="order-total">€32.15</span>
+                                    <div class="order-items-preview">Pork, Quinoa, Broccoli, Almonds...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Salmon (3x), Sweet potatoes (4x), Spinach (2x), Pork (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 3 (2 orders)</h4>
+                                <div class="house-total">Total: €61.30</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Tom Wilson</span>
+                                    <span class="order-total">€33.80</span>
+                                    <div class="order-items-preview">Lamb, Potatoes, Carrots, Protein shake...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Alex Chen</span>
+                                    <span class="order-total">€27.50</span>
+                                    <div class="order-items-preview">Tofu, Noodles, Peppers, Soy milk...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Lamb (2x), Potatoes (5x), Carrots (3x), Tofu (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <!-- Individual House Views -->
+                    <div id="W1Summary" class="house-summary-content">
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 1 - Detailed View</h4>
+                                <div class="house-total">Total: €127.85</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Max Bisinger</span>
+                                    <span class="order-total">€31.45</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Chicken breast (2x) - €8.90</div>
+                                        <div class="order-item">Basmati Rice (1x) - €2.99</div>
+                                        <div class="order-item">Greek Yogurt (3x) - €4.47</div>
+                                        <div class="order-item">Protein bars (4x) - €4.36</div>
+                                        <div class="order-item">Bananas (6x) - €2.40</div>
+                                        <div class="order-item">Avocados (3x) - €4.77</div>
+                                        <div class="order-item">Ground Turkey (1x) - €3.56</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Luis Garcia</span>
+                                    <span class="order-total">€28.90</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Salmon fillet (2x) - €7.80</div>
+                                        <div class="order-item">Whole wheat pasta (2x) - €3.98</div>
+                                        <div class="order-item">Mixed vegetables (1x) - €2.45</div>
+                                        <div class="order-item">Milk (2x) - €2.80</div>
+                                        <div class="order-item">Eggs (12x) - €3.99</div>
+                                        <div class="order-item">Spinach (1x) - €1.89</div>
+                                        <div class="order-item">Sweet potatoes (3x) - €5.99</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Ahmed Hassan</span>
+                                    <span class="order-total">€34.20</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Ground beef (2x) - €6.98</div>
+                                        <div class="order-item">Brown bread (2x) - €3.98</div>
+                                        <div class="order-item">Mixed fruits (1x) - €4.99</div>
+                                        <div class="order-item">Cottage cheese (2x) - €3.78</div>
+                                        <div class="order-item">Quinoa (1x) - €3.49</div>
+                                        <div class="order-item">Broccoli (2x) - €3.98</div>
+                                        <div class="order-item">Almonds (1x) - €6.99</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Jonas Mueller</span>
+                                    <span class="order-total">€33.30</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Turkey slices (2x) - €5.98</div>
+                                        <div class="order-item">Oatmeal (2x) - €4.98</div>
+                                        <div class="order-item">Bananas (8x) - €3.20</div>
+                                        <div class="order-item">Cheese slices (1x) - €4.99</div>
+                                        <div class="order-item">Protein shake (3x) - €8.97</div>
+                                        <div class="order-item">Carrots (2x) - €2.18</div>
+                                        <div class="order-item">Peanut butter (1x) - €2.99</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Complete Shopping List - Widdersdorf 1:</h5>
+                                <div class="consolidated-items">
+                                    <div class="item-category">
+                                        <strong>Proteins:</strong> Chicken breast (2x), Salmon fillet (2x), Ground beef (2x), Ground turkey (1x), Turkey slices (2x), Eggs (12x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Grains & Carbs:</strong> Basmati rice (1x), Whole wheat pasta (2x), Brown bread (2x), Quinoa (1x), Oatmeal (2x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Fruits & Vegetables:</strong> Bananas (14x), Avocados (3x), Mixed vegetables (1x), Mixed fruits (1x), Spinach (1x), Sweet potatoes (3x), Broccoli (2x), Carrots (2x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Dairy:</strong> Greek yogurt (3x), Milk (2x), Cottage cheese (2x), Cheese slices (1x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Supplements & Snacks:</strong> Protein bars (4x), Protein shake (3x), Almonds (1x), Peanut butter (1x)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="W2Summary" class="house-summary-content">
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 2 - Detailed View</h4>
+                                <div class="house-total">Total: €89.65</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Mike Brown</span>
+                                    <span class="order-total">€29.85</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Salmon (3x) - €11.70</div>
+                                        <div class="order-item">Sweet potatoes (4x) - €7.98</div>
+                                        <div class="order-item">Spinach (2x) - €3.78</div>
+                                        <div class="order-item">Olive oil (1x) - €6.39</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">David Kim</span>
+                                    <span class="order-total">€32.15</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Pork tenderloin (2x) - €9.98</div>
+                                        <div class="order-item">Quinoa (2x) - €6.98</div>
+                                        <div class="order-item">Broccoli (3x) - €5.97</div>
+                                        <div class="order-item">Almonds (2x) - €9.22</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Carlos Ruiz</span>
+                                    <span class="order-total">€27.65</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Tuna steaks (2x) - €8.98</div>
+                                        <div class="order-item">Brown rice (2x) - €5.98</div>
+                                        <div class="order-item">Avocados (6x) - €9.54</div>
+                                        <div class="order-item">Lime (4x) - €3.15</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Complete Shopping List - Widdersdorf 2:</h5>
+                                <div class="consolidated-items">
+                                    <div class="item-category">
+                                        <strong>Proteins:</strong> Salmon (3x), Pork tenderloin (2x), Tuna steaks (2x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Grains:</strong> Quinoa (2x), Brown rice (2x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Vegetables & Fruits:</strong> Sweet potatoes (4x), Spinach (2x), Broccoli (3x), Avocados (6x), Lime (4x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Pantry:</strong> Olive oil (1x), Almonds (2x)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="W3Summary" class="house-summary-content">
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 3 - Detailed View</h4>
+                                <div class="house-total">Total: €61.30</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Tom Wilson</span>
+                                    <span class="order-total">€33.80</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Lamb chops (2x) - €15.98</div>
+                                        <div class="order-item">Red potatoes (5x) - €9.95</div>
+                                        <div class="order-item">Carrots (3x) - €3.27</div>
+                                        <div class="order-item">Protein shake mix (1x) - €4.60</div>
+                                    </div>
+                                </div>
+                                <div class="player-order-summary expanded">
+                                    <span class="player-name">Alex Chen</span>
+                                    <span class="order-total">€27.50</span>
+                                    <div class="detailed-order-items">
+                                        <div class="order-item">Firm tofu (2x) - €5.98</div>
+                                        <div class="order-item">Rice noodles (3x) - €8.97</div>
+                                        <div class="order-item">Bell peppers (4x) - €7.96</div>
+                                        <div class="order-item">Soy milk (2x) - €4.59</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Complete Shopping List - Widdersdorf 3:</h5>
+                                <div class="consolidated-items">
+                                    <div class="item-category">
+                                        <strong>Proteins:</strong> Lamb chops (2x), Firm tofu (2x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Carbs:</strong> Red potatoes (5x), Rice noodles (3x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Vegetables:</strong> Carrots (3x), Bell peppers (4x)
+                                    </div>
+                                    <div class="item-category">
+                                        <strong>Beverages & Supplements:</strong> Soy milk (2x), Protein shake mix (1x)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                         <div class="house-group">
                             <div class="house-header">
                                 <h4>🏠 Widdersdorf 1 (4 orders)</h4>
@@ -7721,8 +8028,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             window.showBudgetValidation = showBudgetValidation;
             window.updateOrderPreview = updateOrderPreview;
             window.submitIndividualOrder = submitIndividualOrder;
+            
+            // Clear selections after successful submission
+            clearSelection();
+        }
 
-        // House Summary Admin Functions
+        // House Summary Admin Functions - Global scope
         window.showHouseSummary = function(house) {
             // Hide all house summary content
             document.querySelectorAll('.house-summary-content').forEach(content => {
@@ -7739,9 +8050,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 document.getElementById('allHousesSummary').classList.add('active');
                 document.querySelector('.house-tab-btn').classList.add('active');
             } else {
-                // Show specific house summary (placeholder for individual house views)
-                document.getElementById('allHousesSummary').classList.add('active');
-                document.querySelectorAll('.house-tab-btn').forEach((btn, index) => {
+                // Show specific house summary
+                const houseElementId = house + 'Summary';
+                const houseElement = document.getElementById(houseElementId);
+                if (houseElement) {
+                    houseElement.classList.add('active');
+                }
+                
+                // Activate the correct tab button
+                document.querySelectorAll('.house-tab-btn').forEach((btn) => {
                     if (btn.textContent.includes(house)) {
                         btn.classList.add('active');
                     }
@@ -7762,10 +8079,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 alert('All House Orders Processed Successfully!\\n\\n✅ 9 individual orders submitted\\n✅ 3 house shopping lists generated\\n✅ Delivery scheduled for Tuesday & Friday\\n✅ Player confirmations sent\\n\\nTotal processed: €278.80');
             }
         };
-            
-            // Clear selections after successful submission
-            clearSelection();
-        }
 
         // Initialize individual food order functionality on page load
         document.addEventListener('DOMContentLoaded', function() {
