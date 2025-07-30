@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the pre-Google Sheets application - complete damage reversal
-const serverProcess = spawn('node', ['fc-koln-complete-reverse.js'], {
+// Start the full 7300-line sophisticated application
+const serverProcess = spawn('node', ['fc-koln-7300-working.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
