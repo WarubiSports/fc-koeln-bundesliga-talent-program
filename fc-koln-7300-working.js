@@ -1040,6 +1040,92 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-style: italic;
             padding: 2rem;
         }
+
+        /* Calendar Display Styles */
+        .calendar-display {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+
+        .current-month {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: #111827;
+        }
+
+        .calendar-month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .calendar-day-cell {
+            background: white;
+            min-height: 100px;
+            padding: 0.5rem;
+            position: relative;
+        }
+
+        .calendar-day-cell.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .calendar-day-cell.today {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .calendar-day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .calendar-event-dot {
+            background: #dc2626;
+            color: white;
+            font-size: 0.625rem;
+            padding: 1px 4px;
+            border-radius: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calendar-event-dot.training {
+            background: #059669;
+        }
+
+        .calendar-event-dot.match {
+            background: #dc2626;
+        }
+
+        .calendar-event-dot.meeting {
+            background: #7c3aed;
+        }
+
+        .specific-day-options {
+            margin-top: 0.5rem;
+        }
             padding: 1.5rem;
             text-align: center;
         }
@@ -5351,6 +5437,21 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
+                <!-- Calendar Display -->
+                <div class="form-section">
+                    <h3>📅 Event Calendar</h3>
+                    <div id="calendarDisplay" class="calendar-display">
+                        <div class="calendar-nav">
+                            <button class="btn-mini" onclick="changeCalendarMonth(-1)">← Previous</button>
+                            <span id="currentMonthYear" class="current-month"></span>
+                            <button class="btn-mini" onclick="changeCalendarMonth(1)">Next →</button>
+                        </div>
+                        <div id="calendarGrid" class="calendar-month-grid">
+                            <!-- Calendar will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Weekly Overview -->
                 <div class="form-section">
                     <h3>📅 This Week's Schedule</h3>
@@ -5588,6 +5689,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                         <option value="none">One-time Event</option>
                                         <option value="daily">Daily</option>
                                         <option value="weekly">Weekly</option>
+                                        <option value="weekdays">Monday-Friday (Weekdays)</option>
+                                        <option value="weekends">Saturday-Sunday (Weekends)</option>
+                                        <option value="specific-day">Specific Weekday (e.g., Every Tuesday)</option>
                                         <option value="monthly">Monthly</option>
                                         <option value="custom">Custom</option>
                                     </select>
@@ -5620,6 +5724,18 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                             <label><input type="checkbox" value="6"> Sat</label>
                                             <label><input type="checkbox" value="0"> Sun</label>
                                         </div>
+                                    </div>
+                                    <div id="specificDayOptions" class="specific-day-options" style="display: none;">
+                                        <label>Select day of the week:</label>
+                                        <select id="specificWeekday">
+                                            <option value="1">Every Monday</option>
+                                            <option value="2">Every Tuesday</option>
+                                            <option value="3">Every Wednesday</option>
+                                            <option value="4">Every Thursday</option>
+                                            <option value="5">Every Friday</option>
+                                            <option value="6">Every Saturday</option>
+                                            <option value="0">Every Sunday</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -8224,26 +8340,55 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const recurrenceType = document.getElementById('eventRecurrence').value;
             const optionsSection = document.getElementById('recurrenceOptionsSection');
             const weeklyOptions = document.getElementById('weeklyOptions');
+            const specificDayOptions = document.getElementById('specificDayOptions');
             const recurrenceUnit = document.getElementById('recurrenceUnit');
+            
+            // Hide all options first
+            weeklyOptions.style.display = 'none';
+            specificDayOptions.style.display = 'none';
             
             if (recurrenceType === 'none') {
                 optionsSection.style.display = 'none';
             } else {
                 optionsSection.style.display = 'block';
                 
-                // Update unit text based on recurrence type
+                // Update unit text and show relevant options
                 if (recurrenceType === 'daily') {
                     recurrenceUnit.textContent = 'day(s)';
-                    weeklyOptions.style.display = 'none';
                 } else if (recurrenceType === 'weekly') {
                     recurrenceUnit.textContent = 'week(s)';
                     weeklyOptions.style.display = 'block';
+                } else if (recurrenceType === 'weekdays') {
+                    recurrenceUnit.textContent = 'week(s)';
+                    // Auto-select Mon-Fri
+                    setTimeout(() => {
+                        const dayCheckboxes = document.querySelectorAll('#weeklyOptions input[type="checkbox"]');
+                        dayCheckboxes.forEach(cb => cb.checked = false);
+                        [1,2,3,4,5].forEach(day => {
+                            const checkbox = document.querySelector('#weeklyOptions input[value="' + day + '"]');
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }, 100);
+                    weeklyOptions.style.display = 'block';
+                } else if (recurrenceType === 'weekends') {
+                    recurrenceUnit.textContent = 'week(s)';
+                    // Auto-select Sat-Sun
+                    setTimeout(() => {
+                        const dayCheckboxes = document.querySelectorAll('#weeklyOptions input[type="checkbox"]');
+                        dayCheckboxes.forEach(cb => cb.checked = false);
+                        [6,0].forEach(day => {
+                            const checkbox = document.querySelector('#weeklyOptions input[value="' + day + '"]');
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }, 100);
+                    weeklyOptions.style.display = 'block';
+                } else if (recurrenceType === 'specific-day') {
+                    recurrenceUnit.textContent = 'week(s)';
+                    specificDayOptions.style.display = 'block';
                 } else if (recurrenceType === 'monthly') {
                     recurrenceUnit.textContent = 'month(s)';
-                    weeklyOptions.style.display = 'none';
                 } else if (recurrenceType === 'custom') {
                     recurrenceUnit.textContent = 'day(s)';
-                    weeklyOptions.style.display = 'none';
                 }
             }
         };
@@ -8295,9 +8440,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Get selected days for weekly recurrence
             let selectedDays = [];
-            if (recurrence === 'weekly') {
+            if (recurrence === 'weekly' || recurrence === 'weekdays' || recurrence === 'weekends') {
                 const dayCheckboxes = document.querySelectorAll('#weeklyOptions input[type="checkbox"]:checked');
                 selectedDays = Array.from(dayCheckboxes).map(cb => parseInt(cb.value));
+            } else if (recurrence === 'specific-day') {
+                const specificDay = document.getElementById('specificWeekday').value;
+                selectedDays = [parseInt(specificDay)];
             }
 
             // Create event object
@@ -8367,7 +8515,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Close modal and refresh calendar
             closeCreateEventModal();
             refreshCalendarEvents();
-            displayCalendarEvents();
+            
+            // Delay the display update to ensure DOM is ready
+            setTimeout(() => {
+                displayCalendarEvents();
+            }, 100);
             
             console.log('New event created:', newEvent);
         };
@@ -8399,7 +8551,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 // Calculate next occurrence
                 if (baseEvent.recurrence.type === 'daily') {
                     currentDate.setDate(currentDate.getDate() + interval);
-                } else if (baseEvent.recurrence.type === 'weekly') {
+                } else if (baseEvent.recurrence.type === 'weekly' || baseEvent.recurrence.type === 'weekdays' || baseEvent.recurrence.type === 'weekends' || baseEvent.recurrence.type === 'specific-day') {
                     if (baseEvent.recurrence.selectedDays && baseEvent.recurrence.selectedDays.length > 0) {
                         // Handle specific days of the week
                         const nextDay = getNextWeeklyOccurrence(currentDate, baseEvent.recurrence.selectedDays, interval);
@@ -8469,6 +8621,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
                 
                 refreshCalendarEvents();
+                
+                // Delay the display update
+                setTimeout(() => {
+                    displayCalendarEvents();
+                }, 100);
+                
                 alert('Event deleted successfully.');
             }
         };
@@ -8482,60 +8640,160 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             displayCalendarEvents();
         };
 
+        // Current calendar state
+        let currentCalendarDate = new Date();
+
         window.displayCalendarEvents = function() {
             const container = document.getElementById('eventManagementList');
-            if (!container) return;
-            
-            if (!window.calendarEvents || window.calendarEvents.length === 0) {
-                container.innerHTML = '<p class="no-events-message">No events created yet. Use the "Create New Event" button to add events.</p>';
-                return;
+            if (container) {
+                if (!window.calendarEvents || window.calendarEvents.length === 0) {
+                    container.innerHTML = '<p class="no-events-message">No events created yet. Use the "Create New Event" button to add events.</p>';
+                } else {
+                    let html = '';
+                    const sortedEvents = window.calendarEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    sortedEvents.forEach(event => {
+                        const eventDate = new Date(event.date);
+                        const isRecurring = event.isRecurring || event.recurrence?.type !== 'none';
+                        
+                        html += '<div class="event-item' + (isRecurring ? ' recurring' : '') + '">';
+                        html += '<div class="event-header">';
+                        html += '<div>';
+                        html += '<div class="event-title-main">' + event.title;
+                        
+                        if (isRecurring) {
+                            html += '<span class="recurring-badge">Recurring</span>';
+                        }
+                        
+                        html += '</div>';
+                        html += '<div class="event-meta">';
+                        html += '📅 ' + eventDate.toLocaleDateString() + ' at ' + event.time;
+                        html += ' • 📍 ' + (event.location || 'Location TBD');
+                        html += ' • ⚽ ' + event.type;
+                        html += '</div>';
+                        
+                        if (event.selectedPlayers && event.selectedPlayers.length > 0) {
+                            html += '<div class="event-meta">👥 ' + event.selectedPlayers.length + ' players assigned</div>';
+                        } else if (event.attendance === 'all') {
+                            html += '<div class="event-meta">👥 All players required</div>';
+                        }
+                        
+                        html += '</div>';
+                        html += '<div class="event-actions-menu">';
+                        html += '<button class="action-btn" onclick="editEvent(' + JSON.stringify(event.id) + ')">✏️ Edit</button>';
+                        html += '<button class="action-btn danger" onclick="deleteEvent(' + JSON.stringify(event.id) + ')">🗑️ Delete</button>';
+                        html += '</div>';
+                        html += '</div>';
+                        
+                        if (event.description) {
+                            html += '<div class="event-meta" style="margin-top: 0.5rem;">' + event.description + '</div>';
+                        }
+                        
+                        html += '</div>';
+                    });
+                    
+                    container.innerHTML = html;
+                }
             }
             
-            let html = '';
-            const sortedEvents = window.calendarEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            // Also update the main calendar view
+            renderCalendar();
+        };
+
+        window.renderCalendar = function() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthYear = document.getElementById('currentMonthYear');
             
-            sortedEvents.forEach(event => {
-                const eventDate = new Date(event.date);
-                const isRecurring = event.isRecurring || event.recurrence?.type !== 'none';
-                
-                html += '<div class="event-item' + (isRecurring ? ' recurring' : '') + '">';
-                html += '<div class="event-header">';
-                html += '<div>';
-                html += '<div class="event-title-main">' + event.title;
-                
-                if (isRecurring) {
-                    html += '<span class="recurring-badge">Recurring</span>';
-                }
-                
-                html += '</div>';
-                html += '<div class="event-meta">';
-                html += '📅 ' + eventDate.toLocaleDateString() + ' at ' + event.time;
-                html += ' • 📍 ' + (event.location || 'Location TBD');
-                html += ' • ⚽ ' + event.type;
-                html += '</div>';
-                
-                if (event.selectedPlayers && event.selectedPlayers.length > 0) {
-                    html += '<div class="event-meta">👥 ' + event.selectedPlayers.length + ' players assigned</div>';
-                } else if (event.attendance === 'all') {
-                    html += '<div class="event-meta">👥 All players required</div>';
-                }
-                
-                html += '</div>';
-                html += '<div class="event-actions-menu">';
-                html += '<button class="action-btn" onclick="editEvent(' + JSON.stringify(event.id) + ')">✏️ Edit</button>';
-                html += '<button class="action-btn danger" onclick="deleteEvent(' + JSON.stringify(event.id) + ')">🗑️ Delete</button>';
-                html += '</div>';
-                html += '</div>';
-                
-                if (event.description) {
-                    html += '<div class="event-meta" style="margin-top: 0.5rem;">' + event.description + '</div>';
-                }
-                
-                html += '</div>';
+            if (!calendarGrid || !monthYear) return;
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            // Set month/year display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            monthYear.textContent = monthNames[month] + ' ' + year;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Build calendar grid
+            let html = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                html += '<div class="calendar-day-header" style="background: #f3f4f6; font-weight: 600; padding: 0.5rem; text-align: center;">' + day + '</div>';
             });
             
-            container.innerHTML = html;
+            // Add empty cells for days before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const prevMonthDay = new Date(year, month, 1 - (startingDayOfWeek - i));
+                html += '<div class="calendar-day-cell other-month">';
+                html += '<div class="day-number">' + prevMonthDay.getDate() + '</div>';
+                html += '</div>';
+            }
+            
+            // Add days of current month
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const currentDay = new Date(year, month, day);
+                const isToday = currentDay.toDateString() === today.toDateString();
+                
+                html += '<div class="calendar-day-cell' + (isToday ? ' today' : '') + '">';
+                html += '<div class="day-number">' + day + '</div>';
+                
+                // Add events for this day
+                const dayEvents = getEventsForDate(currentDay);
+                if (dayEvents.length > 0) {
+                    html += '<div class="calendar-day-events">';
+                    dayEvents.slice(0, 3).forEach(event => {
+                        html += '<div class="calendar-event-dot ' + event.type + '">';
+                        html += event.time + ' ' + event.title.substring(0, 10);
+                        html += '</div>';
+                    });
+                    if (dayEvents.length > 3) {
+                        html += '<div class="calendar-event-dot">+' + (dayEvents.length - 3) + ' more</div>';
+                    }
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            // Add remaining cells to complete the grid
+            const totalCells = Math.ceil((daysInMonth + startingDayOfWeek) / 7) * 7;
+            for (let i = daysInMonth + startingDayOfWeek; i < totalCells; i++) {
+                const nextMonthDay = new Date(year, month + 1, i - daysInMonth - startingDayOfWeek + 1);
+                html += '<div class="calendar-day-cell other-month">';
+                html += '<div class="day-number">' + nextMonthDay.getDate() + '</div>';
+                html += '</div>';
+            }
+            
+            calendarGrid.innerHTML = html;
         };
+
+        window.getEventsForDate = function(date) {
+            if (!window.calendarEvents) return [];
+            
+            const dateString = date.toISOString().split('T')[0];
+            return window.calendarEvents.filter(event => event.date === dateString);
+        };
+
+        window.changeCalendarMonth = function(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            renderCalendar();
+        };
+
+        // Initialize calendar on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                renderCalendar();
+            }, 1000);
+        });
 
         window.editEvent = function(eventId) {
             // For now, just show event details - full edit functionality could be added later
