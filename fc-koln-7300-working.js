@@ -1126,6 +1126,269 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         .specific-day-options {
             margin-top: 0.5rem;
         }
+
+        /* Calendar View Styles */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .view-toggles {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .view-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .current-period {
+            font-weight: 600;
+            color: #111827;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .calendar-view {
+            display: none;
+        }
+
+        .calendar-view.active {
+            display: block;
+        }
+
+        /* Day View Styles */
+        .day-view-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .day-header {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+
+        .day-date {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .day-weekday {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .day-event-item {
+            padding: 1rem;
+            border-left: 4px solid #dc2626;
+            background: #f8fafc;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .day-event-item.training {
+            border-left-color: #059669;
+        }
+
+        .day-event-item.match {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .day-event-time {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .day-event-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-event-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Week View Styles */
+        .week-view-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+        }
+
+        .week-day {
+            background: white;
+            min-height: 200px;
+            padding: 0.75rem;
+        }
+
+        .week-day-header {
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .week-day.today {
+            background: #fef3c7;
+        }
+
+        .week-event {
+            background: #dc2626;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+        }
+
+        .week-event.training {
+            background: #059669;
+        }
+
+        .week-event.match {
+            background: #dc2626;
+        }
+
+        .week-event.meeting {
+            background: #7c3aed;
+        }
+
+        /* Month View Styles */
+        .month-view-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+        }
+
+        .month-day {
+            background: white;
+            min-height: 100px;
+            padding: 0.5rem;
+            position: relative;
+        }
+
+        .month-day.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .month-day.today {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+
+        .month-day-number {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .month-events {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .month-event-dot {
+            background: #dc2626;
+            color: white;
+            font-size: 0.625rem;
+            padding: 1px 3px;
+            border-radius: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .month-event-dot.training {
+            background: #059669;
+        }
+
+        .month-event-dot.match {
+            background: #dc2626;
+        }
+
+        .month-event-dot.meeting {
+            background: #7c3aed;
+        }
             padding: 1.5rem;
             text-align: center;
         }
@@ -5428,34 +5691,58 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
                 
-                <!-- Event Management Section (Admin Only) -->
+                <!-- Calendar Views -->
+                <div class="form-section">
+                    <div class="calendar-header">
+                        <h3>📅 Training Calendar & Schedule</h3>
+                        <div class="calendar-controls">
+                            <div class="view-toggles">
+                                <button class="view-btn active" onclick="switchCalendarView('day')">Day</button>
+                                <button class="view-btn" onclick="switchCalendarView('week')">Week</button>
+                                <button class="view-btn" onclick="switchCalendarView('month')">Month</button>
+                            </div>
+                            <div class="calendar-nav">
+                                <button class="nav-btn" onclick="navigateCalendar(-1)">← Previous</button>
+                                <span id="currentPeriod" class="current-period">Today</span>
+                                <button class="nav-btn" onclick="navigateCalendar(1)">Next →</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Day View -->
+                    <div id="dayView" class="calendar-view active">
+                        <div id="dayViewContent" class="day-view-content">
+                            <!-- Day schedule will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Week View -->
+                    <div id="weekView" class="calendar-view">
+                        <div id="weekViewContent" class="week-view-content">
+                            <!-- Week schedule will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Month View -->
+                    <div id="monthView" class="calendar-view">
+                        <div id="monthViewContent" class="month-view-content">
+                            <!-- Month calendar will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Management (Admin Only) -->
                 <div class="form-section admin-only" style="display: none;">
                     <h3>📋 Event Management</h3>
                     <div id="eventManagementList" class="event-management-container">
-                        <!-- Existing events will be displayed here -->
                         <p class="no-events-message">No events created yet. Use the "Create New Event" button to add events.</p>
                     </div>
                 </div>
 
-                <!-- Calendar Display -->
+                <!-- Performance Metrics -->
                 <div class="form-section">
-                    <h3>📅 Event Calendar</h3>
-                    <div id="calendarDisplay" class="calendar-display">
-                        <div class="calendar-nav">
-                            <button class="btn-mini" onclick="changeCalendarMonth(-1)">← Previous</button>
-                            <span id="currentMonthYear" class="current-month"></span>
-                            <button class="btn-mini" onclick="changeCalendarMonth(1)">Next →</button>
-                        </div>
-                        <div id="calendarGrid" class="calendar-month-grid">
-                            <!-- Calendar will be populated here -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Weekly Overview -->
-                <div class="form-section">
-                    <h3>📅 This Week's Schedule</h3>
-                    <div class="calendar-grid enhanced">
+                    <h3>📊 Weekly Performance Metrics</h3>
+                    <div class="metrics-dashboard">
                         <div class="calendar-day">
                             <strong>Monday</strong>
                             <div class="calendar-event training">
@@ -8642,8 +8929,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Current calendar state
         let currentCalendarDate = new Date();
+        let currentCalendarView = 'day';
 
         window.displayCalendarEvents = function() {
+            // Update event management list for admins
             const container = document.getElementById('eventManagementList');
             if (container) {
                 if (!window.calendarEvents || window.calendarEvents.length === 0) {
@@ -8696,23 +8985,165 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
             }
             
-            // Also update the main calendar view
-            renderCalendar();
+            // Update the main calendar view based on current view mode
+            renderCurrentCalendarView();
         };
 
-        window.renderCalendar = function() {
-            const calendarGrid = document.getElementById('calendarGrid');
-            const monthYear = document.getElementById('currentMonthYear');
+        window.switchCalendarView = function(view) {
+            currentCalendarView = view;
             
-            if (!calendarGrid || !monthYear) return;
+            // Update view buttons
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target?.classList.add('active');
+            
+            // Update view containers
+            document.querySelectorAll('.calendar-view').forEach(container => container.classList.remove('active'));
+            document.getElementById(view + 'View').classList.add('active');
+            
+            // Update period display and render content
+            renderCurrentCalendarView();
+        };
+
+        window.navigateCalendar = function(direction) {
+            if (currentCalendarView === 'day') {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + direction);
+            } else if (currentCalendarView === 'week') {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + (direction * 7));
+            } else if (currentCalendarView === 'month') {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            }
+            
+            renderCurrentCalendarView();
+        };
+
+        window.renderCurrentCalendarView = function() {
+            updatePeriodDisplay();
+            
+            if (currentCalendarView === 'day') {
+                renderDayView();
+            } else if (currentCalendarView === 'week') {
+                renderWeekView();
+            } else if (currentCalendarView === 'month') {
+                renderMonthView();
+            }
+        };
+
+        window.updatePeriodDisplay = function() {
+            const periodElement = document.getElementById('currentPeriod');
+            if (!periodElement) return;
+            
+            const today = new Date();
+            const isToday = currentCalendarDate.toDateString() === today.toDateString();
+            
+            if (currentCalendarView === 'day') {
+                if (isToday) {
+                    periodElement.textContent = 'Today';
+                } else {
+                    periodElement.textContent = currentCalendarDate.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+            } else if (currentCalendarView === 'week') {
+                const startOfWeek = new Date(currentCalendarDate);
+                startOfWeek.setDate(currentCalendarDate.getDate() - currentCalendarDate.getDay());
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 6);
+                
+                periodElement.textContent = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + 
+                    ' - ' + endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } else if (currentCalendarView === 'month') {
+                periodElement.textContent = currentCalendarDate.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+            }
+        };
+
+        window.renderDayView = function() {
+            const container = document.getElementById('dayViewContent');
+            if (!container) return;
+            
+            const dayEvents = getEventsForDate(currentCalendarDate);
+            const today = new Date();
+            const isToday = currentCalendarDate.toDateString() === today.toDateString();
+            
+            let html = '<div class="day-header">';
+            html += '<div class="day-date">' + currentCalendarDate.getDate() + '</div>';
+            html += '<div class="day-weekday">' + currentCalendarDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', year: 'numeric' }) + '</div>';
+            html += '</div>';
+            
+            if (dayEvents.length === 0) {
+                html += '<div class="no-events-message">No events scheduled for this day</div>';
+            } else {
+                html += '<div class="day-events">';
+                dayEvents.sort((a, b) => a.time.localeCompare(b.time)).forEach(event => {
+                    html += '<div class="day-event-item ' + event.type + '">';
+                    html += '<div class="day-event-time">' + event.time + '</div>';
+                    html += '<div class="day-event-title">' + event.title + '</div>';
+                    html += '<div class="day-event-details">';
+                    if (event.location) html += '📍 ' + event.location + ' • ';
+                    html += '⚽ ' + event.type;
+                    if (event.selectedPlayers && event.selectedPlayers.length > 0) {
+                        html += ' • 👥 ' + event.selectedPlayers.length + ' players';
+                    }
+                    html += '</div>';
+                    if (event.description) {
+                        html += '<div style="margin-top: 0.5rem; font-size: 0.875rem;">' + event.description + '</div>';
+                    }
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+        };
+
+        window.renderWeekView = function() {
+            const container = document.getElementById('weekViewContent');
+            if (!container) return;
+            
+            // Get start of week (Sunday)
+            const startOfWeek = new Date(currentCalendarDate);
+            startOfWeek.setDate(currentCalendarDate.getDate() - currentCalendarDate.getDay());
+            
+            const today = new Date();
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            
+            let html = '<div class="week-grid">';
+            
+            for (let i = 0; i < 7; i++) {
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate() + i);
+                const isToday = currentDay.toDateString() === today.toDateString();
+                
+                html += '<div class="week-day' + (isToday ? ' today' : '') + '">';
+                html += '<div class="week-day-header">';
+                html += '<div>' + dayNames[i] + '</div>';
+                html += '<div style="font-size: 1.25rem;">' + currentDay.getDate() + '</div>';
+                html += '</div>';
+                
+                const dayEvents = getEventsForDate(currentDay);
+                dayEvents.sort((a, b) => a.time.localeCompare(b.time)).forEach(event => {
+                    html += '<div class="week-event ' + event.type + '" title="' + event.title + ' at ' + event.time + '">';
+                    html += event.time + ' ' + event.title.substring(0, 15);
+                    html += '</div>';
+                });
+                
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        };
+
+        window.renderMonthView = function() {
+            const container = document.getElementById('monthViewContent');
+            if (!container) return;
             
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
-            
-            // Set month/year display
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'];
-            monthYear.textContent = monthNames[month] + ' ' + year;
             
             // Get first day of month and number of days
             const firstDay = new Date(year, month, 1);
@@ -8720,43 +9151,42 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const daysInMonth = lastDay.getDate();
             const startingDayOfWeek = firstDay.getDay();
             
-            // Build calendar grid
-            let html = '';
+            const today = new Date();
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            let html = '<div class="month-grid">';
             
             // Add day headers
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             dayHeaders.forEach(day => {
-                html += '<div class="calendar-day-header" style="background: #f3f4f6; font-weight: 600; padding: 0.5rem; text-align: center;">' + day + '</div>';
+                html += '<div class="month-day-header" style="background: #f3f4f6; font-weight: 600; padding: 0.5rem; text-align: center;">' + day + '</div>';
             });
             
             // Add empty cells for days before month starts
             for (let i = 0; i < startingDayOfWeek; i++) {
                 const prevMonthDay = new Date(year, month, 1 - (startingDayOfWeek - i));
-                html += '<div class="calendar-day-cell other-month">';
-                html += '<div class="day-number">' + prevMonthDay.getDate() + '</div>';
+                html += '<div class="month-day other-month">';
+                html += '<div class="month-day-number">' + prevMonthDay.getDate() + '</div>';
                 html += '</div>';
             }
             
             // Add days of current month
-            const today = new Date();
             for (let day = 1; day <= daysInMonth; day++) {
                 const currentDay = new Date(year, month, day);
                 const isToday = currentDay.toDateString() === today.toDateString();
                 
-                html += '<div class="calendar-day-cell' + (isToday ? ' today' : '') + '">';
-                html += '<div class="day-number">' + day + '</div>';
+                html += '<div class="month-day' + (isToday ? ' today' : '') + '">';
+                html += '<div class="month-day-number">' + day + '</div>';
                 
-                // Add events for this day
                 const dayEvents = getEventsForDate(currentDay);
                 if (dayEvents.length > 0) {
-                    html += '<div class="calendar-day-events">';
-                    dayEvents.slice(0, 3).forEach(event => {
-                        html += '<div class="calendar-event-dot ' + event.type + '">';
-                        html += event.time + ' ' + event.title.substring(0, 10);
+                    html += '<div class="month-events">';
+                    dayEvents.slice(0, 2).forEach(event => {
+                        html += '<div class="month-event-dot ' + event.type + '">';
+                        html += event.time + ' ' + event.title.substring(0, 8);
                         html += '</div>';
                     });
-                    if (dayEvents.length > 3) {
-                        html += '<div class="calendar-event-dot">+' + (dayEvents.length - 3) + ' more</div>';
+                    if (dayEvents.length > 2) {
+                        html += '<div class="month-event-dot">+' + (dayEvents.length - 2) + '</div>';
                     }
                     html += '</div>';
                 }
@@ -8768,12 +9198,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const totalCells = Math.ceil((daysInMonth + startingDayOfWeek) / 7) * 7;
             for (let i = daysInMonth + startingDayOfWeek; i < totalCells; i++) {
                 const nextMonthDay = new Date(year, month + 1, i - daysInMonth - startingDayOfWeek + 1);
-                html += '<div class="calendar-day-cell other-month">';
-                html += '<div class="day-number">' + nextMonthDay.getDate() + '</div>';
+                html += '<div class="month-day other-month">';
+                html += '<div class="month-day-number">' + nextMonthDay.getDate() + '</div>';
                 html += '</div>';
             }
             
-            calendarGrid.innerHTML = html;
+            html += '</div>';
+            container.innerHTML = html;
         };
 
         window.getEventsForDate = function(date) {
@@ -8783,15 +9214,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             return window.calendarEvents.filter(event => event.date === dateString);
         };
 
-        window.changeCalendarMonth = function(direction) {
-            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
-            renderCalendar();
-        };
-
         // Initialize calendar on page load
         window.addEventListener('load', function() {
             setTimeout(() => {
-                renderCalendar();
+                if (typeof renderCurrentCalendarView === 'function') {
+                    renderCurrentCalendarView();
+                }
             }, 1000);
         });
 
