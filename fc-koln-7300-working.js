@@ -7633,6 +7633,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             if (houseSummarySection) {
                 houseSummarySection.style.display = currentUser.role === 'admin' ? 'block' : 'none';
             }
+            
+            // Show create event button for admins
+            const createEventBtn = document.getElementById('createEventBtn');
+            if (createEventBtn) {
+                createEventBtn.style.display = currentUser.role === 'admin' ? 'inline-block' : 'none';
+            }
         }
 
         // Navigation
@@ -7649,7 +7655,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById(pageId).classList.add('active');
             
             // Add active to clicked nav item
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Show create event button for admins when on calendar page
+            if (pageId === 'calendar' && currentUser && currentUser.role === 'admin') {
+                const createEventBtn = document.getElementById('createEventBtn');
+                if (createEventBtn) {
+                    createEventBtn.style.display = 'inline-block';
+                }
+            }
         }
 
         // Admin tab management
