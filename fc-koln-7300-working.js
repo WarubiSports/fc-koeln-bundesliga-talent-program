@@ -4330,8 +4330,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
             <!-- Food Orders Page -->
             <div id="food-orders" class="page">
-                <h1>🛒 House Grocery Management</h1>
+                <h1>🛒 Individual Food Orders</h1>
                 
+                <!-- Player vs Admin View Toggle -->
+                <div class="form-section" id="orderViewToggle" style="display: none;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button onclick="showPlayerOrdering()" class="btn btn-primary" id="playerOrderBtn">My Orders</button>
+                        <button onclick="showAdminSummary()" class="btn" id="adminSummaryBtn">House Summaries</button>
+                    </div>
+                </div>
+
                 <!-- Delivery Schedule & Deadlines -->
                 <div class="form-section">
                     <h3>📅 Delivery Schedule & Order Deadlines</h3>
@@ -4359,83 +4367,124 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Current Budget Overview -->
-                <div class="form-section">
-                    <h3>💰 Budget Overview</h3>
+                <!-- Player Individual Ordering Section -->
+                <div id="playerOrderingSection" class="form-section">
+                    <h3>🛒 Place Your Individual Order</h3>
+                    <div id="playerOrderStatus" style="margin-bottom: 1rem;"></div>
+                    
+                    <!-- Current Cart Overview -->
                     <div class="budget-overview">
                         <div class="budget-card">
-                            <h4>Total Current Cart</h4>
-                            <div class="budget-amount large">€168.16</div>
-                            <div class="budget-limit">Budget: €210.00</div>
-                            <div class="budget-remaining">€41.84 remaining</div>
+                            <h4>Your Current Cart</h4>
+                            <div class="budget-amount large" id="playerCartTotal">€0.00</div>
+                            <div class="budget-limit">Weekly Budget: €50.00</div>
+                            <div class="budget-remaining" id="playerBudgetRemaining">€50.00 remaining</div>
                         </div>
-                        <div class="budget-breakdown">
-                            <div class="category-budget">
-                                <span>Vegetables & Fruits</span>
-                                <span>€21.45</span>
+                    </div>
+                    
+                    <!-- Food Categories for Individual Ordering -->
+                    <div class="grocery-categories" id="individualFoodCatalog">
+                        <div class="category-section">
+                            <h4 class="category-title">🥬 Vegetables & Fruits</h4>
+                            <div class="items-grid" id="vegetables-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🥩 Meat & Protein</h4>
+                            <div class="items-grid" id="meat-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🧀 Dairy Products</h4>
+                            <div class="items-grid" id="dairy-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🍞 Carbohydrates</h4>
+                            <div class="items-grid" id="carbs-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🥤 Drinks</h4>
+                            <div class="items-grid" id="drinks-items"></div>
+                        </div>
+                        <div class="category-section">
+                            <h4 class="category-title">🍿 Snacks</h4>
+                            <div class="items-grid" id="snacks-items"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn btn-secondary" onclick="clearPlayerCart()">Clear Cart</button>
+                        <button class="btn btn-primary" onclick="submitPlayerOrder()" id="submitPlayerOrderBtn">Place Order (€0.00)</button>
+                    </div>
+                </div>
+
+                <!-- Admin House Summary Section -->
+                <div id="adminSummarySection" class="form-section" style="display: none;">
+                    <h3>📊 House Order Summaries</h3>
+                    <div id="houseSummaries">
+                        <div class="house-summary-tabs">
+                            <button onclick="showHouseSummary('Widdersdorf 1')" class="house-tab active" id="w1-tab">Widdersdorf 1</button>
+                            <button onclick="showHouseSummary('Widdersdorf 2')" class="house-tab" id="w2-tab">Widdersdorf 2</button>
+                            <button onclick="showHouseSummary('Widdersdorf 3')" class="house-tab" id="w3-tab">Widdersdorf 3</button>
+                        </div>
+                        <div id="houseSummaryContent"></div>
+                    </div>
+                </div>
+
+                <!-- Individual Orders History -->
+                <div class="form-section">
+                    <h3>📦 Your Order History</h3>
+                    <div id="playerOrderHistory">
+                        <div class="order-card pending">
+                            <div class="order-header">
+                                <h4>Tuesday Delivery - July 30</h4>
+                                <span class="status-badge pending">Submitted</span>
                             </div>
-                            <div class="category-budget">
-                                <span>Meat & Protein</span>
-                                <span>€35.92</span>
-                            </div>
-                            <div class="category-budget">
-                                <span>Dairy Products</span>
-                                <span>€19.83</span>
-                            </div>
-                            <div class="category-budget">
-                                <span>Household Items</span>
-                                <span>€28.15</span>
+                            <div class="order-details">
+                                <p>3 items • Total: €12.47</p>
+                                <p>Delivery: Tuesday 6-8 PM to Widdersdorf 1</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Grocery Shopping -->
-                <div class="form-section">
-                    <h3>🛍️ Grocery Shopping List</h3>
-                    <div class="grocery-categories">
-                        <!-- Household Items -->
-                        <div class="category-section">
-                            <h4 class="category-title">🧽 Household Items</h4>
-                            <div class="items-grid">
-                                <div class="grocery-item">
-                                    <span class="item-name">Laundry Detergent</span>
-                                    <span class="item-price">€4.49</span>
-                                    <input type="checkbox" checked> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Baking Paper</span>
-                                    <span class="item-price">€0.95</span>
-                                    <input type="checkbox"> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Dish Soap</span>
-                                    <span class="item-price">€0.95</span>
-                                    <input type="checkbox"> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Paper Towels</span>
-                                    <span class="item-price">€2.85</span>
-                                    <input type="checkbox"> <span class="qty">1x</span>
-                                </div>
-                                <div class="grocery-item">
-                                    <span class="item-name">Toilet Paper</span>
-                                    <span class="item-price">€4.15</span>
-                                    <input type="checkbox"> <span class="qty">1x</span>
-                                </div>
-                            </div>
-                        </div>
+            </div>
 
-                        <!-- Vegetables & Fruits -->
-                        <div class="category-section">
-                            <h4 class="category-title">🥕 Vegetables & Fruits</h4>
-                            <div class="items-grid">
-                                <div class="grocery-item">
-                                    <span class="item-name">Avocados</span>
-                                    <span class="item-price">€1.59</span>
-                                    <input type="checkbox" checked> <span class="qty">3x</span>
-                                </div>
-                                <div class="grocery-item">
+            <!-- Communications Page -->
+            <div id="communications" class="page">
+                <h1>Team Communications</h1>
+                <div class="form-section">
+                    <h3>Send Team Message</h3>
+                    <div class="form-group">
+                        <label>Recipient Group</label>
+                        <select>
+                            <option>All Players</option>
+                            <option>Widdersdorf 1</option>
+                            <option>Widdersdorf 2</option>
+                            <option>Widdersdorf 3</option>
+                            <option>Coaching Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="4" placeholder="Enter your message..."></textarea>
+                    </div>
+                    <button class="btn">Send Message</button>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Recent Messages</h3>
+                    <p><strong>Training Update:</strong> Tomorrow's session moved to 4:00 PM</p>
+                    <p><strong>House Reminder:</strong> Please complete weekly chores by Sunday</p>
+                    <p><strong>Match Announcement:</strong> Home match this Saturday vs. Borussia Dortmund U19</p>
+                </div>
+            </div>
+
+            <!-- House Management Page -->
+            <div id="house-management" class="page">
+                <h1>🏠 Housing & Chore Management</h1>
+                
+                <!-- Admin/Staff Chore Creation (Only visible to Thomas & Max) -->
+                <div class="admin-staff-only form-section" style="display: none;">
+                    <h3>➕ Create New Chore Assignment</h3>
                                     <span class="item-name">Bananas</span>
                                     <span class="item-price">€0.40</span>
                                     <input type="checkbox" checked> <span class="qty">5x</span>
@@ -5769,6 +5818,57 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Password reset storage (in production, this would be in database)
         let passwordResetTokens = [];
 
+        // Individual food orders storage
+        let individualOrders = [];
+        
+        // Food items catalog
+        const foodCatalog = {
+            'vegetables': [
+                { id: 'avocado', name: 'Avocado', price: 1.99, category: 'vegetables' },
+                { id: 'bell-pepper', name: 'Bell Pepper', price: 2.49, category: 'vegetables' },
+                { id: 'broccoli', name: 'Broccoli', price: 2.29, category: 'vegetables' },
+                { id: 'carrot', name: 'Carrots (1kg)', price: 1.19, category: 'vegetables' },
+                { id: 'cucumber', name: 'Cucumber', price: 0.99, category: 'vegetables' },
+                { id: 'onion', name: 'Onions (1kg)', price: 1.49, category: 'vegetables' },
+                { id: 'tomato', name: 'Tomatoes (500g)', price: 2.99, category: 'vegetables' },
+                { id: 'banana', name: 'Bananas (1kg)', price: 1.89, category: 'vegetables' },
+                { id: 'apple', name: 'Apples (1kg)', price: 2.49, category: 'vegetables' }
+            ],
+            'meat': [
+                { id: 'chicken-breast', name: 'Chicken Breast (500g)', price: 6.49, category: 'meat' },
+                { id: 'ground-beef', name: 'Ground Beef (500g)', price: 4.99, category: 'meat' },
+                { id: 'salmon', name: 'Salmon Fillet (300g)', price: 8.99, category: 'meat' },
+                { id: 'turkey', name: 'Turkey Breast (400g)', price: 5.49, category: 'meat' },
+                { id: 'eggs', name: 'Eggs (12 pack)', price: 2.79, category: 'meat' }
+            ],
+            'dairy': [
+                { id: 'milk', name: 'Milk (1L)', price: 1.29, category: 'dairy' },
+                { id: 'yogurt', name: 'Greek Yogurt (500g)', price: 2.49, category: 'dairy' },
+                { id: 'cheese', name: 'Gouda Cheese (200g)', price: 3.99, category: 'dairy' },
+                { id: 'butter', name: 'Butter (250g)', price: 2.19, category: 'dairy' },
+                { id: 'cream-cheese', name: 'Cream Cheese (200g)', price: 1.89, category: 'dairy' }
+            ],
+            'carbs': [
+                { id: 'bread', name: 'Whole Grain Bread', price: 2.49, category: 'carbs' },
+                { id: 'rice', name: 'Basmati Rice (1kg)', price: 3.29, category: 'carbs' },
+                { id: 'pasta', name: 'Pasta (500g)', price: 1.79, category: 'carbs' },
+                { id: 'oats', name: 'Oats (500g)', price: 1.99, category: 'carbs' },
+                { id: 'potatoes', name: 'Potatoes (2kg)', price: 2.99, category: 'carbs' }
+            ],
+            'drinks': [
+                { id: 'sparkling-water', name: 'Sparkling Water (6x500ml)', price: 2.99, category: 'drinks' },
+                { id: 'orange-juice', name: 'Orange Juice (1L)', price: 2.49, category: 'drinks' },
+                { id: 'protein-shake', name: 'Protein Shake', price: 3.99, category: 'drinks' },
+                { id: 'energy-drink', name: 'Energy Drink', price: 1.99, category: 'drinks' }
+            ],
+            'snacks': [
+                { id: 'protein-bar', name: 'Protein Bar', price: 2.29, category: 'snacks' },
+                { id: 'nuts', name: 'Mixed Nuts (200g)', price: 4.49, category: 'snacks' },
+                { id: 'granola', name: 'Granola (400g)', price: 3.79, category: 'snacks' },
+                { id: 'fruit-cups', name: 'Fruit Cups (4 pack)', price: 3.29, category: 'snacks' }
+            ]
+        };
+
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
             // Check for password reset token first
@@ -6262,6 +6362,294 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('loginMessage').innerHTML = '';
         }
 
+        // Individual Food Ordering System
+        let playerCart = [];
+        const WEEKLY_BUDGET = 50.00;
+
+        // Initialize food ordering system when page loads
+        function initializeFoodOrdering() {
+            if (currentUser && currentUser.role === 'admin') {
+                document.getElementById('orderViewToggle').style.display = 'block';
+            }
+            
+            loadFoodCatalog();
+            updatePlayerCart();
+        }
+
+        // Load food catalog into individual ordering interface
+        function loadFoodCatalog() {
+            Object.keys(foodCatalog).forEach(category => {
+                const container = document.getElementById(category + '-items');
+                if (container) {
+                    container.innerHTML = '';
+                    
+                    foodCatalog[category].forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'grocery-item';
+                        itemElement.innerHTML = '<span class="item-name">' + item.name + '</span>' +
+                            '<span class="item-price">€' + item.price.toFixed(2) + '</span>' +
+                            '<div class="quantity-controls">' +
+                            '<button onclick="removeFromCart(\'' + item.id + '\')" class="qty-btn">-</button>' +
+                            '<span class="qty" id="qty-' + item.id + '">0</span>' +
+                            '<button onclick="addToCart(\'' + item.id + '\')" class="qty-btn">+</button>' +
+                            '</div>';
+                        container.appendChild(itemElement);
+                    });
+                }
+            });
+        }
+
+        // Add item to player cart
+        function addToCart(itemId) {
+            const item = findItemById(itemId);
+            if (!item) return;
+            
+            const currentTotal = calculateCartTotal();
+            if (currentTotal + item.price > WEEKLY_BUDGET) {
+                document.getElementById('playerOrderStatus').innerHTML = 
+                    '<div style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
+                    'Adding this item would exceed your weekly budget of €' + WEEKLY_BUDGET.toFixed(2) + '</div>';
+                return;
+            }
+            
+            const existingItem = playerCart.find(cartItem => cartItem.id === itemId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                playerCart.push({ ...item, quantity: 1 });
+            }
+            
+            updatePlayerCart();
+            document.getElementById('playerOrderStatus').innerHTML = '';
+        }
+
+        // Remove item from player cart
+        function removeFromCart(itemId) {
+            const existingItem = playerCart.find(cartItem => cartItem.id === itemId);
+            if (existingItem) {
+                existingItem.quantity -= 1;
+                if (existingItem.quantity <= 0) {
+                    playerCart = playerCart.filter(cartItem => cartItem.id !== itemId);
+                }
+            }
+            updatePlayerCart();
+        }
+
+        // Update player cart display
+        function updatePlayerCart() {
+            const total = calculateCartTotal();
+            const remaining = WEEKLY_BUDGET - total;
+            
+            document.getElementById('playerCartTotal').textContent = '€' + total.toFixed(2);
+            document.getElementById('playerBudgetRemaining').textContent = '€' + remaining.toFixed(2) + ' remaining';
+            document.getElementById('submitPlayerOrderBtn').textContent = 'Place Order (€' + total.toFixed(2) + ')';
+            
+            // Update quantity displays
+            playerCart.forEach(item => {
+                const qtyElement = document.getElementById('qty-' + item.id);
+                if (qtyElement) {
+                    qtyElement.textContent = item.quantity;
+                }
+            });
+            
+            // Reset quantities for items not in cart
+            Object.keys(foodCatalog).forEach(category => {
+                foodCatalog[category].forEach(item => {
+                    const cartItem = playerCart.find(cartItem => cartItem.id === item.id);
+                    const qtyElement = document.getElementById('qty-' + item.id);
+                    if (qtyElement && !cartItem) {
+                        qtyElement.textContent = '0';
+                    }
+                });
+            });
+        }
+
+        // Calculate cart total
+        function calculateCartTotal() {
+            return playerCart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        // Find item by ID in catalog
+        function findItemById(itemId) {
+            for (const category of Object.keys(foodCatalog)) {
+                const item = foodCatalog[category].find(item => item.id === itemId);
+                if (item) return item;
+            }
+            return null;
+        }
+
+        // Clear player cart
+        function clearPlayerCart() {
+            playerCart = [];
+            updatePlayerCart();
+        }
+
+        // Submit player order
+        function submitPlayerOrder() {
+            if (playerCart.length === 0) {
+                document.getElementById('playerOrderStatus').innerHTML = 
+                    '<div style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
+                    'Please add items to your cart before placing an order.</div>';
+                return;
+            }
+            
+            const currentPlayer = getCurrentPlayer();
+            if (!currentPlayer) {
+                document.getElementById('playerOrderStatus').innerHTML = 
+                    '<div style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
+                    'Unable to identify current player. Please contact support.</div>';
+                return;
+            }
+            
+            const order = {
+                id: 'ORD' + Date.now(),
+                playerId: currentPlayer.id,
+                playerName: currentPlayer.firstName + ' ' + currentPlayer.lastName,
+                house: currentPlayer.house,
+                items: [...playerCart],
+                total: calculateCartTotal(),
+                orderDate: new Date().toISOString(),
+                deliveryDate: getNextDeliveryDate(),
+                status: 'submitted'
+            };
+            
+            individualOrders.push(order);
+            
+            document.getElementById('playerOrderStatus').innerHTML = 
+                '<div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
+                '<strong>Order Placed Successfully!</strong><br>' +
+                'Order #' + order.id + ' • Total: €' + order.total.toFixed(2) + '<br>' +
+                'Delivery: ' + order.deliveryDate + ' to ' + order.house + '</div>';
+            
+            clearPlayerCart();
+            console.log('Individual order placed:', order);
+        }
+
+        // Get current player info
+        function getCurrentPlayer() {
+            if (currentUser && currentUser.email) {
+                return playerStorage.find(player => player.registrationEmail === currentUser.email);
+            }
+            return null;
+        }
+
+        // Get next delivery date
+        function getNextDeliveryDate() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            
+            if (dayOfWeek < 1 || (dayOfWeek === 1 && today.getHours() < 8)) {
+                return 'Tuesday 6-8 PM';
+            } else if (dayOfWeek < 4 || (dayOfWeek === 4 && today.getHours() < 8)) {
+                return 'Friday 6-8 PM';
+            } else {
+                return 'Next Tuesday 6-8 PM';
+            }
+        }
+
+        // Show player ordering view
+        function showPlayerOrdering() {
+            document.getElementById('playerOrderingSection').style.display = 'block';
+            document.getElementById('adminSummarySection').style.display = 'none';
+            document.getElementById('playerOrderBtn').className = 'btn btn-primary';
+            document.getElementById('adminSummaryBtn').className = 'btn';
+        }
+
+        // Show admin summary view
+        function showAdminSummary() {
+            document.getElementById('playerOrderingSection').style.display = 'none';
+            document.getElementById('adminSummarySection').style.display = 'block';
+            document.getElementById('playerOrderBtn').className = 'btn';
+            document.getElementById('adminSummaryBtn').className = 'btn btn-primary';
+            generateHouseSummaries();
+        }
+
+        // Generate house summaries for admin
+        function generateHouseSummaries() {
+            showHouseSummary('Widdersdorf 1');
+        }
+
+        // Show specific house summary
+        function showHouseSummary(house) {
+            const houseOrders = individualOrders.filter(order => order.house === house && order.status === 'submitted');
+            
+            // Update tab states
+            document.querySelectorAll('.house-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(house.toLowerCase().replace(' ', '') + '-tab').classList.add('active');
+            
+            let summaryHTML = '<div class="house-summary-content">';
+            
+            if (houseOrders.length === 0) {
+                summaryHTML += '<p>No current orders for ' + house + '</p>';
+            } else {
+                // Consolidate items
+                const consolidatedItems = {};
+                let totalAmount = 0;
+                
+                houseOrders.forEach(order => {
+                    totalAmount += order.total;
+                    order.items.forEach(item => {
+                        if (consolidatedItems[item.id]) {
+                            consolidatedItems[item.id].quantity += item.quantity;
+                            consolidatedItems[item.id].players.add(order.playerName);
+                        } else {
+                            consolidatedItems[item.id] = {
+                                ...item,
+                                players: new Set([order.playerName])
+                            };
+                        }
+                    });
+                });
+                
+                summaryHTML += '<div class="summary-header">';
+                summaryHTML += '<h4>' + house + ' - Next Delivery</h4>';
+                summaryHTML += '<p><strong>Total Orders:</strong> ' + houseOrders.length + ' players</p>';
+                summaryHTML += '<p><strong>Total Amount:</strong> €' + totalAmount.toFixed(2) + '</p>';
+                summaryHTML += '</div>';
+                
+                summaryHTML += '<div class="consolidated-items">';
+                summaryHTML += '<h5>Consolidated Shopping List:</h5>';
+                
+                Object.values(consolidatedItems).forEach(item => {
+                    const playerList = Array.from(item.players).join(', ');
+                    summaryHTML += '<div class="consolidated-item">';
+                    summaryHTML += '<div class="item-details">';
+                    summaryHTML += '<strong>' + item.name + '</strong>';
+                    summaryHTML += '<span class="item-quantity">Qty: ' + item.quantity + '</span>';
+                    summaryHTML += '<span class="item-total">€' + (item.price * item.quantity).toFixed(2) + '</span>';
+                    summaryHTML += '</div>';
+                    summaryHTML += '<div class="item-players">Players: ' + playerList + '</div>';
+                    summaryHTML += '</div>';
+                });
+                
+                summaryHTML += '</div>';
+                
+                summaryHTML += '<div class="summary-actions">';
+                summaryHTML += '<button class="btn btn-primary" onclick="printDeliveryList(\'' + house + '\')">Print Delivery List</button>';
+                summaryHTML += '<button class="btn btn-secondary" onclick="markHouseDelivered(\'' + house + '\')">Mark as Delivered</button>';
+                summaryHTML += '</div>';
+            }
+            
+            summaryHTML += '</div>';
+            document.getElementById('houseSummaryContent').innerHTML = summaryHTML;
+        }
+
+        // Print delivery list
+        function printDeliveryList(house) {
+            window.print();
+        }
+
+        // Mark house orders as delivered
+        function markHouseDelivered(house) {
+            individualOrders.forEach(order => {
+                if (order.house === house && order.status === 'submitted') {
+                    order.status = 'delivered';
+                    order.deliveredDate = new Date().toISOString();
+                }
+            });
+            showHouseSummary(house);
+        }
+
         // Make functions globally accessible
         window.showForgotPassword = showForgotPassword;
         window.sendPasswordReset = sendPasswordReset;
@@ -6270,6 +6658,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         window.checkForResetToken = checkForResetToken;
         window.showPasswordResetForm = showPasswordResetForm;
         window.resetPassword = resetPassword;
+        window.initializeFoodOrdering = initializeFoodOrdering;
+        window.addToCart = addToCart;
+        window.removeFromCart = removeFromCart;
+        window.clearPlayerCart = clearPlayerCart;
+        window.submitPlayerOrder = submitPlayerOrder;
+        window.showPlayerOrdering = showPlayerOrdering;
+        window.showAdminSummary = showAdminSummary;
+        window.showHouseSummary = showHouseSummary;
+        window.printDeliveryList = printDeliveryList;
+        window.markHouseDelivered = markHouseDelivered;
 
         // Logout
         window.logout = function() {
