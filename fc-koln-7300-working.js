@@ -5727,7 +5727,43 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         
         // Player data storage - cleared per user request
         let playerStorage = [
-            // No players registered - ready for new registrations
+            // Test player for preview and testing purposes
+            {
+                id: 'PLR001',
+                firstName: 'Marco',
+                lastName: 'Schmidt',
+                age: 19,
+                position: 'midfielder',
+                nationality: 'Germany',
+                house: 'Widdersdorf 1',
+                room: '12A',
+                status: 'active',
+                contractPeriod: '2024-2026',
+                joinDate: '2024-01-15',
+                phoneNumber: '+49 221 555 0123',
+                emergencyContact: 'Hans Schmidt (Father) - +49 221 555 0124',
+                medicalInfo: 'No known allergies, previous knee injury (recovered)',
+                specialNotes: 'Team captain material, excellent leadership skills',
+                registrationEmail: 'marco.schmidt@example.com',
+                // Performance statistics
+                trainingAttendance: 95,
+                matchPerformance: 88,
+                physicalFitness: 92,
+                technicalSkills: 85,
+                teamwork: 94,
+                discipline: 98,
+                // Additional profile data
+                height: '178 cm',
+                weight: '72 kg',
+                preferredFoot: 'Right',
+                previousClub: 'FC Viktoria Köln U19',
+                languages: ['German', 'English'],
+                goals: 12,
+                assists: 8,
+                yellowCards: 2,
+                redCards: 0,
+                matchesPlayed: 24
+            }
         ];
 
         // Password reset storage (in production, this would be in database)
