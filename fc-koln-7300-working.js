@@ -3504,6 +3504,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             margin-bottom: 0.25rem;
         }
 
+        .empty-order {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 2rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 2px dashed #d1d5db;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -4663,9 +4673,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <div class="budget-overview">
                         <div class="budget-card individual">
                             <h4 id="playerNameBudget">Max Bisinger - Personal Order</h4>
-                            <div class="budget-amount large" id="currentOrderTotal">€23.45</div>
+                            <div class="budget-amount large" id="currentOrderTotal">€0.00</div>
                             <div class="budget-limit">Maximum Budget: €35.00</div>
-                            <div class="budget-remaining" id="budgetRemaining">€11.55 remaining</div>
+                            <div class="budget-remaining" id="budgetRemaining">€35.00 remaining</div>
                             <div class="budget-warning" id="budgetWarning" style="display: none;">⚠️ Approaching budget limit!</div>
                         </div>
                     </div>
@@ -5024,7 +5034,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     
                     <div class="order-actions">
                         <button class="btn btn-secondary" onclick="clearSelection()">Clear All</button>
-                        <button class="btn btn-primary" id="submitOrderBtn" onclick="submitIndividualOrder()">Submit Personal Order (<span id="orderTotalBtn">€23.45</span>)</button>
+                        <button class="btn btn-primary" id="submitOrderBtn" onclick="submitIndividualOrder()">Submit Personal Order (<span id="orderTotalBtn">€0.00</span>)</button>
                         <div class="budget-validation" id="budgetValidation">
                             <div class="validation-message success" id="budgetOk" style="display: block;">✅ Within budget limit</div>
                             <div class="validation-message warning" id="budgetWarning" style="display: none;">⚠️ Approaching €35 limit</div>
@@ -5037,32 +5047,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <div class="form-section">
                     <h3>📋 Your Current Order</h3>
                     <div class="order-preview" id="orderPreview">
-                        <div class="order-item">
-                            <span>Power System High Protein (4x)</span>
-                            <span>€4.36</span>
-                        </div>
-                        <div class="order-item">
-                            <span>Ground Beef (2x)</span>
-                            <span>€6.98</span>
-                        </div>
-                        <div class="order-item">
-                            <span>Avocados (3x)</span>
-                            <span>€4.77</span>
-                        </div>
-                        <div class="order-item">
-                            <span>Rice (1x)</span>
-                            <span>€2.99</span>
-                        </div>
-                        <div class="order-item">
-                            <span>Bananas (5x)</span>
-                            <span>€2.00</span>
-                        </div>
-                        <div class="order-item">
-                            <span>Greek Vanilla Yogurt (2x)</span>
-                            <span>€2.35</span>
+                        <div class="empty-order">
+                            <p>No items selected yet. Choose items from the grocery list above to build your personal order.</p>
                         </div>
                         <div class="order-total">
-                            <strong>Total: €23.45 / €35.00</strong>
+                            <strong>Total: €0.00 / €35.00</strong>
                         </div>
                     </div>
                 </div>
@@ -7804,6 +7793,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function updateOrderTotal() {
+            // Use the individual order logic instead
+            if (window.updateOrderTotal) {
+                window.updateOrderTotal();
+                return;
+            }
+            
             let total = 0;
             const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
             
@@ -7815,29 +7810,28 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 total += price * qty;
             });
 
-            // Update the submit button
-            const submitButton = document.querySelector('button[onclick="submitGroceryOrder()"]');
-            if (submitButton) {
-                submitButton.textContent = 'Submit Order (€' + total.toFixed(2) + ')';
-            }
-
-            // Update the budget display
-            const budgetAmountElement = document.querySelector('.budget-amount.large');
+            // Update individual order budget display (€35 limit)
+            const budgetAmountElement = document.getElementById('currentOrderTotal');
             if (budgetAmountElement) {
                 budgetAmountElement.textContent = '€' + total.toFixed(2);
             }
 
-            const budgetRemaining = document.querySelector('.budget-remaining');
+            const budgetRemaining = document.getElementById('budgetRemaining');
             if (budgetRemaining) {
-                const remaining = 210.00 - total;
-                budgetRemaining.textContent = '€' + remaining.toFixed(2) + ' remaining';
-                
-                if (remaining < 0) {
-                    budgetRemaining.style.color = '#dc2626';
-                    budgetRemaining.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2);
-                } else {
+                const remaining = 35.00 - total; // Individual €35 budget
+                if (remaining >= 0) {
+                    budgetRemaining.textContent = '€' + remaining.toFixed(2) + ' remaining';
                     budgetRemaining.style.color = '#059669';
+                } else {
+                    budgetRemaining.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2);
+                    budgetRemaining.style.color = '#dc2626';
                 }
+            }
+
+            // Update submit button
+            const orderTotalBtn = document.getElementById('orderTotalBtn');
+            if (orderTotalBtn) {
+                orderTotalBtn.textContent = '€' + total.toFixed(2);
             }
         }
 
@@ -7958,12 +7952,19 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 if (!previewElement) return;
                 
                 let previewHTML = '';
-                currentPlayerOrder.items.forEach(function(item) {
-                    previewHTML += '<div class="order-item">';
-                    previewHTML += '<span>' + item.name + ' (' + item.quantity + 'x)</span>';
-                    previewHTML += '<span>€' + item.total.toFixed(2) + '</span>';
+                
+                if (currentPlayerOrder.items.length === 0) {
+                    previewHTML += '<div class="empty-order">';
+                    previewHTML += '<p>No items selected yet. Choose items from the grocery list above to build your personal order.</p>';
                     previewHTML += '</div>';
-                });
+                } else {
+                    currentPlayerOrder.items.forEach(function(item) {
+                        previewHTML += '<div class="order-item">';
+                        previewHTML += '<span>' + item.name + ' (' + item.quantity + 'x)</span>';
+                        previewHTML += '<span>€' + item.total.toFixed(2) + '</span>';
+                        previewHTML += '</div>';
+                    });
+                }
                 
                 previewHTML += '<div class="order-total">';
                 previewHTML += '<strong>Total: €' + currentPlayerOrder.total.toFixed(2) + ' / €' + currentPlayerOrder.maxBudget.toFixed(2) + '</strong>';
