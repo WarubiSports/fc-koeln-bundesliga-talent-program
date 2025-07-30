@@ -7718,7 +7718,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             houses.forEach(house => {
                 const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
-                const houseName = house.charAt(0).toUpperCase() + house.slice(1).replace(/(\d)/, ' $1');
+                const houseName = house === 'widdersdorf1' ? 'Widdersdorf 1' : 
+                                 house === 'widdersdorf2' ? 'Widdersdorf 2' : 
+                                 house === 'widdersdorf3' ? 'Widdersdorf 3' : house;
                 
                 summaryHtml += '<div class="house-summary-card">' +
                     '<h4>🏠 ' + houseName + '</h4>' +
@@ -7762,7 +7764,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         function displaySingleHouseSummary(container, allOrders, house) {
             const houseOrders = Object.entries(allOrders).filter(([email, data]) => data.house === house);
-            const houseName = house.charAt(0).toUpperCase() + house.slice(1).replace(/(\d)/, ' $1');
+            const houseName = house === 'widdersdorf1' ? 'Widdersdorf 1' : 
+                              house === 'widdersdorf2' ? 'Widdersdorf 2' : 
+                              house === 'widdersdorf3' ? 'Widdersdorf 3' : house;
             
             let summaryHtml = '<div class="single-house-summary"><h4>🏠 ' + houseName + ' - Detailed Orders</h4>';
             
