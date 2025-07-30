@@ -4107,6 +4107,90 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             border-radius: 50%;
         }
 
+        /* Admin Group Management Styles */
+        .chat-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .group-create-btn, .house-create-btn {
+            padding: 0.75rem 1rem;
+            margin: 0.5rem;
+            background: #f8f9fa;
+            border: 2px dashed #dc2626;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .group-create-btn:hover, .house-create-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .create-group-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .create-icon {
+            font-size: 1.2rem;
+        }
+
+        .group-settings-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .group-settings-btn:hover {
+            background: #f3f4f6;
+            color: #dc2626;
+        }
+
+        .chat-item.active .group-settings-btn {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .chat-item.active .group-settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .member-selection {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .member-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .member-checkbox input {
+            margin-right: 0.5rem;
+        }
+
+        .member-checkbox label {
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -6036,7 +6120,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <div class="chat-sidebar">
                         <div class="chat-header">
                             <h3>Messages</h3>
-                            <button class="btn-icon" onclick="startNewChat()" title="New Chat">💬</button>
+                            <div class="chat-header-actions">
+                                <button class="btn-icon" onclick="startNewChat()" title="New Chat">💬</button>
+                                <button class="btn-icon admin-only" onclick="showGroupManagement()" title="Manage Groups" style="display: none;">⚙️</button>
+                            </div>
                         </div>
                         
                         <!-- Chat Tabs -->
@@ -6105,6 +6192,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         
                         <!-- Group Chats List -->
                         <div id="group-chats" class="chat-list-container">
+                            <div class="admin-only group-create-btn" onclick="createNewGroup()" style="display: none;">
+                                <div class="create-group-item">
+                                    <div class="create-icon">➕</div>
+                                    <span>Create New Group</span>
+                                </div>
+                            </div>
+                            
                             <div class="chat-item" onclick="openChat('team-captains')">
                                 <div class="chat-avatar group">
                                     <div class="group-icon">👑</div>
@@ -6116,6 +6210,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                                 <div class="chat-badges">
                                     <span class="unread-count">5</span>
+                                    <button class="admin-only group-settings-btn" onclick="editGroup('team-captains')" style="display: none;">⚙️</button>
                                 </div>
                             </div>
                             
@@ -6128,11 +6223,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <div class="chat-preview">Luis: Physio session rescheduled</div>
                                     <div class="chat-time">2 hours ago</div>
                                 </div>
+                                <div class="chat-badges">
+                                    <button class="admin-only group-settings-btn" onclick="editGroup('injured-players')" style="display: none;">⚙️</button>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-item" onclick="openChat('coaching-staff')">
+                                <div class="chat-avatar group">
+                                    <div class="group-icon">📋</div>
+                                </div>
+                                <div class="chat-info">
+                                    <div class="chat-name">Coaching Staff</div>
+                                    <div class="chat-preview">Max: Weekly training schedule updated</div>
+                                    <div class="chat-time">4 hours ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <button class="admin-only group-settings-btn" onclick="editGroup('coaching-staff')" style="display: none;">⚙️</button>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- House Channels List -->
                         <div id="house-chats" class="chat-list-container">
+                            <div class="admin-only house-create-btn" onclick="createNewHouseChat()" style="display: none;">
+                                <div class="create-group-item">
+                                    <div class="create-icon">🏠➕</div>
+                                    <span>Create House Chat</span>
+                                </div>
+                            </div>
+                            
                             <div class="chat-item" onclick="openChat('widdersdorf-1')">
                                 <div class="chat-avatar house">
                                     <div class="house-icon">🏠</div>
@@ -6144,6 +6263,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                                 <div class="chat-badges">
                                     <span class="unread-count">3</span>
+                                    <button class="admin-only group-settings-btn" onclick="editHouseChat('widdersdorf-1')" style="display: none;">⚙️</button>
                                 </div>
                             </div>
                             
@@ -6156,6 +6276,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <div class="chat-preview">Luis: Movie night Friday 8 PM!</div>
                                     <div class="chat-time">1 hour ago</div>
                                 </div>
+                                <div class="chat-badges">
+                                    <button class="admin-only group-settings-btn" onclick="editHouseChat('widdersdorf-2')" style="display: none;">⚙️</button>
+                                </div>
                             </div>
                             
                             <div class="chat-item" onclick="openChat('widdersdorf-3')">
@@ -6166,6 +6289,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <div class="chat-name">Widdersdorf 3</div>
                                     <div class="chat-preview">Jonas: Game room maintenance complete</div>
                                     <div class="chat-time">4 hours ago</div>
+                                </div>
+                                <div class="chat-badges">
+                                    <button class="admin-only group-settings-btn" onclick="editHouseChat('widdersdorf-3')" style="display: none;">⚙️</button>
                                 </div>
                             </div>
                         </div>
@@ -6396,6 +6522,131 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <div class="contact-status online"></div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Group Modal -->
+                <div id="createGroupModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Create New Group Chat</h3>
+                            <button class="modal-close" onclick="closeCreateGroupModal()">❌</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createGroupForm">
+                                <div class="form-group">
+                                    <label>Group Name *</label>
+                                    <input type="text" id="groupName" class="form-control" placeholder="e.g., Defenders, Training Squad A" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Group Description</label>
+                                    <textarea id="groupDescription" class="form-control" rows="2" placeholder="Brief description of the group purpose"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Group Icon</label>
+                                    <select id="groupIcon" class="form-control">
+                                        <option value="👥">👥 General Group</option>
+                                        <option value="⚽">⚽ Football Team</option>
+                                        <option value="🏃">🏃 Training Group</option>
+                                        <option value="🛡️">🛡️ Defenders</option>
+                                        <option value="⚡">⚡ Attackers</option>
+                                        <option value="🥅">🥅 Goalkeepers</option>
+                                        <option value="📋">📋 Staff</option>
+                                        <option value="🏆">🏆 Leadership</option>
+                                        <option value="🏥">🏥 Medical/Recovery</option>
+                                        <option value="🎓">🎓 Academy</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Add Members</label>
+                                    <div class="member-selection">
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-thomas" value="thomas-ellinger">
+                                            <label for="member-thomas">Thomas Ellinger (House Manager)</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-coach" value="coach-martinez">
+                                            <label for="member-coach">Coach Martinez (Head Coach)</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-ahmad" value="ahmad-hassan">
+                                            <label for="member-ahmad">Ahmad Hassan (Player - Defender)</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-luis" value="luis-garcia">
+                                            <label for="member-luis">Luis García (Player - Forward)</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-jonas" value="jonas-weber">
+                                            <label for="member-jonas">Jonas Weber (Player - Goalkeeper)</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="member-marco" value="marco-silva">
+                                            <label for="member-marco">Marco Silva (Player - Midfielder)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeCreateGroupModal()">Cancel</button>
+                                    <button type="submit" class="btn">Create Group</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create House Chat Modal -->
+                <div id="createHouseChatModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Create House Chat</h3>
+                            <button class="modal-close" onclick="closeCreateHouseChatModal()">❌</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="createHouseChatForm">
+                                <div class="form-group">
+                                    <label>House Name *</label>
+                                    <input type="text" id="houseName" class="form-control" placeholder="e.g., Widdersdorf 4, Training Center A" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>House Address</label>
+                                    <input type="text" id="houseAddress" class="form-control" placeholder="Full address or location">
+                                </div>
+                                <div class="form-group">
+                                    <label>House Manager</label>
+                                    <select id="houseManager" class="form-control">
+                                        <option value="">Select House Manager</option>
+                                        <option value="thomas-ellinger">Thomas Ellinger</option>
+                                        <option value="max-bisinger">Max Bisinger</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Add Residents</label>
+                                    <div class="member-selection">
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="resident-ahmad" value="ahmad-hassan">
+                                            <label for="resident-ahmad">Ahmad Hassan</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="resident-luis" value="luis-garcia">
+                                            <label for="resident-luis">Luis García</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="resident-jonas" value="jonas-weber">
+                                            <label for="resident-jonas">Jonas Weber</label>
+                                        </div>
+                                        <div class="member-checkbox">
+                                            <input type="checkbox" id="resident-marco" value="marco-silva">
+                                            <label for="resident-marco">Marco Silva</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeCreateHouseChatModal()">Cancel</button>
+                                    <button type="submit" class="btn">Create House Chat</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -9222,7 +9473,163 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }, 100);
         };
 
-        // Simplified - removed call and settings functions
+        // Admin Group Management Functions
+        window.showGroupManagement = function() {
+            alert('Group Management\\n\\nAdmin controls for chat groups:\\n• Create new groups and house chats\\n• Edit existing group settings\\n• Manage group members\\n• Delete groups\\n• Set group permissions');
+        };
+
+        window.createNewGroup = function() {
+            document.getElementById('createGroupModal').style.display = 'flex';
+        };
+
+        window.closeCreateGroupModal = function() {
+            document.getElementById('createGroupModal').style.display = 'none';
+            document.getElementById('createGroupForm').reset();
+        };
+
+        window.createNewHouseChat = function() {
+            document.getElementById('createHouseChatModal').style.display = 'flex';
+        };
+
+        window.closeCreateHouseChatModal = function() {
+            document.getElementById('createHouseChatModal').style.display = 'none';
+            document.getElementById('createHouseChatForm').reset();
+        };
+
+        window.editGroup = function(groupId) {
+            alert('Edit Group: ' + groupId + '\\n\\nGroup management options:\\n• Change group name and description\\n• Update group icon\\n• Add/remove members\\n• Set group permissions\\n• Delete group');
+        };
+
+        window.editHouseChat = function(houseId) {
+            alert('Edit House Chat: ' + houseId + '\\n\\nHouse management options:\\n• Update house details\\n• Change house manager\\n• Add/remove residents\\n• Set house rules\\n• Archive house chat');
+        };
+
+        // Handle group creation form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const createGroupForm = document.getElementById('createGroupForm');
+            if (createGroupForm) {
+                createGroupForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleCreateGroup();
+                });
+            }
+
+            const createHouseChatForm = document.getElementById('createHouseChatForm');
+            if (createHouseChatForm) {
+                createHouseChatForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleCreateHouseChat();
+                });
+            }
+
+            // Show admin controls if user is admin
+            showAdminControls();
+        });
+
+        function handleCreateGroup() {
+            const groupName = document.getElementById('groupName').value;
+            const groupDescription = document.getElementById('groupDescription').value;
+            const groupIcon = document.getElementById('groupIcon').value;
+            
+            // Get selected members
+            const memberCheckboxes = document.querySelectorAll('#createGroupModal .member-checkbox input:checked');
+            const members = Array.from(memberCheckboxes).map(cb => cb.value);
+            
+            if (groupName.trim() === '') {
+                alert('Please enter a group name');
+                return;
+            }
+            
+            // Create the group (in a real app, this would make an API call)
+            createGroupInChat(groupName, groupDescription, groupIcon, members);
+            
+            alert('Group Created Successfully!\\n\\nGroup: ' + groupName + '\\nMembers: ' + members.length + ' selected\\nIcon: ' + groupIcon + '\\n\\nThe new group will appear in the Groups tab.');
+            
+            closeCreateGroupModal();
+        }
+
+        function handleCreateHouseChat() {
+            const houseName = document.getElementById('houseName').value;
+            const houseAddress = document.getElementById('houseAddress').value;
+            const houseManager = document.getElementById('houseManager').value;
+            
+            // Get selected residents
+            const residentCheckboxes = document.querySelectorAll('#createHouseChatModal .member-checkbox input:checked');
+            const residents = Array.from(residentCheckboxes).map(cb => cb.value);
+            
+            if (houseName.trim() === '') {
+                alert('Please enter a house name');
+                return;
+            }
+            
+            // Create the house chat (in a real app, this would make an API call)
+            createHouseChatInChat(houseName, houseAddress, houseManager, residents);
+            
+            alert('House Chat Created Successfully!\\n\\nHouse: ' + houseName + '\\nManager: ' + (houseManager || 'Not assigned') + '\\nResidents: ' + residents.length + ' selected\\n\\nThe new house chat will appear in the Houses tab.');
+            
+            closeCreateHouseChatModal();
+        }
+
+        function createGroupInChat(name, description, icon, members) {
+            // Add the new group to the groups list
+            const groupsContainer = document.getElementById('group-chats');
+            const newGroupId = name.toLowerCase().replace(/\\s+/g, '-');
+            
+            const groupHTML = 
+                '<div class="chat-item" onclick="openChat(\\'+ newGroupId + '\\')">' +
+                    '<div class="chat-avatar group">' +
+                        '<div class="group-icon">' + icon + '</div>' +
+                    '</div>' +
+                    '<div class="chat-info">' +
+                        '<div class="chat-name">' + name + '</div>' +
+                        '<div class="chat-preview">Group created by admin</div>' +
+                        '<div class="chat-time">Just now</div>' +
+                    '</div>' +
+                    '<div class="chat-badges">' +
+                        '<button class="admin-only group-settings-btn" onclick="editGroup(\\'+ newGroupId + '\\')" style="display: inline-block;">⚙️</button>' +
+                    '</div>' +
+                '</div>';
+            
+            // Insert before the last item (keeping create button at top)
+            const createBtn = groupsContainer.querySelector('.group-create-btn');
+            createBtn.insertAdjacentHTML('afterend', groupHTML);
+        }
+
+        function createHouseChatInChat(name, address, manager, residents) {
+            // Add the new house chat to the houses list
+            const housesContainer = document.getElementById('house-chats');
+            const newHouseId = name.toLowerCase().replace(/\\s+/g, '-');
+            
+            const houseHTML = 
+                '<div class="chat-item" onclick="openChat(\\'+ newHouseId + '\\')">' +
+                    '<div class="chat-avatar house">' +
+                        '<div class="house-icon">🏠</div>' +
+                    '</div>' +
+                    '<div class="chat-info">' +
+                        '<div class="chat-name">' + name + '</div>' +
+                        '<div class="chat-preview">House chat created by admin</div>' +
+                        '<div class="chat-time">Just now</div>' +
+                    '</div>' +
+                    '<div class="chat-badges">' +
+                        '<button class="admin-only group-settings-btn" onclick="editHouseChat(\\'+ newHouseId + '\\')" style="display: inline-block;">⚙️</button>' +
+                    '</div>' +
+                '</div>';
+            
+            // Insert before the last item (keeping create button at top)
+            const createBtn = housesContainer.querySelector('.house-create-btn');
+            createBtn.insertAdjacentHTML('afterend', houseHTML);
+        }
+
+        function showAdminControls() {
+            // Check if user is admin (simplified check - in real app would check session/auth)
+            const isAdmin = true; // For now, always show admin controls
+            
+            if (isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(element => {
+                    element.style.display = element.classList.contains('group-settings-btn') ? 'inline-block' : 'block';
+                });
+            }
+        }
 
         function loadChatMessages(chatId) {
             // Update header based on selected chat
@@ -9253,6 +9660,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 case 'team-captains':
                     contactName.textContent = 'Team Captains';
                     contactStatus.textContent = '4 members • Leadership Group';
+                    break;
+                case 'coaching-staff':
+                    contactName.textContent = 'Coaching Staff';
+                    contactStatus.textContent = '3 members • Staff Group';
                     break;
             }
         }
