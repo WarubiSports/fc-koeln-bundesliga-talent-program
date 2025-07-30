@@ -3334,6 +3334,22 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-weight: 400;
             line-height: 1.4;
         }
+
+        .forgot-password-section {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password-link {
+            color: #dc2626;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -3367,6 +3383,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     
                     <button type="submit" class="btn">Sign In</button>
                 </form>
+                
+                <div class="forgot-password-section">
+                    <a href="#" onclick="showForgotPassword()" class="forgot-password-link">Forgot Password?</a>
+                </div>
                 
                 <div id="loginMessage"></div>
             </div>
@@ -5984,6 +6004,33 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
             
             console.log('Staff Application Submitted for Admin Review:', formData);
+        }
+
+        // Forgot Password functionality
+        function showForgotPassword() {
+            const messageDiv = document.getElementById('loginMessage');
+            messageDiv.innerHTML = '<div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; color: #0c4a6e; text-align: left;">' +
+                '<h3 style="color: #0c4a6e; margin-bottom: 1rem; font-size: 1.1rem;">🔑 Password Recovery</h3>' +
+                '<p style="margin-bottom: 1rem;"><strong>For system access, please contact:</strong></p>' +
+                '<div style="background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">' +
+                '<p><strong>📧 Admin Support:</strong><br>' +
+                '<a href="mailto:max.bisinger@warubi-sports.com" style="color: #dc2626;">max.bisinger@warubi-sports.com</a></p>' +
+                '<p style="margin-top: 0.5rem;"><strong>📞 Phone Support:</strong><br>+49 221 123 4567</p>' +
+                '</div>' +
+                '<p style="font-size: 0.9rem; margin-bottom: 1rem;">' +
+                '<strong>Include in your request:</strong><br>' +
+                '• Your full name<br>' +
+                '• Your role (Player/Staff/Admin)<br>' +
+                '• Your registered email address<br>' +
+                '• Reason for password reset</p>' +
+                '<p style="font-size: 0.9rem; color: #374151;">' +
+                '<strong>Response time:</strong> Password resets are typically processed within 2-4 hours during business hours.</p>' +
+                '<button onclick="closeForgotPassword()" style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-top: 1rem; font-weight: 500;">Close</button>' +
+                '</div>';
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('loginMessage').innerHTML = '';
         }
 
         // Logout
