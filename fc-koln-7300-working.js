@@ -3747,8 +3747,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 <div class="activity-item">
                                     <div class="activity-time">8:45 AM</div>
                                     <div class="activity-content">
-                                        <div class="activity-title">Meal Orders Submitted</div>
-                                        <div class="activity-description">22 players submitted lunch preferences</div>
+                                        <div class="activity-title">Training Schedule Update</div>
+                                        <div class="activity-description">Coach updated afternoon training session plan</div>
                                     </div>
                                 </div>
                                 <div class="activity-item">
