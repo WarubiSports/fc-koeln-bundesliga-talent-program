@@ -6365,11 +6365,61 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Individual Food Ordering System
         let playerCart = [];
         const WEEKLY_BUDGET = 50.00;
+        
+        // Food catalog for individual ordering
+        const foodCatalog = {
+            vegetables: [
+                { id: 'veg001', name: 'Avocados', price: 1.59 },
+                { id: 'veg002', name: 'Bananas', price: 0.89 },
+                { id: 'veg003', name: 'Cucumber', price: 0.69 },
+                { id: 'veg004', name: 'Strawberries', price: 4.99 },
+                { id: 'veg005', name: 'Apples', price: 1.89 },
+                { id: 'veg006', name: 'Broccoli', price: 1.69 },
+                { id: 'veg007', name: 'Carrots', price: 0.99 },
+                { id: 'veg008', name: 'Spinach', price: 2.49 }
+            ],
+            meat: [
+                { id: 'meat001', name: 'Chicken Breast', price: 8.99 },
+                { id: 'meat002', name: 'Ground Beef', price: 6.49 },
+                { id: 'meat003', name: 'Salmon Fillet', price: 12.99 },
+                { id: 'meat004', name: 'Turkey Slices', price: 4.29 },
+                { id: 'meat005', name: 'Eggs (12 pack)', price: 2.99 },
+                { id: 'meat006', name: 'Greek Yogurt', price: 1.89 }
+            ],
+            dairy: [
+                { id: 'dairy001', name: 'Milk (1L)', price: 1.19 },
+                { id: 'dairy002', name: 'Cheese Slices', price: 3.49 },
+                { id: 'dairy003', name: 'Butter', price: 2.29 },
+                { id: 'dairy004', name: 'Cottage Cheese', price: 2.79 }
+            ],
+            carbs: [
+                { id: 'carbs001', name: 'Whole Wheat Bread', price: 1.99 },
+                { id: 'carbs002', name: 'Brown Rice', price: 2.49 },
+                { id: 'carbs003', name: 'Oats', price: 1.79 },
+                { id: 'carbs004', name: 'Pasta', price: 1.29 },
+                { id: 'carbs005', name: 'Sweet Potatoes', price: 1.49 }
+            ],
+            drinks: [
+                { id: 'drinks001', name: 'Mineral Water', price: 0.49 },
+                { id: 'drinks002', name: 'Orange Juice', price: 2.99 },
+                { id: 'drinks003', name: 'Sports Drink', price: 1.49 },
+                { id: 'drinks004', name: 'Protein Shake', price: 3.99 }
+            ],
+            snacks: [
+                { id: 'snacks001', name: 'Protein Bar', price: 1.99 },
+                { id: 'snacks002', name: 'Mixed Nuts', price: 4.49 },
+                { id: 'snacks003', name: 'Dark Chocolate', price: 2.29 },
+                { id: 'snacks004', name: 'Energy Bar', price: 1.79 }
+            ]
+        };
 
         // Initialize food ordering system when page loads
         function initializeFoodOrdering() {
             if (currentUser && currentUser.role === 'admin') {
-                document.getElementById('orderViewToggle').style.display = 'block';
+                const toggleElement = document.getElementById('orderViewToggle');
+                if (toggleElement) {
+                    toggleElement.style.display = 'block';
+                }
             }
             
             loadFoodCatalog();
@@ -6389,9 +6439,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         itemElement.innerHTML = '<span class="item-name">' + item.name + '</span>' +
                             '<span class="item-price">€' + item.price.toFixed(2) + '</span>' +
                             '<div class="quantity-controls">' +
-                            '<button onclick="removeFromCart(\'' + item.id + '\')" class="qty-btn">-</button>' +
+                            '<button onclick="removeFromCart(' + "'" + item.id + "'" + ')" class="qty-btn">-</button>' +
                             '<span class="qty" id="qty-' + item.id + '">0</span>' +
-                            '<button onclick="addToCart(\'' + item.id + '\')" class="qty-btn">+</button>' +
+                            '<button onclick="addToCart(' + "'" + item.id + "'" + ')" class="qty-btn">+</button>' +
                             '</div>';
                         container.appendChild(itemElement);
                     });
