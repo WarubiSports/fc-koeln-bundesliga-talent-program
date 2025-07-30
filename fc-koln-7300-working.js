@@ -1247,6 +1247,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             border-left-color: #059669;
         }
 
+        .day-event-item.weight {
+            border-left-color: #7c2d12;
+            background: #fef7f5;
+        }
+
         .day-event-item.match {
             border-left-color: #dc2626;
             background: #fef2f2;
@@ -1316,6 +1321,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             background: #059669;
         }
 
+        .week-event.weight {
+            background: #7c2d12;
+        }
+
         .week-event.match {
             background: #dc2626;
         }
@@ -1380,6 +1389,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         .month-event-dot.training {
             background: #059669;
+        }
+
+        .month-event-dot.weight {
+            background: #7c2d12;
         }
 
         .month-event-dot.match {
@@ -5760,6 +5773,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                         <option value="match">Match</option>
                                         <option value="tactical">Tactical Session</option>
                                         <option value="fitness">Fitness Training</option>
+                                        <option value="weight">Weight Session</option>
                                         <option value="recovery">Recovery Session</option>
                                         <option value="technical">Technical Skills</option>
                                         <option value="match-prep">Match Preparation</option>
