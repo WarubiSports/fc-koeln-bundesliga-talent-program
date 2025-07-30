@@ -6627,8 +6627,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 summaryHTML += '</div>';
                 
                 summaryHTML += '<div class="summary-actions">';
-                summaryHTML += '<button class="btn btn-primary" onclick="printDeliveryList(\'' + house + '\')">Print Delivery List</button>';
-                summaryHTML += '<button class="btn btn-secondary" onclick="markHouseDelivered(\'' + house + '\')">Mark as Delivered</button>';
+                summaryHTML += '<button class="btn btn-primary" onclick="printDeliveryList(' + "'" + house + "'" + ')">Print Delivery List</button>';
+                summaryHTML += '<button class="btn btn-secondary" onclick="markHouseDelivered(' + "'" + house + "'" + ')">Mark as Delivered</button>';
                 summaryHTML += '</div>';
             }
             
