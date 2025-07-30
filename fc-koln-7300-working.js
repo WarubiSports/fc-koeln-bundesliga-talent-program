@@ -3824,6 +3824,135 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-weight: 600;
         }
 
+        .validation-message.error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .validation-message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        /* Pending Applications Styles */
+        .pending-applications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .application-stats {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .stat-badge {
+            background: #dc2626;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pending-applications {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .application-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .application-item:hover {
+            border-color: #dc2626;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .application-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .application-type.player {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .application-type.staff {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .application-details {
+            margin-bottom: 1rem;
+        }
+
+        .application-details p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .application-details strong {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .no-applications-message {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 2rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
         .validation-message.success {
             background: #f0fdf4;
             color: #166534;
@@ -7596,31 +7725,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                     
                     <div id="pending-tab" class="admin-tab-content">
-                        <div class="pending-approvals">
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>New Registration: Luis Martinez</strong><br>
-                                    <small>luis.martinez@email.com - Player Application</small>
-                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn">Approve</button>
-                                    <button class="btn btn-secondary">Reject</button>
-                                    <button class="btn btn-secondary">Review</button>
-                                </div>
+                        <div class="pending-applications-header">
+                            <h4>Pending User Applications</h4>
+                            <div class="application-stats">
+                                <span id="pendingCount" class="stat-badge">0 pending</span>
                             </div>
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>Staff Application: Maria Schmidt</strong><br>
-                                    <small>maria.schmidt@email.com - Coaching Staff</small>
-                                    <p>Role: Fitness Coach, Experience: 5 years</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn">Approve</button>
-                                    <button class="btn btn-secondary">Reject</button>
-                                    <button class="btn btn-secondary">Review</button>
-                                </div>
-                            </div>
+                        </div>
+                        <div id="pendingApplicationsList" class="pending-applications">
+                            <p class="no-applications-message">No pending applications at this time.</p>
                         </div>
                     </div>
                     
@@ -8020,6 +8132,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
     <script>
         let currentUser = null;
         let choreStorage = [];
+        let pendingApplications = [];
         
         // Player data storage
         let playerStorage = [
@@ -8249,7 +8362,176 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Add active to clicked button
             event.target.classList.add('active');
+
+            // Update pending applications if showing that tab
+            if (tabId === 'pending') {
+                displayPendingApplications();
+            }
         }
+
+        // Display pending applications
+        window.displayPendingApplications = function() {
+            const container = document.getElementById('pendingApplicationsList');
+            const countElement = document.getElementById('pendingCount');
+            
+            if (!container || !countElement) return;
+
+            // Update count
+            countElement.textContent = pendingApplications.length + ' pending';
+            
+            if (pendingApplications.length === 0) {
+                container.innerHTML = '<p class="no-applications-message">No pending applications at this time.</p>';
+                return;
+            }
+
+            let html = '';
+            pendingApplications.forEach(app => {
+                html += '<div class="application-item" id="app-' + app.id + '">';
+                html += '<div class="application-info">';
+                html += '<div class="application-header">';
+                html += '<strong>' + (app.type === 'player' ? '⚽' : '👥') + ' ' + app.firstName + ' ' + app.lastName + '</strong>';
+                html += '<span class="application-type ' + app.type + '">' + (app.type === 'player' ? 'Player' : 'Staff') + ' Application</span>';
+                html += '</div>';
+                html += '<div class="application-details">';
+                html += '<p><strong>Email:</strong> ' + app.email + '</p>';
+                html += '<p><strong>Phone:</strong> ' + (app.phone || 'Not provided') + '</p>';
+                
+                if (app.type === 'player') {
+                    html += '<p><strong>Position:</strong> ' + (app.position || 'Not specified') + '</p>';
+                    html += '<p><strong>Age:</strong> ' + (app.dateOfBirth ? calculateAge(app.dateOfBirth) : 'Not provided') + '</p>';
+                    html += '<p><strong>Nationality:</strong> ' + (app.nationality || 'Not provided') + '</p>';
+                    if (app.motivation) {
+                        html += '<p><strong>Motivation:</strong> ' + app.motivation.substring(0, 100) + (app.motivation.length > 100 ? '...' : '') + '</p>';
+                    }
+                } else {
+                    html += '<p><strong>Position:</strong> ' + (app.position || 'Not specified') + '</p>';
+                    if (app.additionalInfo) {
+                        html += '<p><strong>Experience:</strong> ' + app.additionalInfo.substring(0, 100) + (app.additionalInfo.length > 100 ? '...' : '') + '</p>';
+                    }
+                }
+                
+                html += '<p><strong>Submitted:</strong> ' + new Date(app.submittedAt).toLocaleString() + '</p>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="application-actions">';
+                html += '<button class="btn btn-success" onclick="approveApplication(\'' + app.id + '\')">✅ Approve</button>';
+                html += '<button class="btn btn-danger" onclick="rejectApplication(\'' + app.id + '\')">❌ Reject</button>';
+                html += '<button class="btn btn-secondary" onclick="viewApplicationDetails(\'' + app.id + '\')">👁️ Details</button>';
+                html += '</div>';
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        };
+
+        // Helper function to calculate age
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age + ' years old';
+        }
+
+        // Approve application
+        window.approveApplication = function(applicationId) {
+            const app = pendingApplications.find(a => a.id === applicationId);
+            if (!app) return;
+
+            if (confirm('Approve application for ' + app.firstName + ' ' + app.lastName + '?')) {
+                // Create user account based on application
+                const newUser = {
+                    name: app.firstName + ' ' + app.lastName,
+                    email: app.email,
+                    role: app.type,
+                    password: 'ITP2024', // Default password
+                    phone: app.phone,
+                    approved: true,
+                    approvedAt: new Date().toISOString(),
+                    approvedBy: currentUser.email
+                };
+
+                // Add additional fields for players
+                if (app.type === 'player') {
+                    newUser.position = app.position;
+                    newUser.dateOfBirth = app.dateOfBirth;
+                    newUser.nationality = app.nationality;
+                    newUser.house = 'Widdersdorf 1'; // Default assignment
+                    newUser.room = 'TBD';
+                    newUser.status = 'Active';
+                }
+
+                // Remove from pending applications
+                const index = pendingApplications.findIndex(a => a.id === applicationId);
+                if (index > -1) {
+                    pendingApplications.splice(index, 1);
+                }
+
+                // Update displays
+                displayPendingApplications();
+                
+                console.log('Application approved:', newUser);
+                alert('✅ Application approved successfully!\n\nUser account created for ' + newUser.name + '\nDefault password: ITP2024\n\nNotification email will be sent to: ' + newUser.email);
+            }
+        };
+
+        // Reject application
+        window.rejectApplication = function(applicationId) {
+            const app = pendingApplications.find(a => a.id === applicationId);
+            if (!app) return;
+
+            const reason = prompt('Optional: Reason for rejection (will be sent to applicant):');
+            
+            if (confirm('Reject application for ' + app.firstName + ' ' + app.lastName + '?')) {
+                // Remove from pending applications
+                const index = pendingApplications.findIndex(a => a.id === applicationId);
+                if (index > -1) {
+                    pendingApplications.splice(index, 1);
+                }
+
+                // Update display
+                displayPendingApplications();
+                
+                console.log('Application rejected:', app, 'Reason:', reason);
+                alert('❌ Application rejected.\n\nRejection notification will be sent to: ' + app.email + (reason ? '\nReason: ' + reason : ''));
+            }
+        };
+
+        // View application details
+        window.viewApplicationDetails = function(applicationId) {
+            const app = pendingApplications.find(a => a.id === applicationId);
+            if (!app) return;
+
+            let details = '📋 APPLICATION DETAILS\n\n';
+            details += 'Name: ' + app.firstName + ' ' + app.lastName + '\n';
+            details += 'Email: ' + app.email + '\n';
+            details += 'Phone: ' + (app.phone || 'Not provided') + '\n';
+            details += 'Type: ' + (app.type === 'player' ? 'Player' : 'Staff') + '\n';
+            details += 'Submitted: ' + new Date(app.submittedAt).toLocaleString() + '\n\n';
+
+            if (app.type === 'player') {
+                details += 'PLAYER DETAILS:\n';
+                details += 'Position: ' + (app.position || 'Not specified') + '\n';
+                details += 'Date of Birth: ' + (app.dateOfBirth || 'Not provided') + '\n';
+                details += 'Nationality: ' + (app.nationality || 'Not provided') + '\n';
+                if (app.motivation) {
+                    details += 'Motivation: ' + app.motivation + '\n';
+                }
+            } else {
+                details += 'STAFF DETAILS:\n';
+                details += 'Position: ' + (app.position || 'Not specified') + '\n';
+                if (app.additionalInfo) {
+                    details += 'Experience/Info: ' + app.additionalInfo + '\n';
+                }
+            }
+
+            alert(details);
+        };
 
         // Auth tab management (login/register)
         window.showAuthTab = function(tabType) {
@@ -8315,6 +8597,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Submit player application
         function submitPlayerApplication() {
             const formData = {
+                id: Date.now().toString(),
                 type: 'player',
                 firstName: document.getElementById('playerFirstName').value,
                 lastName: document.getElementById('playerLastName').value,
@@ -8334,23 +8617,26 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 return;
             }
 
+            // Add to pending applications
+            pendingApplications.push(formData);
+            console.log('Player Application Added to Pending:', formData);
+
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
-                '<p>Welcome ' + formData.firstName + '! Your player registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and coaching staff notified.</p>' +
-                '<p>🏠 You will receive housing and program details at ' + formData.email + ' shortly.</p>';
+            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your player application has been submitted for review.</p>' +
+                '<p>📧 You will receive an email notification once your application has been reviewed by our admin team.</p>' +
+                '<p>⏰ This process typically takes 1-2 business days.</p>';
             
             // Replace the form with success message
             document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
-            
-            console.log('Player Application Submitted:', formData);
         }
 
         // Submit staff application
         function submitStaffApplication() {
             const formData = {
+                id: Date.now().toString(),
                 type: 'staff',
                 firstName: document.getElementById('staffFirstName').value,
                 lastName: document.getElementById('staffLastName').value,
@@ -8367,18 +8653,20 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 return;
             }
 
+            // Add to pending applications
+            pendingApplications.push(formData);
+            console.log('Staff Application Added to Pending:', formData);
+
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
-                '<p>Welcome ' + formData.firstName + '! Your staff registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and management notified.</p>' +
-                '<p>📋 You will receive any updates about your role at ' + formData.email + ' shortly.</p>';
+            successDiv.innerHTML = '<h3>✅ Application Submitted Successfully!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your staff application has been submitted for review.</p>' +
+                '<p>📧 You will receive an email notification once your application has been reviewed by our admin team.</p>' +
+                '<p>⏰ This process typically takes 1-2 business days.</p>';
             
             // Replace the form with success message
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
-            
-            console.log('Staff Application Submitted:', formData);
         }
 
         // Event Management Functions
