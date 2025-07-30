@@ -904,6 +904,142 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         .house-filter-btn:hover {
             background: #b91c1c;
+        }
+
+        /* Recurrence Options Styles */
+        .recurrence-container {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .day-checkboxes {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .day-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-checkboxes label:hover {
+            background: #f3f4f6;
+        }
+
+        .day-checkboxes input[type="checkbox"]:checked + * {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        #recurrenceUnit {
+            margin-left: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Event Management Styles */
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .event-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .event-item.recurring {
+            border-left: 4px solid #059669;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title-main {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .event-actions-menu {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .action-btn.danger {
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .action-btn.danger:hover {
+            background: #fef2f2;
+        }
+
+        .recurring-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            background: #ecfdf5;
+            color: #059669;
+            border-radius: 9999px;
+            margin-left: 0.5rem;
+        }
+
+        .event-management-container {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .no-events-message {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 2rem;
+        }
             padding: 1.5rem;
             text-align: center;
         }
@@ -5206,6 +5342,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
                 
+                <!-- Event Management Section (Admin Only) -->
+                <div class="form-section admin-only" style="display: none;">
+                    <h3>📋 Event Management</h3>
+                    <div id="eventManagementList" class="event-management-container">
+                        <!-- Existing events will be displayed here -->
+                        <p class="no-events-message">No events created yet. Use the "Create New Event" button to add events.</p>
+                    </div>
+                </div>
+
                 <!-- Weekly Overview -->
                 <div class="form-section">
                     <h3>📅 This Week's Schedule</h3>
@@ -5433,6 +5578,49 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                         <option value="high">High Priority</option>
                                         <option value="urgent">Urgent</option>
                                     </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Recurring Event</label>
+                                    <select id="eventRecurrence" onchange="toggleRecurrenceOptions()">
+                                        <option value="none">One-time Event</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Recurrence Options Section -->
+                            <div id="recurrenceOptionsSection" class="form-group" style="display: none;">
+                                <label>Recurrence Settings</label>
+                                <div class="recurrence-container">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Repeat every</label>
+                                            <input type="number" id="recurrenceInterval" value="1" min="1" max="30">
+                                            <span id="recurrenceUnit">week(s)</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>End Date</label>
+                                            <input type="date" id="recurrenceEndDate">
+                                        </div>
+                                    </div>
+                                    <div id="weeklyOptions" class="weekly-options" style="display: none;">
+                                        <label>Repeat on days:</label>
+                                        <div class="day-checkboxes">
+                                            <label><input type="checkbox" value="1"> Mon</label>
+                                            <label><input type="checkbox" value="2"> Tue</label>
+                                            <label><input type="checkbox" value="3"> Wed</label>
+                                            <label><input type="checkbox" value="4"> Thu</label>
+                                            <label><input type="checkbox" value="5"> Fri</label>
+                                            <label><input type="checkbox" value="6"> Sat</label>
+                                            <label><input type="checkbox" value="0"> Sun</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -8032,6 +8220,34 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         };
 
+        window.toggleRecurrenceOptions = function() {
+            const recurrenceType = document.getElementById('eventRecurrence').value;
+            const optionsSection = document.getElementById('recurrenceOptionsSection');
+            const weeklyOptions = document.getElementById('weeklyOptions');
+            const recurrenceUnit = document.getElementById('recurrenceUnit');
+            
+            if (recurrenceType === 'none') {
+                optionsSection.style.display = 'none';
+            } else {
+                optionsSection.style.display = 'block';
+                
+                // Update unit text based on recurrence type
+                if (recurrenceType === 'daily') {
+                    recurrenceUnit.textContent = 'day(s)';
+                    weeklyOptions.style.display = 'none';
+                } else if (recurrenceType === 'weekly') {
+                    recurrenceUnit.textContent = 'week(s)';
+                    weeklyOptions.style.display = 'block';
+                } else if (recurrenceType === 'monthly') {
+                    recurrenceUnit.textContent = 'month(s)';
+                    weeklyOptions.style.display = 'none';
+                } else if (recurrenceType === 'custom') {
+                    recurrenceUnit.textContent = 'day(s)';
+                    weeklyOptions.style.display = 'none';
+                }
+            }
+        };
+
         window.closeCreateEventModal = function() {
             document.getElementById('createEventModal').style.display = 'none';
             document.getElementById('createEventForm').reset();
@@ -8050,6 +8266,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const description = document.getElementById('eventDescription').value;
             const attendance = document.getElementById('eventAttendance').value;
             const priority = document.getElementById('eventPriority').value;
+            const recurrence = document.getElementById('eventRecurrence').value;
+            const recurrenceInterval = document.getElementById('recurrenceInterval').value;
+            const recurrenceEndDate = document.getElementById('recurrenceEndDate').value;
             
             // Get selected players if attendance is 'selected'
             let selectedPlayers = [];
@@ -8074,6 +8293,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
             }
             
+            // Get selected days for weekly recurrence
+            let selectedDays = [];
+            if (recurrence === 'weekly') {
+                const dayCheckboxes = document.querySelectorAll('#weeklyOptions input[type="checkbox"]:checked');
+                selectedDays = Array.from(dayCheckboxes).map(cb => parseInt(cb.value));
+            }
+
             // Create event object
             const newEvent = {
                 id: Date.now().toString(),
@@ -8087,6 +8313,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 attendance: attendance,
                 priority: priority,
                 selectedPlayers: selectedPlayers,
+                recurrence: {
+                    type: recurrence,
+                    interval: recurrenceInterval,
+                    endDate: recurrenceEndDate,
+                    selectedDays: selectedDays
+                },
                 createdBy: currentUser.email,
                 createdAt: new Date().toISOString(),
                 attendees: []
@@ -8096,7 +8328,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             if (!window.calendarEvents) {
                 window.calendarEvents = [];
             }
-            window.calendarEvents.push(newEvent);
+            
+            // Handle recurring events
+            if (recurrence !== 'none') {
+                const events = generateRecurringEvents(newEvent);
+                window.calendarEvents.push(...events);
+            } else {
+                window.calendarEvents.push(newEvent);
+            }
             
             // Show success message with player info
             let successMessage = 'Event "' + title + '" created successfully!\\n\\n' +
@@ -8116,13 +8355,217 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 successMessage += 'Attendance: ' + attendance;
             }
             
+            if (recurrence !== 'none') {
+                successMessage += '\\n\\nRecurring: ' + recurrence;
+                if (recurrenceEndDate) {
+                    successMessage += ' until ' + new Date(recurrenceEndDate).toLocaleDateString();
+                }
+            }
+            
             alert(successMessage);
             
             // Close modal and refresh calendar
             closeCreateEventModal();
             refreshCalendarEvents();
+            displayCalendarEvents();
             
             console.log('New event created:', newEvent);
+        };
+
+        window.generateRecurringEvents = function(baseEvent) {
+            const events = [];
+            const startDate = new Date(baseEvent.date);
+            const endDate = baseEvent.recurrence.endDate ? new Date(baseEvent.recurrence.endDate) : new Date(startDate.getTime() + (365 * 24 * 60 * 60 * 1000)); // Default 1 year
+            const interval = parseInt(baseEvent.recurrence.interval) || 1;
+            
+            let currentDate = new Date(startDate);
+            let eventCounter = 1;
+            
+            while (currentDate <= endDate && eventCounter <= 100) { // Max 100 occurrences
+                const eventDate = new Date(currentDate);
+                
+                // Create event for this date
+                const recurringEvent = {
+                    ...baseEvent,
+                    id: baseEvent.id + '_' + eventCounter,
+                    date: eventDate.toISOString().split('T')[0],
+                    isRecurring: true,
+                    parentEventId: baseEvent.id,
+                    occurrenceNumber: eventCounter
+                };
+                
+                events.push(recurringEvent);
+                
+                // Calculate next occurrence
+                if (baseEvent.recurrence.type === 'daily') {
+                    currentDate.setDate(currentDate.getDate() + interval);
+                } else if (baseEvent.recurrence.type === 'weekly') {
+                    if (baseEvent.recurrence.selectedDays && baseEvent.recurrence.selectedDays.length > 0) {
+                        // Handle specific days of the week
+                        const nextDay = getNextWeeklyOccurrence(currentDate, baseEvent.recurrence.selectedDays, interval);
+                        currentDate = nextDay;
+                    } else {
+                        currentDate.setDate(currentDate.getDate() + (7 * interval));
+                    }
+                } else if (baseEvent.recurrence.type === 'monthly') {
+                    currentDate.setMonth(currentDate.getMonth() + interval);
+                } else {
+                    // Custom - treat as daily
+                    currentDate.setDate(currentDate.getDate() + interval);
+                }
+                
+                eventCounter++;
+            }
+            
+            return events;
+        };
+
+        function getNextWeeklyOccurrence(currentDate, selectedDays, interval) {
+            const nextDate = new Date(currentDate);
+            let found = false;
+            let attempts = 0;
+            
+            while (!found && attempts < 14) { // Max 2 weeks to find next occurrence
+                nextDate.setDate(nextDate.getDate() + 1);
+                const dayOfWeek = nextDate.getDay();
+                
+                if (selectedDays.includes(dayOfWeek)) {
+                    found = true;
+                }
+                attempts++;
+            }
+            
+            return nextDate;
+        }
+
+        window.deleteEvent = function(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+            
+            if (!window.calendarEvents) {
+                return;
+            }
+            
+            const eventIndex = window.calendarEvents.findIndex(event => event.id === eventId);
+            if (eventIndex > -1) {
+                const event = window.calendarEvents[eventIndex];
+                
+                if (event.isRecurring) {
+                    const deleteAll = confirm('This is a recurring event. Delete all occurrences?\\n\\nClick OK to delete all, Cancel to delete only this occurrence.');
+                    
+                    if (deleteAll) {
+                        // Delete all occurrences
+                        window.calendarEvents = window.calendarEvents.filter(e => 
+                            e.parentEventId !== event.parentEventId && e.id !== event.parentEventId
+                        );
+                    } else {
+                        // Delete only this occurrence
+                        window.calendarEvents.splice(eventIndex, 1);
+                    }
+                } else {
+                    // Delete single event
+                    window.calendarEvents.splice(eventIndex, 1);
+                }
+                
+                refreshCalendarEvents();
+                alert('Event deleted successfully.');
+            }
+        };
+
+        window.refreshCalendarEvents = function() {
+            // This would refresh the calendar display
+            // For now, just log the events
+            console.log('Calendar events updated:', window.calendarEvents);
+            
+            // Update any visible calendar views
+            displayCalendarEvents();
+        };
+
+        window.displayCalendarEvents = function() {
+            const container = document.getElementById('eventManagementList');
+            if (!container) return;
+            
+            if (!window.calendarEvents || window.calendarEvents.length === 0) {
+                container.innerHTML = '<p class="no-events-message">No events created yet. Use the "Create New Event" button to add events.</p>';
+                return;
+            }
+            
+            let html = '';
+            const sortedEvents = window.calendarEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            sortedEvents.forEach(event => {
+                const eventDate = new Date(event.date);
+                const isRecurring = event.isRecurring || event.recurrence?.type !== 'none';
+                
+                html += '<div class="event-item' + (isRecurring ? ' recurring' : '') + '">';
+                html += '<div class="event-header">';
+                html += '<div>';
+                html += '<div class="event-title-main">' + event.title;
+                
+                if (isRecurring) {
+                    html += '<span class="recurring-badge">Recurring</span>';
+                }
+                
+                html += '</div>';
+                html += '<div class="event-meta">';
+                html += '📅 ' + eventDate.toLocaleDateString() + ' at ' + event.time;
+                html += ' • 📍 ' + (event.location || 'Location TBD');
+                html += ' • ⚽ ' + event.type;
+                html += '</div>';
+                
+                if (event.selectedPlayers && event.selectedPlayers.length > 0) {
+                    html += '<div class="event-meta">👥 ' + event.selectedPlayers.length + ' players assigned</div>';
+                } else if (event.attendance === 'all') {
+                    html += '<div class="event-meta">👥 All players required</div>';
+                }
+                
+                html += '</div>';
+                html += '<div class="event-actions-menu">';
+                html += '<button class="action-btn" onclick="editEvent(\'' + event.id + '\')">✏️ Edit</button>';
+                html += '<button class="action-btn danger" onclick="deleteEvent(\'' + event.id + '\')">🗑️ Delete</button>';
+                html += '</div>';
+                html += '</div>';
+                
+                if (event.description) {
+                    html += '<div class="event-meta" style="margin-top: 0.5rem;">' + event.description + '</div>';
+                }
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        };
+
+        window.editEvent = function(eventId) {
+            // For now, just show event details - full edit functionality could be added later
+            const event = window.calendarEvents.find(e => e.id === eventId);
+            if (event) {
+                let details = 'Event Details:\\n\\n';
+                details += 'Title: ' + event.title + '\\n';
+                details += 'Type: ' + event.type + '\\n';
+                details += 'Date: ' + new Date(event.date).toLocaleDateString() + '\\n';
+                details += 'Time: ' + event.time + '\\n';
+                details += 'Location: ' + (event.location || 'Not specified') + '\\n';
+                details += 'Duration: ' + event.duration + ' minutes\\n';
+                details += 'Priority: ' + event.priority + '\\n';
+                
+                if (event.selectedPlayers && event.selectedPlayers.length > 0) {
+                    details += '\\nAssigned Players:\\n';
+                    event.selectedPlayers.forEach(player => {
+                        details += '• ' + player.name + '\\n';
+                    });
+                }
+                
+                if (event.recurrence && event.recurrence.type !== 'none') {
+                    details += '\\nRecurring: ' + event.recurrence.type;
+                    if (event.recurrence.endDate) {
+                        details += ' until ' + new Date(event.recurrence.endDate).toLocaleDateString();
+                    }
+                }
+                
+                alert(details + '\\n\\n(Full editing functionality can be added in future updates)');
+            }
         };
 
         window.refreshCalendarEvents = function() {
