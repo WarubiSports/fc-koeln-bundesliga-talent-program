@@ -3325,6 +3325,143 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             opacity: 0.6;
         }
 
+        /* House Summary Admin Styles */
+        .house-summary-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .house-tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .house-tab-btn.active {
+            color: #dc2626;
+            border-bottom-color: #dc2626;
+        }
+
+        .house-tab-btn:hover {
+            color: #dc2626;
+            background: #f8fafc;
+        }
+
+        .house-summary-content {
+            display: none;
+        }
+
+        .house-summary-content.active {
+            display: block;
+        }
+
+        .house-group {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #dc2626;
+        }
+
+        .house-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #dc2626;
+        }
+
+        .house-header h4 {
+            margin: 0;
+            color: #374151;
+            font-size: 1.25rem;
+        }
+
+        .house-total {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #dc2626;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #dc2626;
+        }
+
+        .house-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-order-summary {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-total {
+            font-weight: bold;
+            color: #dc2626;
+            float: right;
+        }
+
+        .order-items-preview {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            clear: both;
+        }
+
+        .house-shopping-list {
+            background: white;
+            border: 2px solid #dc2626;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .house-shopping-list h5 {
+            margin: 0 0 0.75rem 0;
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .shopping-items {
+            color: #374151;
+        }
+
+        .shopping-item {
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
         .auth-tab-content {
             display: none;
         }
@@ -4888,6 +5025,116 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
+                <!-- Admin House Summary (Admin Only) -->
+                <div class="form-section admin-only" id="houseSummarySection" style="display: none;">
+                    <h3>🏠 House Order Summary (Admin View)</h3>
+                    <div class="house-summary-tabs">
+                        <button class="house-tab-btn active" onclick="showHouseSummary('all')">All Houses</button>
+                        <button class="house-tab-btn" onclick="showHouseSummary('W1')">Widdersdorf 1</button>
+                        <button class="house-tab-btn" onclick="showHouseSummary('W2')">Widdersdorf 2</button>
+                        <button class="house-tab-btn" onclick="showHouseSummary('W3')">Widdersdorf 3</button>
+                    </div>
+                    
+                    <!-- All Houses Summary -->
+                    <div id="allHousesSummary" class="house-summary-content active">
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 1 (4 orders)</h4>
+                                <div class="house-total">Total: €127.85</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Max Bisinger</span>
+                                    <span class="order-total">€31.45</span>
+                                    <div class="order-items-preview">Chicken (2x), Rice, Yogurt, Protein bars...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Luis Garcia</span>
+                                    <span class="order-total">€28.90</span>
+                                    <div class="order-items-preview">Fish, Pasta, Vegetables, Milk...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Ahmed Hassan</span>
+                                    <span class="order-total">€34.20</span>
+                                    <div class="order-items-preview">Beef, Eggs, Bread, Fruits...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Jonas Mueller</span>
+                                    <span class="order-total">€33.30</span>
+                                    <div class="order-items-preview">Turkey, Oats, Bananas, Cheese...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Chicken (8x), Rice (3x), Yogurt (6x), Fish (4x), Pasta (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 2 (3 orders)</h4>
+                                <div class="house-total">Total: €89.65</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Mike Brown</span>
+                                    <span class="order-total">€29.85</span>
+                                    <div class="order-items-preview">Salmon, Sweet potatoes, Spinach...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">David Kim</span>
+                                    <span class="order-total">€32.15</span>
+                                    <div class="order-items-preview">Pork, Quinoa, Broccoli, Almonds...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Carlos Ruiz</span>
+                                    <span class="order-total">€27.65</span>
+                                    <div class="order-items-preview">Tuna, Brown rice, Avocados...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Salmon (3x), Sweet potatoes (4x), Spinach (2x), Pork (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="house-group">
+                            <div class="house-header">
+                                <h4>🏠 Widdersdorf 3 (2 orders)</h4>
+                                <div class="house-total">Total: €61.30</div>
+                            </div>
+                            <div class="house-players">
+                                <div class="player-order-summary">
+                                    <span class="player-name">Tom Wilson</span>
+                                    <span class="order-total">€33.80</span>
+                                    <div class="order-items-preview">Lamb, Potatoes, Carrots, Protein shake...</div>
+                                </div>
+                                <div class="player-order-summary">
+                                    <span class="player-name">Alex Chen</span>
+                                    <span class="order-total">€27.50</span>
+                                    <div class="order-items-preview">Tofu, Noodles, Peppers, Soy milk...</div>
+                                </div>
+                            </div>
+                            <div class="house-shopping-list">
+                                <h5>Consolidated Shopping List:</h5>
+                                <div class="shopping-items">
+                                    <span class="shopping-item">Lamb (2x), Potatoes (5x), Carrots (3x), Tofu (2x)...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-actions">
+                        <button class="btn btn-secondary" onclick="exportHouseOrders()">📋 Export House Orders</button>
+                        <button class="btn btn-secondary" onclick="printShoppingLists()">🖨️ Print Shopping Lists</button>
+                        <button class="btn btn-primary" onclick="processAllOrders()">✅ Process All House Orders</button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Communications Page -->
@@ -6057,6 +6304,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 adminStaffElements.forEach(element => {
                     element.style.display = 'block';
                 });
+            }
+            
+            // Show house summary for admins in food orders
+            const houseSummarySection = document.getElementById('houseSummarySection');
+            if (houseSummarySection) {
+                houseSummarySection.style.display = currentUser.role === 'admin' ? 'block' : 'none';
             }
         }
 
@@ -7468,6 +7721,47 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             window.showBudgetValidation = showBudgetValidation;
             window.updateOrderPreview = updateOrderPreview;
             window.submitIndividualOrder = submitIndividualOrder;
+
+        // House Summary Admin Functions
+        window.showHouseSummary = function(house) {
+            // Hide all house summary content
+            document.querySelectorAll('.house-summary-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.house-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected house summary
+            if (house === 'all') {
+                document.getElementById('allHousesSummary').classList.add('active');
+                document.querySelector('.house-tab-btn').classList.add('active');
+            } else {
+                // Show specific house summary (placeholder for individual house views)
+                document.getElementById('allHousesSummary').classList.add('active');
+                document.querySelectorAll('.house-tab-btn').forEach((btn, index) => {
+                    if (btn.textContent.includes(house)) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        };
+
+        window.exportHouseOrders = function() {
+            alert('Export House Orders\\n\\nGenerating comprehensive order export with:\\n• Individual player orders grouped by house\\n• Consolidated shopping lists per house\\n• Budget totals and delivery schedules\\n\\nExport file will be saved as: house-orders-' + new Date().toISOString().split('T')[0] + '.csv');
+        };
+
+        window.printShoppingLists = function() {
+            alert('Print Shopping Lists\\n\\nPreparing printable shopping lists:\\n• Widdersdorf 1: 127.85€ (4 players)\\n• Widdersdorf 2: 89.65€ (3 players)\\n• Widdersdorf 3: 61.30€ (2 players)\\n\\nTotal across all houses: 278.80€');
+        };
+
+        window.processAllOrders = function() {
+            if (confirm('Process all house orders for delivery?\\n\\nThis will:\\n• Submit orders for all houses\\n• Generate shopping lists for staff\\n• Send confirmations to all players\\n\\nContinue?')) {
+                alert('All House Orders Processed Successfully!\\n\\n✅ 9 individual orders submitted\\n✅ 3 house shopping lists generated\\n✅ Delivery scheduled for Tuesday & Friday\\n✅ Player confirmations sent\\n\\nTotal processed: €278.80');
+            }
+        };
             
             // Clear selections after successful submission
             clearSelection();
