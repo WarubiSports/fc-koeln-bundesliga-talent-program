@@ -5870,7 +5870,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 dateOfBirth: document.getElementById('playerBirth').value,
                 nationality: document.getElementById('playerNationality').value,
                 position: document.getElementById('playerPosition').value,
-
                 motivation: document.getElementById('playerMotivation').value,
                 submittedAt: new Date().toISOString()
             };
@@ -5881,21 +5880,72 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 return;
             }
 
+            // Calculate age from date of birth
+            const birthDate = new Date(formData.dateOfBirth);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear() - 
+                (today.getMonth() < birthDate.getMonth() || 
+                 (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+
+            // Auto-assign house based on current counts
+            const houseAssignments = [
+                { house: 'Widdersdorf 1', count: playerStorage.filter(p => p.house === 'Widdersdorf 1').length },
+                { house: 'Widdersdorf 2', count: playerStorage.filter(p => p.house === 'Widdersdorf 2').length },
+                { house: 'Widdersdorf 3', count: playerStorage.filter(p => p.house === 'Widdersdorf 3').length }
+            ];
+            const assignedHouse = houseAssignments.sort((a, b) => a.count - b.count)[0].house;
+
+            // Generate unique player ID
+            const playerId = 'player_' + Date.now();
+
+            // Create new player object
+            const newPlayer = {
+                id: playerId,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                position: formData.position.toLowerCase(),
+                age: age,
+                nationality: formData.nationality,
+                house: assignedHouse,
+                room: 'TBD', // To be assigned by admin
+                contractPeriod: 'TBD', // To be assigned by admin
+                status: 'pending', // New registrations start as pending
+                specialNotes: formData.motivation,
+                joinDate: new Date().toISOString().split('T')[0],
+                phoneNumber: formData.phone,
+                emergencyContact: 'To be provided',
+                medicalInfo: 'To be provided',
+                registrationEmail: formData.email
+            };
+
+            // Add to player storage
+            playerStorage.push(newPlayer);
+
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
             successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
                 '<p>Welcome ' + formData.firstName + '! Your player registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and coaching staff notified.</p>' +
-                '<p>🏠 You will receive housing and program details at ' + formData.email + ' shortly.</p>';
+                '<p>🏠 You have been assigned to <strong>' + assignedHouse + '</strong></p>' +
+                '<p>📧 Your profile has been added to our system and coaches notified.</p>' +
+                '<p>📋 Staff will contact you at ' + formData.email + ' with next steps.</p>' +
+                '<p style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 6px; color: #0369a1;">' +
+                '<strong>Player ID:</strong> ' + playerId + '<br>' +
+                '<strong>Status:</strong> Pending approval<br>' +
+                '<strong>House Assignment:</strong> ' + assignedHouse + '</p>';
             
             // Replace the form with success message
             document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
             
-            console.log('Player Application Submitted:', formData);
+            console.log('Player Application Submitted and Added to System:', newPlayer);
+            
+            // Update player displays if currently viewing players page
+            if (typeof updatePlayerDisplay === 'function') {
+                updatePlayerDisplay();
+            }
         }
 
-        // Submit staff application
+        // Submit staff application  
         function submitStaffApplication() {
             const formData = {
                 type: 'staff',
@@ -5914,18 +5964,26 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 return;
             }
 
+            // For staff applications, just show confirmation since staff accounts need admin setup
+            // In a real system, this would be sent to admin for approval
+            
             // Show success message
             const successDiv = document.createElement('div');
             successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
-                '<p>Welcome ' + formData.firstName + '! Your staff registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and management notified.</p>' +
-                '<p>📋 You will receive any updates about your role at ' + formData.email + ' shortly.</p>';
+            successDiv.innerHTML = '<h3>✅ Staff Registration Submitted!</h3>' +
+                '<p>Thank you ' + formData.firstName + '! Your staff registration has been received.</p>' +
+                '<p>📋 Admin will review your application and create your account.</p>' +
+                '<p>📧 You will receive login credentials at ' + formData.email + ' once approved.</p>' +
+                '<p style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border-radius: 6px; color: #92400e;">' +
+                '<strong>Next Steps:</strong><br>' +
+                '• Admin review (1-2 business days)<br>' +
+                '• Account setup with appropriate permissions<br>' +
+                '• Email with login credentials and instructions</p>';
             
             // Replace the form with success message
             document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
             
-            console.log('Staff Application Submitted:', formData);
+            console.log('Staff Application Submitted for Admin Review:', formData);
         }
 
         // Logout
