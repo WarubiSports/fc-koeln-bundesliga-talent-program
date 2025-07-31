@@ -7280,127 +7280,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ Settings</button>
                 </div>
 
-                <!-- Full Admin Control Section -->
-                <div id="full-control" class="admin-section">
-                    <h2>🛡️ Full Administrator Control Panel</h2>
-                    
-                    <!-- Super Admin Powers -->
-                    <div class="form-section">
-                        <h3>⚡ Super Administrator Powers</h3>
-                        <div class="super-admin-controls">
-                            <div class="control-category">
-                                <h4>🔐 Security & Access Control</h4>
-                                <button class="btn btn-primary" onclick="fullUserControl()">👥 Complete User Account Control</button>
-                                <button class="btn btn-primary" onclick="passwordManagement()">🔑 Global Password Management</button>
-                                <button class="btn btn-primary" onclick="sessionControl()">🔐 Force Logout All Users</button>
-                                <button class="btn btn-primary" onclick="permissionOverride()">🚪 Override All Permissions</button>
-                                <button class="btn btn-warning" onclick="lockdownMode()">🚨 System Lockdown Mode</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>💾 Data & Database Control</h4>
-                                <button class="btn btn-primary" onclick="databaseFullAccess()">🗄️ Direct Database Access</button>
-                                <button class="btn btn-primary" onclick="backupManagement()">💾 Complete Backup Management</button>
-                                <button class="btn btn-primary" onclick="dataExportAll()">📤 Export All System Data</button>
-                                <button class="btn btn-primary" onclick="dataImportAll()">📥 Import/Restore Data</button>
-                                <button class="btn btn-warning" onclick="databaseReset()">⚠️ Database Reset</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>⚙️ System Operations</h4>
-                                <button class="btn btn-primary" onclick="systemRestart()">🔄 Restart Entire System</button>
-                                <button class="btn btn-primary" onclick="maintenanceMode()">🚧 Enable Maintenance Mode</button>
-                                <button class="btn btn-primary" onclick="systemMonitoring()">📊 Real-time System Monitoring</button>
-                                <button class="btn btn-primary" onclick="logManagement()">📋 Complete Log Management</button>
-                                <button class="btn btn-danger" onclick="emergencyShutdown()">🛑 Emergency System Shutdown</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>👥 Player & Staff Control</h4>
-                                <button class="btn btn-primary" onclick="massPlayerUpdate()">👤 Mass Player Updates</button>
-                                <button class="btn btn-primary" onclick="medicalRecordsFull()">🏥 Complete Medical Records Access</button>
-                                <button class="btn btn-primary" onclick="financialRecords()">💰 Full Financial Records Access</button>
-                                <button class="btn btn-primary" onclick="communicationControl()">📢 Communication System Control</button>
-                                <button class="btn btn-warning" onclick="disciplinaryActions()">⚠️ Disciplinary Action Tools</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>🏠 Facility & Operations</h4>
-                                <button class="btn btn-primary" onclick="facilityFullControl()">🏠 Complete Facility Management</button>
-                                <button class="btn btn-primary" onclick="scheduleOverride()">📅 Override All Schedules</button>
-                                <button class="btn btn-primary" onclick="foodSystemControl()">🍽️ Food System Management</button>
-                                <button class="btn btn-primary" onclick="choreSystemControl()">🧹 Chore System Control</button>
-                                <button class="btn btn-primary" onclick="emergencyProtocols()">🚨 Emergency Protocols</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Live Admin Dashboard -->
-                    <div class="form-section">
-                        <h3>📺 Live Administrative Dashboard</h3>
-                        <div class="live-dashboard">
-                            <div class="dashboard-item">
-                                <h4>System Status</h4>
-                                <div class="status-indicators">
-                                    <span class="status-indicator online">🟢 Database: Online</span>
-                                    <span class="status-indicator online">🟢 Server: Operational</span>
-                                    <span class="status-indicator online">🟢 Security: Active</span>
-                                    <span class="status-indicator warning">🟡 Storage: 76% Used</span>
-                                </div>
-                                <button class="btn-small" onclick="refreshSystemStatus()">🔄 Refresh</button>
-                            </div>
-                            
-                            <div class="dashboard-item">
-                                <h4>Active Users (Real-time)</h4>
-                                <div class="user-activity">
-                                    <p><strong>Total Online:</strong> <span class="live-count">23</span></p>
-                                    <p><strong>Admins:</strong> <span class="admin-count">2</span></p>
-                                    <p><strong>Staff:</strong> <span class="staff-count">5</span></p>
-                                    <p><strong>Players:</strong> <span class="player-count">16</span></p>
-                                </div>
-                                <button class="btn-small" onclick="viewActiveUsers()">👥 View All</button>
-                            </div>
-                            
-                            <div class="dashboard-item">
-                                <h4>Security Monitoring</h4>
-                                <div class="security-status">
-                                    <p><strong>Failed Logins (24h):</strong> <span class="security-alert">0</span></p>
-                                    <p><strong>Suspicious Activity:</strong> <span class="security-alert">0</span></p>
-                                    <p><strong>Last Security Scan:</strong> <span class="scan-time">2 hours ago</span></p>
-                                </div>
-                                <button class="btn-small" onclick="securityAudit()">🔍 Security Audit</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dangerous Operations -->
-                    <div class="form-section danger-zone">
-                        <h3>⚠️ Danger Zone - Destructive Operations</h3>
-                        <div class="danger-controls">
-                            <div class="danger-warning">
-                                <p><strong>⚠️ WARNING:</strong> These operations are irreversible and can cause permanent data loss. Use with extreme caution.</p>
-                            </div>
-                            <div class="danger-actions">
-                                <button class="btn btn-danger" onclick="factoryReset()">🔄 Complete Factory Reset</button>
-                                <button class="btn btn-danger" onclick="purgeAllData()">🗑️ Purge All User Data</button>
-                                <button class="btn btn-danger" onclick="deleteAllPlayers()">❌ Delete All Player Records</button>
-                                <button class="btn btn-danger" onclick="systemWipe()">💥 Complete System Wipe</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Emergency Controls -->
-                    <div class="form-section emergency-controls">
-                        <h3>🚨 Emergency Controls</h3>
-                        <div class="emergency-grid">
-                            <button class="btn btn-emergency" onclick="emergencyLockdown()">🔒 EMERGENCY LOCKDOWN</button>
-                            <button class="btn btn-emergency" onclick="emergencyEvacuation()">🚨 EVACUATION PROTOCOL</button>
-                            <button class="btn btn-emergency" onclick="emergencyMedical()">🏥 MEDICAL EMERGENCY</button>
-                            <button class="btn btn-emergency" onclick="emergencyContact()">📞 EMERGENCY CONTACTS</button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- User Management -->
                 <div id="user-management" class="admin-section active">
                     <h3>👥 User Management</h3>
@@ -7409,7 +7288,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <button class="tab-btn" onclick="showAdminTab('users')">Active Users</button>
                     </div>
 
-                    
                     <div id="pending-tab" class="admin-tab-content active">
                         <div class="pending-approvals">
                             <div class="approval-item">
@@ -7462,55 +7340,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                                 <div class="user-status active">Active</div>
                                 <button class="btn-mini">Edit</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="pending-tab" class="admin-tab-content">
-                        <div class="pending-approvals">
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>New Registration: Luis Martinez</strong><br>
-                                    <small>luis.martinez@email.com - Player Application</small>
-                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn">Approve</button>
-                                    <button class="btn btn-secondary">Reject</button>
-                                    <button class="btn btn-secondary">Review</button>
-                                </div>
-                            </div>
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>Staff Application: Maria Schmidt</strong><br>
-                                    <small>maria.schmidt@email.com - Coaching Staff</small>
-                                    <p>Role: Fitness Coach, Experience: 5 years</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn">Approve</button>
-                                    <button class="btn btn-secondary">Reject</button>
-                                    <button class="btn btn-secondary">Review</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="roles-tab" class="admin-tab-content">
-                        <div class="roles-grid">
-                            <div class="role-card">
-                                <h4>Admin</h4>
-                                <p>Full system access</p>
-                                <small>2 users assigned</small>
-                            </div>
-                            <div class="role-card">
-                                <h4>Staff</h4>
-                                <p>Management and oversight</p>
-                                <small>5 users assigned</small>
-                            </div>
-                            <div class="role-card">
-                                <h4>Player</h4>
-                                <p>Basic access and profile</p>
-                                <small>24 users assigned</small>
                             </div>
                         </div>
                     </div>
