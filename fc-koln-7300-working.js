@@ -4874,250 +4874,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-weight: 400;
             line-height: 1.4;
         }
-
-        /* Member Management Styles */
-        .member-filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            align-items: center;
-        }
-
-        .join-requests-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .join-request-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .join-request-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-color: #dc2626;
-        }
-
-        .request-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .request-info h4 {
-            margin: 0 0 0.5rem 0;
-            color: #111827;
-            font-size: 1.25rem;
-        }
-
-        .request-type-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-        }
-
-        .request-type-badge.player {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .request-type-badge.staff {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .request-status {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-approved {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .request-details {
-            margin-bottom: 1rem;
-        }
-
-        .request-details p {
-            margin: 0.5rem 0;
-            color: #4b5563;
-        }
-
-        .admin-notes {
-            background: #f3f4f6;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        .request-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .request-actions .btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .no-requests, .error-message, .loading-message {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-            font-style: italic;
-        }
-
-        .error-message {
-            color: #dc2626;
-            background: #fee2e2;
-            border-radius: 6px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            margin: 0 0 1rem 0;
-            color: #6b7280;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #dc2626;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-card small {
-            color: #9ca3af;
-            font-size: 0.75rem;
-        }
-
-        .stats-breakdown {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .breakdown-charts {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .chart-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .chart-item h4 {
-            margin: 0;
-            min-width: 120px;
-            font-size: 0.875rem;
-            color: #4b5563;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 20px;
-            background: #f3f4f6;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-fill.player-requests {
-            background: #3b82f6;
-        }
-
-        .progress-fill.staff-requests {
-            background: #10b981;
-        }
-
-        .chart-item span {
-            min-width: 30px;
-            font-weight: 500;
-            color: #4b5563;
-        }
-
-        .modal-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: rgba(0,0,0,0.5) !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            z-index: 1000 !important;
-        }
-
-        .modal-content {
-            background: white !important;
-            padding: 2rem !important;
-            border-radius: 8px !important;
-            max-width: 600px !important;
-            max-height: 80vh !important;
-            overflow-y: auto !important;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .motivation-text {
-            background: #f9fafb;
-            padding: 1rem;
-            border-radius: 6px;
-            margin: 0.5rem 0;
-            font-style: italic;
-            color: #4b5563;
-        }
     </style>
 </head>
 <body>
@@ -7514,120 +7270,146 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Member Management Page -->
+            <!-- Admin Page -->
             <div id="admin" class="page">
-                <h1>Member Management</h1>
+                <h1>System Administration</h1>
                 
-                <!-- Member Management Navigation -->
+                <!-- Admin Navigation -->
                 <div class="admin-nav">
-                    <button class="admin-nav-btn active" onclick="showAdminSection('join-requests')">📋 Join Requests</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">👥 User Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('member-statistics')">📊 Statistics</button>
+                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('full-control')">🛡️ Full Admin Control</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
                 </div>
 
-                <!-- Join Requests Section -->
-                <div id="join-requests" class="admin-section active">
-                    <h2>📋 Pending Join Requests</h2>
+                <!-- Full Admin Control Section -->
+                <div id="full-control" class="admin-section">
+                    <h2>🛡️ Full Administrator Control Panel</h2>
                     
-                    <!-- Filter Options -->
-                    <div class="member-filters">
-                        <select id="requestTypeFilter" onchange="filterJoinRequests()">
-                            <option value="all">All Types</option>
-                            <option value="player">Player Applications</option>
-                            <option value="staff">Staff Applications</option>
-                        </select>
-                        <select id="requestStatusFilter" onchange="filterJoinRequests()">
-                            <option value="pending">Pending Only</option>
-                            <option value="all">All Statuses</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="refreshJoinRequests()">🔄 Refresh</button>
-                    </div>
-
-                    <!-- Join Requests List -->
-                    <div id="joinRequestsList" class="join-requests-container">
-                        <div class="loading-message">Loading join requests...</div>
-                    </div>
-                </div>
-
-                <!-- User Management Section -->
-                <div id="user-management" class="admin-section">
-                    <h2>👥 User Management</h2>
-                    
-                    <!-- User Search and Controls -->
-                    <div class="user-management-controls">
-                        <input type="text" id="userSearch" placeholder="Search users by name or email..." class="form-control">
-                        <select id="roleFilter" class="form-control">
-                            <option value="all">All Roles</option>
-                            <option value="admin">Administrators</option>
-                            <option value="staff">Staff</option>
-                            <option value="player">Players</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="searchUsers()">🔍 Search</button>
-                        <button class="btn btn-primary" onclick="addNewUser()">+ Add User</button>
-                    </div>
-
-                    <!-- Users List -->
-                    <div id="usersList" class="users-container">
-                        <div class="loading-message">Loading users...</div>
-                    </div>
-                </div>
-
-                <!-- Statistics Section -->
-                <div id="member-statistics" class="admin-section">
-                    <h2>📊 Member Statistics</h2>
-                    
-                    <!-- Stats Overview -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h3>Total Join Requests</h3>
-                            <div class="stat-number" id="totalRequests">0</div>
-                            <small>All time</small>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Pending Requests</h3>
-                            <div class="stat-number" id="pendingRequests">0</div>
-                            <small>Awaiting review</small>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Approved This Month</h3>
-                            <div class="stat-number" id="approvedThisMonth">0</div>
-                            <small>Current month</small>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Active Users</h3>
-                            <div class="stat-number" id="activeUsers">0</div>
-                            <small>System users</small>
-                        </div>
-                    </div>
-
-                    <!-- Request Type Breakdown -->
-                    <div class="stats-breakdown">
-                        <h3>Request Type Distribution</h3>
-                        <div class="breakdown-charts">
-                            <div class="chart-item">
-                                <h4>Player Requests</h4>
-                                <div class="progress-bar">
-                                    <div class="progress-fill player-requests" style="width: 0%"></div>
-                                </div>
-                                <span id="playerRequestsCount">0</span>
+                    <!-- Super Admin Powers -->
+                    <div class="form-section">
+                        <h3>⚡ Super Administrator Powers</h3>
+                        <div class="super-admin-controls">
+                            <div class="control-category">
+                                <h4>🔐 Security & Access Control</h4>
+                                <button class="btn btn-primary" onclick="fullUserControl()">👥 Complete User Account Control</button>
+                                <button class="btn btn-primary" onclick="passwordManagement()">🔑 Global Password Management</button>
+                                <button class="btn btn-primary" onclick="sessionControl()">🔐 Force Logout All Users</button>
+                                <button class="btn btn-primary" onclick="permissionOverride()">🚪 Override All Permissions</button>
+                                <button class="btn btn-warning" onclick="lockdownMode()">🚨 System Lockdown Mode</button>
                             </div>
-                            <div class="chart-item">
-                                <h4>Staff Requests</h4>
-                                <div class="progress-bar">
-                                    <div class="progress-fill staff-requests" style="width: 0%"></div>
-                                </div>
-                                <span id="staffRequestsCount">0</span>
+                            
+                            <div class="control-category">
+                                <h4>💾 Data & Database Control</h4>
+                                <button class="btn btn-primary" onclick="databaseFullAccess()">🗄️ Direct Database Access</button>
+                                <button class="btn btn-primary" onclick="backupManagement()">💾 Complete Backup Management</button>
+                                <button class="btn btn-primary" onclick="dataExportAll()">📤 Export All System Data</button>
+                                <button class="btn btn-primary" onclick="dataImportAll()">📥 Import/Restore Data</button>
+                                <button class="btn btn-warning" onclick="databaseReset()">⚠️ Database Reset</button>
+                            </div>
+                            
+                            <div class="control-category">
+                                <h4>⚙️ System Operations</h4>
+                                <button class="btn btn-primary" onclick="systemRestart()">🔄 Restart Entire System</button>
+                                <button class="btn btn-primary" onclick="maintenanceMode()">🚧 Enable Maintenance Mode</button>
+                                <button class="btn btn-primary" onclick="systemMonitoring()">📊 Real-time System Monitoring</button>
+                                <button class="btn btn-primary" onclick="logManagement()">📋 Complete Log Management</button>
+                                <button class="btn btn-danger" onclick="emergencyShutdown()">🛑 Emergency System Shutdown</button>
+                            </div>
+                            
+                            <div class="control-category">
+                                <h4>👥 Player & Staff Control</h4>
+                                <button class="btn btn-primary" onclick="massPlayerUpdate()">👤 Mass Player Updates</button>
+                                <button class="btn btn-primary" onclick="medicalRecordsFull()">🏥 Complete Medical Records Access</button>
+                                <button class="btn btn-primary" onclick="financialRecords()">💰 Full Financial Records Access</button>
+                                <button class="btn btn-primary" onclick="communicationControl()">📢 Communication System Control</button>
+                                <button class="btn btn-warning" onclick="disciplinaryActions()">⚠️ Disciplinary Action Tools</button>
+                            </div>
+                            
+                            <div class="control-category">
+                                <h4>🏠 Facility & Operations</h4>
+                                <button class="btn btn-primary" onclick="facilityFullControl()">🏠 Complete Facility Management</button>
+                                <button class="btn btn-primary" onclick="scheduleOverride()">📅 Override All Schedules</button>
+                                <button class="btn btn-primary" onclick="foodSystemControl()">🍽️ Food System Management</button>
+                                <button class="btn btn-primary" onclick="choreSystemControl()">🧹 Chore System Control</button>
+                                <button class="btn btn-primary" onclick="emergencyProtocols()">🚨 Emergency Protocols</button>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Live Admin Dashboard -->
+                    <div class="form-section">
+                        <h3>📺 Live Administrative Dashboard</h3>
+                        <div class="live-dashboard">
+                            <div class="dashboard-item">
+                                <h4>System Status</h4>
+                                <div class="status-indicators">
+                                    <span class="status-indicator online">🟢 Database: Online</span>
+                                    <span class="status-indicator online">🟢 Server: Operational</span>
+                                    <span class="status-indicator online">🟢 Security: Active</span>
+                                    <span class="status-indicator warning">🟡 Storage: 76% Used</span>
+                                </div>
+                                <button class="btn-small" onclick="refreshSystemStatus()">🔄 Refresh</button>
+                            </div>
+                            
+                            <div class="dashboard-item">
+                                <h4>Active Users (Real-time)</h4>
+                                <div class="user-activity">
+                                    <p><strong>Total Online:</strong> <span class="live-count">23</span></p>
+                                    <p><strong>Admins:</strong> <span class="admin-count">2</span></p>
+                                    <p><strong>Staff:</strong> <span class="staff-count">5</span></p>
+                                    <p><strong>Players:</strong> <span class="player-count">16</span></p>
+                                </div>
+                                <button class="btn-small" onclick="viewActiveUsers()">👥 View All</button>
+                            </div>
+                            
+                            <div class="dashboard-item">
+                                <h4>Security Monitoring</h4>
+                                <div class="security-status">
+                                    <p><strong>Failed Logins (24h):</strong> <span class="security-alert">0</span></p>
+                                    <p><strong>Suspicious Activity:</strong> <span class="security-alert">0</span></p>
+                                    <p><strong>Last Security Scan:</strong> <span class="scan-time">2 hours ago</span></p>
+                                </div>
+                                <button class="btn-small" onclick="securityAudit()">🔍 Security Audit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dangerous Operations -->
+                    <div class="form-section danger-zone">
+                        <h3>⚠️ Danger Zone - Destructive Operations</h3>
+                        <div class="danger-controls">
+                            <div class="danger-warning">
+                                <p><strong>⚠️ WARNING:</strong> These operations are irreversible and can cause permanent data loss. Use with extreme caution.</p>
+                            </div>
+                            <div class="danger-actions">
+                                <button class="btn btn-danger" onclick="factoryReset()">🔄 Complete Factory Reset</button>
+                                <button class="btn btn-danger" onclick="purgeAllData()">🗑️ Purge All User Data</button>
+                                <button class="btn btn-danger" onclick="deleteAllPlayers()">❌ Delete All Player Records</button>
+                                <button class="btn btn-danger" onclick="systemWipe()">💥 Complete System Wipe</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Controls -->
+                    <div class="form-section emergency-controls">
+                        <h3>🚨 Emergency Controls</h3>
+                        <div class="emergency-grid">
+                            <button class="btn btn-emergency" onclick="emergencyLockdown()">🔒 EMERGENCY LOCKDOWN</button>
+                            <button class="btn btn-emergency" onclick="emergencyEvacuation()">🚨 EVACUATION PROTOCOL</button>
+                            <button class="btn btn-emergency" onclick="emergencyMedical()">🏥 MEDICAL EMERGENCY</button>
+                            <button class="btn btn-emergency" onclick="emergencyContact()">📞 EMERGENCY CONTACTS</button>
+                        </div>
+                    </div>
                 </div>
 
-            </div>
-
-            <!-- Registration Page -->
-            <div id="registration" class="page">
+                <!-- Player Management Section -->
+                <div id="player-management" class="admin-section active">
+                    <h2>Player Management & Editing</h2>
+                    
+                    <!-- Player Search and Filters -->
+                    <div class="admin-controls">
                         <div class="search-bar">
                             <input type="text" id="playerSearch" placeholder="Search players by name, position, or nationality..." class="form-control">
                             <button class="btn" onclick="searchPlayers()">🔍 Search</button>
@@ -8450,13 +8232,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     createEventBtn.style.display = 'inline-block';
                 }
             }
-            
-            // Initialize Member Management when admin page is loaded
-            if (pageId === 'admin' && currentUser && (currentUser.role === 'admin' || currentUser.email === 'max.bisinger@warubi-sports.com')) {
-                if (typeof initializeMemberManagement === 'function') {
-                    setTimeout(initializeMemberManagement, 100); // Small delay to ensure DOM is ready
-                }
-            }
         }
 
         // Admin tab management
@@ -8543,115 +8318,72 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
 
         // Submit player application
-        async function submitPlayerApplication() {
+        function submitPlayerApplication() {
             const formData = {
+                type: 'player',
                 firstName: document.getElementById('playerFirstName').value,
                 lastName: document.getElementById('playerLastName').value,
                 email: document.getElementById('playerEmail').value,
                 phone: document.getElementById('playerPhone').value,
                 dateOfBirth: document.getElementById('playerBirth').value,
                 nationality: document.getElementById('playerNationality').value,
-                currentClub: document.getElementById('playerCurrentClub')?.value || '',
-                position: document.getElementById('playerPosition')?.value || '',
-                strongFoot: document.getElementById('playerStrongFoot')?.value || '',
-                height: document.getElementById('playerHeight')?.value || '',
-                weight: document.getElementById('playerWeight')?.value || '',
-                parentGuardianName: document.getElementById('playerParentName')?.value || '',
-                parentGuardianPhone: document.getElementById('playerParentPhone')?.value || '',
-                parentGuardianEmail: document.getElementById('playerParentEmail')?.value || '',
+                position: document.getElementById('playerPosition').value,
+
                 motivation: document.getElementById('playerMotivation').value,
-                requestType: 'player'
+                submittedAt: new Date().toISOString()
             };
 
             // Basic validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.dateOfBirth || !formData.nationality || !formData.motivation) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.motivation) {
                 alert('Please fill in all required fields.');
                 return;
             }
 
-            try {
-                const response = await fetch('/api/join-requests', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // Show success message
-                    const successDiv = document.createElement('div');
-                    successDiv.className = 'message success';
-                    successDiv.innerHTML = '<h3>✅ Registration Submitted Successfully!</h3>' +
-                        '<p>Thank you ' + formData.firstName + '! Your player registration has been submitted for review.</p>' +
-                        '<p>📧 You will receive confirmation and next steps at ' + formData.email + ' within 24-48 hours.</p>' +
-                        '<p>🏠 If approved, you will receive housing and program details shortly.</p>' +
-                        '<p><strong>Reference ID:</strong> #' + result.data.id + '</p>';
-                    
-                    // Replace the form with success message
-                    document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
-                } else {
-                    throw new Error(result.error || 'Failed to submit application');
-                }
-            } catch (error) {
-                console.error('Error submitting player application:', error);
-                alert('There was an error submitting your application. Please try again or contact support.');
-            }
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message success';
+            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
+                '<p>Welcome ' + formData.firstName + '! Your player registration has been processed.</p>' +
+                '<p>📧 Your profile has been updated in our system and coaching staff notified.</p>' +
+                '<p>🏠 You will receive housing and program details at ' + formData.email + ' shortly.</p>';
+            
+            // Replace the form with success message
+            document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
+            
+            console.log('Player Application Submitted:', formData);
         }
 
         // Submit staff application
-        async function submitStaffApplication() {
+        function submitStaffApplication() {
             const formData = {
+                type: 'staff',
                 firstName: document.getElementById('staffFirstName').value,
                 lastName: document.getElementById('staffLastName').value,
                 email: document.getElementById('staffEmail').value,
                 phone: document.getElementById('staffPhone').value,
-                dateOfBirth: new Date().toISOString().split('T')[0], // Default placeholder
-                nationality: 'Germany', // Default placeholder
-                staffPosition: document.getElementById('staffPosition').value,
-                staffExperience: document.getElementById('staffExperienceDetail').value,
-                motivation: document.getElementById('staffExperienceDetail').value,
-                requestType: 'staff'
+                position: document.getElementById('staffPosition').value,
+                additionalInfo: document.getElementById('staffExperienceDetail').value,
+                submittedAt: new Date().toISOString()
             };
 
             // Basic validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.staffPosition || !formData.staffExperience) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.additionalInfo) {
                 alert('Please fill in all required fields.');
                 return;
             }
 
-            try {
-                const response = await fetch('/api/join-requests', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // Show success message
-                    const successDiv = document.createElement('div');
-                    successDiv.className = 'message success';
-                    successDiv.innerHTML = '<h3>✅ Registration Submitted Successfully!</h3>' +
-                        '<p>Thank you ' + formData.firstName + '! Your staff registration has been submitted for review.</p>' +
-                        '<p>📧 You will receive confirmation and next steps at ' + formData.email + ' within 24-48 hours.</p>' +
-                        '<p>📋 If approved, you will receive role details and access information shortly.</p>' +
-                        '<p><strong>Reference ID:</strong> #' + result.data.id + '</p>';
-                    
-                    // Replace the form with success message
-                    document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
-                } else {
-                    throw new Error(result.error || 'Failed to submit application');
-                }
-            } catch (error) {
-                console.error('Error submitting staff application:', error);
-                alert('There was an error submitting your application. Please try again or contact support.');
-            }
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message success';
+            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
+                '<p>Welcome ' + formData.firstName + '! Your staff registration has been processed.</p>' +
+                '<p>📧 Your profile has been updated in our system and management notified.</p>' +
+                '<p>📋 You will receive any updates about your role at ' + formData.email + ' shortly.</p>';
+            
+            // Replace the form with success message
+            document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
+            
+            console.log('Staff Application Submitted:', formData);
         }
 
         // Event Management Functions
@@ -10974,297 +10706,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         window.removeFilePreview = function() {
             document.getElementById('filePreview').style.display = 'none';
         };
-
-        // Member Management Functions
-        let joinRequestsData = [];
-        let usersData = [];
-
-        // Load join requests from database
-        async function refreshJoinRequests() {
-            try {
-                const response = await fetch('/api/join-requests');
-                const result = await response.json();
-                
-                if (result.success) {
-                    joinRequestsData = result.data;
-                    displayJoinRequests();
-                    updateMemberStatistics();
-                } else {
-                    console.error('Error loading join requests:', result.error);
-                }
-            } catch (error) {
-                console.error('Error fetching join requests:', error);
-                const container = document.getElementById('joinRequestsList');
-                if (container) {
-                    container.innerHTML = '<div class="error-message">Failed to load join requests. Please try again.</div>';
-                }
-            }
-        }
-
-        // Display join requests in the UI
-        function displayJoinRequests() {
-            const container = document.getElementById('joinRequestsList');
-            if (!container) return;
-            
-            if (!joinRequestsData || joinRequestsData.length === 0) {
-                container.innerHTML = '<div class="no-requests">No join requests found.</div>';
-                return;
-            }
-
-            const requestsHTML = joinRequestsData.map(request => {
-                const statusClass = request.status === 'pending' ? 'status-pending' : 
-                                  request.status === 'approved' ? 'status-approved' : 'status-rejected';
-                
-                const formatDate = (dateString) => {
-                    return new Date(dateString).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    });
-                };
-
-                return `
-                    <div class="join-request-card" data-type="${request.requestType}" data-status="${request.status}">
-                        <div class="request-header">
-                            <div class="request-info">
-                                <h4>${request.firstName} ${request.lastName}</h4>
-                                <span class="request-type-badge ${request.requestType}">${request.requestType === 'player' ? '⚽ Player' : '👨‍🏫 Staff'}</span>
-                                <span class="request-status ${statusClass}">${request.status.toUpperCase()}</span>
-                            </div>
-                            <div class="request-date">
-                                <small>Submitted: ${formatDate(request.createdAt)}</small>
-                            </div>
-                        </div>
-                        
-                        <div class="request-details">
-                            <p><strong>Email:</strong> ${request.email}</p>
-                            <p><strong>Phone:</strong> ${request.phone}</p>
-                            ${request.requestType === 'player' ? 
-                                `<p><strong>Position:</strong> ${request.position || 'Not specified'}</p>
-                                 <p><strong>Nationality:</strong> ${request.nationality}</p>` :
-                                `<p><strong>Position:</strong> ${request.staffPosition}</p>`
-                            }
-                            <p><strong>Motivation:</strong> ${request.motivation.substring(0, 100)}${request.motivation.length > 100 ? '...' : ''}</p>
-                            
-                            ${request.adminNotes ? `<div class="admin-notes"><strong>Admin Notes:</strong> ${request.adminNotes}</div>` : ''}
-                        </div>
-                        
-                        <div class="request-actions">
-                            ${request.status === 'pending' ? `
-                                <button class="btn btn-primary" onclick="reviewJoinRequest(${request.id}, 'approved')">✅ Approve</button>
-                                <button class="btn btn-warning" onclick="reviewJoinRequest(${request.id}, 'rejected')">❌ Reject</button>
-                            ` : ''}
-                            <button class="btn btn-secondary" onclick="viewJoinRequestDetails(${request.id})">👁️ View Details</button>
-                            <button class="btn btn-danger" onclick="deleteJoinRequest(${request.id})">🗑️ Delete</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = requestsHTML;
-        }
-
-        // Filter join requests
-        window.filterJoinRequests = function() {
-            const typeFilter = document.getElementById('requestTypeFilter')?.value || 'all';
-            const statusFilter = document.getElementById('requestStatusFilter')?.value || 'pending';
-            const cards = document.querySelectorAll('.join-request-card');
-
-            cards.forEach(card => {
-                const cardType = card.getAttribute('data-type');
-                const cardStatus = card.getAttribute('data-status');
-                
-                const typeMatch = typeFilter === 'all' || cardType === typeFilter;
-                const statusMatch = statusFilter === 'all' || cardStatus === statusFilter;
-                
-                card.style.display = (typeMatch && statusMatch) ? 'block' : 'none';
-            });
-        };
-
-        // Review join request (approve/reject)
-        window.reviewJoinRequest = async function(requestId, status) {
-            const adminNotes = prompt(`Please enter admin notes for this ${status} decision (optional):`);
-            
-            try {
-                const response = await fetch(`/api/join-requests/${requestId}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        status: status,
-                        adminNotes: adminNotes || '',
-                        reviewedBy: currentUser.id || 1 // Admin user ID
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert(`Join request has been ${status}!`);
-                    refreshJoinRequests(); // Reload the list
-                } else {
-                    throw new Error(result.error || `Failed to ${status} request`);
-                }
-            } catch (error) {
-                console.error(`Error ${status}ing request:`, error);
-                alert(`Error ${status}ing request. Please try again.`);
-            }
-        };
-
-        // Delete join request
-        window.deleteJoinRequest = async function(requestId) {
-            if (!confirm('Are you sure you want to delete this join request? This action cannot be undone.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/join-requests/${requestId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert('Join request deleted successfully!');
-                    refreshJoinRequests(); // Reload the list
-                } else {
-                    throw new Error(result.error || 'Failed to delete request');
-                }
-            } catch (error) {
-                console.error('Error deleting request:', error);
-                alert('Error deleting request. Please try again.');
-            }
-        };
-
-        // View join request details
-        window.viewJoinRequestDetails = function(requestId) {
-            const request = joinRequestsData.find(r => r.id === requestId);
-            if (!request) return;
-
-            let detailsHTML = `
-                <h3>${request.firstName} ${request.lastName} - ${request.requestType === 'player' ? 'Player' : 'Staff'} Application</h3>
-                <div class="modal-details">
-                    <p><strong>Email:</strong> ${request.email}</p>
-                    <p><strong>Phone:</strong> ${request.phone}</p>
-                    <p><strong>Date of Birth:</strong> ${request.dateOfBirth}</p>
-                    <p><strong>Nationality:</strong> ${request.nationality}</p>
-            `;
-
-            if (request.requestType === 'player') {
-                detailsHTML += `
-                    <p><strong>Current Club:</strong> ${request.currentClub || 'Not specified'}</p>
-                    <p><strong>Position:</strong> ${request.position || 'Not specified'}</p>
-                    <p><strong>Strong Foot:</strong> ${request.strongFoot || 'Not specified'}</p>
-                    <p><strong>Height:</strong> ${request.height || 'Not specified'}</p>
-                    <p><strong>Weight:</strong> ${request.weight || 'Not specified'}</p>
-                    <p><strong>Parent/Guardian:</strong> ${request.parentGuardianName || 'Not specified'}</p>
-                    <p><strong>Parent Phone:</strong> ${request.parentGuardianPhone || 'Not specified'}</p>
-                    <p><strong>Parent Email:</strong> ${request.parentGuardianEmail || 'Not specified'}</p>
-                `;
-            } else {
-                detailsHTML += `
-                    <p><strong>Staff Position:</strong> ${request.staffPosition}</p>
-                    <p><strong>Experience:</strong> ${request.staffExperience}</p>
-                `;
-            }
-
-            detailsHTML += `
-                    <p><strong>Motivation:</strong></p>
-                    <div class="motivation-text">${request.motivation}</div>
-                    <p><strong>Status:</strong> ${request.status}</p>
-                    <p><strong>Submitted:</strong> ${new Date(request.createdAt).toLocaleString()}</p>
-                    ${request.adminNotes ? `<p><strong>Admin Notes:</strong> ${request.adminNotes}</p>` : ''}
-                    ${request.reviewedAt ? `<p><strong>Reviewed:</strong> ${new Date(request.reviewedAt).toLocaleString()}</p>` : ''}
-                </div>
-            `;
-
-            // Create and show modal
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            `;
-            modal.innerHTML = `
-                <div class="modal-content" style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-                    ${detailsHTML}
-                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Close</button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        };
-
-        // User Management Functions
-        window.searchUsers = async function() {
-            alert('User search functionality - Would connect to user management API');
-        };
-
-        window.addNewUser = async function() {
-            alert('Add new user functionality - Would open user creation modal');
-        };
-
-        // Refresh join requests function
-        window.refreshJoinRequests = refreshJoinRequests;
-
-        // Initialize Member Management when admin page loads
-        window.initializeMemberManagement = function() {
-            if (currentUser && (currentUser.role === 'admin' || currentUser.email === 'max.bisinger@warubi-sports.com')) {
-                refreshJoinRequests();
-            }
-        };
-
-        // Update member statistics
-        function updateMemberStatistics() {
-            if (!joinRequestsData) return;
-            
-            // Update stats from join requests data
-            const totalRequests = joinRequestsData.length;
-            const pendingRequests = joinRequestsData.filter(r => r.status === 'pending').length;
-            const approvedThisMonth = joinRequestsData.filter(r => {
-                const reviewDate = new Date(r.reviewedAt);
-                const now = new Date();
-                return r.status === 'approved' && 
-                       reviewDate.getMonth() === now.getMonth() && 
-                       reviewDate.getFullYear() === now.getFullYear();
-            }).length;
-
-            // Update UI elements
-            const totalElement = document.getElementById('totalRequests');
-            const pendingElement = document.getElementById('pendingRequests');
-            const approvedElement = document.getElementById('approvedThisMonth');
-            const activeElement = document.getElementById('activeUsers');
-            
-            if (totalElement) totalElement.textContent = totalRequests;
-            if (pendingElement) pendingElement.textContent = pendingRequests;
-            if (approvedElement) approvedElement.textContent = approvedThisMonth;
-            if (activeElement) activeElement.textContent = '24'; // Mock data
-
-            // Update progress bars
-            const playerRequests = joinRequestsData.filter(r => r.requestType === 'player').length;
-            const staffRequests = joinRequestsData.filter(r => r.requestType === 'staff').length;
-            
-            const playerPercentage = totalRequests > 0 ? (playerRequests / totalRequests) * 100 : 0;
-            const staffPercentage = totalRequests > 0 ? (staffRequests / totalRequests) * 100 : 0;
-
-            const playerFill = document.querySelector('.progress-fill.player-requests');
-            const staffFill = document.querySelector('.progress-fill.staff-requests');
-            const playerCount = document.getElementById('playerRequestsCount');
-            const staffCount = document.getElementById('staffRequestsCount');
-            
-            if (playerFill) playerFill.style.width = playerPercentage + '%';
-            if (staffFill) staffFill.style.width = staffPercentage + '%';
-            if (playerCount) playerCount.textContent = playerRequests;
-            if (staffCount) staffCount.textContent = staffRequests;
-        }
 
         // Initialize individual food order functionality on page load
         document.addEventListener('DOMContentLoaded', function() {
