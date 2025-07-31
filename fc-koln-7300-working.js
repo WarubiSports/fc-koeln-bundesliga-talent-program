@@ -7581,16 +7581,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 <label>Select Individual Player *</label>
                                 <select id="individualPlayer">
                                     <option value="">Choose specific player</option>
-                                    <option value="max_finkgrafe">Max Finkgräfe</option>
-                                    <option value="tim_lemperle">Tim Lemperle</option>
-                                    <option value="mark_uth">Mark Uth</option>
-                                    <option value="steffen_tigges">Steffen Tigges</option>
-                                    <option value="linton_maina">Linton Maina</option>
-                                    <option value="florian_kainz">Florian Kainz</option>
-                                    <option value="jan_thielmann">Jan Thielmann</option>
-                                    <option value="denis_huseinbasic">Denis Huseinbašić</option>
-                                    <option value="luca_waldschmidt">Luca Waldschmidt</option>
-                                    <option value="timo_horn">Timo Horn</option>
+                                    <!-- Players will be populated dynamically -->
                                 </select>
                             </div>
                         </div>
@@ -7600,47 +7591,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             <div class="form-group">
                                 <label>Select Multiple Players *</label>
                                 <p class="form-help">Check all players who should complete this chore</p>
-                                <div class="players-checkbox-grid">
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="max_finkgrafe">
-                                        <span>Max Finkgräfe</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="tim_lemperle">
-                                        <span>Tim Lemperle</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="mark_uth">
-                                        <span>Mark Uth</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="steffen_tigges">
-                                        <span>Steffen Tigges</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="linton_maina">
-                                        <span>Linton Maina</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="florian_kainz">
-                                        <span>Florian Kainz</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="jan_thielmann">
-                                        <span>Jan Thielmann</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="denis_huseinbasic">
-                                        <span>Denis Huseinbašić</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="luca_waldschmidt">
-                                        <span>Luca Waldschmidt</span>
-                                    </label>
-                                    <label class="checkbox-item">
-                                        <input type="checkbox" name="selectedPlayers" value="timo_horn">
-                                        <span>Timo Horn</span>
-                                    </label>
+                                <div class="players-checkbox-grid" id="playersCheckboxGrid">
+                                    <!-- Players will be populated dynamically -->
                                 </div>
                                 <div class="selection-actions">
                                     <button type="button" class="btn-mini" onclick="selectAllPlayers()">Select All</button>
@@ -9900,10 +9852,61 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Show appropriate selection based on type
             if (assignmentType === 'individual') {
+                populateIndividualPlayerDropdown();
                 individualPlayerRow.style.display = 'flex';
             } else if (assignmentType === 'multiple') {
+                populateMultiplePlayersCheckboxes();
                 multiplePlayersRow.style.display = 'block';
                 updateSelectedCount();
+            }
+        }
+
+        // Populate individual player dropdown
+        function populateIndividualPlayerDropdown() {
+            const dropdown = document.getElementById('individualPlayer');
+            if (!dropdown) return;
+            
+            // Clear existing options except the first one
+            dropdown.innerHTML = '<option value="">Choose specific player</option>';
+            
+            // Add players from playerStorage
+            if (typeof playerStorage !== 'undefined' && playerStorage.length > 0) {
+                playerStorage.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player.id;
+                    option.textContent = player.firstName + ' ' + player.lastName + ' (' + player.house + ' - Room ' + player.room + ')';
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+        // Populate multiple players checkboxes
+        function populateMultiplePlayersCheckboxes() {
+            const container = document.getElementById('playersCheckboxGrid');
+            if (!container) return;
+            
+            // Clear existing checkboxes
+            container.innerHTML = '';
+            
+            // Add players from playerStorage
+            if (typeof playerStorage !== 'undefined' && playerStorage.length > 0) {
+                playerStorage.forEach(player => {
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'selectedPlayers';
+                    checkbox.value = player.id;
+                    checkbox.addEventListener('change', updateSelectedCount);
+                    
+                    const span = document.createElement('span');
+                    span.textContent = player.firstName + ' ' + player.lastName + ' (' + player.house + ')';
+                    
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    container.appendChild(label);
+                });
             }
         }
 
@@ -10030,7 +10033,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('choreDescription').value = '';
             
             // Clear individual player selection
-            document.getElementById('individualPlayer').value = '';
+            const individualPlayer = document.getElementById('individualPlayer');
+            if (individualPlayer) individualPlayer.value = '';
             
             // Clear multiple player selections
             const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
