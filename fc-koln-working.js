@@ -5797,6 +5797,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         ];
 
+        // CRITICAL VARIABLES - Must be declared before use
+        let currentUser = null;
+
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
@@ -5901,23 +5904,46 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Auth tab management (login/register)
         window.showAuthTab = function(tabType) {
-            const loginTab = document.getElementById('login-auth-tab');
-            const registerTab = document.getElementById('register-auth-tab');
+            console.log('Auth tab switch requested:', tabType);
+            
+            // Try multiple ID variations to find the correct elements
+            const loginTab = document.getElementById('loginTab') || document.getElementById('login-auth-tab') || document.getElementById('login-tab');
+            const registerTab = document.getElementById('registerTab') || document.getElementById('register-auth-tab') || document.getElementById('register-tab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
             
-            // Remove active from all tabs and buttons
+            console.log('Found elements:', {loginTab: !!loginTab, registerTab: !!registerTab});
+            
+            if (!loginTab || !registerTab) {
+                console.error('Auth tabs not found - debugging...');
+                console.log('Available elements with "Tab" in ID:', 
+                    Array.from(document.querySelectorAll('[id*="ab"]')).map(el => el.id));
+                return;
+            }
+            
+            // Hide all tabs first
+            loginTab.style.display = 'none';
+            registerTab.style.display = 'none';
+            
+            // Remove active classes
             loginTab.classList.remove('active');
             registerTab.classList.remove('active');
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab
             if (tabType === 'login') {
+                loginTab.style.display = 'block';
                 loginTab.classList.add('active');
-                event.target.classList.add('active');
             } else if (tabType === 'register') {
+                registerTab.style.display = 'block';
                 registerTab.classList.add('active');
+            }
+            
+            // Activate button if possible
+            if (typeof event !== 'undefined' && event.target) {
                 event.target.classList.add('active');
             }
+            
+            console.log('Auth tab switched to:', tabType);
         }
 
         // Public registration type management  
