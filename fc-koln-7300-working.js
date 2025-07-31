@@ -5796,10 +5796,208 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
     <script>
         let currentUser = null;
-        let choreStorage = [];
         let pendingApplications = [];
         
-        // Player data storage
+        // Enhanced chore management system with comprehensive tracking
+        let choreStorage = [
+            {
+                id: 1,
+                title: 'Kitchen Deep Clean',
+                description: 'Complete kitchen cleaning including appliances, counters, and floor',
+                assignedTo: 'Luis Martinez',
+                house: 'W1',
+                priority: 'High',
+                deadline: '2025-01-20',
+                status: 'Pending',
+                createdBy: 'Thomas Ellinger',
+                createdAt: '2025-01-15',
+                estimatedTime: '2 hours'
+            },
+            {
+                id: 2,
+                title: 'Common Area Organization',
+                description: 'Organize recreation area, arrange furniture, clean surfaces',
+                assignedTo: 'Marco Weber',
+                house: 'W2', 
+                priority: 'Medium',
+                deadline: '2025-01-22',
+                status: 'In Progress',
+                createdBy: 'Max Bisinger',
+                createdAt: '2025-01-14',
+                estimatedTime: '1.5 hours'
+            },
+            {
+                id: 3,
+                title: 'Laundry Room Maintenance',
+                description: 'Clean washing machines, organize supplies, mop floor',
+                assignedTo: 'Ahmed Hassan',
+                house: 'W3',
+                priority: 'Low',
+                deadline: '2025-01-25',
+                status: 'Completed',
+                createdBy: 'Thomas Ellinger', 
+                createdAt: '2025-01-13',
+                estimatedTime: '1 hour',
+                completedAt: '2025-01-18'
+            },
+            {
+                id: 4,
+                title: 'Garden Maintenance',
+                description: 'Trim hedges, water plants, clean outdoor furniture',
+                assignedTo: 'Jean Dubois',
+                house: 'W1',
+                priority: 'Medium',
+                deadline: '2025-01-21',
+                status: 'Pending',
+                createdBy: 'Thomas Ellinger',
+                createdAt: '2025-01-16',
+                estimatedTime: '2.5 hours'
+            },
+            {
+                id: 5,
+                title: 'Equipment Storage Organization',
+                description: 'Sort training equipment, inventory supplies, label storage areas',
+                assignedTo: 'Carlos Rodriguez',
+                house: 'W2',
+                priority: 'Urgent',
+                deadline: '2025-01-19',
+                status: 'Overdue',
+                createdBy: 'Max Bisinger',
+                createdAt: '2025-01-12',
+                estimatedTime: '3 hours'
+            }
+        ];
+        
+        // Enhanced player data with comprehensive management
+        let playerData = [
+            {
+                id: 1,
+                firstName: 'Luis',
+                lastName: 'Martinez',
+                position: 'Forward',
+                status: 'Active',
+                house: 'W1',
+                nationality: 'Spain',
+                age: 17,
+                email: 'luis.martinez@fckoln.de',
+                phone: '+49 221 12345',
+                dateOfBirth: '2007-03-15',
+                emergencyContact: 'Maria Martinez - +34 600 123 456',
+                medicalInfo: 'No known allergies',
+                performanceRating: 85,
+                attendanceRate: 92,
+                lastUpdate: '2025-01-15'
+            },
+            {
+                id: 2,
+                firstName: 'Marco',
+                lastName: 'Weber',
+                position: 'Midfielder',
+                status: 'Active',
+                house: 'W2',
+                nationality: 'Germany',
+                age: 18,
+                email: 'marco.weber@fckoln.de',
+                phone: '+49 221 12346',
+                dateOfBirth: '2006-08-22',
+                emergencyContact: 'Hans Weber - +49 221 987 654',
+                medicalInfo: 'Knee injury history',
+                performanceRating: 78,
+                attendanceRate: 88,
+                lastUpdate: '2025-01-14'
+            },
+            {
+                id: 3,
+                firstName: 'Ahmed',
+                lastName: 'Hassan',
+                position: 'Defender',
+                status: 'Active',
+                house: 'W3',
+                nationality: 'Egypt',
+                age: 17,
+                email: 'ahmed.hassan@fckoln.de',
+                phone: '+49 221 12347',
+                dateOfBirth: '2007-11-08',
+                emergencyContact: 'Fatima Hassan - +20 100 123 456',
+                medicalInfo: 'Asthma - inhaler required',
+                performanceRating: 82,
+                attendanceRate: 95,
+                lastUpdate: '2025-01-13'
+            },
+            {
+                id: 4,
+                firstName: 'Jean',
+                lastName: 'Dubois',
+                position: 'Goalkeeper',
+                status: 'Active',
+                house: 'W1',
+                nationality: 'France',
+                age: 18,
+                email: 'jean.dubois@fckoln.de',
+                phone: '+49 221 12348',
+                dateOfBirth: '2006-05-12',
+                emergencyContact: 'Pierre Dubois - +33 6 12 34 56 78',
+                medicalInfo: 'Regular health checkups',
+                performanceRating: 88,
+                attendanceRate: 90,
+                lastUpdate: '2025-01-12'
+            },
+            {
+                id: 5,
+                firstName: 'Carlos',
+                lastName: 'Rodriguez',
+                position: 'Winger',
+                status: 'Injured',
+                house: 'W2',
+                nationality: 'Argentina',
+                age: 17,
+                email: 'carlos.rodriguez@fckoln.de',
+                phone: '+49 221 12349',
+                dateOfBirth: '2007-09-30',
+                emergencyContact: 'Sofia Rodriguez - +54 11 1234 5678',
+                medicalInfo: 'Ankle sprain - estimated return 2 weeks',
+                performanceRating: 91,
+                attendanceRate: 85,
+                lastUpdate: '2025-01-11'
+            }
+        ];
+
+        // Enhanced food ordering system with individual budgets
+        let foodOrders = [];
+        const playerBudgets = {
+            1: { used: 12.50, limit: 35.00 },
+            2: { used: 28.75, limit: 35.00 },
+            3: { used: 15.20, limit: 35.00 },
+            4: { used: 31.40, limit: 35.00 },
+            5: { used: 8.90, limit: 35.00 }
+        };
+
+        // House assignments and management
+        const houseData = {
+            'W1': {
+                name: 'Wilhelm House 1',
+                supervisor: 'Thomas Ellinger',
+                players: [1, 4],
+                capacity: 8,
+                facilities: ['Kitchen', 'Study Room', 'Recreation Area']
+            },
+            'W2': {
+                name: 'Wilhelm House 2', 
+                supervisor: 'Max Bisinger',
+                players: [2, 5],
+                capacity: 8,
+                facilities: ['Kitchen', 'Gym Access', 'Meeting Room']
+            },
+            'W3': {
+                name: 'Wilhelm House 3',
+                supervisor: 'Staff Assignment Pending',
+                players: [3],
+                capacity: 8,
+                facilities: ['Kitchen', 'Library', 'Game Room']
+            }
+        };
+        
+        // Player data storage (maintained for compatibility)
         let playerStorage = [
             {
                 id: 'player_001',
@@ -6498,53 +6696,37 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function getPlayerData(playerId) {
-            // Mock data - in real implementation, this would fetch from database
-            const players = {
-                'marco-silva': {
-                    firstName: 'Marco',
-                    lastName: 'Silva',
-                    position: 'midfielder',
-                    status: 'active',
-                    age: 19,
-                    nationality: 'Portugal',
-                    house: 'Widdersdorf 1',
-                    room: '12A',
+            // Use enhanced player data with comprehensive information
+            const player = playerData.find(p => p.id == playerId);
+            if (player) {
+                return {
+                    firstName: player.firstName,
+                    lastName: player.lastName,
+                    position: player.position.toLowerCase(),
+                    status: player.status.toLowerCase(),
+                    age: player.age,
+                    nationality: player.nationality,
+                    house: houseData[player.house] ? houseData[player.house].name : player.house,
+                    room: 'Room ' + (100 + player.id),
                     contract: '2024-2026',
-                    notes: 'Team captain, excellent leadership skills'
-                },
-                'luis-garcia': {
-                    firstName: 'Luis',
-                    lastName: 'García',
-                    position: 'forward',
-                    status: 'injured',
-                    age: 18,
-                    nationality: 'Spain',
-                    house: 'Widdersdorf 2',
-                    room: '08B',
-                    contract: '2023-2025',
-                    notes: 'Knee injury - expected return in 2 weeks'
-                },
-                'ahmad-hassan': {
-                    firstName: 'Ahmad',
-                    lastName: 'Hassan',
-                    position: 'defender',
-                    status: 'active',
-                    age: 20,
-                    nationality: 'Egypt',
-                    house: 'Widdersdorf 1',
-                    room: '15C',
-                    contract: '2023-2025',
-                    notes: 'Strong defensive player, vegetarian diet'
-                }
-            };
-            return players[playerId] || {
-                firstName: '',
-                lastName: '',
+                    notes: player.medicalInfo,
+                    email: player.email,
+                    phone: player.phone,
+                    emergencyContact: player.emergencyContact,
+                    medicalInfo: player.medicalInfo,
+                    performanceRating: player.performanceRating,
+                    attendanceRate: player.attendanceRate
+                };
+            }
+            
+            return {
+                firstName: 'Unknown',
+                lastName: 'Player',
                 position: 'midfielder',
-                status: 'active',
+                status: 'inactive',
                 age: 18,
                 nationality: 'Germany',
-                house: 'Widdersdorf 1',
+                house: 'Unassigned',  
                 room: '',
                 contract: '',
                 notes: ''
