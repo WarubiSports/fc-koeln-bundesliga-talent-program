@@ -7367,26 +7367,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
             </div>
-                                <div class="user-info">
-                                    <strong>Max Bisinger</strong><br>
-                                    <small>max.bisinger@warubi-sports.com - Admin</small>
-                                </div>
-                                <div class="user-status active">Active</div>
-                                <button class="btn-mini">Edit</button>
-                            </div>
-                            <div class="user-item">
-                                <div class="user-info">
-                                    <strong>Thomas Ellinger</strong><br>
-                                    <small>thomas.ellinger@warubi-sports.com - Staff</small>
-                                </div>
-                                <div class="user-status active">Active</div>
-                                <button class="btn-mini">Edit</button>
-                            </div>
-                            <div class="user-item">
-                                <div class="user-info">
-                                    <strong>Ahmed Hassan</strong><br>
-                                    <small>ahmed.hassan@fckoln.de - Player</small>
-                                </div>
                                 <div class="user-status active">Active</div>
                                 <button class="btn-mini">Edit</button>
                             </div>
@@ -7494,16 +7474,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <button class="btn">Save Settings</button>
                 </div>
                 
-                <!-- Data Export -->
-                <div class="form-section">
-                    <h3>📁 Data Export & Backup</h3>
-                    <div class="export-options">
-                        <button class="btn">Export Player Data</button>
-                        <button class="btn">Export House Statistics</button>
-                        <button class="btn">Export System Logs</button>
-                        <button class="btn btn-secondary">Full System Backup</button>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Registration Page -->
