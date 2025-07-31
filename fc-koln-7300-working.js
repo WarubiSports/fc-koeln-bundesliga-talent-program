@@ -713,6 +713,470 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             padding: 1.5rem;
         }
 
+        /* System Analytics & Configuration Styles */
+        .section-analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .section-analytics-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .section-analytics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-analytics-card h4 {
+            color: #dc2626;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .section-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .trend-indicator {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .trend-indicator.positive {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .trend-indicator.negative {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .trend-indicator.neutral {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-indicator.healthy {
+            color: #059669;
+        }
+
+        .status-indicator.secure {
+            color: #7c3aed;
+        }
+
+        .metric-details {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .metric-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .performance-meter {
+            width: 100%;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669, #34d399);
+            transition: width 0.3s ease;
+        }
+
+        .stat-large {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            margin: 0.5rem 0;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .insight-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .insight-card h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .usage-chart {
+            display: flex;
+            gap: 0.5rem;
+            align-items: end;
+            height: 100px;
+            margin: 1rem 0;
+        }
+
+        .time-bar {
+            flex: 1;
+            background: linear-gradient(to top, #dc2626, #ef4444);
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem;
+            min-height: 20px;
+        }
+
+        .feature-usage {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .usage-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .usage-item span:first-child {
+            width: 80px;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .usage-bar {
+            flex: 1;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .usage-bar div {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            transition: width 0.3s ease;
+        }
+
+        .usage-item span:last-child {
+            width: 40px;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: right;
+        }
+
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+
+        .recommendation-item.high {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+
+        .recommendation-item.medium {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+
+        .recommendation-item.low {
+            background: #f0f9ff;
+            border-left-color: #0ea5e9;
+        }
+
+        .recommendation-item .priority {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: white;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .recommendation-item.high .priority {
+            background: #dc2626;
+        }
+
+        .recommendation-item.medium .priority {
+            background: #f59e0b;
+        }
+
+        .recommendation-item.low .priority {
+            background: #0ea5e9;
+        }
+
+        .export-controls {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .export-options, .export-formats {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .export-buttons, .format-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* System Configuration Styles */
+        .config-sections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .config-section-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .config-section-card h4 {
+            color: #dc2626;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .config-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .config-item label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .config-select, .config-input {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .config-select:focus, .config-input:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .config-checkbox {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .config-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+        }
+
+        .config-save {
+            margin-top: 1rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .config-save:hover {
+            background: #b91c1c;
+        }
+
+        .deadline-config {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .deadline-config div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .deadline-config input[type="time"] {
+            padding: 0.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+
+        .global-settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .global-setting-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .global-setting-card h4 {
+            color: #dc2626;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .setting-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .config-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .action-group {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .action-group h4 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
         /* Enhanced Calendar Styles */
         .calendar-grid.enhanced {
             display: grid;
@@ -5156,6 +5620,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <a class="nav-item" onclick="showPage('food-orders')">Food Orders</a>
                 <a class="nav-item" onclick="showPage('communications')">Communications</a>
                 <a class="nav-item" onclick="showPage('calendar')">Calendar</a>
+                <a class="nav-item" onclick="showPage('system-analytics')">📊 Analytics</a>
+                <a class="nav-item" onclick="showPage('system-configuration')">⚙️ Configuration</a>
                 <a class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">User Management</a>
             </div>
         </nav>
@@ -7265,6 +7731,650 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             <div class="stat-large">420</div>
                             <p>Total Points</p>
                             <small>↗ +32 from last week</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Analytics Page -->
+            <div id="system-analytics" class="page">
+                <h1>📊 System Analytics & Performance Monitoring</h1>
+                
+                <!-- Real-Time System Overview -->
+                <div class="form-section">
+                    <h3>🚦 Real-Time System Status</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card system-status">
+                            <h4>System Health</h4>
+                            <div class="status-indicator healthy">🟢 Operational</div>
+                            <p>All systems running normally</p>
+                            <div class="metric-details">
+                                <span>Uptime: 99.8%</span>
+                                <span>Response: 120ms</span>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Active Users</h4>
+                            <div class="stat-large live-count">18</div>
+                            <p>Currently online</p>
+                            <div class="metric-breakdown">
+                                <span>Admins: 2</span>
+                                <span>Staff: 3</span>
+                                <span>Players: 13</span>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Database Performance</h4>
+                            <div class="performance-meter">
+                                <div class="meter-fill" style="width: 92%;"></div>
+                            </div>
+                            <p>92% - Excellent</p>
+                            <div class="metric-details">
+                                <span>Queries/sec: 45</span>
+                                <span>Storage: 2.1GB</span>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Security Status</h4>
+                            <div class="status-indicator secure">🔒 Secure</div>
+                            <p>No threats detected</p>
+                            <div class="metric-details">
+                                <span>Last scan: 2 min ago</span>
+                                <span>Failed logins: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cross-Sectional Analytics -->
+                <div class="form-section">
+                    <h3>📈 Cross-Section Performance Analytics</h3>
+                    <div class="section-analytics-grid">
+                        
+                        <!-- Player Management Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>👥 Player Management</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>Total Players:</span>
+                                    <span class="metric-value">24</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Active Status:</span>
+                                    <span class="metric-value">21 (87.5%)</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Profile Completeness:</span>
+                                    <span class="metric-value">95%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Recent Updates:</span>
+                                    <span class="metric-value">8 this week</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator positive">↗️ +3% this month</div>
+                        </div>
+
+                        <!-- Housing Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>🏠 Housing Management</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>Houses Occupied:</span>
+                                    <span class="metric-value">3/3 (100%)</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Chore Completion:</span>
+                                    <span class="metric-value">89% avg</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>House Competition:</span>
+                                    <span class="metric-value">Active</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Maintenance Requests:</span>
+                                    <span class="metric-value">2 pending</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator neutral">➡️ Stable</div>
+                        </div>
+
+                        <!-- Food Orders Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>🛒 Food Orders</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>Weekly Orders:</span>
+                                    <span class="metric-value">46 orders</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Budget Utilization:</span>
+                                    <span class="metric-value">78% avg</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>On-Time Delivery:</span>
+                                    <span class="metric-value">95%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Total Spending:</span>
+                                    <span class="metric-value">€1,247 this week</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator positive">↗️ +12% this month</div>
+                        </div>
+
+                        <!-- Communications Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>💬 Communications</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>Messages Today:</span>
+                                    <span class="metric-value">187</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Active Channels:</span>
+                                    <span class="metric-value">8</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Response Rate:</span>
+                                    <span class="metric-value">94%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Avg Response Time:</span>
+                                    <span class="metric-value">3.2 min</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator positive">↗️ +8% engagement</div>
+                        </div>
+
+                        <!-- Calendar Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>📅 Calendar System</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>Events This Week:</span>
+                                    <span class="metric-value">23</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Attendance Rate:</span>
+                                    <span class="metric-value">91%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Training Sessions:</span>
+                                    <span class="metric-value">12 scheduled</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Facility Utilization:</span>
+                                    <span class="metric-value">76%</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator positive">↗️ +5% attendance</div>
+                        </div>
+
+                        <!-- System Administration Analytics -->
+                        <div class="section-analytics-card">
+                            <h4>⚙️ System Admin</h4>
+                            <div class="section-metrics">
+                                <div class="metric-row">
+                                    <span>User Approvals:</span>
+                                    <span class="metric-value">3 pending</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>System Changes:</span>
+                                    <span class="metric-value">7 this week</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Backup Status:</span>
+                                    <span class="metric-value">✅ Current</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Security Alerts:</span>
+                                    <span class="metric-value">0 active</span>
+                                </div>
+                            </div>
+                            <div class="trend-indicator neutral">➡️ Stable operations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Patterns & Insights -->
+                <div class="form-section">
+                    <h3>🎯 Usage Patterns & AI Insights</h3>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <h4>Peak Usage Times</h4>
+                            <div class="usage-chart">
+                                <div class="time-bar" style="height: 60%;">6AM</div>
+                                <div class="time-bar" style="height: 80%;">8AM</div>
+                                <div class="time-bar" style="height: 100%;">10AM</div>
+                                <div class="time-bar" style="height: 95%;">12PM</div>
+                                <div class="time-bar" style="height: 85%;">2PM</div>
+                                <div class="time-bar" style="height: 90%;">4PM</div>
+                                <div class="time-bar" style="height: 75%;">6PM</div>
+                                <div class="time-bar" style="height: 45%;">8PM</div>
+                            </div>
+                            <p><strong>Peak:</strong> 10AM-12PM (Training coordination)</p>
+                        </div>
+                        <div class="insight-card">
+                            <h4>Feature Utilization</h4>
+                            <div class="feature-usage">
+                                <div class="usage-item">
+                                    <span>Communications</span>
+                                    <div class="usage-bar"><div style="width: 92%;"></div></div>
+                                    <span>92%</span>
+                                </div>
+                                <div class="usage-item">
+                                    <span>Calendar</span>
+                                    <div class="usage-bar"><div style="width: 87%;"></div></div>
+                                    <span>87%</span>
+                                </div>
+                                <div class="usage-item">
+                                    <span>Food Orders</span>
+                                    <div class="usage-bar"><div style="width: 78%;"></div></div>
+                                    <span>78%</span>
+                                </div>
+                                <div class="usage-item">
+                                    <span>Player Mgmt</span>
+                                    <div class="usage-bar"><div style="width: 65%;"></div></div>
+                                    <span>65%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <h4>Performance Recommendations</h4>
+                            <div class="recommendations-list">
+                                <div class="recommendation-item high">
+                                    <span class="priority">HIGH</span>
+                                    <p>Optimize database queries - 15% performance gain possible</p>
+                                </div>
+                                <div class="recommendation-item medium">
+                                    <span class="priority">MEDIUM</span>
+                                    <p>Implement caching for player data - faster load times</p>
+                                </div>
+                                <div class="recommendation-item low">
+                                    <span class="priority">LOW</span>
+                                    <p>Archive old messages - reduce storage usage</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export & Reporting -->
+                <div class="form-section">
+                    <h3>📄 Analytics Export & Reporting</h3>
+                    <div class="export-controls">
+                        <div class="export-options">
+                            <h4>Generate Reports</h4>
+                            <div class="export-buttons">
+                                <button class="btn">📊 Weekly Analytics Report</button>
+                                <button class="btn">📈 Performance Dashboard</button>
+                                <button class="btn">👥 User Activity Report</button>
+                                <button class="btn">🏠 Housing Statistics</button>
+                                <button class="btn">💰 Food Budget Analysis</button>
+                                <button class="btn">📅 Calendar Utilization</button>
+                            </div>
+                        </div>
+                        <div class="export-formats">
+                            <h4>Export Formats</h4>
+                            <div class="format-buttons">
+                                <button class="btn btn-secondary">📄 PDF Report</button>
+                                <button class="btn btn-secondary">📊 Excel Spreadsheet</button>
+                                <button class="btn btn-secondary">📈 CSV Data</button>
+                                <button class="btn btn-secondary">📱 Mobile Dashboard</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Configuration Page -->
+            <div id="system-configuration" class="page">
+                <h1>⚙️ System Configuration & Settings</h1>
+                
+                <!-- Cross-Sectional Configuration -->
+                <div class="form-section">
+                    <h3>🔧 Cross-Section Configuration Management</h3>
+                    <div class="config-sections-grid">
+                        
+                        <!-- Player Management Configuration -->
+                        <div class="config-section-card">
+                            <h4>👥 Player Management Settings</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>Default Player Status</label>
+                                    <select class="config-select">
+                                        <option>Active</option>
+                                        <option>Pending</option>
+                                        <option>Trial</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Profile Photo Requirements</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Mandatory profile photos</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Auto-assign House</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox"> <span>Enable automatic house assignment</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Medical Info Visibility</label>
+                                    <select class="config-select">
+                                        <option>Admin & Staff Only</option>
+                                        <option>Medical Staff Only</option>
+                                        <option>Emergency Contacts</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save Player Settings</button>
+                        </div>
+
+                        <!-- Housing Configuration -->
+                        <div class="config-section-card">
+                            <h4>🏠 Housing System Settings</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>Chore Rotation Frequency</label>
+                                    <select class="config-select">
+                                        <option>Weekly</option>
+                                        <option>Bi-weekly</option>
+                                        <option>Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>AI Chore Assignment</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Enable AI-powered assignments</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>House Competition Points</label>
+                                    <input type="number" class="config-input" value="50" placeholder="Max points per week">
+                                </div>
+                                <div class="config-item">
+                                    <label>Maintenance Request Priority</label>
+                                    <select class="config-select">
+                                        <option>Immediate Response</option>
+                                        <option>24 Hour Response</option>
+                                        <option>48 Hour Response</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save Housing Settings</button>
+                        </div>
+
+                        <!-- Food Orders Configuration -->
+                        <div class="config-section-card">
+                            <h4>🛒 Food Orders Configuration</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>Individual Budget Limit</label>
+                                    <input type="number" class="config-input" value="35" placeholder="€ per player">
+                                </div>
+                                <div class="config-item">
+                                    <label>Order Deadline Times</label>
+                                    <div class="deadline-config">
+                                        <div>Tuesday Delivery: <input type="time" value="00:00"> Monday</div>
+                                        <div>Friday Delivery: <input type="time" value="00:00"> Thursday</div>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Budget Warnings</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Alert at 80% budget usage</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Admin Order Overview</label>
+                                    <select class="config-select">
+                                        <option>Group by House</option>
+                                        <option>Group by Position</option>
+                                        <option>Alphabetical</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save Food Settings</button>
+                        </div>
+
+                        <!-- Communications Configuration -->
+                        <div class="config-section-card">
+                            <h4>💬 Communications Settings</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>Message Retention Period</label>
+                                    <select class="config-select">
+                                        <option>30 days</option>
+                                        <option>90 days</option>
+                                        <option>1 year</option>
+                                        <option>Permanent</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>File Upload Limits</label>
+                                    <input type="number" class="config-input" value="10" placeholder="MB per file">
+                                </div>
+                                <div class="config-item">
+                                    <label>Notification Settings</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Email notifications</span>
+                                        <input type="checkbox" checked> <span>Push notifications</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Channel Auto-Archive</label>
+                                    <select class="config-select">
+                                        <option>Never</option>
+                                        <option>After 30 days inactive</option>
+                                        <option>After 60 days inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save Communication Settings</button>
+                        </div>
+
+                        <!-- Calendar Configuration -->
+                        <div class="config-section-card">
+                            <h4>📅 Calendar System Settings</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>Default Event Duration</label>
+                                    <input type="number" class="config-input" value="90" placeholder="Minutes">
+                                </div>
+                                <div class="config-item">
+                                    <label>Event Creation Permissions</label>
+                                    <select class="config-select">
+                                        <option>Admin Only</option>
+                                        <option>Admin & Staff</option>
+                                        <option>All Users</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Auto-Recurring Events</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Daily training sessions</span>
+                                        <input type="checkbox"> <span>Weekly team meetings</span>
+                                    </div>
+                                </div>
+                                <div class="config-item">
+                                    <label>Calendar Sync</label>
+                                    <select class="config-select">
+                                        <option>Internal Only</option>
+                                        <option>Google Calendar</option>
+                                        <option>Outlook Calendar</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save Calendar Settings</button>
+                        </div>
+
+                        <!-- System Administration Configuration -->
+                        <div class="config-section-card">
+                            <h4>🔧 System Administration</h4>
+                            <div class="config-options">
+                                <div class="config-item">
+                                    <label>User Registration Approval</label>
+                                    <select class="config-select">
+                                        <option>Manual Approval</option>
+                                        <option>Auto-Approve Players</option>
+                                        <option>Auto-Approve All</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Session Timeout</label>
+                                    <select class="config-select">
+                                        <option>30 minutes</option>
+                                        <option>1 hour</option>
+                                        <option>4 hours</option>
+                                        <option>24 hours</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Backup Frequency</label>
+                                    <select class="config-select">
+                                        <option>Hourly</option>
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label>Security Monitoring</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Login attempt monitoring</span>
+                                        <input type="checkbox" checked> <span>Data access logging</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn config-save">Save System Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global System Settings -->
+                <div class="form-section">
+                    <h3>🌐 Global System Settings</h3>
+                    <div class="global-settings-grid">
+                        <div class="global-setting-card">
+                            <h4>🎨 Appearance & Branding</h4>
+                            <div class="setting-controls">
+                                <div class="setting-item">
+                                    <label>System Theme</label>
+                                    <select class="config-select">
+                                        <option>FC Köln Official (Red)</option>
+                                        <option>Professional Blue</option>
+                                        <option>Dark Mode</option>
+                                        <option>High Contrast</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Logo Display</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Show FC Köln logo on all pages</span>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Language</label>
+                                    <select class="config-select">
+                                        <option>English</option>
+                                        <option>German (Deutsch)</option>
+                                        <option>Spanish (Español)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="global-setting-card">
+                            <h4>📊 Analytics & Monitoring</h4>
+                            <div class="setting-controls">
+                                <div class="setting-item">
+                                    <label>Analytics Collection</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Enable usage analytics</span>
+                                        <input type="checkbox" checked> <span>Performance monitoring</span>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Data Retention</label>
+                                    <select class="config-select">
+                                        <option>1 year</option>
+                                        <option>2 years</option>
+                                        <option>5 years</option>
+                                        <option>Permanent</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Real-time Updates</label>
+                                    <select class="config-select">
+                                        <option>Every 5 seconds</option>
+                                        <option>Every 30 seconds</option>
+                                        <option>Every minute</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="global-setting-card">
+                            <h4>🔐 Security & Privacy</h4>
+                            <div class="setting-controls">
+                                <div class="setting-item">
+                                    <label>Password Requirements</label>
+                                    <div class="config-checkbox">
+                                        <input type="checkbox" checked> <span>Minimum 8 characters</span>
+                                        <input type="checkbox" checked> <span>Require special characters</span>
+                                        <input type="checkbox"> <span>Two-factor authentication</span>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Data Encryption</label>
+                                    <select class="config-select">
+                                        <option>AES-256 (Recommended)</option>
+                                        <option>AES-128</option>
+                                        <option>Custom</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Privacy Level</label>
+                                    <select class="config-select">
+                                        <option>Standard</option>
+                                        <option>Enhanced</option>
+                                        <option>Maximum</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Actions -->
+                <div class="form-section">
+                    <h3>💾 Configuration Management</h3>
+                    <div class="config-actions">
+                        <div class="action-group">
+                            <h4>Backup & Restore</h4>
+                            <div class="action-buttons">
+                                <button class="btn">💾 Export All Settings</button>
+                                <button class="btn btn-secondary">📂 Import Settings</button>
+                                <button class="btn btn-secondary">🔄 Reset to Defaults</button>
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <h4>System Maintenance</h4>
+                            <div class="action-buttons">
+                                <button class="btn btn-warning">🔧 Apply All Changes</button>
+                                <button class="btn btn-danger">⚠️ Force System Restart</button>
+                                <button class="btn btn-danger">🗑️ Clear All Caches</button>
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <h4>Configuration Logs</h4>
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary">📄 View Change Log</button>
+                                <button class="btn btn-secondary">👥 User Activity Log</button>
+                                <button class="btn btn-secondary">⚙️ System Events Log</button>
+                            </div>
                         </div>
                     </div>
                 </div>
