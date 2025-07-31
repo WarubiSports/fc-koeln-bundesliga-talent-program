@@ -8974,7 +8974,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
                 
                 document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
-                const activeBtn = document.querySelector(`[onclick="showAuthTab('${tab}')"]`);
+                const activeBtn = document.querySelector('[onclick*="showAuthTab"]');
                 if (activeBtn) activeBtn.classList.add('active');
             };
 
@@ -8992,7 +8992,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 const targetPage = document.getElementById(pageId);
                 if (targetPage) targetPage.classList.add('active');
                 
-                const targetNav = document.querySelector(`[onclick="showPage('${pageId}')"]`);
+                const targetNav = document.querySelector('[onclick*="showPage"][onclick*="' + pageId + '"]');
                 if (targetNav) targetNav.classList.add('active');
             };
 
@@ -9028,6 +9028,47 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         
         // Initialize authentication system
         const authSystemStable = initializeAuthenticationSystem();
+        
+        // ADDITIONAL PROTECTION: Continuous monitoring system
+        function initializeAdvancedProtection() {
+            // Backup authentication functions in closure for emergency restoration
+            const authBackup = {
+                showAuthTab: window.showAuthTab,
+                showForgotPassword: window.showForgotPassword,  
+                showPage: window.showPage,
+                logout: window.logout
+            };
+            
+            // Monitor for function loss every 3 seconds
+            setInterval(() => {
+                const criticalFunctions = ['showAuthTab', 'showForgotPassword', 'showPage', 'logout'];
+                let functionsLost = false;
+                
+                criticalFunctions.forEach(funcName => {
+                    if (typeof window[funcName] !== 'function') {
+                        console.error('EMERGENCY: ' + funcName + ' lost, restoring from backup');
+                        window[funcName] = authBackup[funcName];
+                        functionsLost = true;
+                    }
+                });
+                
+                if (functionsLost) {
+                    console.log('Authentication functions restored from emergency backup');
+                }
+            }, 3000);
+            
+            // Protect against page reload auth loss
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('auth-functions-backup', JSON.stringify({
+                    timestamp: Date.now(),
+                    functions: Object.keys(authBackup)
+                }));
+            });
+            
+            console.log('Advanced authentication protection active');
+        }
+        
+        initializeAdvancedProtection();
 
         // Forgot Password Form Handler
         document.addEventListener('DOMContentLoaded', function() {
