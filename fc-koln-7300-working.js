@@ -8583,26 +8583,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         };
 
         window.togglePlayerSelection = function() {
-            // Check if this is being called from event creation modal
-            const eventAttendance = document.getElementById('eventAttendance');
-            if (eventAttendance) {
-                const attendanceType = eventAttendance.value;
-                const playerSection = document.getElementById('playerSelectionSection');
-                
-                if (attendanceType === 'selected') {
-                    if (playerSection) playerSection.style.display = 'block';
-                } else {
-                    if (playerSection) playerSection.style.display = 'none';
-                }
-                return;
-            }
-            
-            // Check if this is being called from chore assignment
+            // First check if this is being called from chore assignment (priority check)
             const choreAssignmentType = document.getElementById('choreAssignmentType');
-            if (choreAssignmentType) {
+            const individualPlayerRow = document.getElementById('individualPlayerRow');
+            const multiplePlayersRow = document.getElementById('multiplePlayersRow');
+            
+            if (choreAssignmentType && (individualPlayerRow || multiplePlayersRow)) {
                 const assignmentType = choreAssignmentType.value;
-                const individualPlayerRow = document.getElementById('individualPlayerRow');
-                const multiplePlayersRow = document.getElementById('multiplePlayersRow');
+                console.log('Chore assignment type changed to:', assignmentType);
                 
                 // Hide all selection rows first
                 if (individualPlayerRow) individualPlayerRow.style.display = 'none';
@@ -8610,12 +8598,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 
                 // Show appropriate selection based on type
                 if (assignmentType === 'individual') {
+                    console.log('Showing individual player dropdown');
                     populateIndividualPlayerDropdown();
                     if (individualPlayerRow) individualPlayerRow.style.display = 'flex';
                 } else if (assignmentType === 'multiple') {
+                    console.log('Showing multiple players checkboxes');
                     populateMultiplePlayersCheckboxes();
                     if (multiplePlayersRow) multiplePlayersRow.style.display = 'block';
                     updateSelectedCount();
+                }
+                return;
+            }
+            
+            // Check if this is being called from event creation modal
+            const eventAttendance = document.getElementById('eventAttendance');
+            const playerSection = document.getElementById('playerSelectionSection');
+            
+            if (eventAttendance && playerSection) {
+                const attendanceType = eventAttendance.value;
+                
+                if (attendanceType === 'selected') {
+                    playerSection.style.display = 'block';
+                } else {
+                    playerSection.style.display = 'none';
                 }
             }
         };
