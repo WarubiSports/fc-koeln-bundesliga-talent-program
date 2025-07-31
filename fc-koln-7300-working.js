@@ -4944,109 +4944,99 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             <div id="admin" class="page">
                 <h1>System Administration</h1>
                 
-                <!-- Admin Navigation -->
-                <div class="admin-nav">
-                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('full-control')">🛡️ Full Admin Control</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
+                <!-- Streamlined Admin Navigation -->
+                <div class="admin-navigation">
+                    <button class="admin-nav-btn active" onclick="showAdminSection('user-management')">👥 User Management</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ Settings</button>
                 </div>
 
-                <!-- Full Admin Control Section -->
-                <div id="full-control" class="admin-section">
-                    <h2>🛡️ Full Administrator Control Panel</h2>
+                <!-- User Management Section -->
+                <div id="user-management" class="admin-section active">
+                    <div class="admin-tabs">
+                        <button class="tab-btn active" onclick="showAdminTab('pending')">Pending Approvals</button>
+                        <button class="tab-btn" onclick="showAdminTab('users')">Active Users</button>
+                    </div>
                     
-                    <!-- Super Admin Powers -->
-                    <div class="form-section">
-                        <h3>⚡ Super Administrator Powers</h3>
-                        <div class="super-admin-controls">
-                            <div class="control-category">
-                                <h4>🔐 Security & Access Control</h4>
-                                <button class="btn btn-primary" onclick="fullUserControl()">👥 Complete User Account Control</button>
-                                <button class="btn btn-primary" onclick="passwordManagement()">🔑 Global Password Management</button>
-                                <button class="btn btn-primary" onclick="sessionControl()">🔐 Force Logout All Users</button>
-                                <button class="btn btn-primary" onclick="permissionOverride()">🚪 Override All Permissions</button>
-                                <button class="btn btn-warning" onclick="lockdownMode()">🚨 System Lockdown Mode</button>
+                    <div id="pending-tab" class="admin-tab-content active">
+                        <div class="pending-approvals">
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>New Registration: Luis Martinez</strong><br>
+                                    <small>luis.martinez@email.com - Player Application</small>
+                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn btn-success" onclick="approveUser('luis-martinez')">✅ Approve & Add to System</button>
+                                    <button class="btn btn-danger" onclick="rejectUser('luis-martinez')">❌ Reject</button>
+                                </div>
                             </div>
-                            
-                            <div class="control-category">
-                                <h4>💾 Data & Database Control</h4>
-                                <button class="btn btn-primary" onclick="databaseFullAccess()">🗄️ Direct Database Access</button>
-                                <button class="btn btn-primary" onclick="backupManagement()">💾 Complete Backup Management</button>
-                                <button class="btn btn-primary" onclick="dataExportAll()">📤 Export All System Data</button>
-                                <button class="btn btn-primary" onclick="dataImportAll()">📥 Import/Restore Data</button>
-                                <button class="btn btn-warning" onclick="databaseReset()">⚠️ Database Reset</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>⚙️ System Operations</h4>
-                                <button class="btn btn-primary" onclick="systemRestart()">🔄 Restart Entire System</button>
-                                <button class="btn btn-primary" onclick="maintenanceMode()">🚧 Enable Maintenance Mode</button>
-                                <button class="btn btn-primary" onclick="systemMonitoring()">📊 Real-time System Monitoring</button>
-                                <button class="btn btn-primary" onclick="logManagement()">📋 Complete Log Management</button>
-                                <button class="btn btn-danger" onclick="emergencyShutdown()">🛑 Emergency System Shutdown</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>👥 Player & Staff Control</h4>
-                                <button class="btn btn-primary" onclick="massPlayerUpdate()">👤 Mass Player Updates</button>
-                                <button class="btn btn-primary" onclick="medicalRecordsFull()">🏥 Complete Medical Records Access</button>
-                                <button class="btn btn-primary" onclick="financialRecords()">💰 Full Financial Records Access</button>
-                                <button class="btn btn-primary" onclick="communicationControl()">📢 Communication System Control</button>
-                                <button class="btn btn-warning" onclick="disciplinaryActions()">⚠️ Disciplinary Action Tools</button>
-                            </div>
-                            
-                            <div class="control-category">
-                                <h4>🏠 Facility & Operations</h4>
-                                <button class="btn btn-primary" onclick="facilityFullControl()">🏠 Complete Facility Management</button>
-                                <button class="btn btn-primary" onclick="scheduleOverride()">📅 Override All Schedules</button>
-                                <button class="btn btn-primary" onclick="foodSystemControl()">🍽️ Food System Management</button>
-                                <button class="btn btn-primary" onclick="choreSystemControl()">🧹 Chore System Control</button>
-                                <button class="btn btn-primary" onclick="emergencyProtocols()">🚨 Emergency Protocols</button>
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>Staff Application: Maria Schmidt</strong><br>
+                                    <small>maria.schmidt@email.com - Coaching Staff</small>
+                                    <p>Role: Fitness Coach, Experience: 5 years</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn btn-success" onclick="approveUser('maria-schmidt')">✅ Approve & Add to System</button>
+                                    <button class="btn btn-danger" onclick="rejectUser('maria-schmidt')">❌ Reject</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Live Admin Dashboard -->
-                    <div class="form-section">
-                        <h3>📺 Live Administrative Dashboard</h3>
-                        <div class="live-dashboard">
-                            <div class="dashboard-item">
-                                <h4>System Status</h4>
-                                <div class="status-indicators">
-                                    <span class="status-indicator online">🟢 Database: Online</span>
-                                    <span class="status-indicator online">🟢 Server: Operational</span>
-                                    <span class="status-indicator online">🟢 Security: Active</span>
-                                    <span class="status-indicator warning">🟡 Storage: 76% Used</span>
+                    
+                    <div id="users-tab" class="admin-tab-content">
+                        <div class="users-list">
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Max Bisinger</strong><br>
+                                    <small>max.bisinger@warubi-sports.com - Admin</small>
                                 </div>
-                                <button class="btn-small" onclick="refreshSystemStatus()">🔄 Refresh</button>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini" onclick="editUser('max-bisinger')">Edit</button>
                             </div>
-                            
-                            <div class="dashboard-item">
-                                <h4>Active Users (Real-time)</h4>
-                                <div class="user-activity">
-                                    <p><strong>Total Online:</strong> <span class="live-count">23</span></p>
-                                    <p><strong>Admins:</strong> <span class="admin-count">2</span></p>
-                                    <p><strong>Staff:</strong> <span class="staff-count">5</span></p>
-                                    <p><strong>Players:</strong> <span class="player-count">16</span></p>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Thomas Ellinger</strong><br>
+                                    <small>thomas.ellinger@warubi-sports.com - Staff</small>
                                 </div>
-                                <button class="btn-small" onclick="viewActiveUsers()">👥 View All</button>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini" onclick="editUser('thomas-ellinger')">Edit</button>
                             </div>
-                            
-                            <div class="dashboard-item">
-                                <h4>Security Monitoring</h4>
-                                <div class="security-status">
-                                    <p><strong>Failed Logins (24h):</strong> <span class="security-alert">0</span></p>
-                                    <p><strong>Suspicious Activity:</strong> <span class="security-alert">0</span></p>
-                                    <p><strong>Last Security Scan:</strong> <span class="scan-time">2 hours ago</span></p>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Ahmed Hassan</strong><br>
+                                    <small>ahmed.hassan@fckoln.de - Player</small>
                                 </div>
-                                <button class="btn-small" onclick="securityAudit()">🔍 Security Audit</button>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini" onclick="editUser('ahmed-hassan')">Edit</button>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Dangerous Operations -->
+                <!-- System Settings -->
+                <div id="system-settings" class="admin-section">
+                    <h3>⚙️ Essential Settings</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>Auto-approve player registrations</label>
+                            <input type="checkbox" class="setting-toggle">
+                        </div>
+                        <div class="setting-item">
+                            <label>Email notifications enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                    </div>
+                    <button class="btn">Save Settings</button>
+                    
+                    <div class="form-section">
+                        <h3>🔐 Authentication Safety</h3>
+                        <p class="safety-note"><strong>⚠️ Critical:</strong> Authentication system protection is active. Any changes to login functionality require careful testing.</p>
+                        <button class="btn btn-secondary" onclick="testAuthentication()">Test Login System</button>
+                    </div>
+            </div>
+
+            <!-- Registration Page -->
                     <div class="form-section danger-zone">
                         <h3>⚠️ Danger Zone - Destructive Operations</h3>
                         <div class="danger-controls">
@@ -5366,16 +5356,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <button class="btn">Save Settings</button>
                 </div>
                 
-                <!-- Data Export -->
-                <div class="form-section">
-                    <h3>📁 Data Export & Backup</h3>
-                    <div class="export-options">
-                        <button class="btn">Export Player Data</button>
-                        <button class="btn">Export House Statistics</button>
-                        <button class="btn">Export System Logs</button>
-                        <button class="btn btn-secondary">Full System Backup</button>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Registration Page -->
