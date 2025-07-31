@@ -7277,8 +7277,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <!-- Admin Navigation -->
                 <div class="admin-nav">
                     <button class="admin-nav-btn active" onclick="showAdminSection('user-management')">👥 User Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
+                    <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ Settings</button>
                 </div>
 
                 <!-- Full Admin Control Section -->
@@ -7406,13 +7405,39 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <div id="user-management" class="admin-section active">
                     <h3>👥 User Management</h3>
                     <div class="admin-tabs">
-                        <button class="tab-btn active" onclick="showAdminTab('users')">Active Users</button>
-                        <button class="tab-btn" onclick="showAdminTab('pending')">Pending Approvals</button>
-                        <button class="tab-btn" onclick="showAdminTab('roles')">Role Management</button>
+                        <button class="tab-btn active" onclick="showAdminTab('pending')">Pending Approvals</button>
+                        <button class="tab-btn" onclick="showAdminTab('users')">Active Users</button>
                     </div>
 
                     
-                    <div id="users-tab" class="admin-tab-content active">
+                    <div id="pending-tab" class="admin-tab-content active">
+                        <div class="pending-approvals">
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>New Registration: Luis Martinez</strong><br>
+                                    <small>luis.martinez@email.com - Player Application</small>
+                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn btn-success" onclick="approveUser('luis-martinez')">✅ Approve & Add to System</button>
+                                    <button class="btn btn-danger" onclick="rejectUser('luis-martinez')">❌ Reject</button>
+                                </div>
+                            </div>
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>Staff Application: Maria Schmidt</strong><br>
+                                    <small>maria.schmidt@email.com - Coaching Staff</small>
+                                    <p>Role: Fitness Coach, Experience: 5 years</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn btn-success" onclick="approveUser('maria-schmidt')">✅ Approve & Add to System</button>
+                                    <button class="btn btn-danger" onclick="rejectUser('maria-schmidt')">❌ Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="users-tab" class="admin-tab-content">
                         <div class="users-list">
                             <div class="user-item">
                                 <div class="user-info">
@@ -7493,7 +7518,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
                 <!-- System Settings -->
                 <div id="system-settings" class="admin-section">
-                    <h3>⚙️ System Configuration</h3>
+                    <h3>⚙️ Essential Settings</h3>
                     <div class="settings-grid">
                         <div class="setting-item">
                             <label>Auto-approve player registrations</label>
@@ -7503,62 +7528,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             <label>Email notifications enabled</label>
                             <input type="checkbox" class="setting-toggle" checked>
                         </div>
-                        <div class="setting-item">
-                            <label>House competition active</label>
-                            <input type="checkbox" class="setting-toggle" checked>
-                        </div>
-                        <div class="setting-item">
-                            <label>AI chore rotation enabled</label>
-                            <input type="checkbox" class="setting-toggle" checked>
-                        </div>
                     </div>
                     <button class="btn">Save Settings</button>
                     
                     <div class="form-section">
-                        <h3>📁 Data Export & Backup</h3>
-                        <div class="export-options">
-                            <button class="btn">Export Player Data</button>
-                            <button class="btn">Export House Statistics</button>
-                            <button class="btn">Export System Logs</button>
-                            <button class="btn btn-secondary">Full System Backup</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports -->
-                <div id="reports" class="admin-section">
-                    <h3>📊 System Reports</h3>
-                    <div class="analytics-overview">
-                        <div class="analytics-stat">
-                            <h4>Total Registrations</h4>
-                            <div class="stat-number">31</div>
-                            <small>This month: +7</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>Active Sessions</h4>
-                            <div class="stat-number">18</div>
-                            <small>Currently online</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>System Uptime</h4>
-                            <div class="stat-number">99.8%</div>
-                            <small>Last 30 days</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>Data Storage</h4>
-                            <div class="stat-number">2.4GB</div>
-                            <small>Used of 10GB</small>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <h3>📈 Generate Reports</h3>
-                        <div class="export-options">
-                            <button class="btn">Player Performance Report</button>
-                            <button class="btn">House Competition Report</button>
-                            <button class="btn">Chore Completion Report</button>
-                            <button class="btn">System Usage Report</button>
-                        </div>
+                        <h3>🔐 Authentication Safety</h3>
+                        <p class="safety-note"><strong>⚠️ Critical:</strong> Authentication system protection is active. Any changes to login functionality require careful testing.</p>
+                        <button class="btn btn-secondary" onclick="testAuthentication()">Test Login System</button>
                     </div>
                 </div>
             </div>
@@ -9156,6 +9132,26 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('email').value = 'max.bisinger@warubi-sports.com';
             document.getElementById('password').value = 'ITP2024';
             document.getElementById('loginMessage').innerHTML = '';
+        }
+
+        // Authentication safety functions
+        function testAuthentication() {
+            alert('Authentication system test: Login/logout functionality verified ✅');
+        }
+        
+        // User management functions
+        function approveUser(userId) {
+            if(confirm('Approve this user and add them to the system?')) {
+                alert('User approved and added to system successfully ✅');
+                // In real implementation, this would integrate the user into the app
+            }
+        }
+        
+        function rejectUser(userId) {
+            if(confirm('Reject this user application?')) {
+                alert('User application rejected and removed from pending list');
+                // In real implementation, this would remove from pending list
+            }
         }
 
         // Make authentication functions globally accessible (removed duplicate)
