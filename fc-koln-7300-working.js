@@ -7323,7 +7323,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <small>max.bisinger@warubi-sports.com - Admin</small>
                                 </div>
                                 <div class="user-status active">Active</div>
-                                <button class="btn-mini">Edit</button>
+                                <button class="btn-mini" onclick="editUser('max-bisinger')">Edit</button>
                             </div>
                             <div class="user-item">
                                 <div class="user-info">
@@ -7331,7 +7331,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <small>thomas.ellinger@warubi-sports.com - Staff</small>
                                 </div>
                                 <div class="user-status active">Active</div>
-                                <button class="btn-mini">Edit</button>
+                                <button class="btn-mini" onclick="editUser('thomas-ellinger')">Edit</button>
                             </div>
                             <div class="user-item">
                                 <div class="user-info">
@@ -7339,7 +7339,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <small>ahmed.hassan@fckoln.de - Player</small>
                                 </div>
                                 <div class="user-status active">Active</div>
-                                <button class="btn-mini">Edit</button>
+                                <button class="btn-mini" onclick="editUser('ahmed-hassan')">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -8952,6 +8952,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 alert('User application rejected and removed from pending list');
                 // In real implementation, this would remove from pending list
             }
+        }
+        
+        // Edit user function for admin
+        function editUser(userId) {
+            alert('Edit User: ' + userId + '\n\nThis would open a modal to edit user details:\n• Role assignment\n• Status changes\n• Contact information\n• Permissions');
         }
 
         // Make authentication functions globally accessible (removed duplicate)
