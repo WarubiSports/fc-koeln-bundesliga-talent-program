@@ -5156,7 +5156,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <a class="nav-item" onclick="showPage('food-orders')">Food Orders</a>
                 <a class="nav-item" onclick="showPage('communications')">Communications</a>
                 <a class="nav-item" onclick="showPage('calendar')">Calendar</a>
-                <a class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">Member Management</a>
+                <a class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">User Management</a>
             </div>
         </nav>
 
@@ -7276,9 +7276,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 
                 <!-- Admin Navigation -->
                 <div class="admin-nav">
-                    <button class="admin-nav-btn active" onclick="showAdminSection('player-management')">👥 Player Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('user-management')">🔐 User Management</button>
-                    <button class="admin-nav-btn" onclick="showAdminSection('full-control')">🛡️ Full Admin Control</button>
+                    <button class="admin-nav-btn active" onclick="showAdminSection('user-management')">👥 User Management</button>
                     <button class="admin-nav-btn" onclick="showAdminSection('system-settings')">⚙️ System Settings</button>
                     <button class="admin-nav-btn" onclick="showAdminSection('reports')">📊 Reports</button>
                 </div>
@@ -7404,171 +7402,166 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Player Management Section -->
-                <div id="player-management" class="admin-section active">
-                    <h2>Player Management & Editing</h2>
-                    
-                    <!-- Player Search and Filters -->
-                    <div class="admin-controls">
-                        <div class="search-bar">
-                            <input type="text" id="playerSearch" placeholder="Search players by name, position, or nationality..." class="form-control">
-                            <button class="btn" onclick="searchPlayers()">🔍 Search</button>
-                        </div>
-                        <div class="filter-controls">
-                            <select id="statusFilter" class="form-control">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="injured">Injured</option>
-                                <option value="suspended">Suspended</option>
-                                <option value="on-loan">On Loan</option>
-                            </select>
-                            <select id="positionFilter" class="form-control">
-                                <option value="">All Positions</option>
-                                <option value="goalkeeper">Goalkeeper</option>
-                                <option value="defender">Defender</option>
-                                <option value="midfielder">Midfielder</option>
-                                <option value="forward">Forward</option>
-                            </select>
-                            <button class="btn btn-primary" onclick="addNewPlayer()">+ Add New Player</button>
-                        </div>
-                    </div>
-
-                    <!-- Players Admin Grid -->
-                    <div class="players-admin-grid">
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Marco Silva</h4>
-                                    <span class="player-position">Midfielder</span>
-                                    <span class="player-status status-active">Active</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('marco-silva')">✏️ Edit</button>
-                                    <button class="btn-small btn-warning" onclick="suspendPlayer('marco-silva')">⚠️ Suspend</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Portugal</p>
-                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 12A</p>
-                                <p><strong>Contract:</strong> 2024-2026 • <strong>Performance:</strong> 8.4/10</p>
-                            </div>
-                        </div>
-
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Luis García</h4>
-                                    <span class="player-position">Forward</span>
-                                    <span class="player-status status-injured">Injured</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('luis-garcia')">✏️ Edit</button>
-                                    <button class="btn-small" onclick="viewMedicalRecord('luis-garcia')">🏥 Medical</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 18 • <strong>Nationality:</strong> Spain</p>
-                                <p><strong>House:</strong> Widdersdorf 2 • <strong>Room:</strong> 08B</p>
-                                <p><strong>Injury:</strong> Knee strain (2 weeks) • <strong>Performance:</strong> 7.8/10</p>
-                            </div>
-                        </div>
-
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Ahmad Hassan</h4>
-                                    <span class="player-position">Defender</span>
-                                    <span class="player-status status-active">Active</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('ahmad-hassan')">✏️ Edit</button>
-                                    <button class="btn-small" onclick="viewPerformance('ahmad-hassan')">📈 Stats</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 20 • <strong>Nationality:</strong> Egypt</p>
-                                <p><strong>House:</strong> Widdersdorf 1 • <strong>Room:</strong> 15C</p>
-                                <p><strong>Contract:</strong> 2023-2025 • <strong>Performance:</strong> 8.9/10</p>
-                            </div>
-                        </div>
-
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Jonas Weber</h4>
-                                    <span class="player-position">Goalkeeper</span>
-                                    <span class="player-status status-active">Active</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('jonas-weber')">✏️ Edit</button>
-                                    <button class="btn-small" onclick="assignCaptain('jonas-weber')">👑 Captain</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 19 • <strong>Nationality:</strong> Germany</p>
-                                <p><strong>House:</strong> Widdersdorf 3 • <strong>Room:</strong> 03A</p>
-                                <p><strong>Contract:</strong> 2024-2027 • <strong>Performance:</strong> 9.2/10</p>
-                            </div>
-                        </div>
-
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Carlos Rodriguez</h4>
-                                    <span class="player-position">Forward</span>
-                                    <span class="player-status status-active">Active</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('carlos-rodriguez')">✏️ Edit</button>
-                                    <button class="btn-small" onclick="transferPlayer('carlos-rodriguez')">🔄 Transfer</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 17 • <strong>Nationality:</strong> Argentina</p>
-                                <p><strong>House:</strong> Widdersdorf 3 • <strong>Room:</strong> 07B</p>
-                                <p><strong>Contract:</strong> 2024-2025 • <strong>Performance:</strong> 8.7/10</p>
-                            </div>
-                        </div>
-
-                        <div class="player-admin-card">
-                            <div class="player-header">
-                                <img src="https://via.placeholder.com/60x60" alt="Player" class="player-avatar">
-                                <div class="player-info">
-                                    <h4>Luca Müller</h4>
-                                    <span class="player-position">Defender</span>
-                                    <span class="player-status status-suspended">Suspended</span>
-                                </div>
-                                <div class="player-actions">
-                                    <button class="btn-small" onclick="editPlayer('luca-muller')">✏️ Edit</button>
-                                    <button class="btn-small btn-success" onclick="reactivatePlayer('luca-muller')">✅ Reactivate</button>
-                                </div>
-                            </div>
-                            <div class="player-details">
-                                <p><strong>Age:</strong> 18 • <strong>Nationality:</strong> Germany</p>
-                                <p><strong>House:</strong> Widdersdorf 2 • <strong>Room:</strong> 14A</p>
-                                <p><strong>Suspension:</strong> Disciplinary (1 week) • <strong>Performance:</strong> 7.2/10</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- User Management -->
-                <div id="user-management" class="admin-section">
+                <div id="user-management" class="admin-section active">
                     <h3>👥 User Management</h3>
                     <div class="admin-tabs">
                         <button class="tab-btn active" onclick="showAdminTab('users')">Active Users</button>
                         <button class="tab-btn" onclick="showAdminTab('pending')">Pending Approvals</button>
                         <button class="tab-btn" onclick="showAdminTab('roles')">Role Management</button>
                     </div>
+
                     
                     <div id="users-tab" class="admin-tab-content active">
                         <div class="users-list">
                             <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Max Bisinger</strong><br>
+                                    <small>max.bisinger@warubi-sports.com - Admin</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Thomas Ellinger</strong><br>
+                                    <small>thomas.ellinger@warubi-sports.com - Staff</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-info">
+                                    <strong>Ahmed Hassan</strong><br>
+                                    <small>ahmed.hassan@fckoln.de - Player</small>
+                                </div>
+                                <div class="user-status active">Active</div>
+                                <button class="btn-mini">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="pending-tab" class="admin-tab-content">
+                        <div class="pending-approvals">
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>New Registration: Luis Martinez</strong><br>
+                                    <small>luis.martinez@email.com - Player Application</small>
+                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn">Approve</button>
+                                    <button class="btn btn-secondary">Reject</button>
+                                    <button class="btn btn-secondary">Review</button>
+                                </div>
+                            </div>
+                            <div class="approval-item">
+                                <div class="approval-info">
+                                    <strong>Staff Application: Maria Schmidt</strong><br>
+                                    <small>maria.schmidt@email.com - Coaching Staff</small>
+                                    <p>Role: Fitness Coach, Experience: 5 years</p>
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn">Approve</button>
+                                    <button class="btn btn-secondary">Reject</button>
+                                    <button class="btn btn-secondary">Review</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="roles-tab" class="admin-tab-content">
+                        <div class="roles-grid">
+                            <div class="role-card">
+                                <h4>Admin</h4>
+                                <p>Full system access</p>
+                                <small>2 users assigned</small>
+                            </div>
+                            <div class="role-card">
+                                <h4>Staff</h4>
+                                <p>Management and oversight</p>
+                                <small>5 users assigned</small>
+                            </div>
+                            <div class="role-card">
+                                <h4>Player</h4>
+                                <p>Basic access and profile</p>
+                                <small>24 users assigned</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Settings -->
+                <div id="system-settings" class="admin-section">
+                    <h3>⚙️ System Configuration</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>Auto-approve player registrations</label>
+                            <input type="checkbox" class="setting-toggle">
+                        </div>
+                        <div class="setting-item">
+                            <label>Email notifications enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                        <div class="setting-item">
+                            <label>House competition active</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                        <div class="setting-item">
+                            <label>AI chore rotation enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
+                        </div>
+                    </div>
+                    <button class="btn">Save Settings</button>
+                    
+                    <div class="form-section">
+                        <h3>📁 Data Export & Backup</h3>
+                        <div class="export-options">
+                            <button class="btn">Export Player Data</button>
+                            <button class="btn">Export House Statistics</button>
+                            <button class="btn">Export System Logs</button>
+                            <button class="btn btn-secondary">Full System Backup</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div id="reports" class="admin-section">
+                    <h3>📊 System Reports</h3>
+                    <div class="analytics-overview">
+                        <div class="analytics-stat">
+                            <h4>Total Registrations</h4>
+                            <div class="stat-number">31</div>
+                            <small>This month: +7</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>Active Sessions</h4>
+                            <div class="stat-number">18</div>
+                            <small>Currently online</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>System Uptime</h4>
+                            <div class="stat-number">99.8%</div>
+                            <small>Last 30 days</small>
+                        </div>
+                        <div class="analytics-stat">
+                            <h4>Data Storage</h4>
+                            <div class="stat-number">2.4GB</div>
+                            <small>Used of 10GB</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>📈 Generate Reports</h3>
+                        <div class="export-options">
+                            <button class="btn">Player Performance Report</button>
+                            <button class="btn">House Competition Report</button>
+                            <button class="btn">Chore Completion Report</button>
+                            <button class="btn">System Usage Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
                                 <div class="user-info">
                                     <strong>Max Bisinger</strong><br>
                                     <small>max.bisinger@warubi-sports.com - Admin</small>
