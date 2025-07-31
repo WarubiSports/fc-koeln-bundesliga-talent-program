@@ -8958,7 +8958,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // This system ensures authentication functions remain globally accessible
         
         function initializeAuthenticationSystem() {
-            console.log('🔐 Initializing Authentication System - Permanent Stabilization Protocol');
+            console.log('Initializing Authentication System - Permanent Stabilization Protocol');
             
             // Essential authentication functions - MUST remain globally accessible
             window.showAuthTab = function(tab) {
@@ -9010,17 +9010,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             criticalFunctions.forEach(funcName => {
                 if (typeof window[funcName] !== 'function') {
-                    console.error(`❌ CRITICAL FAILURE: ${funcName} not accessible`);
+                    console.error('CRITICAL FAILURE: ' + funcName + ' not accessible');
                     systemStable = false;
                 } else {
-                    console.log(`✅ ${funcName} verified accessible`);
+                    console.log('Verified accessible: ' + funcName);
                 }
             });
             
             if (systemStable) {
-                console.log('🔐 Authentication System: STABLE & PROTECTED');
+                console.log('Authentication System: STABLE & PROTECTED');
             } else {
-                console.error('🚨 AUTHENTICATION SYSTEM COMPROMISED');
+                console.error('AUTHENTICATION SYSTEM COMPROMISED');
             }
             
             return systemStable;
