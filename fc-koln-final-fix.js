@@ -5899,25 +5899,46 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // Auth tab management (login/register)
+        // CRITICAL AUTH TAB FUNCTION - ISOLATED & PROTECTED
         window.showAuthTab = function(tabType) {
+            console.log('Auth tab switch requested:', tabType);
+            
             const loginTab = document.getElementById('login-auth-tab');
             const registerTab = document.getElementById('register-auth-tab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
             
-            // Remove active from all tabs and buttons
+            if (!loginTab || !registerTab) {
+                console.error('Auth tabs not found - IDs:', {
+                    loginTab: loginTab ? 'found' : 'missing',
+                    registerTab: registerTab ? 'missing' : 'missing'
+                });
+                return;
+            }
+            
+            // Hide all tabs first using display
+            loginTab.style.display = 'none';
+            registerTab.style.display = 'none';
+            
+            // Remove active classes
             loginTab.classList.remove('active');
             registerTab.classList.remove('active');
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
-            // Show selected tab
+            // Show selected tab with both display and class
             if (tabType === 'login') {
+                loginTab.style.display = 'block';
                 loginTab.classList.add('active');
-                event.target.classList.add('active');
             } else if (tabType === 'register') {
+                registerTab.style.display = 'block';
                 registerTab.classList.add('active');
+            }
+            
+            // Activate button safely
+            if (typeof event !== 'undefined' && event.target) {
                 event.target.classList.add('active');
             }
+            
+            console.log('Auth tab switched successfully to:', tabType);
         }
 
         // Public registration type management  
@@ -6330,245 +6351,111 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Full Admin Control Functions
         function fullUserControl() {
-            alert('FULL USER CONTROL ACTIVATED
-
-Admin now has complete control over:
-• All user accounts
-• Account creation and deletion
-• Profile modifications
-• Access level changes
-• Password resets
-
-All user management operations are now available.');
+            alert('FULL USER CONTROL ACTIVATED\\n\\nAdmin now has complete control over:\\n• All user accounts\\n• Account creation and deletion\\n• Profile modifications\\n• Access level changes\\n• Password resets\\n\\nAll user management operations are now available.');
         }
 
         function passwordManagement() {
             if(confirm('Enable global password management? This will allow you to reset any user password and view security information.')) {
-                alert('GLOBAL PASSWORD MANAGEMENT ENABLED
-
-You can now:
-• Reset any user password
-• Force password changes
-• View login history
-• Manage security settings
-• Access encrypted data');
+                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\\n\\nYou can now:\\n• Reset any user password\\n• Force password changes\\n• View login history\\n• Manage security settings\\n• Access encrypted data');
             }
         }
 
         function sessionControl() {
             if(confirm('Force logout all users? This will disconnect everyone from the system immediately.')) {
-                alert('ALL USER SESSIONS TERMINATED
-
-All users have been logged out except administrators.
-Users will need to log in again to access the system.');
+                alert('ALL USER SESSIONS TERMINATED\\n\\nAll users have been logged out except administrators.\\nUsers will need to log in again to access the system.');
             }
         }
 
         function permissionOverride() {
             if(confirm('Override all user permissions? This gives admin access to everything regardless of normal restrictions.')) {
-                alert('PERMISSION OVERRIDE ACTIVATED
-
-Admin permissions now bypass all restrictions:
-• Access to all modules
-• Database read/write access
-• Medical records access
-• Financial data access
-• Emergency protocols');
+                alert('PERMISSION OVERRIDE ACTIVATED\\n\\nAdmin permissions now bypass all restrictions:\\n• Access to all modules\\n• Database read/write access\\n• Medical records access\\n• Financial data access\\n• Emergency protocols');
             }
         }
 
         function lockdownMode() {
             if(confirm('Enable system lockdown? This will restrict access for all non-admin users.')) {
-                alert('SYSTEM LOCKDOWN ACTIVATED
-
-Security measures engaged:
-• Non-admin access restricted
-• All sessions monitored
-• Activity logging increased
-• Emergency protocols ready');
+                alert('SYSTEM LOCKDOWN ACTIVATED\\n\\nSecurity measures engaged:\\n• Non-admin access restricted\\n• All sessions monitored\\n• Activity logging increased\\n• Emergency protocols ready');
             }
         }
 
         function databaseFullAccess() {
             if(confirm('Enable direct database access? This provides complete database control.')) {
-                alert('DATABASE FULL ACCESS GRANTED
-
-Direct database control enabled:
-• SQL query execution
-• Table modifications
-• Data export/import
-• Schema changes
-• Backup/restore operations');
+                alert('DATABASE FULL ACCESS GRANTED\\n\\nDirect database control enabled:\\n• SQL query execution\\n• Table modifications\\n• Data export/import\\n• Schema changes\\n• Backup/restore operations');
             }
         }
 
         function backupManagement() {
-            alert('BACKUP MANAGEMENT SYSTEM
-
-Full backup control available:
-• Create instant backups
-• Schedule automated backups
-• Restore from any backup point
-• Manage backup storage
-• Verify backup integrity');
+            alert('BACKUP MANAGEMENT SYSTEM\\n\\nFull backup control available:\\n• Create instant backups\\n• Schedule automated backups\\n• Restore from any backup point\\n• Manage backup storage\\n• Verify backup integrity');
         }
 
         function dataExportAll() {
             if(confirm('Export all system data? This will create a complete data export.')) {
-                alert('COMPLETE DATA EXPORT INITIATED
-
-Exporting all system data:
-• User profiles and authentication
-• Player records and performance
-• Financial and administrative data
-• System logs and analytics
-
-Export will be available for download shortly.');
+                alert('COMPLETE DATA EXPORT INITIATED\\n\\nExporting all system data:\\n• User profiles and authentication\\n• Player records and performance\\n• Financial and administrative data\\n• System logs and analytics\\n\\nExport will be available for download shortly.');
             }
         }
 
         function emergencyShutdown() {
             if(confirm('EMERGENCY SHUTDOWN - Are you sure? This will immediately shut down the entire system.')) {
                 if(confirm('FINAL WARNING: This will disconnect all users and stop all services. Continue?')) {
-                    alert('EMERGENCY SHUTDOWN INITIATED
-
-System shutdown in progress:
-• All user sessions terminated
-• Services stopping
-• Data safely stored
-• Emergency contacts notified');
+                    alert('EMERGENCY SHUTDOWN INITIATED\\n\\nSystem shutdown in progress:\\n• All user sessions terminated\\n• Services stopping\\n• Data safely stored\\n• Emergency contacts notified');
                 }
             }
         }
 
         function massPlayerUpdate() {
-            alert('MASS PLAYER UPDATE TOOLS
-
-Bulk operations available:
-• Update multiple player profiles
-• Change house assignments
-• Modify contract terms
-• Update medical information
-• Batch status changes');
+            alert('MASS PLAYER UPDATE TOOLS\\n\\nBulk operations available:\\n• Update multiple player profiles\\n• Change house assignments\\n• Modify contract terms\\n• Update medical information\\n• Batch status changes');
         }
 
         function medicalRecordsFull() {
             if(confirm('Access complete medical records? This includes sensitive health information.')) {
-                alert('MEDICAL RECORDS FULL ACCESS GRANTED
-
-Complete medical system access:
-• All player health records
-• Injury histories
-• Treatment plans
-• Medical clearances
-• Emergency medical information');
+                alert('MEDICAL RECORDS FULL ACCESS GRANTED\\n\\nComplete medical system access:\\n• All player health records\\n• Injury histories\\n• Treatment plans\\n• Medical clearances\\n• Emergency medical information');
             }
         }
 
         function financialRecords() {
             if(confirm('Access full financial records? This includes sensitive financial data.')) {
-                alert('FINANCIAL RECORDS ACCESS GRANTED
-
-Complete financial access:
-• Player contracts and salaries
-• Program budgets
-• Expense tracking
-• Revenue analysis
-• Financial reporting');
+                alert('FINANCIAL RECORDS ACCESS GRANTED\\n\\nComplete financial access:\\n• Player contracts and salaries\\n• Program budgets\\n• Expense tracking\\n• Revenue analysis\\n• Financial reporting');
             }
         }
 
         function disciplinaryActions() {
-            alert('DISCIPLINARY ACTION TOOLS
-
-Disciplinary management:
-• Issue warnings and sanctions
-• Suspend player access
-• Implement corrective measures
-• Track disciplinary history
-• Generate reports');
+            alert('DISCIPLINARY ACTION TOOLS\\n\\nDisciplinary management:\\n• Issue warnings and sanctions\\n• Suspend player access\\n• Implement corrective measures\\n• Track disciplinary history\\n• Generate reports');
         }
 
         function facilityFullControl() {
-            alert('FACILITY MANAGEMENT CONTROL
-
-Complete facility control:
-• House assignments
-• Room allocations
-• Facility maintenance
-• Security systems
-• Emergency protocols');
+            alert('FACILITY MANAGEMENT CONTROL\\n\\nComplete facility control:\\n• House assignments\\n• Room allocations\\n• Facility maintenance\\n• Security systems\\n• Emergency protocols');
         }
 
         function emergencyProtocols() {
-            alert('EMERGENCY PROTOCOLS ACTIVATED
-
-Emergency systems ready:
-• Medical emergency response
-• Evacuation procedures
-• Security lockdown
-• Emergency contacts
-• Crisis management');
+            alert('EMERGENCY PROTOCOLS ACTIVATED\\n\\nEmergency systems ready:\\n• Medical emergency response\\n• Evacuation procedures\\n• Security lockdown\\n• Emergency contacts\\n• Crisis management');
         }
 
         function factoryReset() {
             if(confirm('DANGER: Factory reset will delete ALL data permanently. Are you absolutely sure?')) {
                 if(confirm('FINAL WARNING: This action cannot be undone. All players, staff, and system data will be lost. Continue?')) {
-                    alert('FACTORY RESET INITIATED
-
-System reset in progress:
-• All user data deleted
-• Database cleared
-• System restored to defaults
-• Logs archived');
+                    alert('FACTORY RESET INITIATED\\n\\nSystem reset in progress:\\n• All user data deleted\\n• Database cleared\\n• System restored to defaults\\n• Logs archived');
                 }
             }
         }
 
         function emergencyLockdown() {
             if(confirm('ACTIVATE EMERGENCY LOCKDOWN? This will lock all facilities and restrict all access.')) {
-                alert('🚨 EMERGENCY LOCKDOWN ACTIVATED 🚨
-
-Security measures engaged:
-• All facilities locked
-• Emergency services contacted
-• Staff and authorities notified
-• Security protocols active');
+                alert('🚨 EMERGENCY LOCKDOWN ACTIVATED 🚨\\n\\nSecurity measures engaged:\\n• All facilities locked\\n• Emergency services contacted\\n• Staff and authorities notified\\n• Security protocols active');
             }
         }
 
         function emergencyEvacuation() {
             if(confirm('INITIATE EVACUATION PROTOCOL? This will trigger facility evacuation procedures.')) {
-                alert('🚨 EVACUATION PROTOCOL INITIATED 🚨
-
-Evacuation in progress:
-• Alarm systems activated
-• Emergency exits unlocked
-• Evacuation routes highlighted
-• Emergency services notified');
+                alert('🚨 EVACUATION PROTOCOL INITIATED 🚨\\n\\nEvacuation in progress:\\n• Alarm systems activated\\n• Emergency exits unlocked\\n• Evacuation routes highlighted\\n• Emergency services notified');
             }
         }
 
         function emergencyMedical() {
-            alert('🏥 MEDICAL EMERGENCY PROTOCOL 🏥
-
-Medical emergency response:
-• Emergency medical services contacted
-• On-site medical staff alerted
-• Medical emergency kit locations
-• Hospital contact information
-• Player medical records accessible');
+            alert('🏥 MEDICAL EMERGENCY PROTOCOL 🏥\\n\\nMedical emergency response:\\n• Emergency medical services contacted\\n• On-site medical staff alerted\\n• Medical emergency kit locations\\n• Hospital contact information\\n• Player medical records accessible');
         }
 
         function emergencyContact() {
-            alert('📞 EMERGENCY CONTACTS 📞
-
-Emergency contact system:
-• Fire Department: 112
-• Police: 110
-• Medical Emergency: 112
-• FC Köln Security: +49-221-XXX-XXXX
-• Program Director: +49-221-XXX-XXXX');
+            alert('📞 EMERGENCY CONTACTS 📞\\n\\nEmergency contact system:\\n• Fire Department: 112\\n• Police: 110\\n• Medical Emergency: 112\\n• FC Köln Security: +49-221-XXX-XXXX\\n• Program Director: +49-221-XXX-XXXX');
         }
 
         function refreshSystemStatus() {
@@ -6697,12 +6584,7 @@ Emergency contact system:
             };
 
             // Display success message
-            alert('Chore "' + title + '" has been created successfully!
-
-Assigned to: ' + assignmentText + '
-House: ' + house + '
-Deadline: ' + chore.deadline + '
-Points: ' + points);
+            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + assignmentText + '\\nHouse: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
             
             // Clear the form
             clearChoreForm();
@@ -6797,13 +6679,7 @@ Points: ' + points);
 
         // View house details
         function viewHouseDetails(houseId) {
-            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.
-
-This would show:
-- Individual player assignments
-- Completion rates
-- Point rankings
-- Chore history');
+            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
         }
 
         // Update chore assignments display
@@ -7027,29 +6903,17 @@ This would show:
             const player = playerStorage.find(p => p.id === playerId);
             if (!player) return;
 
-            alert('Player Details:
-
-' +
-                'Name: ' + player.firstName + ' ' + player.lastName + '
-' +
-                'Position: ' + player.position + '
-' +
-                'Age: ' + player.age + '
-' +
-                'Nationality: ' + player.nationality + '
-' +
-                'House: ' + player.house + ' (Room ' + player.room + ')
-' +
-                'Contract: ' + player.contractPeriod + '
-' +
-                'Status: ' + player.status + '
-' +
-                'Phone: ' + player.phoneNumber + '
-' +
-                'Emergency Contact: ' + player.emergencyContact + '
-' +
-                'Medical Info: ' + player.medicalInfo + '
-' +
+            alert('Player Details:\\n\\n' +
+                'Name: ' + player.firstName + ' ' + player.lastName + '\\n' +
+                'Position: ' + player.position + '\\n' +
+                'Age: ' + player.age + '\\n' +
+                'Nationality: ' + player.nationality + '\\n' +
+                'House: ' + player.house + ' (Room ' + player.room + ')\\n' +
+                'Contract: ' + player.contractPeriod + '\\n' +
+                'Status: ' + player.status + '\\n' +
+                'Phone: ' + player.phoneNumber + '\\n' +
+                'Emergency Contact: ' + player.emergencyContact + '\\n' +
+                'Medical Info: ' + player.medicalInfo + '\\n' +
                 'Notes: ' + player.specialNotes);
         }
 
@@ -7207,12 +7071,7 @@ This would show:
             });
 
             // Simulate order submission
-            alert('Grocery order submitted successfully!
-
-Items: ' + orderItems.length + '
-Total: €' + total.toFixed(2) + '
-
-Your order will be processed for the next available delivery slot.');
+            alert('Grocery order submitted successfully!\\n\\nItems: ' + orderItems.length + '\\nTotal: €' + total.toFixed(2) + '\\n\\nYour order will be processed for the next available delivery slot.');
             
             // Clear selections after successful submission
             clearSelection();
@@ -7247,8 +7106,7 @@ Your order will be processed for the next available delivery slot.');
                 nationality: document.getElementById('editNationality').value
             };
             
-            alert('Player changes saved successfully!
-' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
+            alert('Player changes saved successfully!\\n' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
             closePlayerEditModal();
         }
 

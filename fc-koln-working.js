@@ -5797,9 +5797,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         ];
 
-        // CRITICAL VARIABLE DECLARATION
-        let currentUser = null;
-
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
@@ -5911,11 +5908,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
             
             if (!loginTab || !registerTab) {
-                console.error('Auth tabs not found');
+                console.error('Auth tabs not found - IDs:', {
+                    loginTab: loginTab ? 'found' : 'missing',
+                    registerTab: registerTab ? 'missing' : 'missing'
+                });
                 return;
             }
             
-            // Hide all tabs first
+            // Hide all tabs first using display
             loginTab.style.display = 'none';
             registerTab.style.display = 'none';
             
@@ -5924,7 +5924,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             registerTab.classList.remove('active');
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
-            // Show selected tab
+            // Show selected tab with both display and class
             if (tabType === 'login') {
                 loginTab.style.display = 'block';
                 loginTab.classList.add('active');
