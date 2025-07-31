@@ -8954,80 +8954,18 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         }
 
-        // CRITICAL: PERMANENT AUTHENTICATION STABILIZATION SYSTEM
-        // This system ensures authentication functions remain globally accessible
-        
-        function initializeAuthenticationSystem() {
-            console.log('🔐 Initializing Authentication System - Permanent Stabilization Protocol');
-            
-            // Essential authentication functions - MUST remain globally accessible
-            window.showAuthTab = function(tab) {
-                const loginTab = document.getElementById('loginTab');
-                const forgotTab = document.getElementById('forgotPasswordTab');
-                
-                if (tab === 'login') {
-                    if (loginTab) loginTab.style.display = 'block';
-                    if (forgotTab) forgotTab.style.display = 'none';
-                } else if (tab === 'forgot') {
-                    if (loginTab) loginTab.style.display = 'none';
-                    if (forgotTab) forgotTab.style.display = 'block';
-                }
-                
-                document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
-                const activeBtn = document.querySelector(`[onclick="showAuthTab('${tab}')"]`);
-                if (activeBtn) activeBtn.classList.add('active');
-            };
+        // Make authentication functions globally accessible (removed duplicate)
 
-            window.showForgotPassword = function() {
-                window.showAuthTab('forgot');
-            };
-
-            window.showPage = function(pageId) {
-                const pages = document.querySelectorAll('.page');
-                const navItems = document.querySelectorAll('.nav-item');
-                
-                pages.forEach(page => page.classList.remove('active'));
-                navItems.forEach(item => item.classList.remove('active'));
-                
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) targetPage.classList.add('active');
-                
-                const targetNav = document.querySelector(`[onclick="showPage('${pageId}')"]`);
-                if (targetNav) targetNav.classList.add('active');
-            };
-
-            window.logout = function() {
-                document.getElementById('authScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                sessionStorage.clear();
-                localStorage.removeItem('userRole');
-                console.log('User logged out successfully');
-            };
+        // Make forgot password function globally accessible
+        window.showForgotPassword = function() {
+            const loginTab = document.getElementById('loginTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
             
-            // Verification system - ensures all critical functions are accessible
-            const criticalFunctions = ['showAuthTab', 'showForgotPassword', 'showPage', 'logout'];
-            let systemStable = true;
+            if (loginTab) loginTab.style.display = 'none';
+            if (forgotTab) forgotTab.style.display = 'block';
             
-            criticalFunctions.forEach(funcName => {
-                if (typeof window[funcName] !== 'function') {
-                    console.error(`❌ CRITICAL FAILURE: ${funcName} not accessible`);
-                    systemStable = false;
-                } else {
-                    console.log(`✅ ${funcName} verified accessible`);
-                }
-            });
-            
-            if (systemStable) {
-                console.log('🔐 Authentication System: STABLE & PROTECTED');
-            } else {
-                console.error('🚨 AUTHENTICATION SYSTEM COMPROMISED');
-            }
-            
-            return systemStable;
-        }
-        
-        // Initialize authentication system
-        const authSystemStable = initializeAuthenticationSystem();
+            document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+        };
 
         // Forgot Password Form Handler
         document.addEventListener('DOMContentLoaded', function() {
