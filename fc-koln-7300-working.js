@@ -8251,24 +8251,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // Auth tab management (login/register)
+        // Auth tab management (login/register) - AUTHENTICATION STABILITY FIX
         window.showAuthTab = function(tabType) {
-            const loginTab = document.getElementById('login-auth-tab');
-            const registerTab = document.getElementById('register-auth-tab');
+            // Use correct element IDs that match the actual HTML elements
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
             
-            // Remove active from all tabs and buttons
-            loginTab.classList.remove('active');
-            registerTab.classList.remove('active');
+            // Hide all auth tabs properly using display property
+            if (loginTab) loginTab.style.display = 'none';
+            if (registerTab) registerTab.style.display = 'none';
+            if (forgotTab) forgotTab.style.display = 'none';
+            
+            // Remove active from all tab buttons
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab
             if (tabType === 'login') {
-                loginTab.classList.add('active');
-                event.target.classList.add('active');
+                if (loginTab) loginTab.style.display = 'block';
+                if (tabButtons[0]) tabButtons[0].classList.add('active');
             } else if (tabType === 'register') {
-                registerTab.classList.add('active');
-                event.target.classList.add('active');
+                if (registerTab) registerTab.style.display = 'block';
+                if (tabButtons[1]) tabButtons[1].classList.add('active');
             }
         }
 
