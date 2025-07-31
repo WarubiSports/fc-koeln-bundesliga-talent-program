@@ -1,10 +1,10 @@
-// Development server redirect to safe restructured implementation
+// Development server redirect to working implementation
 const { spawn } = require('child_process');
 
-console.log('🔄 Redirecting to restructured FC Köln server...');
+console.log('🔄 Redirecting to working FC Köln server...');
 
-// Start the restructured safe server (eliminates template literal vulnerability)
-const serverProcess = spawn('node', ['server/safe-server.js'], {
+// Start the full 7300-line sophisticated application
+const serverProcess = spawn('node', ['fc-koln-7300-working.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
