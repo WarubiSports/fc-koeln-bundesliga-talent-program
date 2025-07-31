@@ -3460,7 +3460,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             </div>
             
             <!-- Login Form -->
-            <div id="login-auth-tab" class="auth-tab-content active">
+            <div id="loginTab" class="auth-tab-content" style="display: block;">
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -3472,14 +3472,31 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <input type="password" id="password" value="ITP2024" required>
                     </div>
                     
-                    <button type="submit" class="btn">Sign In</button>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="button" class="btn btn-secondary" onclick="showForgotPassword()">Forgot Password?</button>
                 </form>
                 
                 <div id="loginMessage"></div>
             </div>
             
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordTab" class="auth-tab-content" style="display: none;">
+                <div class="forgot-password-form">
+                    <h3>Reset Your Password</h3>
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                    <form id="forgotPasswordForm">
+                        <div class="form-group">
+                            <label for="resetEmail">Email Address</label>
+                            <input type="email" id="resetEmail" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                        <button type="button" class="btn btn-secondary" onclick="showAuthTab('login')">Back to Login</button>
+                    </form>
+                </div>
+            </div>
+            
             <!-- Public Registration Tab -->
-            <div id="register-auth-tab" class="auth-tab-content">
+            <div id="registerTab" class="auth-tab-content" style="display: none;">
                 <div class="public-registration">
                     <p class="registration-intro">1.FC Köln Bundesliga Talent Program Registration</p>
                     
@@ -6040,9 +6057,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 html += '</div>';
                 html += '</div>';
                 html += '<div class="application-actions">';
-                html += '<button class="btn btn-success" onclick="approveApplication(\'' + app.id + '\')">✅ Approve</button>';
-                html += '<button class="btn btn-danger" onclick="rejectApplication(\'' + app.id + '\')">❌ Reject</button>';
-                html += '<button class="btn btn-secondary" onclick="viewApplicationDetails(\'' + app.id + '\')">👁️ Details</button>';
+                html += '<button class="btn btn-success" onclick="approveApplication(' + JSON.stringify(app.id) + ')">✅ Approve</button>';
+                html += '<button class="btn btn-danger" onclick="rejectApplication(' + JSON.stringify(app.id) + ')">❌ Reject</button>';
+                html += '<button class="btn btn-secondary" onclick="viewApplicationDetails(' + JSON.stringify(app.id) + ')">👁️ Details</button>';
                 html += '</div>';
                 html += '</div>';
             });
@@ -6123,29 +6140,54 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert(details);
         };
 
-        // Auth tab management (login/register)
-        window.showAuthTab = function(tabType) {
-            const loginTab = document.getElementById('login-auth-tab');
-            const registerTab = document.getElementById('register-auth-tab');
-            const tabButtons = document.querySelectorAll('.auth-tab-btn');
+
+
+        // Auth tab management (login/register) - CRITICAL FUNCTION
+        window.showAuthTab = function(tab) {
+            // Hide all auth tabs
+            document.querySelectorAll('.auth-tab-content').forEach(function(content) {
+                content.style.display = 'none';
+            });
             
-            // Remove active from all tabs and buttons
-            loginTab.classList.remove('active');
-            registerTab.classList.remove('active');
-            tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.auth-tab-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
             
             // Show selected tab
-            if (tabType === 'login') {
-                loginTab.classList.add('active');
-                event.target.classList.add('active');
-            } else if (tabType === 'register') {
-                registerTab.classList.add('active');
-                event.target.classList.add('active');
+            if (tab === 'login') {
+                const loginTab = document.getElementById('loginTab');
+                if (loginTab) {
+                    loginTab.style.display = 'block';
+                    const firstTabBtn = document.querySelector('.auth-tab-btn');
+                    if (firstTabBtn) firstTabBtn.classList.add('active');
+                }
+                // Hide forgot password tab if showing
+                const forgotTab = document.getElementById('forgotPasswordTab');
+                if (forgotTab) forgotTab.style.display = 'none';
+            } else if (tab === 'register') {
+                const registerTab = document.getElementById('registerTab');
+                if (registerTab) {
+                    registerTab.style.display = 'block';
+                    const secondTabBtn = document.querySelectorAll('.auth-tab-btn')[1];
+                    if (secondTabBtn) secondTabBtn.classList.add('active');
+                }
             }
-        }
+        };
+
+        // Forgot password function - CRITICAL FUNCTION
+        window.showForgotPassword = function() {
+            const loginTab = document.getElementById('loginTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
+            
+            if (loginTab) loginTab.style.display = 'none';
+            if (forgotTab) forgotTab.style.display = 'block';
+            
+            document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+        };
 
         // Public registration type management  
-        function showPublicRegistrationType(type) {
+        window.showPublicRegistrationType = function(type) {
             const playerForm = document.getElementById('public-player-registration');
             const staffForm = document.getElementById('public-staff-registration');
             const typeButtons = document.querySelectorAll('.public-registration-type-btn');
@@ -6158,12 +6200,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Show selected form
             if (type === 'player') {
                 playerForm.style.display = 'block';
-                event.target.classList.add('active');
+                if (event && event.target) event.target.classList.add('active');
             } else if (type === 'staff') {
                 staffForm.style.display = 'block';
-                event.target.classList.add('active');
+                if (event && event.target) event.target.classList.add('active');
             }
-        }
+        };
 
         // Registration type management
         function showRegistrationType(type) {
