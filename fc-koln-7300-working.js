@@ -9669,25 +9669,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert('Add New Player - Open detailed registration form for new team member');
         }
 
-        function editPlayer(playerId) {
-            // Populate modal with player data based on playerId
-            let playerData = getPlayerData(playerId);
-            
-            document.getElementById('editFirstName').value = playerData.firstName;
-            document.getElementById('editLastName').value = playerData.lastName;
-            document.getElementById('editPosition').value = playerData.position;
-            document.getElementById('editStatus').value = playerData.status;
-            document.getElementById('editAge').value = playerData.age;
-            document.getElementById('editNationality').value = playerData.nationality;
-            document.getElementById('editHouse').value = playerData.house;
-            document.getElementById('editRoom').value = playerData.room;
-            document.getElementById('editContract').value = playerData.contract;
-            document.getElementById('editNotes').value = playerData.notes || '';
-            
-            // Store current player ID for saving
-            document.getElementById('playerEditModal').setAttribute('data-player-id', playerId);
-            document.getElementById('playerEditModal').style.display = 'block';
-        }
+
 
         function getPlayerData(playerId) {
             // Mock data - in real implementation, this would fetch from database
@@ -11039,19 +11021,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             document.getElementById('playerEditModal').style.display = 'none';
         }
 
-        function savePlayerChanges() {
-            const formData = {
-                firstName: document.getElementById('editFirstName').value,
-                lastName: document.getElementById('editLastName').value,
-                position: document.getElementById('editPosition').value,
-                status: document.getElementById('editStatus').value,
-                age: document.getElementById('editAge').value,
-                nationality: document.getElementById('editNationality').value
-            };
-            
-            alert('Player changes saved successfully!\\n' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
-            closePlayerEditModal();
-        }
+
 
         // Add all missing admin function definitions
         function choreSystemControl() { alert('Chore System Control - Advanced chore management features'); }
