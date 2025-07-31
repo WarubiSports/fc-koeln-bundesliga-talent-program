@@ -9411,13 +9411,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 if (targetNav) targetNav.classList.add('active');
             };
 
-            window.logout = function() {
-                document.getElementById('authScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                sessionStorage.clear();
-                localStorage.removeItem('userRole');
-                console.log('User logged out successfully');
-            };
+            // Logout function already defined above, removing duplicate
             
             // Verification system - ensures all critical functions are accessible
             const criticalFunctions = ['showAuthTab', 'showForgotPassword', 'showPage', 'logout'];
