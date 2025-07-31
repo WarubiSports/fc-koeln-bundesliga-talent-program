@@ -8959,6 +8959,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert('Edit User: ' + userId + '\n\nThis would open a modal to edit user details:\n• Role assignment\n• Status changes\n• Contact information\n• Permissions');
         }
 
+        // Make essential functions globally accessible (CRITICAL FIX)
+        window.showAuthTab = function(tabId) {
+            const loginTab = document.getElementById('loginTab');
+            const forgotTab = document.getElementById('forgotPasswordTab');
+            
+            if (tabId === 'login') {
+                if (loginTab) loginTab.style.display = 'block';
+                if (forgotTab) forgotTab.style.display = 'none';
+            } else if (tabId === 'forgot') {
+                if (loginTab) loginTab.style.display = 'none';
+                if (forgotTab) forgotTab.style.display = 'block';
+            }
+            
+            document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.auth-tab-btn[onclick*="' + tabId + '"]')?.classList.add('active');
+        };
+
+        // Make showPage globally accessible
+        window.showPage = showPage;
+        
+        // Make login function globally accessible
+        window.login = login;
+
         // Make authentication functions globally accessible (removed duplicate)
 
         // Make forgot password function globally accessible
