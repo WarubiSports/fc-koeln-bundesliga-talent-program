@@ -8479,7 +8479,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         window.selectByHouse = function() {
             // Create a simple house selection interface
             const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
-            const house = prompt('Select house (enter 1, 2, or 3):\n\n1 - Widdersdorf 1\n2 - Widdersdorf 2\n3 - Widdersdorf 3');
+            const house = prompt('Select house (enter 1, 2, or 3):\\n\\n1 - Widdersdorf 1\\n2 - Widdersdorf 2\\n3 - Widdersdorf 3');
             
             if (house && (house === '1' || house === '2' || house === '3')) {
                 const targetHouse = 'Widdersdorf ' + house;
@@ -8646,16 +8646,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
             
             // Show success message with player info
-            let successMessage = 'Event "' + title + '" created successfully!\n\n' +
-                  'Date: ' + new Date(date).toLocaleDateString() + '\n' +
-                  'Time: ' + time + '\n' +
-                  'Type: ' + type + '\n' +
-                  'Location: ' + location + '\n\n';
+            let successMessage = 'Event "' + title + '" created successfully!\\n\\n' +
+                  'Date: ' + new Date(date).toLocaleDateString() + '\\n' +
+                  'Time: ' + time + '\\n' +
+                  'Type: ' + type + '\\n' +
+                  'Location: ' + location + '\\n\\n';
             
             if (attendance === 'selected' && selectedPlayers.length > 0) {
                 successMessage += 'Assigned Players (' + selectedPlayers.length + '):';
                 selectedPlayers.forEach(player => {
-                    successMessage += '\n• ' + player.name;
+                    successMessage += '\\n• ' + player.name;
                 });
             } else if (attendance === 'all') {
                 successMessage += 'Attendance: All Players Required';
@@ -8664,7 +8664,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
             
             if (recurrence !== 'none') {
-                successMessage += '\n\nRecurring: ' + recurrence;
+                successMessage += '\\n\\nRecurring: ' + recurrence;
                 if (recurrenceEndDate) {
                     successMessage += ' until ' + new Date(recurrenceEndDate).toLocaleDateString();
                 }
@@ -8764,7 +8764,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 const event = window.calendarEvents[eventIndex];
                 
                 if (event.isRecurring) {
-                    const deleteAll = confirm('This is a recurring event. Delete all occurrences?\n\nClick OK to delete all, Cancel to delete only this occurrence.');
+                    const deleteAll = confirm('This is a recurring event. Delete all occurrences?\\n\\nClick OK to delete all, Cancel to delete only this occurrence.');
                     
                     if (deleteAll) {
                         // Delete all occurrences
@@ -9100,30 +9100,30 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // For now, just show event details - full edit functionality could be added later
             const event = window.calendarEvents.find(e => e.id === eventId);
             if (event) {
-                let details = 'Event Details:\n\n';
-                details += 'Title: ' + event.title + '\n';
-                details += 'Type: ' + event.type + '\n';
-                details += 'Date: ' + new Date(event.date).toLocaleDateString() + '\n';
-                details += 'Time: ' + event.time + '\n';
-                details += 'Location: ' + (event.location || 'Not specified') + '\n';
-                details += 'Duration: ' + event.duration + ' minutes\n';
-                details += 'Priority: ' + event.priority + '\n';
+                let details = 'Event Details:\\n\\n';
+                details += 'Title: ' + event.title + '\\n';
+                details += 'Type: ' + event.type + '\\n';
+                details += 'Date: ' + new Date(event.date).toLocaleDateString() + '\\n';
+                details += 'Time: ' + event.time + '\\n';
+                details += 'Location: ' + (event.location || 'Not specified') + '\\n';
+                details += 'Duration: ' + event.duration + ' minutes\\n';
+                details += 'Priority: ' + event.priority + '\\n';
                 
                 if (event.selectedPlayers && event.selectedPlayers.length > 0) {
-                    details += '\nAssigned Players:\n';
+                    details += '\\nAssigned Players:\\n';
                     event.selectedPlayers.forEach(player => {
-                        details += '• ' + player.name + '\n';
+                        details += '• ' + player.name + '\\n';
                     });
                 }
                 
                 if (event.recurrence && event.recurrence.type !== 'none') {
-                    details += '\nRecurring: ' + event.recurrence.type;
+                    details += '\\nRecurring: ' + event.recurrence.type;
                     if (event.recurrence.endDate) {
                         details += ' until ' + new Date(event.recurrence.endDate).toLocaleDateString();
                     }
                 }
                 
-                alert(details + '\n\n(Full editing functionality can be added in future updates)');
+                alert(details + '\\n\\n(Full editing functionality can be added in future updates)');
             }
         };
 
@@ -9526,111 +9526,111 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Full Admin Control Functions
         function fullUserControl() {
-            alert('FULL USER CONTROL ACTIVATED\n\nAdmin now has complete control over:\n• All user accounts\n• Account creation and deletion\n• Profile modifications\n• Access level changes\n• Password resets\n\nAll user management operations are now available.');
+            alert('FULL USER CONTROL ACTIVATED\\n\\nAdmin now has complete control over:\\n• All user accounts\\n• Account creation and deletion\\n• Profile modifications\\n• Access level changes\\n• Password resets\\n\\nAll user management operations are now available.');
         }
 
         function passwordManagement() {
             if(confirm('Enable global password management? This will allow you to reset any user password and view security information.')) {
-                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\n\nYou can now:\n• Reset any user password\n• Force password changes\n• View login history\n• Manage security settings\n• Access encrypted data');
+                alert('GLOBAL PASSWORD MANAGEMENT ENABLED\\n\\nYou can now:\\n• Reset any user password\\n• Force password changes\\n• View login history\\n• Manage security settings\\n• Access encrypted data');
             }
         }
 
         function sessionControl() {
             if(confirm('Force logout all users? This will disconnect everyone from the system immediately.')) {
-                alert('ALL USER SESSIONS TERMINATED\n\nAll users have been logged out except administrators.\nUsers will need to log in again to access the system.');
+                alert('ALL USER SESSIONS TERMINATED\\n\\nAll users have been logged out except administrators.\\nUsers will need to log in again to access the system.');
             }
         }
 
         function permissionOverride() {
             if(confirm('Override all user permissions? This gives admin access to everything regardless of normal restrictions.')) {
-                alert('PERMISSION OVERRIDE ACTIVATED\n\nAdmin permissions now bypass all restrictions:\n• Access to all modules\n• Database read/write access\n• Medical records access\n• Financial data access\n• Emergency protocols');
+                alert('PERMISSION OVERRIDE ACTIVATED\\n\\nAdmin permissions now bypass all restrictions:\\n• Access to all modules\\n• Database read/write access\\n• Medical records access\\n• Financial data access\\n• Emergency protocols');
             }
         }
 
         function lockdownMode() {
             if(confirm('Enable system lockdown? This will restrict access for all non-admin users.')) {
-                alert('SYSTEM LOCKDOWN ACTIVATED\n\nSecurity measures engaged:\n• Non-admin access restricted\n• All sessions monitored\n• Activity logging increased\n• Emergency protocols ready');
+                alert('SYSTEM LOCKDOWN ACTIVATED\\n\\nSecurity measures engaged:\\n• Non-admin access restricted\\n• All sessions monitored\\n• Activity logging increased\\n• Emergency protocols ready');
             }
         }
 
         function databaseFullAccess() {
             if(confirm('Enable direct database access? This provides complete database control.')) {
-                alert('DATABASE FULL ACCESS GRANTED\n\nDirect database control enabled:\n• SQL query execution\n• Table modifications\n• Data export/import\n• Schema changes\n• Backup/restore operations');
+                alert('DATABASE FULL ACCESS GRANTED\\n\\nDirect database control enabled:\\n• SQL query execution\\n• Table modifications\\n• Data export/import\\n• Schema changes\\n• Backup/restore operations');
             }
         }
 
         function backupManagement() {
-            alert('BACKUP MANAGEMENT SYSTEM\n\nFull backup control available:\n• Create instant backups\n• Schedule automated backups\n• Restore from any backup point\n• Manage backup storage\n• Verify backup integrity');
+            alert('BACKUP MANAGEMENT SYSTEM\\n\\nFull backup control available:\\n• Create instant backups\\n• Schedule automated backups\\n• Restore from any backup point\\n• Manage backup storage\\n• Verify backup integrity');
         }
 
         function dataExportAll() {
             if(confirm('Export all system data? This will create a complete data export.')) {
-                alert('COMPLETE DATA EXPORT INITIATED\n\nExporting all system data:\n• User profiles and authentication\n• Player records and performance\n• Financial and administrative data\n• System logs and analytics\n\nExport will be available for download shortly.');
+                alert('COMPLETE DATA EXPORT INITIATED\\n\\nExporting all system data:\\n• User profiles and authentication\\n• Player records and performance\\n• Financial and administrative data\\n• System logs and analytics\\n\\nExport will be available for download shortly.');
             }
         }
 
         function emergencyShutdown() {
             if(confirm('EMERGENCY SHUTDOWN - Are you sure? This will immediately shut down the entire system.')) {
                 if(confirm('FINAL WARNING: This will disconnect all users and stop all services. Continue?')) {
-                    alert('EMERGENCY SHUTDOWN INITIATED\n\nSystem shutdown in progress:\n• All user sessions terminated\n• Services stopping\n• Data safely stored\n• Emergency contacts notified');
+                    alert('EMERGENCY SHUTDOWN INITIATED\\n\\nSystem shutdown in progress:\\n• All user sessions terminated\\n• Services stopping\\n• Data safely stored\\n• Emergency contacts notified');
                 }
             }
         }
 
         function massPlayerUpdate() {
-            alert('MASS PLAYER UPDATE TOOLS\n\nBulk operations available:\n• Update multiple player profiles\n• Change house assignments\n• Modify contract terms\n• Update medical information\n• Batch status changes');
+            alert('MASS PLAYER UPDATE TOOLS\\n\\nBulk operations available:\\n• Update multiple player profiles\\n• Change house assignments\\n• Modify contract terms\\n• Update medical information\\n• Batch status changes');
         }
 
         function medicalRecordsFull() {
             if(confirm('Access complete medical records? This includes sensitive health information.')) {
-                alert('MEDICAL RECORDS FULL ACCESS GRANTED\n\nComplete medical system access:\n• All player health records\n• Injury histories\n• Treatment plans\n• Medical clearances\n• Emergency medical information');
+                alert('MEDICAL RECORDS FULL ACCESS GRANTED\\n\\nComplete medical system access:\\n• All player health records\\n• Injury histories\\n• Treatment plans\\n• Medical clearances\\n• Emergency medical information');
             }
         }
 
         function financialRecords() {
             if(confirm('Access full financial records? This includes sensitive financial data.')) {
-                alert('FINANCIAL RECORDS ACCESS GRANTED\n\nComplete financial access:\n• Player contracts and salaries\n• Program budgets\n• Expense tracking\n• Revenue analysis\n• Financial reporting');
+                alert('FINANCIAL RECORDS ACCESS GRANTED\\n\\nComplete financial access:\\n• Player contracts and salaries\\n• Program budgets\\n• Expense tracking\\n• Revenue analysis\\n• Financial reporting');
             }
         }
 
         function disciplinaryActions() {
-            alert('DISCIPLINARY ACTION TOOLS\n\nDisciplinary management:\n• Issue warnings and sanctions\n• Suspend player access\n• Implement corrective measures\n• Track disciplinary history\n• Generate reports');
+            alert('DISCIPLINARY ACTION TOOLS\\n\\nDisciplinary management:\\n• Issue warnings and sanctions\\n• Suspend player access\\n• Implement corrective measures\\n• Track disciplinary history\\n• Generate reports');
         }
 
         function facilityFullControl() {
-            alert('FACILITY MANAGEMENT CONTROL\n\nComplete facility control:\n• House assignments\n• Room allocations\n• Facility maintenance\n• Security systems\n• Emergency protocols');
+            alert('FACILITY MANAGEMENT CONTROL\\n\\nComplete facility control:\\n• House assignments\\n• Room allocations\\n• Facility maintenance\\n• Security systems\\n• Emergency protocols');
         }
 
         function emergencyProtocols() {
-            alert('EMERGENCY PROTOCOLS ACTIVATED\n\nEmergency systems ready:\n• Medical emergency response\n• Evacuation procedures\n• Security lockdown\n• Emergency contacts\n• Crisis management');
+            alert('EMERGENCY PROTOCOLS ACTIVATED\\n\\nEmergency systems ready:\\n• Medical emergency response\\n• Evacuation procedures\\n• Security lockdown\\n• Emergency contacts\\n• Crisis management');
         }
 
         function factoryReset() {
             if(confirm('DANGER: Factory reset will delete ALL data permanently. Are you absolutely sure?')) {
                 if(confirm('FINAL WARNING: This action cannot be undone. All players, staff, and system data will be lost. Continue?')) {
-                    alert('FACTORY RESET INITIATED\n\nSystem reset in progress:\n• All user data deleted\n• Database cleared\n• System restored to defaults\n• Logs archived');
+                    alert('FACTORY RESET INITIATED\\n\\nSystem reset in progress:\\n• All user data deleted\\n• Database cleared\\n• System restored to defaults\\n• Logs archived');
                 }
             }
         }
 
         function emergencyLockdown() {
             if(confirm('ACTIVATE EMERGENCY LOCKDOWN? This will lock all facilities and restrict all access.')) {
-                alert('🚨 EMERGENCY LOCKDOWN ACTIVATED 🚨\n\nSecurity measures engaged:\n• All facilities locked\n• Emergency services contacted\n• Staff and authorities notified\n• Security protocols active');
+                alert('🚨 EMERGENCY LOCKDOWN ACTIVATED 🚨\\n\\nSecurity measures engaged:\\n• All facilities locked\\n• Emergency services contacted\\n• Staff and authorities notified\\n• Security protocols active');
             }
         }
 
         function emergencyEvacuation() {
             if(confirm('INITIATE EVACUATION PROTOCOL? This will trigger facility evacuation procedures.')) {
-                alert('🚨 EVACUATION PROTOCOL INITIATED 🚨\n\nEvacuation in progress:\n• Alarm systems activated\n• Emergency exits unlocked\n• Evacuation routes highlighted\n• Emergency services notified');
+                alert('🚨 EVACUATION PROTOCOL INITIATED 🚨\\n\\nEvacuation in progress:\\n• Alarm systems activated\\n• Emergency exits unlocked\\n• Evacuation routes highlighted\\n• Emergency services notified');
             }
         }
 
         function emergencyMedical() {
-            alert('🏥 MEDICAL EMERGENCY PROTOCOL 🏥\n\nMedical emergency response:\n• Emergency medical services contacted\n• On-site medical staff alerted\n• Medical emergency kit locations\n• Hospital contact information\n• Player medical records accessible');
+            alert('🏥 MEDICAL EMERGENCY PROTOCOL 🏥\\n\\nMedical emergency response:\\n• Emergency medical services contacted\\n• On-site medical staff alerted\\n• Medical emergency kit locations\\n• Hospital contact information\\n• Player medical records accessible');
         }
 
         function emergencyContact() {
-            alert('📞 EMERGENCY CONTACTS 📞\n\nEmergency contact system:\n• Fire Department: 112\n• Police: 110\n• Medical Emergency: 112\n• FC Köln Security: +49-221-XXX-XXXX\n• Program Director: +49-221-XXX-XXXX');
+            alert('📞 EMERGENCY CONTACTS 📞\\n\\nEmergency contact system:\\n• Fire Department: 112\\n• Police: 110\\n• Medical Emergency: 112\\n• FC Köln Security: +49-221-XXX-XXXX\\n• Program Director: +49-221-XXX-XXXX');
         }
 
         function refreshSystemStatus() {
@@ -9759,7 +9759,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             };
 
             // Display success message
-            alert('Chore "' + title + '" has been created successfully!\n\nAssigned to: ' + assignmentText + '\nHouse: ' + house + '\nDeadline: ' + chore.deadline + '\nPoints: ' + points);
+            alert('Chore "' + title + '" has been created successfully!\\n\\nAssigned to: ' + assignmentText + '\\nHouse: ' + house + '\\nDeadline: ' + chore.deadline + '\\nPoints: ' + points);
             
             // Clear the form
             clearChoreForm();
@@ -9854,7 +9854,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // View house details
         function viewHouseDetails(houseId) {
-            alert('Viewing detailed information for ' + houseId.replace(/\d/, ' ') + '.\n\nThis would show:\n- Individual player assignments\n- Completion rates\n- Point rankings\n- Chore history');
+            alert('Viewing detailed information for ' + houseId.replace(/\\d/, ' ') + '.\\n\\nThis would show:\\n- Individual player assignments\\n- Completion rates\\n- Point rankings\\n- Chore history');
         }
 
         // Update chore assignments display
@@ -10078,17 +10078,17 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const player = playerStorage.find(p => p.id === playerId);
             if (!player) return;
 
-            alert('Player Details:\n\n' +
-                'Name: ' + player.firstName + ' ' + player.lastName + '\n' +
-                'Position: ' + player.position + '\n' +
-                'Age: ' + player.age + '\n' +
-                'Nationality: ' + player.nationality + '\n' +
-                'House: ' + player.house + ' (Room ' + player.room + ')\n' +
-                'Contract: ' + player.contractPeriod + '\n' +
-                'Status: ' + player.status + '\n' +
-                'Phone: ' + player.phoneNumber + '\n' +
-                'Emergency Contact: ' + player.emergencyContact + '\n' +
-                'Medical Info: ' + player.medicalInfo + '\n' +
+            alert('Player Details:\\n\\n' +
+                'Name: ' + player.firstName + ' ' + player.lastName + '\\n' +
+                'Position: ' + player.position + '\\n' +
+                'Age: ' + player.age + '\\n' +
+                'Nationality: ' + player.nationality + '\\n' +
+                'House: ' + player.house + ' (Room ' + player.room + ')\\n' +
+                'Contract: ' + player.contractPeriod + '\\n' +
+                'Status: ' + player.status + '\\n' +
+                'Phone: ' + player.phoneNumber + '\\n' +
+                'Emergency Contact: ' + player.emergencyContact + '\\n' +
+                'Medical Info: ' + player.medicalInfo + '\\n' +
                 'Notes: ' + player.specialNotes);
         }
 
@@ -10383,7 +10383,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
                 
                 if (currentPlayerOrder.total > currentPlayerOrder.maxBudget) {
-                    alert('Cannot submit order: Budget limit of €35.00 exceeded.\nCurrent total: €' + currentPlayerOrder.total.toFixed(2));
+                    alert('Cannot submit order: Budget limit of €35.00 exceeded.\\nCurrent total: €' + currentPlayerOrder.total.toFixed(2));
                     return;
                 }
                 
@@ -10393,11 +10393,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
                 
                 const deliveryDay = canOrderTuesday ? 'Tuesday' : 'Friday';
-                const orderSummary = 'Personal Order Submitted Successfully!\n\n' +
-                                   'Player: ' + currentPlayerOrder.playerName + '\n' +
-                                   'Items: ' + currentPlayerOrder.items.length + '\n' +
-                                   'Total: €' + currentPlayerOrder.total.toFixed(2) + ' / €35.00\n' +
-                                   'Delivery: ' + deliveryDay + '\n\n' +
+                const orderSummary = 'Personal Order Submitted Successfully!\\n\\n' +
+                                   'Player: ' + currentPlayerOrder.playerName + '\\n' +
+                                   'Items: ' + currentPlayerOrder.items.length + '\\n' +
+                                   'Total: €' + currentPlayerOrder.total.toFixed(2) + ' / €35.00\\n' +
+                                   'Delivery: ' + deliveryDay + '\\n\\n' +
                                    'Your order is private and only visible to you.';
                 
                 alert(orderSummary);
@@ -10451,16 +10451,16 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         };
 
         window.exportHouseOrders = function() {
-            alert('Export House Orders\n\nGenerating comprehensive order export with:\n• Individual player orders grouped by house\n• Consolidated shopping lists per house\n• Budget totals and delivery schedules\n\nExport file will be saved as: house-orders-' + new Date().toISOString().split('T')[0] + '.csv');
+            alert('Export House Orders\\n\\nGenerating comprehensive order export with:\\n• Individual player orders grouped by house\\n• Consolidated shopping lists per house\\n• Budget totals and delivery schedules\\n\\nExport file will be saved as: house-orders-' + new Date().toISOString().split('T')[0] + '.csv');
         };
 
         window.printShoppingLists = function() {
-            alert('Print Shopping Lists\n\nPreparing printable shopping lists:\n• Widdersdorf 1: 127.85€ (4 players)\n• Widdersdorf 2: 89.65€ (3 players)\n• Widdersdorf 3: 61.30€ (2 players)\n\nTotal across all houses: 278.80€');
+            alert('Print Shopping Lists\\n\\nPreparing printable shopping lists:\\n• Widdersdorf 1: 127.85€ (4 players)\\n• Widdersdorf 2: 89.65€ (3 players)\\n• Widdersdorf 3: 61.30€ (2 players)\\n\\nTotal across all houses: 278.80€');
         };
 
         window.processAllOrders = function() {
-            if (confirm('Process all house orders for delivery?\n\nThis will:\n• Submit orders for all houses\n• Generate shopping lists for staff\n• Send confirmations to all players\n\nContinue?')) {
-                alert('All House Orders Processed Successfully!\n\n✅ 9 individual orders submitted\n✅ 3 house shopping lists generated\n✅ Delivery scheduled for Tuesday & Friday\n✅ Player confirmations sent\n\nTotal processed: €278.80');
+            if (confirm('Process all house orders for delivery?\\n\\nThis will:\\n• Submit orders for all houses\\n• Generate shopping lists for staff\\n• Send confirmations to all players\\n\\nContinue?')) {
+                alert('All House Orders Processed Successfully!\\n\\n✅ 9 individual orders submitted\\n✅ 3 house shopping lists generated\\n✅ Delivery scheduled for Tuesday & Friday\\n✅ Player confirmations sent\\n\\nTotal processed: €278.80');
             }
         };
 
@@ -10782,7 +10782,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 nationality: document.getElementById('editNationality').value
             };
             
-            alert('Player changes saved successfully!\n' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
+            alert('Player changes saved successfully!\\n' + 'Updated: ' + formData.firstName + ' ' + formData.lastName);
             closePlayerEditModal();
         }
 
