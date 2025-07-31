@@ -7814,11 +7814,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     <h3>⚙️ Essential Settings</h3>
                     <div class="settings-grid">
                         <div class="setting-item">
-                            <label>Auto-approve player registrations</label>
-                            <input type="checkbox" class="setting-toggle">
+                            <label>System monitoring enabled</label>
+                            <input type="checkbox" class="setting-toggle" checked>
                         </div>
                         <div class="setting-item">
-                            <label>Email notifications enabled</label>
+                            <label>Backup system active</label>
                             <input type="checkbox" class="setting-toggle" checked>
                         </div>
                     </div>
@@ -7887,56 +7887,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     </div>
                 </div>
                 
-                <!-- System Analytics -->
-                <div class="form-section">
-                    <h3>📊 System Analytics</h3>
-                    <div class="analytics-overview">
-                        <div class="analytics-stat">
-                            <h4>Total Registrations</h4>
-                            <div class="stat-number">31</div>
-                            <small>This month: +7</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>Active Sessions</h4>
-                            <div class="stat-number">18</div>
-                            <small>Currently online</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>System Uptime</h4>
-                            <div class="stat-number">99.8%</div>
-                            <small>Last 30 days</small>
-                        </div>
-                        <div class="analytics-stat">
-                            <h4>Data Storage</h4>
-                            <div class="stat-number">2.4GB</div>
-                            <small>Used of 10GB</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- System Settings -->
-                <div class="form-section">
-                    <h3>⚙️ System Configuration</h3>
-                    <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>Auto-approve player registrations</label>
-                            <input type="checkbox" class="setting-toggle">
-                        </div>
-                        <div class="setting-item">
-                            <label>Email notifications enabled</label>
-                            <input type="checkbox" class="setting-toggle" checked>
-                        </div>
-                        <div class="setting-item">
-                            <label>House competition active</label>
-                            <input type="checkbox" class="setting-toggle" checked>
-                        </div>
-                        <div class="setting-item">
-                            <label>AI chore rotation enabled</label>
-                            <input type="checkbox" class="setting-toggle" checked>
-                        </div>
-                    </div>
-                    <button class="btn">Save Settings</button>
-                </div>
+
                 
 
             </div>
