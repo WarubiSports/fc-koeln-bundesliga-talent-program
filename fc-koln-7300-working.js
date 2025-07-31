@@ -8583,13 +8583,40 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         };
 
         window.togglePlayerSelection = function() {
-            const attendanceType = document.getElementById('eventAttendance').value;
-            const playerSection = document.getElementById('playerSelectionSection');
+            // Check if this is being called from event creation modal
+            const eventAttendance = document.getElementById('eventAttendance');
+            if (eventAttendance) {
+                const attendanceType = eventAttendance.value;
+                const playerSection = document.getElementById('playerSelectionSection');
+                
+                if (attendanceType === 'selected') {
+                    if (playerSection) playerSection.style.display = 'block';
+                } else {
+                    if (playerSection) playerSection.style.display = 'none';
+                }
+                return;
+            }
             
-            if (attendanceType === 'selected') {
-                playerSection.style.display = 'block';
-            } else {
-                playerSection.style.display = 'none';
+            // Check if this is being called from chore assignment
+            const choreAssignmentType = document.getElementById('choreAssignmentType');
+            if (choreAssignmentType) {
+                const assignmentType = choreAssignmentType.value;
+                const individualPlayerRow = document.getElementById('individualPlayerRow');
+                const multiplePlayersRow = document.getElementById('multiplePlayersRow');
+                
+                // Hide all selection rows first
+                if (individualPlayerRow) individualPlayerRow.style.display = 'none';
+                if (multiplePlayersRow) multiplePlayersRow.style.display = 'none';
+                
+                // Show appropriate selection based on type
+                if (assignmentType === 'individual') {
+                    populateIndividualPlayerDropdown();
+                    if (individualPlayerRow) individualPlayerRow.style.display = 'flex';
+                } else if (assignmentType === 'multiple') {
+                    populateMultiplePlayersCheckboxes();
+                    if (multiplePlayersRow) multiplePlayersRow.style.display = 'block';
+                    updateSelectedCount();
+                }
             }
         };
 
@@ -9840,29 +9867,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             alert('System status refreshed - All metrics updated with real-time data');
         }
 
-        // Toggle player selection based on assignment type
-        function togglePlayerSelection() {
-            const assignmentType = document.getElementById('choreAssignmentType').value;
-            const individualPlayerRow = document.getElementById('individualPlayerRow');
-            const multiplePlayersRow = document.getElementById('multiplePlayersRow');
-            
-            // Hide all selection rows first
-            individualPlayerRow.style.display = 'none';
-            multiplePlayersRow.style.display = 'none';
-            
-            // Show appropriate selection based on type
-            if (assignmentType === 'individual') {
-                populateIndividualPlayerDropdown();
-                individualPlayerRow.style.display = 'flex';
-            } else if (assignmentType === 'multiple') {
-                populateMultiplePlayersCheckboxes();
-                multiplePlayersRow.style.display = 'block';
-                updateSelectedCount();
-            }
-        }
+        // Remove duplicate function - using window.togglePlayerSelection instead
 
         // Populate individual player dropdown
-        function populateIndividualPlayerDropdown() {
+        window.populateIndividualPlayerDropdown = function() {
             const dropdown = document.getElementById('individualPlayer');
             if (!dropdown) return;
             
@@ -9880,8 +9888,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         }
 
-        // Populate multiple players checkboxes
-        function populateMultiplePlayersCheckboxes() {
+        // Populate multiple players checkboxes  
+        window.populateMultiplePlayersCheckboxes = function() {
             const container = document.getElementById('playersCheckboxGrid');
             if (!container) return;
             
@@ -9908,35 +9916,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     container.appendChild(label);
                 });
             }
-        }
+        };
 
         // Select all players
-        function selectAllPlayers() {
+        window.selectAllPlayers = function() {
             const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = true;
             });
             updateSelectedCount();
-        }
+        };
 
         // Clear all player selections
-        function clearAllPlayers() {
+        window.clearAllPlayers = function() {
             const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = false;
             });
             updateSelectedCount();
-        }
+        };
 
         // Update selected count display
-        function updateSelectedCount() {
+        window.updateSelectedCount = function() {
             const checkboxes = document.querySelectorAll('input[name="selectedPlayers"]:checked');
             const count = checkboxes.length;
             const countDisplay = document.getElementById('selectedCount');
             if (countDisplay) {
                 countDisplay.textContent = count + ' player' + (count === 1 ? '' : 's') + ' selected';
             }
-        }
+        };
 
         // Add event listeners to checkboxes for real-time count updates
         document.addEventListener('DOMContentLoaded', function() {
