@@ -27,8 +27,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             color: #334155;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow: auto;
         }
         
         /* Header */
