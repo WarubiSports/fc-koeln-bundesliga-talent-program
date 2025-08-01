@@ -5562,8 +5562,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             <!-- Login/Registration Tabs -->
             <div class="auth-tabs">
-                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
-                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
+                <button class="auth-tab-btn active" id="loginTabBtn" onclick="showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" id="registerTabBtn" onclick="showAuthTab('register')">Join Program</button>
             </div>
             
             <!-- Login Form -->
@@ -8475,6 +8475,28 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
+            // Setup auth tab buttons with additional event listeners
+            const loginBtn = document.getElementById('loginTabBtn');
+            const registerBtn = document.getElementById('registerTabBtn');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Login button clicked via event listener');
+                    window.showAuthTab('login');
+                });
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Register button clicked via event listener');
+                    window.showAuthTab('register');
+                });
+            }
+            
+            console.log('Auth tab listeners setup completed');
+            
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
