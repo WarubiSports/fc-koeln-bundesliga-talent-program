@@ -25,6 +25,10 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f8fafc;
             color: #334155;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
         }
         
         /* Header */
@@ -5301,7 +5305,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: hidden;
         }
         
@@ -5328,6 +5336,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             z-index: 2;
             transform: translateY(0);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: auto;
         }
         
         .login-card:hover {
@@ -5508,6 +5517,36 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         .login-card .forgot-password-btn:hover {
             color: #b91c1c;
             background: rgba(220, 38, 38, 0.05);
+        }
+        
+        /* Responsive centering adjustments */
+        @media (max-width: 640px) {
+            .login-container {
+                padding: 15px;
+            }
+            
+            .login-card {
+                padding: 40px 30px;
+                max-width: 100%;
+            }
+            
+            .fc-koln-logo {
+                height: 100px;
+            }
+            
+            .login-card h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* Ensure login page takes full viewport */
+        #loginPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
         }
     </style>
 </head>
