@@ -5302,15 +5302,12 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             min-height: 100vh;
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
+            position: relative;
+            overflow-y: auto;
+            padding-top: 50px;
         }
         
         .login-container::before {
