@@ -8414,25 +8414,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         // Public registration type management  
-        function showPublicRegistrationType(type) {
+        window.showPublicRegistrationType = function(type) {
+            console.log('showPublicRegistrationType called with:', type);
+            
             const playerForm = document.getElementById('public-player-registration');
             const staffForm = document.getElementById('public-staff-registration');
             const typeButtons = document.querySelectorAll('.public-registration-type-btn');
             
             // Remove active from all forms and buttons
-            playerForm.style.display = 'none';
-            staffForm.style.display = 'none';
+            if (playerForm) playerForm.style.display = 'none';
+            if (staffForm) staffForm.style.display = 'none';
             typeButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected form
             if (type === 'player') {
-                playerForm.style.display = 'block';
-                event.target.classList.add('active');
+                if (playerForm) playerForm.style.display = 'block';
+                const playerBtn = document.querySelector('[onclick*="showPublicRegistrationType(\'player\')"]');
+                if (playerBtn) playerBtn.classList.add('active');
             } else if (type === 'staff') {
-                staffForm.style.display = 'block';
-                event.target.classList.add('active');
+                if (staffForm) staffForm.style.display = 'block';
+                const staffBtn = document.querySelector('[onclick*="showPublicRegistrationType(\'staff\')"]');
+                if (staffBtn) staffBtn.classList.add('active');
             }
-        }
+        };
 
         // Registration type management
         function showRegistrationType(type) {
@@ -9360,21 +9364,35 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             console.log('Initializing Authentication System - Permanent Stabilization Protocol');
             
             // Essential authentication functions - MUST remain globally accessible
-            window.showAuthTab = function(tab) {
-                const loginTab = document.getElementById('loginTab');
-                const forgotTab = document.getElementById('forgotPasswordTab');
+            window.showAuthTab = function(tabType) {
+                console.log('showAuthTab called with:', tabType);
                 
-                if (tab === 'login') {
+                // Get all auth tabs and buttons
+                const loginTab = document.getElementById('loginTab');
+                const registerTab = document.getElementById('registerTab');
+                const forgotTab = document.getElementById('forgotPasswordTab');
+                const tabButtons = document.querySelectorAll('.auth-tab-btn');
+                
+                // Hide all tabs first
+                if (loginTab) loginTab.style.display = 'none';
+                if (registerTab) registerTab.style.display = 'none';
+                if (forgotTab) forgotTab.style.display = 'none';
+                
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Show the requested tab and activate button
+                if (tabType === 'login') {
                     if (loginTab) loginTab.style.display = 'block';
-                    if (forgotTab) forgotTab.style.display = 'none';
-                } else if (tab === 'forgot') {
-                    if (loginTab) loginTab.style.display = 'none';
+                    const loginBtn = document.querySelector('[onclick*="showAuthTab(\'login\')"]');
+                    if (loginBtn) loginBtn.classList.add('active');
+                } else if (tabType === 'register') {
+                    if (registerTab) registerTab.style.display = 'block';
+                    const registerBtn = document.querySelector('[onclick*="showAuthTab(\'register\')"]');
+                    if (registerBtn) registerBtn.classList.add('active');
+                } else if (tabType === 'forgot') {
                     if (forgotTab) forgotTab.style.display = 'block';
                 }
-                
-                document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
-                const activeBtn = document.querySelector('[onclick*="showAuthTab"]');
-                if (activeBtn) activeBtn.classList.add('active');
             };
 
             window.showForgotPassword = function() {
