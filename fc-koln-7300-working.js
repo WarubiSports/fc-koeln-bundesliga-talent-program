@@ -5829,6 +5829,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                             loginTime: new Date().toISOString()
                         }));
                         
+                        console.log('Login successful for:', userData.email, 'Role:', userData.role);
                         showMainApp();
                         
                     } else {
@@ -5840,9 +5841,26 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Show main application
         function showMainApp() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userName').textContent = 'Welcome, ' + currentUser.name;
+            console.log('showMainApp called for user:', currentUser);
+            
+            const loginPage = document.getElementById('loginPage');
+            const mainApp = document.getElementById('mainApp');
+            const userName = document.getElementById('userName');
+            
+            console.log('Elements found:', { loginPage: !!loginPage, mainApp: !!mainApp, userName: !!userName });
+            
+            if (loginPage) {
+                loginPage.style.display = 'none';
+                console.log('Login page hidden');
+            }
+            if (mainApp) {
+                mainApp.style.display = 'block';
+                console.log('Main app shown');
+            }
+            if (userName && currentUser) {
+                userName.textContent = 'Welcome, ' + currentUser.name;
+                console.log('Username set to:', currentUser.name);
+            }
             
             // Show admin-only navigation items for admins
             const adminOnlyItems = document.querySelectorAll('.admin-only');
