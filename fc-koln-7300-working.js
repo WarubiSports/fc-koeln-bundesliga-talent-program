@@ -8599,13 +8599,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 // Show appropriate selection based on type
                 if (assignmentType === 'individual') {
                     console.log('Showing individual player dropdown');
-                    populateIndividualPlayerDropdown();
+                    window.populateIndividualPlayerDropdown();
                     if (individualPlayerRow) individualPlayerRow.style.display = 'flex';
                 } else if (assignmentType === 'multiple') {
                     console.log('Showing multiple players checkboxes');
-                    populateMultiplePlayersCheckboxes();
+                    window.populateMultiplePlayersCheckboxes();
                     if (multiplePlayersRow) multiplePlayersRow.style.display = 'block';
-                    updateSelectedCount();
+                    window.updateSelectedCount();
                 }
                 return;
             }
