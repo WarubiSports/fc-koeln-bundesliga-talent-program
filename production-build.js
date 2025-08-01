@@ -10,8 +10,8 @@ if (!fs.existsSync('dist')) {
     fs.mkdirSync('dist');
 }
 
-// Copy our working app.js to the expected production location
-fs.copyFileSync('app.js', 'dist/index.js');
+// Copy our working fc-koln-7300-working.js to the expected production location
+fs.copyFileSync('fc-koln-7300-working.js', 'dist/index.js');
 
 // Create the expected production package.json
 const productionPackage = {

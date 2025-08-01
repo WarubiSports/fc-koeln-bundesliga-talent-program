@@ -34,6 +34,7 @@ Preferred communication style: Simple, everyday language.
 ### System Design Choices
 - **Monorepo Structure**: Clear separation between client, server, and shared type definitions.
 - **Authentication Stability**: A modular architecture with `auth-core.js` for immutable authentication functions, `features-module.js` for isolated feature functions, and `system-monitor.js` for continuous integrity checks and recovery. This includes non-writable, non-configurable function properties and multi-layered integrity verification.
+- **Production Build**: Fixed production deployment to use `fc-koln-7300-working.js` instead of `app.js` to ensure deployed app matches development preview exactly (January 2025).
 - **Configuration**: Environment variables for critical settings, separate configurations for development and production, and TypeScript path mapping.
 
 ## External Dependencies
