@@ -5301,42 +5301,213 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="80" r="2.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1.5" fill="white" opacity="0.1"/></svg>') repeat;
+            z-index: 1;
         }
         
         .login-card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3), 0 16px 32px rgba(0, 0, 0, 0.2);
             padding: 60px 50px;
             width: 100%;
             max-width: 480px;
             text-align: center;
+            position: relative;
+            z-index: 2;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35), 0 20px 40px rgba(0, 0, 0, 0.25);
         }
         
         .login-logo {
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
         }
 
         .fc-koln-logo {
-            height: 120px;
+            height: 130px;
             width: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .fc-koln-logo:hover {
+            transform: scale(1.05);
         }
 
         .login-card h1 {
             color: #dc2626;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             line-height: 1.2;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .login-subtitle {
-            color: #666666;
-            font-size: 18px;
-            margin-bottom: 50px;
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 40px;
             font-weight: 400;
-            line-height: 1.4;
+            line-height: 1.5;
+            opacity: 0.8;
+        }
+        
+        /* Enhanced Login Form Styles */
+        .login-card .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8fafc;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .login-card .auth-tab-btn {
+            flex: 1;
+            background: #f8fafc;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .login-card .auth-tab-btn.active {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .login-card .auth-tab-btn:hover:not(.active) {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .login-card .form-group {
+            margin-bottom: 1.75rem;
+            text-align: left;
+        }
+        
+        .login-card .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 15px;
+        }
+        
+        .login-card .form-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+            box-sizing: border-box;
+        }
+        
+        .login-card .form-group input:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .login-card .form-group input:hover {
+            border-color: #d1d5db;
+            background: white;
+        }
+        
+        .login-card .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .login-card .btn:hover::before {
+            left: 100%;
+        }
+        
+        .login-card .btn:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+        
+        .login-card .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .login-card .forgot-password-section {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .login-card .forgot-password-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .login-card .forgot-password-btn:hover {
+            color: #b91c1c;
+            background: rgba(220, 38, 38, 0.05);
         }
     </style>
 </head>
