@@ -8492,9 +8492,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     e.preventDefault();
                     console.log('Register button clicked via event listener');
                     console.log('About to call showAuthTab with register');
+                    console.log('Type of window.showAuthTab:', typeof window.showAuthTab);
+                    console.log('window.showAuthTab function:', window.showAuthTab.toString().substring(0, 200));
                     try {
-                        window.showAuthTab('register');
-                        console.log('showAuthTab call completed');
+                        const result = window.showAuthTab('register');
+                        console.log('showAuthTab call completed, result:', result);
                     } catch (error) {
                         console.error('Error calling showAuthTab:', error);
                     }
@@ -9732,20 +9734,62 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Essential authentication functions - MUST remain globally accessible
             window.showAuthTab = function(tab) {
+                console.log('AUTH PROTECTION: showAuthTab called with:', tab);
+                
                 const loginTab = document.getElementById('loginTab');
+                const registerTab = document.getElementById('registerTab');
                 const forgotTab = document.getElementById('forgotPasswordTab');
                 
+                console.log('AUTH PROTECTION: Found elements:', { 
+                    loginTab: !!loginTab, 
+                    registerTab: !!registerTab, 
+                    forgotTab: !!forgotTab 
+                });
+                
+                // Hide all tabs first
+                if (loginTab) loginTab.style.display = 'none';
+                if (registerTab) registerTab.style.display = 'none';
+                if (forgotTab) forgotTab.style.display = 'none';
+                
                 if (tab === 'login') {
-                    if (loginTab) loginTab.style.display = 'block';
-                    if (forgotTab) forgotTab.style.display = 'none';
+                    if (loginTab) {
+                        loginTab.style.display = 'block';
+                        console.log('AUTH PROTECTION: Showing login tab');
+                    }
+                } else if (tab === 'register') {
+                    if (registerTab) {
+                        registerTab.style.display = 'block';
+                        console.log('AUTH PROTECTION: Showing register tab');
+                        
+                        // Make sure the player registration form is visible by default
+                        setTimeout(() => {
+                            const playerForm = document.getElementById('public-player-registration');
+                            const staffForm = document.getElementById('public-staff-registration');
+                            if (playerForm) {
+                                playerForm.style.display = 'block';
+                                console.log('AUTH PROTECTION: Player form visible');
+                            }
+                            if (staffForm) {
+                                staffForm.style.display = 'none';
+                                console.log('AUTH PROTECTION: Staff form hidden');
+                            }
+                        }, 50);
+                    }
                 } else if (tab === 'forgot') {
-                    if (loginTab) loginTab.style.display = 'none';
-                    if (forgotTab) forgotTab.style.display = 'block';
+                    if (forgotTab) {
+                        forgotTab.style.display = 'block';
+                        console.log('AUTH PROTECTION: Showing forgot tab');
+                    }
                 }
                 
-                document.querySelectorAll('.auth-tab-btn').forEach(btn => btn.classList.remove('active'));
-                const activeBtn = document.querySelector('[onclick*="showAuthTab"]');
-                if (activeBtn) activeBtn.classList.add('active');
+                // Update active button states
+                document.querySelectorAll('.auth-tab-btn').forEach((btn, index) => {
+                    btn.classList.remove('active');
+                    if ((tab === 'login' && index === 0) || (tab === 'register' && index === 1)) {
+                        btn.classList.add('active');
+                        console.log('AUTH PROTECTION: Added active to button', index);
+                    }
+                });
             };
 
             window.showForgotPassword = function() {
