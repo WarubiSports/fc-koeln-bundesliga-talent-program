@@ -239,6 +239,17 @@
     window.updateSelectedCount = Features.ui.updateSelectedCount;
     window.toggleRecurrenceOptions = Features.calendar.toggleRecurrenceOptions;
     
+    // Make registration functions available - ensure they exist globally
+    if (typeof window.submitPlayerApplication !== 'function') {
+        console.warn('FEATURES: submitPlayerApplication not found, registration may not work');
+    }
+    if (typeof window.submitStaffApplication !== 'function') {
+        console.warn('FEATURES: submitStaffApplication not found, registration may not work');
+    }
+    if (typeof window.showPublicRegistrationType !== 'function') {
+        console.warn('FEATURES: showPublicRegistrationType not found, registration may not work');
+    }
+    
     // Expose Features module for debugging
     window.Features = Object.freeze(Features);
     

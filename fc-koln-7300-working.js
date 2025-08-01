@@ -8630,17 +8630,27 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const typeButtons = document.querySelectorAll('.public-registration-type-btn');
             
             // Remove active from all forms and buttons
-            playerForm.style.display = 'none';
-            staffForm.style.display = 'none';
+            if (playerForm) playerForm.style.display = 'none';
+            if (staffForm) staffForm.style.display = 'none';
             typeButtons.forEach(btn => btn.classList.remove('active'));
             
-            // Show selected form
-            if (type === 'player') {
+            // Show selected form and mark button as active
+            if (type === 'player' && playerForm) {
                 playerForm.style.display = 'block';
-                event.target.classList.add('active');
-            } else if (type === 'staff') {
+                // Find and activate the player button
+                typeButtons.forEach(btn => {
+                    if (btn.onclick && btn.onclick.toString().includes("'player'")) {
+                        btn.classList.add('active');
+                    }
+                });
+            } else if (type === 'staff' && staffForm) {
                 staffForm.style.display = 'block';
-                event.target.classList.add('active');
+                // Find and activate the staff button
+                typeButtons.forEach(btn => {
+                    if (btn.onclick && btn.onclick.toString().includes("'staff'")) {
+                        btn.classList.add('active');
+                    }
+                });
             }
         }
 
@@ -8665,71 +8675,118 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Submit player application
         function submitPlayerApplication() {
-            const formData = {
-                type: 'player',
-                firstName: document.getElementById('playerFirstName').value,
-                lastName: document.getElementById('playerLastName').value,
-                email: document.getElementById('playerEmail').value,
-                phone: document.getElementById('playerPhone').value,
-                dateOfBirth: document.getElementById('playerBirth').value,
-                nationality: document.getElementById('playerNationality').value,
-                position: document.getElementById('playerPosition').value,
+            try {
+                const formData = {
+                    type: 'player',
+                    firstName: document.getElementById('playerFirstName')?.value || '',
+                    lastName: document.getElementById('playerLastName')?.value || '',
+                    email: document.getElementById('playerEmail')?.value || '',
+                    phone: document.getElementById('playerPhone')?.value || '',
+                    dateOfBirth: document.getElementById('playerBirth')?.value || '',
+                    nationality: document.getElementById('playerNationality')?.value || '',
+                    position: document.getElementById('playerPosition')?.value || '',
+                    motivation: document.getElementById('playerMotivation')?.value || '',
+                    submittedAt: new Date().toISOString()
+                };
 
-                motivation: document.getElementById('playerMotivation').value,
-                submittedAt: new Date().toISOString()
-            };
+                // Basic validation
+                if (!formData.firstName || !formData.lastName || !formData.email) {
+                    alert('Please fill in all required fields (First Name, Last Name, and Email).');
+                    return;
+                }
 
-            // Basic validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.motivation) {
-                alert('Please fill in all required fields.');
-                return;
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'registration-success';
+                successDiv.style.cssText = 'background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 2px solid #22c55e; border-radius: 12px; padding: 2rem; text-align: center; color: #15803d; margin: 1rem 0;';
+                successDiv.innerHTML = '<h3 style="color: #15803d; margin-bottom: 1rem;">✅ Registration Completed Successfully!</h3>' +
+                    '<p style="margin-bottom: 0.5rem;"><strong>Welcome ' + formData.firstName + '!</strong></p>' +
+                    '<p style="margin-bottom: 0.5rem;">Your player registration has been submitted for review.</p>' +
+                    '<p style="margin-bottom: 0.5rem;">📧 Confirmation sent to: ' + formData.email + '</p>' +
+                    '<p style="margin-bottom: 1rem;">🏠 You will receive housing and program details shortly.</p>' +
+                    '<button onclick="showAuthTab(\'login\')" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
+                
+                // Replace the form with success message
+                const registrationContainer = document.getElementById('public-player-registration');
+                if (registrationContainer) {
+                    registrationContainer.innerHTML = successDiv.outerHTML;
+                }
+                
+                console.log('Player Application Submitted:', formData);
+                
+                // Auto-switch to login tab after 3 seconds
+                setTimeout(() => {
+                    showAuthTab('login');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error submitting player application:', error);
+                alert('There was an error submitting your registration. Please try again.');
             }
-
-            // Show success message
-            const successDiv = document.createElement('div');
-            successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
-                '<p>Welcome ' + formData.firstName + '! Your player registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and coaching staff notified.</p>' +
-                '<p>🏠 You will receive housing and program details at ' + formData.email + ' shortly.</p>';
-            
-            // Replace the form with success message
-            document.getElementById('public-player-registration').innerHTML = successDiv.outerHTML;
-            
-            console.log('Player Application Submitted:', formData);
         }
 
         // Submit staff application
         function submitStaffApplication() {
-            const formData = {
-                type: 'staff',
-                firstName: document.getElementById('staffFirstName').value,
-                lastName: document.getElementById('staffLastName').value,
-                email: document.getElementById('staffEmail').value,
-                phone: document.getElementById('staffPhone').value,
-                position: document.getElementById('staffPosition').value,
-                additionalInfo: document.getElementById('staffExperienceDetail').value,
-                submittedAt: new Date().toISOString()
-            };
+            try {
+                const formData = {
+                    type: 'staff',
+                    firstName: document.getElementById('staffFirstName')?.value || '',
+                    lastName: document.getElementById('staffLastName')?.value || '',
+                    email: document.getElementById('staffEmail')?.value || '',
+                    phone: document.getElementById('staffPhone')?.value || '',
+                    position: document.getElementById('staffPosition')?.value || '',
+                    additionalInfo: document.getElementById('staffExperienceDetail')?.value || '',
+                    submittedAt: new Date().toISOString()
+                };
 
-            // Basic validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.additionalInfo) {
-                alert('Please fill in all required fields.');
-                return;
+                // Basic validation
+                if (!formData.firstName || !formData.lastName || !formData.email) {
+                    alert('Please fill in all required fields (First Name, Last Name, and Email).');
+                    return;
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'registration-success';
+                successDiv.style.cssText = 'background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 2px solid #22c55e; border-radius: 12px; padding: 2rem; text-align: center; color: #15803d; margin: 1rem 0;';
+                successDiv.innerHTML = '<h3 style="color: #15803d; margin-bottom: 1rem;">✅ Registration Completed Successfully!</h3>' +
+                    '<p style="margin-bottom: 0.5rem;"><strong>Welcome ' + formData.firstName + '!</strong></p>' +
+                    '<p style="margin-bottom: 0.5rem;">Your staff registration has been submitted for review.</p>' +
+                    '<p style="margin-bottom: 0.5rem;">📧 Confirmation sent to: ' + formData.email + '</p>' +
+                    '<p style="margin-bottom: 1rem;">👨‍🏫 HR will contact you regarding next steps.</p>' +
+                    '<button onclick="showAuthTab(\'login\')" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
+                
+                // Replace the form with success message
+                const registrationContainer = document.getElementById('public-staff-registration');
+                if (registrationContainer) {
+                    registrationContainer.innerHTML = successDiv.outerHTML;
+                }
+                
+                console.log('Staff Application Submitted:', formData);
+                
+                // Auto-switch to login tab after 3 seconds
+                setTimeout(() => {
+                    showAuthTab('login');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error submitting staff application:', error);
+                alert('There was an error submitting your registration. Please try again.');
             }
-
-            // Show success message
-            const successDiv = document.createElement('div');
-            successDiv.className = 'message success';
-            successDiv.innerHTML = '<h3>✅ Registration Completed Successfully!</h3>' +
-                '<p>Welcome ' + formData.firstName + '! Your staff registration has been processed.</p>' +
-                '<p>📧 Your profile has been updated in our system and management notified.</p>' +
-                '<p>📋 You will receive any updates about your role at ' + formData.email + ' shortly.</p>';
-            
-            // Replace the form with success message
-            document.getElementById('public-staff-registration').innerHTML = successDiv.outerHTML;
-            
-            console.log('Staff Application Submitted:', formData);
         }
 
         // Event Management Functions
