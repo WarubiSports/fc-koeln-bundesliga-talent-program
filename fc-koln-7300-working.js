@@ -8599,11 +8599,15 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Auth tab management (login/register) - AUTHENTICATION STABILITY FIX
         window.showAuthTab = function(tabType) {
+            console.log('showAuthTab called with:', tabType);
+            
             // Use correct element IDs that match the actual HTML elements
             const loginTab = document.getElementById('loginTab');
             const registerTab = document.getElementById('registerTab');
             const forgotTab = document.getElementById('forgotPasswordTab');
             const tabButtons = document.querySelectorAll('.auth-tab-btn');
+            
+            console.log('Found elements:', { loginTab: !!loginTab, registerTab: !!registerTab, forgotTab: !!forgotTab, tabButtons: tabButtons.length });
             
             // Hide all auth tabs properly using display property
             if (loginTab) loginTab.style.display = 'none';
@@ -8615,11 +8619,29 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             
             // Show selected tab
             if (tabType === 'login') {
-                if (loginTab) loginTab.style.display = 'block';
+                if (loginTab) {
+                    loginTab.style.display = 'block';
+                    console.log('Showing login tab');
+                }
                 if (tabButtons[0]) tabButtons[0].classList.add('active');
             } else if (tabType === 'register') {
-                if (registerTab) registerTab.style.display = 'block';
+                if (registerTab) {
+                    registerTab.style.display = 'block';
+                    console.log('Showing register tab');
+                    // Also make sure the default registration form is visible
+                    setTimeout(() => {
+                        const playerForm = document.getElementById('public-player-registration');
+                        const staffForm = document.getElementById('public-staff-registration');
+                        if (playerForm) playerForm.style.display = 'block';
+                        if (staffForm) staffForm.style.display = 'none';
+                    }, 100);
+                }
                 if (tabButtons[1]) tabButtons[1].classList.add('active');
+            } else if (tabType === 'forgot') {
+                if (forgotTab) {
+                    forgotTab.style.display = 'block';
+                    console.log('Showing forgot password tab');
+                }
             }
         }
 
