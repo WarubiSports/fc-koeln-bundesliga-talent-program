@@ -7403,17 +7403,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                 </div>
                             </div>
                             
-                            <div class="chat-item" onclick="openChat('ahmad-hassan')">
-                                <div class="chat-avatar-simple">
-                                    <div class="avatar-initials">AH</div>
-                                    <div class="status-indicator away"></div>
-                                </div>
-                                <div class="chat-info">
-                                    <div class="chat-name">Ahmad Hassan</div>
-                                    <div class="chat-preview">Thanks for the assist today 👍</div>
-                                    <div class="chat-time">3 hours ago</div>
-                                </div>
-                            </div>
+
                             
                             <div class="chat-item" onclick="openChat('jonas-weber')">
                                 <div class="chat-avatar-simple">
@@ -7680,16 +7670,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     </div>
                                     <div class="contact-status online"></div>
                                 </div>
-                                <div class="contact-item" onclick="startChatWith('ahmad-hassan')">
-                                    <div class="contact-avatar-simple">
-                                        <div class="avatar-initials">AH</div>
-                                    </div>
-                                    <div class="contact-info">
-                                        <div class="contact-name">Ahmad Hassan</div>
-                                        <div class="contact-role">Player - Defender</div>
-                                    </div>
-                                    <div class="contact-status away"></div>
-                                </div>
+
                                 <div class="contact-item" onclick="startChatWith('luis-garcia')">
                                     <div class="contact-avatar-simple">
                                         <div class="avatar-initials">LG</div>
@@ -7913,28 +7894,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
                     <div id="pending-tab" class="admin-tab-content active">
                         <div class="pending-approvals">
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>New Registration: Luis Martinez</strong><br>
-                                    <small>luis.martinez@email.com - Player Application</small>
-                                    <p>Position: Forward, Age: 17, Nationality: Spain</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn btn-success" onclick="approveUser('luis-martinez')">✅ Approve & Add to System</button>
-                                    <button class="btn btn-danger" onclick="rejectUser('luis-martinez')">❌ Reject</button>
-                                </div>
-                            </div>
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>Staff Application: Maria Schmidt</strong><br>
-                                    <small>maria.schmidt@email.com - Coaching Staff</small>
-                                    <p>Role: Fitness Coach, Experience: 5 years</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn btn-success" onclick="approveUser('maria-schmidt')">✅ Approve & Add to System</button>
-                                    <button class="btn btn-danger" onclick="rejectUser('maria-schmidt')">❌ Reject</button>
-                                </div>
-                            </div>
+                            <p style="text-align: center; color: #6b7280; padding: 2rem;">No pending registrations at this time.</p>
                         </div>
                     </div>
                     
@@ -8010,18 +7970,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                                     <button class="btn btn-secondary">Review</button>
                                 </div>
                             </div>
-                            <div class="approval-item">
-                                <div class="approval-info">
-                                    <strong>Staff Application: Maria Schmidt</strong><br>
-                                    <small>maria.schmidt@email.com - Coaching Staff</small>
-                                    <p>Role: Fitness Coach, Experience: 5 years</p>
-                                </div>
-                                <div class="approval-actions">
-                                    <button class="btn">Approve</button>
-                                    <button class="btn btn-secondary">Reject</button>
-                                    <button class="btn btn-secondary">Review</button>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                     
@@ -9985,18 +9934,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     contract: '2023-2025',
                     notes: 'Knee injury - expected return in 2 weeks'
                 },
-                'ahmad-hassan': {
-                    firstName: 'Ahmad',
-                    lastName: 'Hassan',
-                    position: 'defender',
-                    status: 'active',
-                    age: 20,
-                    nationality: 'Egypt',
-                    house: 'Widdersdorf 1',
-                    room: '15C',
-                    contract: '2023-2025',
-                    notes: 'Strong defensive player, vegetarian diet'
-                }
+
             };
             return players[playerId] || {
                 firstName: '',
@@ -11257,10 +11195,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     contactName.textContent = 'Coach Martinez';
                     contactStatus.textContent = 'Online • Head Coach';
                     break;
-                case 'ahmad-hassan':
-                    contactName.textContent = 'Ahmad Hassan';
-                    contactStatus.textContent = 'Away • Player - Defender';
-                    break;
+
                 case 'jonas-weber':
                     contactName.textContent = 'Jonas Weber';
                     contactStatus.textContent = 'Online • Player - Goalkeeper';
