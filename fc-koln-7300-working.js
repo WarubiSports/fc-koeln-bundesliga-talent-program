@@ -8711,19 +8711,25 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     '<p style="margin-bottom: 0.5rem;">Your player registration has been submitted for review.</p>' +
                     '<p style="margin-bottom: 0.5rem;">📧 Confirmation sent to: ' + formData.email + '</p>' +
                     '<p style="margin-bottom: 1rem;">🏠 You will receive housing and program details shortly.</p>' +
-                    '<button onclick="showAuthTab(\'login\')" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
+                    '<button id="returnToLogin1" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
                 
                 // Replace the form with success message
                 const registrationContainer = document.getElementById('public-player-registration');
                 if (registrationContainer) {
                     registrationContainer.innerHTML = successDiv.outerHTML;
+                    
+                    // Add event listener to the new button
+                    const returnBtn = document.getElementById('returnToLogin1');
+                    if (returnBtn) {
+                        returnBtn.addEventListener('click', () => window.showAuthTab('login'));
+                    }
                 }
                 
                 console.log('Player Application Submitted:', formData);
                 
                 // Auto-switch to login tab after 3 seconds
                 setTimeout(() => {
-                    showAuthTab('login');
+                    window.showAuthTab('login');
                 }, 3000);
                 
             } catch (error) {
@@ -8768,19 +8774,25 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     '<p style="margin-bottom: 0.5rem;">Your staff registration has been submitted for review.</p>' +
                     '<p style="margin-bottom: 0.5rem;">📧 Confirmation sent to: ' + formData.email + '</p>' +
                     '<p style="margin-bottom: 1rem;">👨‍🏫 HR will contact you regarding next steps.</p>' +
-                    '<button onclick="showAuthTab(\'login\')" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
+                    '<button id="returnToLogin2" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Return to Sign In</button>';
                 
                 // Replace the form with success message
                 const registrationContainer = document.getElementById('public-staff-registration');
                 if (registrationContainer) {
                     registrationContainer.innerHTML = successDiv.outerHTML;
+                    
+                    // Add event listener to the new button
+                    const returnBtn = document.getElementById('returnToLogin2');
+                    if (returnBtn) {
+                        returnBtn.addEventListener('click', () => window.showAuthTab('login'));
+                    }
                 }
                 
                 console.log('Staff Application Submitted:', formData);
                 
                 // Auto-switch to login tab after 3 seconds
                 setTimeout(() => {
-                    showAuthTab('login');
+                    window.showAuthTab('login');
                 }, 3000);
                 
             } catch (error) {
