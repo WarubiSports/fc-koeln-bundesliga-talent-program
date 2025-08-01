@@ -8364,43 +8364,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         let currentUser = null;
         let choreStorage = [];
         
-        // Player data storage - Only Max Bisinger and Thomas Ellinger
-        let playerStorage = [
-            {
-                id: 'player_001',
-                firstName: 'Max',
-                lastName: 'Bisinger',
-                position: 'admin',
-                age: 28,
-                nationality: 'Germany',
-                house: 'Widdersdorf 1',
-                room: '1A',
-                contractPeriod: '2024-2026',
-                status: 'active',
-                specialNotes: 'Program Administrator and Head of Operations',
-                joinDate: '2024-01-01',
-                phoneNumber: '+49 221 123 0001',
-                emergencyContact: 'Contact via administration',
-                medicalInfo: 'No medical concerns'
-            },
-            {
-                id: 'player_002',
-                firstName: 'Thomas',
-                lastName: 'Ellinger',
-                position: 'staff',
-                age: 32,
-                nationality: 'Germany',
-                house: 'Widdersdorf 1',
-                room: '1B',
-                contractPeriod: '2024-2026',
-                status: 'active',
-                specialNotes: 'Senior Staff Coordinator and Training Supervisor',
-                joinDate: '2024-01-01',
-                phoneNumber: '+49 221 123 0002',
-                emergencyContact: 'Contact via administration',
-                medicalInfo: 'No medical concerns'
-            }
-        ];
+        // Player data storage - Empty since Max Bisinger and Thomas Ellinger are administrators, not players
+        let playerStorage = [];
 
         // Login functionality - wrapped in DOMContentLoaded to ensure elements exist
         document.addEventListener('DOMContentLoaded', function() {
@@ -8450,7 +8415,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         
                         if (email === 'max.bisinger@warubi-sports.com') {
                             userData = { name: 'Max Bisinger', email: email, role: 'admin' };
-                        } else if (email === 'thomas.ellinger@warubi-sports.com') {
+                        } else if (email === 'thomas.ellinger@warubi-sports.com' || email === 'th.el@warubi-sports.com') {
                             userData = { name: 'Thomas Ellinger', email: email, role: 'staff' };
                         } else {
                             if (messageDiv) messageDiv.innerHTML = '<div style="color: #dc2626; margin-top: 1rem;">Email not recognized. Please try again.</div>';
