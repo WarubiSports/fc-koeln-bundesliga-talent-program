@@ -8491,7 +8491,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 registerBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     console.log('Register button clicked via event listener');
-                    window.showAuthTab('register');
+                    console.log('About to call showAuthTab with register');
+                    try {
+                        window.showAuthTab('register');
+                        console.log('showAuthTab call completed');
+                    } catch (error) {
+                        console.error('Error calling showAuthTab:', error);
+                    }
                 });
             }
             
@@ -8621,49 +8627,91 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Auth tab management (login/register) - AUTHENTICATION STABILITY FIX
         window.showAuthTab = function(tabType) {
+            console.log('=== showAuthTab START ===');
             console.log('showAuthTab called with:', tabType);
             
-            // Use correct element IDs that match the actual HTML elements
-            const loginTab = document.getElementById('loginTab');
-            const registerTab = document.getElementById('registerTab');
-            const forgotTab = document.getElementById('forgotPasswordTab');
-            const tabButtons = document.querySelectorAll('.auth-tab-btn');
-            
-            console.log('Found elements:', { loginTab: !!loginTab, registerTab: !!registerTab, forgotTab: !!forgotTab, tabButtons: tabButtons.length });
-            
-            // Hide all auth tabs properly using display property
-            if (loginTab) loginTab.style.display = 'none';
-            if (registerTab) registerTab.style.display = 'none';
-            if (forgotTab) forgotTab.style.display = 'none';
-            
-            // Remove active from all tab buttons
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Show selected tab
-            if (tabType === 'login') {
+            try {
+                // Use correct element IDs that match the actual HTML elements
+                const loginTab = document.getElementById('loginTab');
+                const registerTab = document.getElementById('registerTab');
+                const forgotTab = document.getElementById('forgotPasswordTab');
+                const tabButtons = document.querySelectorAll('.auth-tab-btn');
+                
+                console.log('Found elements:', { 
+                    loginTab: !!loginTab, 
+                    registerTab: !!registerTab, 
+                    forgotTab: !!forgotTab, 
+                    tabButtons: tabButtons.length 
+                });
+                
+                // Hide all auth tabs properly using display property
                 if (loginTab) {
-                    loginTab.style.display = 'block';
-                    console.log('Showing login tab');
+                    loginTab.style.display = 'none';
+                    console.log('Hidden login tab');
                 }
-                if (tabButtons[0]) tabButtons[0].classList.add('active');
-            } else if (tabType === 'register') {
                 if (registerTab) {
-                    registerTab.style.display = 'block';
-                    console.log('Showing register tab');
-                    // Also make sure the default registration form is visible
-                    setTimeout(() => {
-                        const playerForm = document.getElementById('public-player-registration');
-                        const staffForm = document.getElementById('public-staff-registration');
-                        if (playerForm) playerForm.style.display = 'block';
-                        if (staffForm) staffForm.style.display = 'none';
-                    }, 100);
+                    registerTab.style.display = 'none';
+                    console.log('Hidden register tab');
                 }
-                if (tabButtons[1]) tabButtons[1].classList.add('active');
-            } else if (tabType === 'forgot') {
                 if (forgotTab) {
-                    forgotTab.style.display = 'block';
-                    console.log('Showing forgot password tab');
+                    forgotTab.style.display = 'none';
+                    console.log('Hidden forgot tab');
                 }
+                
+                // Remove active from all tab buttons
+                tabButtons.forEach((btn, index) => {
+                    btn.classList.remove('active');
+                    console.log('Removed active from button', index);
+                });
+                
+                // Show selected tab
+                if (tabType === 'login') {
+                    if (loginTab) {
+                        loginTab.style.display = 'block';
+                        console.log('SHOWING login tab - display set to block');
+                    }
+                    if (tabButtons[0]) {
+                        tabButtons[0].classList.add('active');
+                        console.log('Added active to login button');
+                    }
+                } else if (tabType === 'register') {
+                    if (registerTab) {
+                        registerTab.style.display = 'block';
+                        console.log('SHOWING register tab - display set to block');
+                        console.log('Register tab final style:', registerTab.style.cssText);
+                        
+                        // Also make sure the default registration form is visible
+                        setTimeout(() => {
+                            const playerForm = document.getElementById('public-player-registration');
+                            const staffForm = document.getElementById('public-staff-registration');
+                            console.log('Setting up registration forms:', { playerForm: !!playerForm, staffForm: !!staffForm });
+                            if (playerForm) {
+                                playerForm.style.display = 'block';
+                                console.log('Player form set to visible');
+                            }
+                            if (staffForm) {
+                                staffForm.style.display = 'none';
+                                console.log('Staff form set to hidden');
+                            }
+                        }, 50);
+                    } else {
+                        console.error('Register tab element not found!');
+                    }
+                    if (tabButtons[1]) {
+                        tabButtons[1].classList.add('active');
+                        console.log('Added active to register button');
+                    }
+                } else if (tabType === 'forgot') {
+                    if (forgotTab) {
+                        forgotTab.style.display = 'block';
+                        console.log('SHOWING forgot password tab - display set to block');
+                    }
+                }
+                
+                console.log('=== showAuthTab END ===');
+                
+            } catch (error) {
+                console.error('ERROR in showAuthTab:', error);
             }
         }
 
