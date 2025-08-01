@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Creating production build...');
+console.log('🚀 Creating production build for Replit deployment...');
 
 // Create dist directory
 if (!fs.existsSync('dist')) {
@@ -12,6 +12,9 @@ if (!fs.existsSync('dist')) {
 
 // Copy our working fc-koln-7300-working.js to the expected production location
 fs.copyFileSync('fc-koln-7300-working.js', 'dist/index.js');
+
+console.log('✅ Copied fc-koln-7300-working.js → dist/index.js');
+console.log('📋 Production build configured for Replit deployment environment');
 
 // Create the expected production package.json
 const productionPackage = {
