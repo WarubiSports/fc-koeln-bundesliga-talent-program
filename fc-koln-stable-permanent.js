@@ -1862,14 +1862,40 @@ app.get('/', (req, res) => {
         // Data loading functions
         async function loadDashboardData() {
             try {
-                const response = await fetch('/api/players');
-                const data = await response.json();
+                // Load players data
+                const playersResponse = await fetch('/api/players');
+                const playersData = await playersResponse.json();
                 
-                if (data.success) {
-                    players = data.players;
+                if (playersData.success) {
+                    players = playersData.players;
                     updateDashboardStats();
                     renderPlayerOverview();
                 }
+                
+                // Load dashboard stats
+                const statsResponse = await fetch('/api/dashboard/stats');
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success) {
+                    updateDashboardStatsFromAPI(statsData.stats);
+                }
+                
+                // Load recent activity
+                const activityResponse = await fetch('/api/dashboard/recent-activity');
+                const activityData = await activityResponse.json();
+                
+                if (activityData.success) {
+                    renderRecentActivity(activityData.activities);
+                }
+                
+                // Load house competition
+                const houseResponse = await fetch('/api/dashboard/house-competition');
+                const houseData = await houseResponse.json();
+                
+                if (houseData.success) {
+                    renderHouseCompetition(houseData.houses, houseData.weekChallenges);
+                }
+                
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
             }
@@ -1881,23 +1907,82 @@ app.get('/', (req, res) => {
             document.getElementById('activitiesToday').textContent = 5; // Static for now
         }
         
+        function updateDashboardStatsFromAPI(stats) {
+            document.getElementById('totalPlayers').textContent = stats.totalPlayers;
+            document.getElementById('trainingToday').textContent = stats.trainingToday;
+            document.getElementById('activitiesToday').textContent = stats.activitiesToday;
+        }
+        
+        function renderRecentActivity(activities) {
+            const container = document.querySelector('.recent-activity');
+            if (!container) return;
+            
+            let html = '';
+            activities.forEach(activity => {
+                html += '<div class="activity-item">' +
+                    '<div class="activity-time">' + activity.time + '</div>' +
+                    '<div class="activity-content">' +
+                        '<div class="activity-title">' + activity.title + '</div>' +
+                        '<div class="activity-description">' + activity.description + '</div>' +
+                    '</div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function renderHouseCompetition(houses, weekChallenges) {
+            const container = document.querySelector('.house-leaderboard');
+            if (!container) return;
+            
+            let html = '';
+            houses.forEach(house => {
+                const rankClass = 'house-rank-' + house.rank;
+                html += '<div class="house-rank ' + rankClass + '">' +
+                    '<div class="rank-trophy">' + house.trophy + '</div>' +
+                    '<div class="house-info">' +
+                        '<div class="house-name">' + house.name + '</div>' +
+                        '<div class="house-stats">' + house.players + ' players • ' + house.stats + '</div>' +
+                    '</div>' +
+                    '<div class="house-points">' + house.points + ' pts</div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+            
+            // Update week challenges
+            const challengesContainer = document.querySelector('.week-challenges');
+            if (challengesContainer) {
+                challengesContainer.innerHTML = '<strong>This Week:</strong> ' + weekChallenges;
+            }
+        }
+        
         function renderPlayerOverview() {
-            const container = document.getElementById('playerOverview');
+            const container = document.querySelector('.player-overview-cards');
+            if (!container) return;
+            
             let html = '';
             
-            players.slice(0, 4).forEach(player => {
-                const statusClass = 'status-' + player.status;
-                const statusText = player.status.toUpperCase();
+            // Show actual players from backend or default to sample data
+            const displayPlayers = players.length > 0 ? players.slice(0, 4) : [
+                { name: 'Max Finkgräfe', position: 'STRIKER', house: 'Widdersdorf 1', status: 'active' },
+                { name: 'Tim Lemperle', position: 'WINGER', house: 'Widdersdorf 3', status: 'active' },
+                { name: 'Linton Maina', position: 'WINGER', house: 'Widdersdorf 2', status: 'training' },
+                { name: 'Florian Kainz', position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest' }
+            ];
+            
+            displayPlayers.forEach(player => {
+                const statusClass = player.status === 'active' ? 'status-active' : 
+                                   player.status === 'training' ? 'status-training' : 'status-rest';
+                const statusText = player.status === 'rest' ? 'REST DAY' : player.status.toUpperCase();
                 
-                html += '<div class="player-card">' +
-                    '<div class="player-header">' +
+                html += '<div class="player-overview-card">' +
+                    '<div class="player-info">' +
                         '<div class="player-name">' + player.name + '</div>' +
-                        '<div class="player-status ' + statusClass + '">' + statusText + '</div>' +
+                        '<div class="player-position">⚽ ' + player.position + '</div>' +
+                        '<div class="player-house">' + player.house + '</div>' +
                     '</div>' +
-                    '<div class="player-details">' +
-                        '<span>⚽ ' + player.position + '</span>' +
-                        '<span>' + formatHouseName(player.house) + '</span>' +
-                    '</div>' +
+                    '<div class="player-status ' + statusClass + '">' + statusText + '</div>' +
                 '</div>';
             });
             
@@ -2099,6 +2184,84 @@ app.get('/', (req, res) => {
 </body>
 </html>
     `);
+});
+
+// Dashboard-specific endpoints
+app.get('/api/dashboard/stats', (req, res) => {
+    const stats = {
+        totalPlayers: players.length,
+        trainingToday: players.filter(p => p.status === 'training').length,
+        houses: 3, // Widdersdorf 1, 2, 3
+        activitiesToday: calendarEvents.filter(e => {
+            const today = new Date().toDateString();
+            const eventDate = new Date(e.date).toDateString();
+            return eventDate === today;
+        }).length
+    };
+    res.json({ success: true, stats });
+});
+
+app.get('/api/dashboard/recent-activity', (req, res) => {
+    const activities = [
+        {
+            time: '10:30 AM',
+            title: 'Training Session Completed',
+            description: 'Morning fitness training - 18 players attended',
+            type: 'training'
+        },
+        {
+            time: '9:15 AM',
+            title: 'New Player Registration',
+            description: 'Dennis Huseinbasic completed profile setup',
+            type: 'registration'
+        },
+        {
+            time: '8:45 AM',
+            title: 'Meal Orders Submitted',
+            description: `${foodOrders.length} players submitted lunch preferences`,
+            type: 'food'
+        },
+        {
+            time: '8:00 AM',
+            title: 'House Chore Completed',
+            description: 'Widdersdorf 2 completed weekly cleaning tasks',
+            type: 'chores'
+        }
+    ];
+    res.json({ success: true, activities });
+});
+
+app.get('/api/dashboard/house-competition', (req, res) => {
+    const houses = [
+        {
+            rank: 1,
+            name: 'Widdersdorf 2',
+            players: players.filter(p => p.house === 'Widdersdorf 2').length,
+            stats: 'Clean record',
+            points: 945,
+            trophy: '🥇'
+        },
+        {
+            rank: 2,
+            name: 'Widdersdorf 1',
+            players: players.filter(p => p.house === 'Widdersdorf 1').length,
+            stats: '2 pending tasks',
+            points: 920,
+            trophy: '🥈'
+        },
+        {
+            rank: 3,
+            name: 'Widdersdorf 3',
+            players: players.filter(p => p.house === 'Widdersdorf 3').length,
+            stats: '1 pending task',
+            points: 885,
+            trophy: '🥉'
+        }
+    ];
+    
+    const weekChallenges = 'Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)';
+    
+    res.json({ success: true, houses, weekChallenges });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
