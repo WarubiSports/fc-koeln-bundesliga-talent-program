@@ -1369,13 +1369,7 @@ app.get('/', (req, res) => {
         <!-- App Header -->
         <div class="app-header">
             <div class="app-logo">
-                <svg width="40" height="40" viewBox="0 0 40 40" style="background: white; border-radius: 50%; padding: 2px;">
-                    <circle cx="20" cy="20" r="18" fill="#dc143c"/>
-                    <circle cx="20" cy="20" r="12" fill="white"/>
-                    <circle cx="20" cy="20" r="8" fill="#dc143c"/>
-                    <text x="20" y="24" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">1.FC</text>
-                    <path d="M15 10 Q18 8 22 10 Q24 12 22 15 Q20 16 18 15 Q16 12 15 10" fill="black" opacity="0.8"/>
-                </svg>
+                <img src="/api/logo" alt="1.FC Köln Football School" style="height: 40px; width: auto; border-radius: 4px;">
                 <div class="app-title">1.FC Köln Bundesliga Talent Program</div>
             </div>
             <div class="app-user">
