@@ -1,10 +1,10 @@
 // Development server redirect to working implementation
 const { spawn } = require('child_process');
 
-console.log('🔄 Starting clean FC Köln authentication system...');
+console.log('🔄 Starting COMPLETE FC Köln Management System...');
 
-// Start the clean authentication system
-const serverProcess = spawn('node', ['fc-koln-clean-auth.js'], {
+// Start the complete system with all features
+const serverProcess = spawn('node', ['fc-koln-complete-system.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
