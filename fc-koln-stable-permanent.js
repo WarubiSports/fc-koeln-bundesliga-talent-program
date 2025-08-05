@@ -1096,7 +1096,6 @@ app.get('/', (req, res) => {
                             <option value="">Select Role</option>
                             <option value="staff">Staff</option>
                             <option value="coach">Coach</option>
-                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <button type="submit" class="btn">Complete Registration</button>
