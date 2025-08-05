@@ -8457,11 +8457,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         function showAdminTab(tabId) {
             // Hide all admin tabs
             const tabs = document.querySelectorAll('.admin-tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
             
             // Remove active from tab buttons
             const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons.forEach(function(btn) { btn.classList.remove('active'); });
             
             // Show selected tab
             document.getElementById(tabId + '-tab').classList.add('active');
@@ -8577,13 +8577,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Remove active from all forms and buttons
             if (playerForm) playerForm.style.display = 'none';
             if (staffForm) staffForm.style.display = 'none';
-            typeButtons.forEach(btn => btn.classList.remove('active'));
+            typeButtons.forEach(function(btn) { btn.classList.remove('active'); });
             
             // Show selected form and mark button as active
             if (type === 'player' && playerForm) {
                 playerForm.style.display = 'block';
                 // Find and activate the player button
-                typeButtons.forEach(btn => {
+                typeButtons.forEach(function(btn) {
                     if (btn.onclick && btn.onclick.toString().includes("'player'")) {
                         btn.classList.add('active');
                     }
@@ -8591,7 +8591,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             } else if (type === 'staff' && staffForm) {
                 staffForm.style.display = 'block';
                 // Find and activate the staff button
-                typeButtons.forEach(btn => {
+                typeButtons.forEach(function(btn) {
                     if (btn.onclick && btn.onclick.toString().includes("'staff'")) {
                         btn.classList.add('active');
                     }
@@ -9643,13 +9643,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 const pages = document.querySelectorAll('.page');
                 const navItems = document.querySelectorAll('.nav-item');
                 
-                pages.forEach(page => page.classList.remove('active'));
-                navItems.forEach(item => item.classList.remove('active'));
+                pages.forEach(function(page) { page.classList.remove('active'); });
+                navItems.forEach(function(item) { item.classList.remove('active'); });
                 
                 const targetPage = document.getElementById(pageId);
                 if (targetPage) targetPage.classList.add('active');
                 
-                const targetNav = document.querySelector('[onclick*="showPage"][onclick*="' + pageId + '"]');
+                const targetNav = document.querySelector('[onclick*="showPage(' + pageId + ')"]');
                 if (targetNav) targetNav.classList.add('active');
             };
 
@@ -9659,7 +9659,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             const criticalFunctions = ['showAuthTab', 'showForgotPassword', 'showPage', 'logout'];
             let systemStable = true;
             
-            criticalFunctions.forEach(funcName => {
+            criticalFunctions.forEach(function(funcName) {
                 if (typeof window[funcName] !== 'function') {
                     console.error('CRITICAL FAILURE: ' + funcName + ' not accessible');
                     systemStable = false;
@@ -9798,7 +9798,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         }
 
         function sendTrainingReminder() {
-            alert('Training reminder sent to all active players for tomorrow\\'s sessions');
+            alert('Training reminder sent to all active players for tomorrow\'s sessions');
         }
 
         function sendMealAnnouncement() {
@@ -9854,7 +9854,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Add hover effects for interactive elements
             document.querySelectorAll('.calendar-event').forEach(event => {
                 event.addEventListener('click', function() {
-                    alert('Event details: ' + this.querySelector(\'.event-title\').textContent);
+                    alert('Event details: ' + this.querySelector('.event-title').textContent);
                 });
             });
 
@@ -10396,9 +10396,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         '<p><strong>Description:</strong> ' + chore.description + '</p>' +
                     '</div>' +
                     '<div class="chore-actions admin-staff-only" style="display: ' + actionsDisplay + ';">' +
-                        '<button class="btn-mini btn-success" onclick="markChoreComplete(\\'' + chore.id + '\\')">Mark Complete</button>' +
-                        '<button class="btn-mini btn-warning" onclick="extendDeadline(\\'' + chore.id + '\\')">Extend Deadline</button>' +
-                        '<button class="btn-mini btn-danger" onclick="deleteChore(\\'' + chore.id + '\\')">Delete</button>' +
+                        '<button class="btn-mini btn-success" onclick="markChoreComplete(\'' + chore.id + '\')">Mark Complete</button>' +
+                        '<button class="btn-mini btn-warning" onclick="extendDeadline(\'' + chore.id + '\')">Extend Deadline</button>' +
+                        '<button class="btn-mini btn-danger" onclick="deleteChore(\'' + chore.id + '\')">Delete</button>' +
                     '</div>' +
                 '</div>';
             });
@@ -10409,9 +10409,9 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Helper function to get assigned players text
         function getAssignedPlayersText(chore) {
             if (chore.assignmentType === 'individual' && chore.assignedPlayers.length > 0) {
-                return chore.assignedPlayers[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                return chore.assignedPlayers[0].replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
             } else if (chore.assignmentType === 'multiple' && chore.assignedPlayers.length > 0) {
-                return chore.assignedPlayers.map(p => p.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())).join(', ');
+                return chore.assignedPlayers.map(function(p) { return p.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }); }).join(', ');
             } else if (chore.assignmentType === 'group') {
                 return 'Group Task (Auto-assigned)';
             } else if (chore.assignmentType === 'house') {
@@ -10534,8 +10534,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         '</div>' +
                     '</div>' +
                     '<div class="player-actions">' +
-                        '<button class="btn-mini" onclick="viewPlayer(\\'' + player.id + '\\')">👁️ View Details</button>' +
-                        '<button class="btn-mini" onclick="editPlayer(\\'' + player.id + '\\')">✏️ Edit Profile</button>' +
+                        '<button class="btn-mini" onclick="viewPlayer(\'' + player.id + '\')">👁️ View Details</button>' +
+                        '<button class="btn-mini" onclick="editPlayer(\'' + player.id + '\')">✏️ Edit Profile</button>' +
                     '</div>' +
                 '</div>';
             });
@@ -11206,7 +11206,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 item.classList.remove('active');
             });
             
-            const chatElement = document.querySelector('[onclick="openChat(\'' + chatId + '\')"]');
+            const chatElement = document.querySelector('[onclick*="openChat(' + chatId + ')"]');
             if (chatElement) {
                 chatElement.classList.add('active');
             }
