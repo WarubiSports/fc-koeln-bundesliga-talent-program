@@ -1091,10 +1091,12 @@ app.get('/', (req, res) => {
                         <input type="password" id="staffPassword" required>
                     </div>
                     <div class="form-group">
-                        <label for="staffRole">Department</label>
+                        <label for="staffRole">Role</label>
                         <select id="staffRole" required>
-                            <option value="staff">Coaching Staff</option>
-                            <option value="admin">Administration</option>
+                            <option value="">Select Role</option>
+                            <option value="staff">Staff</option>
+                            <option value="coach">Coach</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <button type="submit" class="btn">Complete Registration</button>
