@@ -1618,8 +1618,7 @@ app.get('/', (req, res) => {
                         phoneNumber: document.getElementById('phoneNumber').value,
                         dateOfBirth: document.getElementById('dateOfBirth').value,
                         nationality: document.getElementById('nationality').value,
-                        position: document.getElementById('primaryPosition').value,
-                        additionalInfo: document.getElementById('additionalInfo').value
+                        position: document.getElementById('primaryPosition').value
                     };
                 } else {
                     registrationData = {
