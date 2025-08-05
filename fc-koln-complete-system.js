@@ -263,7 +263,7 @@ app.get('/', (req, res) => {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            background: #f5f7fa;
             min-height: 100vh;
         }
         
@@ -425,25 +425,71 @@ app.get('/', (req, res) => {
         }
         
         .main-app.active {
+            display: block;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            padding: 1rem 2rem;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .sidebar {
-            width: 250px;
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .app-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            padding: 1rem 0;
+            padding: 5px;
         }
         
-        .sidebar-header {
-            padding: 0 1rem 1rem;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 1rem;
+        .app-title {
+            font-size: 1.25rem;
+            font-weight: bold;
         }
         
-        .sidebar-header h2 {
+        .app-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-tabs {
+            background: white;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+        }
+        
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab:hover {
             color: #dc143c;
-            font-size: 1.2rem;
+            background: #f9fafb;
+        }
+        
+        .nav-tab.active {
+            color: #dc143c;
+            border-bottom-color: #dc143c;
         }
         
         .user-info {
@@ -482,10 +528,9 @@ app.get('/', (req, res) => {
         }
         
         .main-content {
-            flex: 1;
             padding: 2rem;
-            background: #f8f9fa;
-            overflow-y: auto;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .page {
@@ -530,30 +575,232 @@ app.get('/', (req, res) => {
             margin-bottom: 0.5rem;
         }
         
-        .stats-grid {
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #dc143c;
+        }
+        
+        .stat-header {
+            color: #dc143c;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            color: #dc143c;
-            margin-bottom: 0.5rem;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1;
         }
         
         .stat-label {
-            color: #666;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .player-overview-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc143c;
+        }
+        
+        .player-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+        
+        .player-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #dc143c;
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        .player-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-training {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-rest {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .player-details {
+            display: flex;
+            gap: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .house-competition {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+        
+        .competition-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #dc143c;
+            font-weight: 600;
+        }
+        
+        .house-rank {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .house-rank-1 {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+        }
+        
+        .house-rank-2 {
+            background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+            border: 1px solid #9ca3af;
+        }
+        
+        .house-rank-3 {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            border: 1px solid #ea580c;
+        }
+        
+        .rank-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .house-info {
+            flex: 1;
+        }
+        
+        .house-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .house-stats {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .house-points {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #dc143c;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #dc143c;
+            font-weight: 600;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-time {
+            color: #6b7280;
+            font-size: 0.85rem;
+            min-width: 60px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-description {
+            color: #6b7280;
             font-size: 0.9rem;
         }
         
@@ -808,64 +1055,29 @@ app.get('/', (req, res) => {
     
     <!-- Main Application -->
     <div class="main-app" id="mainApp">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>FC Köln</h2>
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="app-logo">
+                <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: #dc143c; font-weight: bold;">FC</span>
+                </div>
+                <div class="app-title">1.FC Köln Bundesliga Talent Program</div>
             </div>
-            
-            <div class="user-info" id="userInfo">
-                <!-- User info will be populated here -->
+            <div class="app-user">
+                <span id="headerUserInfo">Welcome, User</span>
+                <button class="btn btn-secondary" onclick="logout()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">Logout</button>
             </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active" onclick="showPage('dashboard')">
-                        <span class="nav-icon">📊</span>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="showPage('players')">
-                        <span class="nav-icon">👤</span>
-                        Players
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="showPage('chores')">
-                        <span class="nav-icon">📋</span>
-                        Chores
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="showPage('calendar')">
-                        <span class="nav-icon">📅</span>
-                        Calendar
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="showPage('food-orders')">
-                        <span class="nav-icon">🍽️</span>
-                        Food Orders
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="showPage('communications')">
-                        <span class="nav-icon">💬</span>
-                        Communications
-                    </a>
-                </li>
-                <li class="nav-item admin-only">
-                    <a href="#" class="nav-link" onclick="showPage('admin')">
-                        <span class="nav-icon">⚙️</span>
-                        Admin
-                    </a>
-                </li>
-            </ul>
-            
-            <div style="padding: 1rem;">
-                <button class="btn btn-secondary" onclick="logout()">Logout</button>
-            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showPage('players')">Players</button>
+            <button class="nav-tab" onclick="showPage('housing')">Housing</button>
+            <button class="nav-tab" onclick="showPage('food-orders')">Food Orders</button>
+            <button class="nav-tab" onclick="showPage('communications')">Communications</button>
+            <button class="nav-tab" onclick="showPage('calendar')">Calendar</button>
+            <button class="nav-tab admin-only" onclick="showPage('admin')">User Management</button>
         </div>
         
         <!-- Main Content -->
@@ -873,35 +1085,157 @@ app.get('/', (req, res) => {
             <!-- Dashboard Page -->
             <div class="page active" id="dashboard">
                 <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Welcome to FC Köln Talent Program Management</p>
+                    <h1 class="page-title">1.FC Köln Bundesliga Talent Program Dashboard</h1>
                 </div>
                 
-                <div class="stats-grid">
+                <div class="dashboard-grid">
                     <div class="stat-card">
-                        <div class="stat-value" id="totalPlayers">0</div>
-                        <div class="stat-label">Total Players</div>
+                        <div class="stat-header">Total Players</div>
+                        <div class="stat-value" id="totalPlayers">24</div>
+                        <div class="stat-label">Active in program</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="activeChores">0</div>
-                        <div class="stat-label">Active Chores</div>
+                        <div class="stat-header">Training Today</div>
+                        <div class="stat-value" id="trainingToday">18</div>
+                        <div class="stat-label">Players attending</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="upcomingEvents">0</div>
-                        <div class="stat-label">Upcoming Events</div>
+                        <div class="stat-header">Houses</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Widdersdorf locations</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="pendingOrders">0</div>
-                        <div class="stat-label">Pending Orders</div>
+                        <div class="stat-header">Activities Today</div>
+                        <div class="stat-value" id="activitiesToday">5</div>
+                        <div class="stat-label">Scheduled events</div>
                     </div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Recent Activity</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div class="player-overview-card">
+                        <div class="competition-header">
+                            <span>🏆</span>
+                            <span>Player Overview</span>
+                        </div>
+                        <div id="playerOverview">
+                            <!-- Sample players will be shown here -->
+                            <div class="player-card">
+                                <div class="player-header">
+                                    <div class="player-name">Max Finkgräfe</div>
+                                    <div class="player-status status-active">ACTIVE</div>
+                                </div>
+                                <div class="player-details">
+                                    <span>⚽ STRIKER</span>
+                                    <span>Widdersdorf 1</span>
+                                </div>
+                            </div>
+                            
+                            <div class="player-card">
+                                <div class="player-header">
+                                    <div class="player-name">Tim Lemperle</div>
+                                    <div class="player-status status-active">ACTIVE</div>
+                                </div>
+                                <div class="player-details">
+                                    <span>⚽ WINGER</span>
+                                    <span>Widdersdorf 3</span>
+                                </div>
+                            </div>
+                            
+                            <div class="player-card">
+                                <div class="player-header">
+                                    <div class="player-name">Linton Maina</div>
+                                    <div class="player-status status-training">TRAINING</div>
+                                </div>
+                                <div class="player-details">
+                                    <span>⚽ WINGER</span>
+                                    <span>Widdersdorf 2</span>
+                                </div>
+                            </div>
+                            
+                            <div class="player-card">
+                                <div class="player-header">
+                                    <div class="player-name">Florian Kainz</div>
+                                    <div class="player-status status-rest">REST DAY</div>
+                                </div>
+                                <div class="player-details">
+                                    <span>⚽ MIDFIELDER</span>
+                                    <span>Widdersdorf 1</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <a href="#" onclick="showPage('players')" style="color: #dc143c; text-decoration: none; font-weight: 500;">View All Players →</a>
+                        </div>
                     </div>
-                    <div id="recentActivity">
-                        <p>Welcome to the FC Köln Management System!</p>
+                    
+                    <div class="recent-activity">
+                        <div class="activity-header">
+                            <span>📊</span>
+                            <span>Recent Activity</span>
+                        </div>
+                        <div id="recentActivityFeed">
+                            <div class="activity-item">
+                                <div class="activity-time">10:30 AM</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Training Session Completed</div>
+                                    <div class="activity-description">Morning fitness training - 18 players attended</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-time">9:15 AM</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New Player Registration</div>
+                                    <div class="activity-description">Dennis Huseinbasic completed profile setup</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-time">8:45 AM</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Meal Orders Submitted</div>
+                                    <div class="activity-description">22 players submitted lunch preferences</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="house-competition">
+                    <div class="competition-header">
+                        <span>🏠</span>
+                        <span>House Competition Leaderboard</span>
+                    </div>
+                    
+                    <div class="house-rank house-rank-1">
+                        <div class="rank-number">🥇</div>
+                        <div class="house-info">
+                            <div class="house-name">Widdersdorf 2</div>
+                            <div class="house-stats">8 players • Clean record</div>
+                        </div>
+                        <div class="house-points">945 pts</div>
+                    </div>
+                    
+                    <div class="house-rank house-rank-2">
+                        <div class="rank-number">🥈</div>
+                        <div class="house-info">
+                            <div class="house-name">Widdersdorf 1</div>
+                            <div class="house-stats">9 players • 2 pending tasks</div>
+                        </div>
+                        <div class="house-points">920 pts</div>
+                    </div>
+                    
+                    <div class="house-rank house-rank-3">
+                        <div class="rank-number">🥉</div>
+                        <div class="house-info">
+                            <div class="house-name">Widdersdorf 3</div>
+                            <div class="house-stats">7 players • 1 pending task</div>
+                        </div>
+                        <div class="house-points">885 pts</div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.9rem;">
+                        <strong>This Week:</strong> Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)
                     </div>
                 </div>
             </div>
@@ -1259,9 +1593,8 @@ app.get('/', (req, res) => {
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('mainApp').classList.add('active');
             
-            const userInfo = document.getElementById('userInfo');
-            userInfo.innerHTML = '<strong>' + currentUser.name + '</strong><br>' + 
-                                '<span style="color: #666;">' + currentUser.role + '</span>';
+            const headerUserInfo = document.getElementById('headerUserInfo');
+            headerUserInfo.textContent = 'Welcome, ' + currentUser.name;
             
             // Show/hide admin features
             const adminElements = document.querySelectorAll('.admin-only');
@@ -1281,8 +1614,8 @@ app.get('/', (req, res) => {
                 page.classList.remove('active');
             });
             
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
             });
             
             document.getElementById(pageId).classList.add('active');
