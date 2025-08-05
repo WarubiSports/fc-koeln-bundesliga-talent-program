@@ -39,10 +39,10 @@ const passwordResetTokens = new Map();
 
 // Data storage
 let players = [
-    { id: 'p1', name: 'Max Finkgräfe', age: 19, position: 'STRIKER', house: 'widdersdorf1', status: 'active', joinDate: new Date().toISOString() },
-    { id: 'p2', name: 'Tim Lemperle', age: 20, position: 'WINGER', house: 'widdersdorf3', status: 'active', joinDate: new Date().toISOString() },
-    { id: 'p3', name: 'Linton Maina', age: 21, position: 'WINGER', house: 'widdersdorf2', status: 'training', joinDate: new Date().toISOString() },
-    { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'widdersdorf1', status: 'rest', joinDate: new Date().toISOString() }
+    { id: 'p1', name: 'Max Finkgräfe', age: 19, position: 'STRIKER', house: 'Widdersdorf 1', status: 'active', joinDate: new Date().toISOString() },
+    { id: 'p2', name: 'Tim Lemperle', age: 20, position: 'WINGER', house: 'Widdersdorf 3', status: 'active', joinDate: new Date().toISOString() },
+    { id: 'p3', name: 'Linton Maina', age: 21, position: 'WINGER', house: 'Widdersdorf 2', status: 'training', joinDate: new Date().toISOString() },
+    { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest', joinDate: new Date().toISOString() }
 ];
 
 let choreStorage = [];
@@ -2345,7 +2345,7 @@ app.get('/', (req, res) => {
                     '</div>' +
                     '<div class="player-card-details">' +
                         '<div class="player-card-detail"><strong>Age:</strong> ' + player.age + '</div>' +
-                        '<div class="player-card-detail"><strong>House:</strong> ' + (player.house ? player.house.charAt(0).toUpperCase() + player.house.slice(1) : 'N/A') + '</div>' +
+                        '<div class="player-card-detail"><strong>House:</strong> ' + formatHouseName(player.house) + '</div>' +
                         '<div class="player-card-detail"><strong>Nationality:</strong> ' + (player.nationality || 'N/A') + '</div>' +
                         '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
@@ -2555,6 +2555,21 @@ app.get('/', (req, res) => {
             });
         }
         
+        function formatHouseName(house) {
+            if (!house) return 'N/A';
+            
+            // Handle different formats
+            if (house.toLowerCase().includes('widdersdorf')) {
+                // Extract number and format properly
+                const match = house.match(/(\d+)/);
+                const number = match ? match[1] : '';
+                return 'Widdersdorf ' + number;
+            }
+            
+            // Default capitalization
+            return house.charAt(0).toUpperCase() + house.slice(1);
+        }
+        
         async function viewPlayerDetails(playerId) {
             const player = players.find(p => p.id === playerId);
             if (player) {
@@ -2562,7 +2577,7 @@ app.get('/', (req, res) => {
                     'Name: ' + player.name + '\\n' +
                     'Age: ' + player.age + '\\n' +
                     'Position: ' + player.position + '\\n' +
-                    'House: ' + player.house + '\\n' +
+                    'House: ' + formatHouseName(player.house) + '\\n' +
                     'Status: ' + player.status + '\\n' +
                     'Nationality: ' + (player.nationality || 'N/A') + '\\n' +
                     'Joined: ' + new Date(player.joinDate).toLocaleDateString()
