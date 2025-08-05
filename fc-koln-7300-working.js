@@ -8504,7 +8504,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 }
                 
                 // Remove active from all tab buttons
-                tabButtons.forEach((btn, index) => {
+                tabButtons.forEach(function(btn, index) {
                     btn.classList.remove('active');
                     console.log('Removed active from button', index);
                 });
@@ -8526,7 +8526,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         console.log('Register tab final style:', registerTab.style.cssText);
                         
                         // Also make sure the default registration form is visible
-                        setTimeout(() => {
+                        setTimeout(function() {
                             const playerForm = document.getElementById('public-player-registration');
                             const staffForm = document.getElementById('public-staff-registration');
                             console.log('Setting up registration forms:', { playerForm: !!playerForm, staffForm: !!staffForm });
@@ -9620,72 +9620,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
         }
 
-        // CRITICAL: PERMANENT AUTHENTICATION STABILIZATION SYSTEM
-        // This system ensures authentication functions remain globally accessible
+        // AUTHENTICATION STABILIZATION - Removed duplicate, using main function above
         
         function initializeAuthenticationSystem() {
             console.log('Initializing Authentication System - Permanent Stabilization Protocol');
             
-            // Essential authentication functions - MUST remain globally accessible
-            window.showAuthTab = function(tab) {
-                console.log('AUTH PROTECTION: showAuthTab called with:', tab);
-                
-                const loginTab = document.getElementById('loginTab');
-                const registerTab = document.getElementById('registerTab');
-                const forgotTab = document.getElementById('forgotPasswordTab');
-                
-                console.log('AUTH PROTECTION: Found elements:', { 
-                    loginTab: !!loginTab, 
-                    registerTab: !!registerTab, 
-                    forgotTab: !!forgotTab 
-                });
-                
-                // Hide all tabs first
-                if (loginTab) loginTab.style.display = 'none';
-                if (registerTab) registerTab.style.display = 'none';
-                if (forgotTab) forgotTab.style.display = 'none';
-                
-                if (tab === 'login') {
-                    if (loginTab) {
-                        loginTab.style.display = 'block';
-                        console.log('AUTH PROTECTION: Showing login tab');
-                    }
-                } else if (tab === 'register') {
-                    if (registerTab) {
-                        registerTab.style.display = 'block';
-                        console.log('AUTH PROTECTION: Showing register tab');
-                        
-                        // Make sure the player registration form is visible by default
-                        setTimeout(() => {
-                            const playerForm = document.getElementById('public-player-registration');
-                            const staffForm = document.getElementById('public-staff-registration');
-                            if (playerForm) {
-                                playerForm.style.display = 'block';
-                                console.log('AUTH PROTECTION: Player form visible');
-                            }
-                            if (staffForm) {
-                                staffForm.style.display = 'none';
-                                console.log('AUTH PROTECTION: Staff form hidden');
-                            }
-                        }, 50);
-                    }
-                } else if (tab === 'forgot') {
-                    if (forgotTab) {
-                        forgotTab.style.display = 'block';
-                        console.log('AUTH PROTECTION: Showing forgot tab');
-                    }
-                }
-                
-                // Update active button states
-                document.querySelectorAll('.auth-tab-btn').forEach((btn, index) => {
-                    btn.classList.remove('active');
-                    if ((tab === 'login' && index === 0) || (tab === 'register' && index === 1)) {
-                        btn.classList.add('active');
-                        console.log('AUTH PROTECTION: Added active to button', index);
-                    }
-                });
-            };
-
+            // showAuthTab function is already defined above - no duplicate needed
+            
             window.showForgotPassword = function() {
                 window.showAuthTab('forgot');
             };
@@ -11568,30 +11509,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         function systemWipe() { if(confirm('WIPE ENTIRE SYSTEM? This cannot be undone.')) alert('System wipe initiated'); }
         function viewActiveUsers() { alert('Active Users - Currently logged in users and sessions'); }
         
-        // Add missing showAuthTab function
-        function showAuthTab(tabName) {
-            // Hide all tab content
-            document.querySelectorAll('.admin-tab-content').forEach(function(tab) {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active class from all tab buttons
-            document.querySelectorAll('.tab-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected tab content
-            const selectedTab = document.getElementById(tabName + '-tab');
-            if (selectedTab) {
-                selectedTab.classList.add('active');
-            }
-            
-            // Add active class to selected button
-            const selectedBtn = document.querySelector('[onclick*="showAuthTab(\'' + tabName + '\')"]');
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-            }
-        }
+        // Remove duplicate showAuthTab function - using the main one defined earlier
 
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
@@ -11946,11 +11864,13 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
             
             // Add active class to selected tab and container
-            const tabSelector = '[onclick*="showChatTab(\'' + tabType + '\')"]';
-            const selectedTab = document.querySelector(tabSelector);
-            if (selectedTab) {
-                selectedTab.classList.add('active');
-            }
+            const allTabBtns = document.querySelectorAll('.chat-tab-btn');
+            allTabBtns.forEach(function(btn) {
+                const onclickAttr = btn.getAttribute('onclick');
+                if (onclickAttr && onclickAttr.includes("'" + tabType + "'")) {
+                    btn.classList.add('active');
+                }
+            });
             
             let containerId;
             switch(tabType) {
