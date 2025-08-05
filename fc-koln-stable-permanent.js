@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('.'));
+app.use('/attached_assets', express.static('attached_assets'));
 
 // In-memory storage (replace with database in production)
 const users = [
@@ -728,8 +729,25 @@ app.get('/', (req, res) => {
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <!-- FC Köln Logo -->
-            <div class="fc-koln-logo" style="text-align: center;">
-                <img src="attached_assets/1.FC Köln Football School_1754388855553.png" alt="1.FC Köln Football School" style="max-width: 200px; height: auto; margin-bottom: 30px;">
+            <div class="fc-koln-logo" style="text-align: center; margin-bottom: 30px;">
+                <svg width="200" height="140" viewBox="0 0 200 140">
+                    <!-- Goat silhouette (jumping goat mascot) -->
+                    <path d="M75 25 Q85 15 95 20 Q105 25 115 35 Q125 45 120 55 Q115 65 110 70 Q105 75 95 75 Q85 75 80 70 Q75 65 70 55 Q65 45 75 35 Z" fill="black"/>
+                    <path d="M70 35 Q60 30 55 35 Q50 40 55 45 Q60 50 70 45" fill="black"/>
+                    <path d="M120 35 Q130 30 135 35 Q140 40 135 45 Q130 50 120 45" fill="black"/>
+                    <path d="M85 20 Q82 15 85 10 Q88 15 90 20" fill="black"/>
+                    <path d="M105 20 Q102 15 105 10 Q108 15 110 20" fill="black"/>
+                    
+                    <!-- Red circle with 1.FC KÖLN -->
+                    <circle cx="100" cy="75" r="35" fill="#c8242f"/>
+                    <circle cx="100" cy="75" r="32" fill="#dc143c"/>
+                    <text x="100" y="78" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">1.FC</text>
+                    <text x="100" y="90" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">KÖLN</text>
+                    
+                    <!-- Red banner -->
+                    <rect x="37" y="115" width="126" height="22" fill="#c8242f"/>
+                    <text x="100" y="130" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">FOOTBALL SCHOOL</text>
+                </svg>
             </div>
             
             <!-- Main Title -->
