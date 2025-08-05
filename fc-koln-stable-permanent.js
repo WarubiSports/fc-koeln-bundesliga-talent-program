@@ -1,7 +1,14 @@
 const express = require('express');
 const path = require('path');
+const sgMail = require('@sendgrid/mail');
+const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Configure SendGrid
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Middleware
 app.use(express.json());
@@ -26,6 +33,9 @@ const users = [
         role: 'staff'
     }
 ];
+
+// Password reset tokens storage
+const passwordResetTokens = new Map();
 
 // Data storage
 let players = [
@@ -85,16 +95,253 @@ app.post('/auth/register', (req, res) => {
     res.json({ success: true, user: userResponse });
 });
 
-app.post('/auth/forgot-password', (req, res) => {
+app.post('/auth/forgot-password', async (req, res) => {
     const { email } = req.body;
     const user = users.find(u => u.email === email);
     
-    if (user) {
-        console.log(`Password reset requested for: ${email}`);
-        res.json({ success: true, message: 'Password reset instructions sent to your email' });
-    } else {
-        res.status(404).json({ success: false, message: 'Email not found' });
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'Email not found' });
     }
+    
+    // Generate secure reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = Date.now() + 3600000; // 1 hour from now
+    
+    // Store token
+    passwordResetTokens.set(resetToken, {
+        userId: user.id,
+        email: user.email,
+        expires: tokenExpiry
+    });
+    
+    // Create reset link
+    const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`;
+    
+    // Send email if SendGrid is configured
+    if (process.env.SENDGRID_API_KEY) {
+        try {
+            const msg = {
+                to: email,
+                from: 'noreply@fc-koln-talent.com', // Sender email
+                subject: '1.FC Köln - Password Reset Request',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: #dc143c; color: white; padding: 20px; text-align: center;">
+                            <h1>1.FC Köln Bundesliga Talent Program</h1>
+                        </div>
+                        <div style="padding: 20px; background: #f9f9f9;">
+                            <h2>Password Reset Request</h2>
+                            <p>Hello ${user.name},</p>
+                            <p>We received a request to reset your password for your FC Köln Talent Program account.</p>
+                            <p>Click the button below to reset your password:</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${resetLink}" style="background: #dc143c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+                            </div>
+                            <p>Or copy and paste this link into your browser:</p>
+                            <p style="word-break: break-all; color: #666;">${resetLink}</p>
+                            <p><strong>This link will expire in 1 hour.</strong></p>
+                            <p>If you didn't request this password reset, please ignore this email.</p>
+                            <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+                            <p style="color: #666; font-size: 12px;">1.FC Köln Bundesliga Talent Program Management System</p>
+                        </div>
+                    </div>
+                `
+            };
+            
+            await sgMail.send(msg);
+            console.log(`Password reset email sent to: ${email}`);
+            res.json({ success: true, message: 'Password reset instructions sent to your email' });
+        } catch (error) {
+            console.error('Email sending failed:', error);
+            res.status(500).json({ success: false, message: 'Failed to send reset email. Please try again later.' });
+        }
+    } else {
+        // Fallback when SendGrid is not configured
+        console.log(`Password reset requested for: ${email}`);
+        console.log(`Reset link: ${resetLink}`);
+        res.json({ success: true, message: 'Password reset instructions sent to your email (check console for link)' });
+    }
+});
+
+// Password reset endpoint
+app.post('/auth/reset-password', (req, res) => {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+        return res.status(400).json({ success: false, message: 'Token and new password are required' });
+    }
+    
+    const tokenData = passwordResetTokens.get(token);
+    
+    if (!tokenData) {
+        return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+    }
+    
+    if (Date.now() > tokenData.expires) {
+        passwordResetTokens.delete(token);
+        return res.status(400).json({ success: false, message: 'Reset token has expired' });
+    }
+    
+    // Find user and update password
+    const user = users.find(u => u.id === tokenData.userId);
+    if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    // Update password
+    user.password = newPassword;
+    
+    // Remove used token
+    passwordResetTokens.delete(token);
+    
+    console.log(`Password successfully reset for: ${user.email}`);
+    res.json({ success: true, message: 'Password has been reset successfully' });
+});
+
+// Password reset page route
+app.get('/reset-password', (req, res) => {
+    const { token } = req.query;
+    
+    if (!token) {
+        return res.status(400).send('Invalid reset link');
+    }
+    
+    const tokenData = passwordResetTokens.get(token);
+    
+    if (!tokenData || Date.now() > tokenData.expires) {
+        return res.status(400).send('Invalid or expired reset link');
+    }
+    
+    // Serve password reset page
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Reset Password - 1.FC Köln</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .reset-container {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    width: 100%;
+                    max-width: 400px;
+                    text-align: center;
+                }
+                .logo { font-size: 1.5rem; font-weight: bold; color: #dc143c; margin-bottom: 1rem; }
+                .form-group { margin-bottom: 1rem; text-align: left; }
+                label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+                input[type="password"] {
+                    width: 100%;
+                    padding: 0.75rem;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 1rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.75rem;
+                    background: #dc143c;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 1rem;
+                    cursor: pointer;
+                    font-weight: bold;
+                }
+                .btn:hover { background: #b91c3c; }
+                .message { 
+                    padding: 0.75rem; 
+                    border-radius: 5px; 
+                    margin-bottom: 1rem; 
+                    text-align: center;
+                }
+                .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+                .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+            </style>
+        </head>
+        <body>
+            <div class="reset-container">
+                <div class="logo">1.FC Köln Talent Program</div>
+                <h2>Reset Your Password</h2>
+                <p style="margin-bottom: 1.5rem; color: #666;">Enter your new password below</p>
+                
+                <div id="message"></div>
+                
+                <form id="resetForm">
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn">Reset Password</button>
+                </form>
+                
+                <p style="margin-top: 1rem;">
+                    <a href="/" style="color: #dc143c; text-decoration: none;">Back to Login</a>
+                </p>
+            </div>
+            
+            <script>
+                document.getElementById('resetForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const messageDiv = document.getElementById('message');
+                    
+                    if (newPassword !== confirmPassword) {
+                        messageDiv.innerHTML = '<div class="message error">Passwords do not match</div>';
+                        return;
+                    }
+                    
+                    if (newPassword.length < 6) {
+                        messageDiv.innerHTML = '<div class="message error">Password must be at least 6 characters long</div>';
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/auth/reset-password', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                token: '${token}', 
+                                newPassword: newPassword 
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            messageDiv.innerHTML = '<div class="message success">' + result.message + '</div>';
+                            setTimeout(() => {
+                                window.location.href = '/';
+                            }, 2000);
+                        } else {
+                            messageDiv.innerHTML = '<div class="message error">' + result.message + '</div>';
+                        }
+                    } catch (error) {
+                        messageDiv.innerHTML = '<div class="message error">Network error. Please try again.</div>';
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    `);
 });
 
 // API endpoints
