@@ -8470,8 +8470,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // Auth tab management (login/register) - AUTHENTICATION STABILITY FIX
-        window.showAuthTab = function(tabType) {
+        // CLEAN AUTH SYSTEM - Single consolidated function
+        function showAuthTab(tabType) {
             console.log('=== showAuthTab START ===');
             console.log('showAuthTab called with:', tabType);
             
@@ -8559,6 +8559,14 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 console.error('ERROR in showAuthTab:', error);
             }
         }
+        
+        // Make function globally accessible
+        window.showAuthTab = showAuthTab;
+        
+        // Add showForgotPassword function
+        window.showForgotPassword = function() {
+            showAuthTab('forgot');
+        };
 
         // Public registration type management  
         function showPublicRegistrationType(type) {
