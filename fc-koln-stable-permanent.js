@@ -2345,7 +2345,7 @@ app.get('/', (req, res) => {
                     '</div>' +
                     '<div class="player-card-details">' +
                         '<div class="player-card-detail"><strong>Age:</strong> ' + player.age + '</div>' +
-                        '<div class="player-card-detail"><strong>House:</strong> ' + player.house + '</div>' +
+                        '<div class="player-card-detail"><strong>House:</strong> ' + (player.house ? player.house.charAt(0).toUpperCase() + player.house.slice(1) : 'N/A') + '</div>' +
                         '<div class="player-card-detail"><strong>Nationality:</strong> ' + (player.nationality || 'N/A') + '</div>' +
                         '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
