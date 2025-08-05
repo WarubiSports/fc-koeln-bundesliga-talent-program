@@ -208,7 +208,7 @@ app.get('/', (req, res) => {
             padding: 2rem;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
         }
         
         .logo {
@@ -249,6 +249,13 @@ app.get('/', (req, res) => {
         .tab-btn.active {
             background: #dc143c;
             color: white;
+            border-radius: 25px;
+        }
+        
+        .tab-btn:not(.active) {
+            background: transparent;
+            color: #666;
+            border-radius: 25px;
         }
         
         .auth-form {
@@ -720,11 +727,29 @@ app.get('/', (req, res) => {
     <!-- Authentication Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
-            <div class="logo">
-                <h1>1.FC Köln</h1>
-                <p>Bundesliga Talent Program</p>
+            <!-- FC Köln Logo -->
+            <div class="fc-koln-logo">
+                <svg width="120" height="120" viewBox="0 0 120 120" style="margin-bottom: 20px;">
+                    <!-- Goat silhouette -->
+                    <path d="M35 25 Q45 15 55 20 Q60 25 65 30 Q70 35 75 45 Q80 55 75 65 Q70 70 65 75 Q60 80 50 85 Q40 80 35 70 Q30 60 35 50 Q35 40 35 25" fill="black"/>
+                    <!-- Red circle with 1.FC -->
+                    <circle cx="60" cy="70" r="25" fill="#dc143c"/>
+                    <text x="60" y="75" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">1.FC</text>
+                    <text x="60" y="85" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">KÖLN</text>
+                </svg>
+                <!-- Red banner -->
+                <div style="background: #dc143c; color: white; padding: 8px 24px; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 30px;">
+                    FOOTBALL SCHOOL
+                </div>
             </div>
             
+            <!-- Main Title -->
+            <div class="main-title">
+                <h1 style="color: #dc143c; font-size: 28px; font-weight: bold; text-align: center; margin-bottom: 8px;">1.FC Köln Bundesliga Talent Program</h1>
+                <p style="color: #888; font-size: 16px; text-align: center; margin-bottom: 40px;">Management System</p>
+            </div>
+            
+            <!-- Tab Buttons -->
             <div class="tab-buttons">
                 <button class="tab-btn active" data-tab="login">Sign In</button>
                 <button class="tab-btn" data-tab="register">Join Program</button>
@@ -735,7 +760,7 @@ app.get('/', (req, res) => {
             <!-- Login Form -->
             <form class="auth-form active" id="loginForm" data-form="login">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
+                    <label for="loginEmail">Email Address</label>
                     <input type="email" id="loginEmail" value="max.bisinger@warubi-sports.com" required>
                 </div>
                 <div class="form-group">
@@ -744,38 +769,130 @@ app.get('/', (req, res) => {
                 </div>
                 <button type="submit" class="btn">Sign In</button>
                 <div class="forgot-link">
-                    <a href="#" data-tab="forgot">Forgot Password?</a>
+                    <a href="#" data-tab="forgot" style="color: #dc143c; text-decoration: underline;">Forgot Password?</a>
                 </div>
             </form>
             
             <!-- Register Form -->
             <form class="auth-form" id="registerForm" data-form="register">
-                <div class="form-group">
-                    <label for="registerName">Full Name</label>
-                    <input type="text" id="registerName" required>
+                <div class="registration-title">
+                    <h3 style="color: #333; text-align: center; margin-bottom: 30px;">1.FC Köln Bundesliga Talent Program Registration</h3>
                 </div>
-                <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" required>
+                
+                <!-- Registration Type Selection -->
+                <div class="registration-types" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                    <div class="reg-type active" data-type="player" style="border: 2px solid #dc143c; background: #fef2f2; padding: 20px; border-radius: 8px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">⚽</div>
+                        <div style="font-weight: bold; color: #333; margin-bottom: 4px;">Player Registration</div>
+                        <div style="color: #666; font-size: 14px;">Current FC Köln signed players</div>
+                    </div>
+                    <div class="reg-type" data-type="staff" style="border: 2px solid #e5e7eb; background: #f9fafb; padding: 20px; border-radius: 8px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">👨‍💼</div>
+                        <div style="font-weight: bold; color: #333; margin-bottom: 4px;">Staff Registration</div>
+                        <div style="color: #666; font-size: 14px;">Current FC Köln staff members</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" required>
+                
+                <!-- Player Registration Form -->
+                <div id="playerRegForm" class="registration-form">
+                    <h4 style="color: #333; text-align: center; margin-bottom: 25px;">Player Registration Form</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label for="playerEmail">Email Address *</label>
+                            <input type="email" id="playerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number *</label>
+                            <input type="tel" id="phoneNumber" required>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth *</label>
+                            <input type="date" id="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nationality">Nationality *</label>
+                            <select id="nationality" required>
+                                <option value="">Select nationality</option>
+                                <option value="German">German</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="primaryPosition">Primary Position *</label>
+                        <select id="primaryPosition" required>
+                            <option value="">Select position</option>
+                            <option value="GOALKEEPER">Goalkeeper</option>
+                            <option value="DEFENDER">Defender</option>
+                            <option value="MIDFIELDER">Midfielder</option>
+                            <option value="FORWARD">Forward</option>
+                            <option value="STRIKER">Striker</option>
+                            <option value="WINGER">Winger</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label for="additionalInfo">Additional Information *</label>
+                        <textarea id="additionalInfo" rows="4" placeholder="Any special requirements, medical conditions, or information we should know" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="width: 100%; background: #dc143c; color: white; font-size: 16px; font-weight: bold;">Complete Registration</button>
+                    
+                    <p style="color: #666; font-size: 12px; text-align: center; margin-top: 15px;">
+                        * This registration will update your profile in our system and notify the coaching staff.
+                    </p>
                 </div>
-                <div class="form-group">
-                    <label for="registerRole">Role</label>
-                    <select id="registerRole" required>
-                        <option value="player">Player</option>
-                        <option value="staff">Staff</option>
-                    </select>
+                
+                <!-- Staff Registration Form (Hidden by default) -->
+                <div id="staffRegForm" class="registration-form" style="display: none;">
+                    <h4 style="color: #333; text-align: center; margin-bottom: 25px;">Staff Registration Form</h4>
+                    
+                    <div class="form-group">
+                        <label for="staffName">Full Name</label>
+                        <input type="text" id="staffName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffEmail">Email</label>
+                        <input type="email" id="staffEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffPassword">Password</label>
+                        <input type="password" id="staffPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffRole">Department</label>
+                        <select id="staffRole" required>
+                            <option value="staff">Coaching Staff</option>
+                            <option value="admin">Administration</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Complete Registration</button>
                 </div>
-                <button type="submit" class="btn">Join Program</button>
             </form>
             
             <!-- Forgot Password Form -->
             <form class="auth-form" id="forgotForm" data-form="forgot">
                 <div class="form-group">
-                    <label for="forgotEmail">Email</label>
+                    <label for="forgotEmail">Email Address</label>
                     <input type="email" id="forgotEmail" required>
                 </div>
                 <button type="submit" class="btn">Send Reset Instructions</button>
@@ -1228,6 +1345,26 @@ app.get('/', (req, res) => {
                     e.preventDefault();
                     showAuthTab(e.target.dataset.tab);
                 }
+                // Registration type switching
+                if (e.target.closest('.reg-type')) {
+                    const regType = e.target.closest('.reg-type');
+                    const type = regType.dataset.type;
+                    
+                    // Update active state
+                    document.querySelectorAll('.reg-type').forEach(function(rt) {
+                        rt.classList.remove('active');
+                        rt.style.border = '2px solid #e5e7eb';
+                        rt.style.background = '#f9fafb';
+                    });
+                    
+                    regType.classList.add('active');
+                    regType.style.border = '2px solid #dc143c';
+                    regType.style.background = '#fef2f2';
+                    
+                    // Show appropriate form
+                    document.getElementById('playerRegForm').style.display = type === 'player' ? 'block' : 'none';
+                    document.getElementById('staffRegForm').style.display = type === 'staff' ? 'block' : 'none';
+                }
             });
             
             // Logout button
@@ -1253,16 +1390,40 @@ app.get('/', (req, res) => {
             document.getElementById('registerForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const name = document.getElementById('registerName').value;
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const role = document.getElementById('registerRole').value;
+                const activeRegType = document.querySelector('.reg-type.active').dataset.type;
                 
-                const result = await apiRequest('/auth/register', { name, email, password, role });
+                let registrationData;
+                
+                if (activeRegType === 'player') {
+                    registrationData = {
+                        name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+                        email: document.getElementById('playerEmail').value,
+                        password: 'TempPass123', // Temporary password for demo
+                        role: 'player',
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        phoneNumber: document.getElementById('phoneNumber').value,
+                        dateOfBirth: document.getElementById('dateOfBirth').value,
+                        nationality: document.getElementById('nationality').value,
+                        position: document.getElementById('primaryPosition').value,
+                        additionalInfo: document.getElementById('additionalInfo').value
+                    };
+                } else {
+                    registrationData = {
+                        name: document.getElementById('staffName').value,
+                        email: document.getElementById('staffEmail').value,
+                        password: document.getElementById('staffPassword').value,
+                        role: document.getElementById('staffRole').value
+                    };
+                }
+                
+                const result = await apiRequest('/auth/register', registrationData);
                 
                 if (result.success) {
-                    currentUser = result.user;
-                    showMainApp();
+                    showAuthMessage('Registration successful! Please contact administration for account activation.', 'success');
+                    setTimeout(function() {
+                        showAuthTab('login');
+                    }, 2000);
                 } else {
                     showAuthMessage(result.message || 'Registration failed', 'error');
                 }
