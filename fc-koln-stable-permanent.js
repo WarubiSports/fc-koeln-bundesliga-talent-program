@@ -728,19 +728,8 @@ app.get('/', (req, res) => {
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <!-- FC Köln Logo -->
-            <div class="fc-koln-logo">
-                <svg width="120" height="120" viewBox="0 0 120 120" style="margin-bottom: 20px;">
-                    <!-- Goat silhouette -->
-                    <path d="M35 25 Q45 15 55 20 Q60 25 65 30 Q70 35 75 45 Q80 55 75 65 Q70 70 65 75 Q60 80 50 85 Q40 80 35 70 Q30 60 35 50 Q35 40 35 25" fill="black"/>
-                    <!-- Red circle with 1.FC -->
-                    <circle cx="60" cy="70" r="25" fill="#dc143c"/>
-                    <text x="60" y="75" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">1.FC</text>
-                    <text x="60" y="85" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">KÖLN</text>
-                </svg>
-                <!-- Red banner -->
-                <div style="background: #dc143c; color: white; padding: 8px 24px; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 30px;">
-                    FOOTBALL SCHOOL
-                </div>
+            <div class="fc-koln-logo" style="text-align: center;">
+                <img src="attached_assets/1.FC Köln Football School_1754388855553.png" alt="1.FC Köln Football School" style="max-width: 200px; height: auto; margin-bottom: 30px;">
             </div>
             
             <!-- Main Title -->
