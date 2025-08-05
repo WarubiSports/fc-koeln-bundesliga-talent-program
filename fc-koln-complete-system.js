@@ -1286,7 +1286,7 @@ app.get('/', (req, res) => {
             });
             
             document.getElementById(pageId).classList.add('active');
-            document.querySelector('[onclick="showPage(\'' + pageId + '\')"]').classList.add('active');
+            document.querySelector('[onclick*="showPage(' + pageId + ')"]').classList.add('active');
             
             // Load page-specific data
             if (pageId === 'players') {
