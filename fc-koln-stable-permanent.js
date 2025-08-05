@@ -730,7 +730,8 @@ app.get('/', (req, res) => {
         <div class="auth-card">
             <!-- FC Köln Logo -->
             <div class="fc-koln-logo" style="text-align: center; margin-bottom: 30px;">
-                <svg width="200" height="140" viewBox="0 0 200 140">
+                <img src="/attached_assets/fc-koln-logo.png" alt="1.FC Köln Football School" style="max-width: 200px; height: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <svg width="200" height="140" viewBox="0 0 200 140" style="display: none;">
                     <!-- Goat silhouette (jumping goat mascot) -->
                     <path d="M75 25 Q85 15 95 20 Q105 25 115 35 Q125 45 120 55 Q115 65 110 70 Q105 75 95 75 Q85 75 80 70 Q75 65 70 55 Q65 45 75 35 Z" fill="black"/>
                     <path d="M70 35 Q60 30 55 35 Q50 40 55 45 Q60 50 70 45" fill="black"/>
