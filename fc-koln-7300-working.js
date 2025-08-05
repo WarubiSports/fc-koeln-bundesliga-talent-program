@@ -9131,6 +9131,31 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             }
             
             if (!window.calendarEvents) {
+                window.calendarEvents = [];
+            }
+            
+            // Find and remove the event
+            const eventIndex = window.calendarEvents.findIndex(event => event.id === eventId);
+            if (eventIndex !== -1) {
+                window.calendarEvents.splice(eventIndex, 1);
+                alert('Event deleted successfully!');
+                
+                // Refresh the calendar view
+                if (window.displayCalendar) {
+                    window.displayCalendar();
+                }
+                renderCurrentCalendarView();
+            } else {
+                alert('Event not found!');
+            }
+        };
+
+        window.deleteEventFromCalendar = function(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) {
+                return;
+            }
+            
+            if (!window.calendarEvents) {
                 return;
             }
             
@@ -9472,16 +9497,42 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         });
 
         window.editEvent = function(eventId) {
-            // For now, just show event details - full edit functionality could be added later
-            const event = window.calendarEvents.find(e => e.id === eventId);
-            if (event) {
-                let details = 'Event Details:\\n\\n';
-                details += 'Title: ' + event.title + '\\n';
-                details += 'Type: ' + event.type + '\\n';
-                details += 'Date: ' + new Date(event.date).toLocaleDateString() + '\\n';
-                details += 'Time: ' + event.time + '\\n';
-                details += 'Location: ' + (event.location || 'Not specified') + '\\n';
-                details += 'Duration: ' + event.duration + ' minutes\\n';
+            const event = window.calendarEvents ? window.calendarEvents.find(e => e.id === eventId) : null;
+            if (!event) {
+                alert('Event not found!');
+                return;
+            }
+            
+            // Create edit form
+            const newTitle = prompt('Enter event title:', event.title);
+            if (newTitle === null) return; // User cancelled
+            
+            const newDate = prompt('Enter event date (YYYY-MM-DD):', event.date);
+            if (newDate === null) return; // User cancelled
+            
+            const newTime = prompt('Enter event time (HH:MM):', event.time);
+            if (newTime === null) return; // User cancelled
+            
+            const newLocation = prompt('Enter event location:', event.location || '');
+            if (newLocation === null) return; // User cancelled
+            
+            const newDescription = prompt('Enter event description:', event.description || '');
+            if (newDescription === null) return; // User cancelled
+            
+            // Update the event
+            event.title = newTitle;
+            event.date = newDate;
+            event.time = newTime;
+            event.location = newLocation;
+            event.description = newDescription;
+            
+            alert('Event updated successfully!');
+            
+            // Refresh the calendar view
+            if (window.displayCalendar) {
+                window.displayCalendar();
+            }
+            renderCurrentCalendarView();
                 details += 'Priority: ' + event.priority + '\\n';
                 
                 if (event.selectedPlayers && event.selectedPlayers.length > 0) {
@@ -10601,15 +10652,28 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         function editPlayer(playerId) {
             const player = playerStorage.find(p => p.id === playerId);
-            if (!player) return;
+            if (!player) {
+                alert('Player not found!');
+                return;
+            }
 
             // Populate the edit form with current player data
-            document.getElementById('editFirstName').value = player.firstName;
-            document.getElementById('editLastName').value = player.lastName;
-            document.getElementById('editPosition').value = player.position;
-            document.getElementById('editAge').value = player.age;
-            document.getElementById('editNationality').value = player.nationality;
-            document.getElementById('editStatus').value = player.status;
+            document.getElementById('editFirstName').value = player.firstName || '';
+            document.getElementById('editLastName').value = player.lastName || '';
+            document.getElementById('editPosition').value = player.position || 'midfielder';
+            document.getElementById('editAge').value = player.age || 18;
+            document.getElementById('editNationality').value = player.nationality || 'Germany';
+            document.getElementById('editStatus').value = player.status || 'active';
+            document.getElementById('editHouse').value = player.house || 'Widdersdorf 1';
+            document.getElementById('editRoom').value = player.room || '';
+            document.getElementById('editContract').value = player.contractPeriod || '';
+            document.getElementById('editNotes').value = player.specialNotes || '';
+            
+            // Store the player ID for saving
+            document.getElementById('playerEditModal').setAttribute('data-player-id', playerId);
+            
+            // Show the modal
+            document.getElementById('playerEditModal').style.display = 'block';
             document.getElementById('editHouse').value = player.house;
             document.getElementById('editRoom').value = player.room;
             document.getElementById('editContractPeriod').value = player.contractPeriod;
@@ -11181,10 +11245,40 @@ const FC_KOLN_APP = `<!DOCTYPE html>
 
         // Simplified - removed call and settings functions
 
+        // Global variable to track current chat
+        let currentChatId = null;
+
+        function openChat(chatId) {
+            currentChatId = chatId;
+            loadChatMessages(chatId);
+            
+            // Update active chat item in sidebar
+            document.querySelectorAll('.chat-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+            
+            const chatElement = document.querySelector('[onclick="openChat(\'' + chatId + '\')"]');
+            if (chatElement) {
+                chatElement.classList.add('active');
+            }
+            
+            // Show chat area on mobile
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) {
+                chatContainer.classList.add('chat-open');
+            }
+        }
+
+        function startChatWith(userId) {
+            openChat(userId);
+        }
+
         function loadChatMessages(chatId) {
             // Update header based on selected chat
             const contactName = document.querySelector('.contact-name');
             const contactStatus = document.querySelector('.contact-status');
+            
+            if (!contactName || !contactStatus) return;
             
             switch(chatId) {
                 case 'thomas-ellinger':
@@ -11195,7 +11289,6 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     contactName.textContent = 'Coach Martinez';
                     contactStatus.textContent = 'Online • Head Coach';
                     break;
-
                 case 'jonas-weber':
                     contactName.textContent = 'Jonas Weber';
                     contactStatus.textContent = 'Online • Player - Goalkeeper';
@@ -11204,11 +11297,74 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                     contactName.textContent = 'Widdersdorf 1';
                     contactStatus.textContent = '12 members • House Group';
                     break;
+                case 'widdersdorf-2':
+                    contactName.textContent = 'Widdersdorf 2';
+                    contactStatus.textContent = '8 members • House Group';
+                    break;
+                case 'widdersdorf-3':
+                    contactName.textContent = 'Widdersdorf 3';
+                    contactStatus.textContent = '10 members • House Group';
+                    break;
                 case 'team-captains':
                     contactName.textContent = 'Team Captains';
                     contactStatus.textContent = '4 members • Leadership Group';
                     break;
+                case 'injured-players':
+                    contactName.textContent = 'Recovery Support';
+                    contactStatus.textContent = '3 members • Support Group';
+                    break;
+                default:
+                    contactName.textContent = 'Select Chat';
+                    contactStatus.textContent = 'Choose a conversation';
             }
+            
+            // Load sample messages for the selected chat
+            loadSampleMessages(chatId);
+        }
+        
+        function loadSampleMessages(chatId) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (!messagesContainer) return;
+            
+            // Clear previous messages
+            messagesContainer.innerHTML = '';
+            
+            const sampleMessages = {
+                'thomas-ellinger': [
+                    {type: 'received', text: 'Kitchen inspection tomorrow at 9 AM', time: '14:30'},
+                    {type: 'received', text: 'Please make sure all areas are clean', time: '14:31'},
+                    {type: 'sent', text: 'Understood, will prepare everything', time: '14:35'}
+                ],
+                'coach-martinez': [
+                    {type: 'received', text: 'Great performance in today\'s training!', time: '13:15'},
+                    {type: 'sent', text: 'Thank you coach, working hard to improve', time: '13:20'}
+                ],
+                'widdersdorf-1': [
+                    {type: 'received', text: 'Kitchen roster updated', time: '15:45'},
+                    {type: 'received', text: 'New cleaning schedule posted', time: '15:46'},
+                    {type: 'sent', text: 'Thanks for the update!', time: '15:50'}
+                ]
+            };
+            
+            const messages = sampleMessages[chatId] || [];
+            
+            messages.forEach(function(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message ' + message.type;
+                messageDiv.innerHTML = 
+                    '<div class="message-content">' +
+                        '<div class="message-bubble">' +
+                            message.text +
+                        '</div>' +
+                        '<div class="message-time">' +
+                            '<span>' + message.time + '</span>' +
+                            (message.type === 'sent' ? '<span class="message-status delivered">✓</span>' : '') +
+                        '</div>' +
+                    '</div>';
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         function showFilePreview(file) {
@@ -11256,7 +11412,7 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             // Add event listeners to checkboxes when they exist
             setTimeout(() => {
                 const checkboxes = document.querySelectorAll('.grocery-item input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
+                checkboxes.forEach(function(checkbox) {
                     checkbox.addEventListener('change', function() {
                         if (window.updateOrderTotal) {
                             window.updateOrderTotal();
@@ -11274,6 +11430,123 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         // Missing function definitions
         function closePlayerEditModal() {
             document.getElementById('playerEditModal').style.display = 'none';
+        }
+        
+        function savePlayerChanges() {
+            const modal = document.getElementById('playerEditModal');
+            const playerId = modal.getAttribute('data-player-id');
+            
+            if (!playerId) {
+                alert('Error: Player ID not found');
+                return;
+            }
+            
+            const player = playerStorage.find(p => p.id === playerId);
+            if (!player) {
+                alert('Error: Player not found');
+                return;
+            }
+            
+            // Update player data
+            player.firstName = document.getElementById('editFirstName').value;
+            player.lastName = document.getElementById('editLastName').value;
+            player.position = document.getElementById('editPosition').value;
+            player.age = parseInt(document.getElementById('editAge').value);
+            player.nationality = document.getElementById('editNationality').value;
+            player.status = document.getElementById('editStatus').value;
+            player.house = document.getElementById('editHouse').value;
+            player.room = document.getElementById('editRoom').value;
+            player.contractPeriod = document.getElementById('editContract').value;
+            player.specialNotes = document.getElementById('editNotes').value;
+            
+            alert('Player profile updated successfully!');
+            closePlayerEditModal();
+            
+            // Refresh player display if on players page
+            if (document.getElementById('players').style.display !== 'none') {
+                showPage('players');
+            }
+        }
+        
+        // New chat and group creation functions
+        function startNewChat() {
+            const userName = prompt('Enter username or email to start a new chat:');
+            if (userName && userName.trim()) {
+                const chatId = userName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                alert('New chat started with ' + userName + '! (In a real app, this would search users and start a conversation)');
+                openChat(chatId);
+            }
+        }
+        
+        function createNewGroup() {
+            const groupName = prompt('Enter group name:');
+            if (groupName && groupName.trim()) {
+                const groupDescription = prompt('Enter group description (optional):');
+                const groupId = groupName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                
+                alert('Group "' + groupName + '" created successfully! (In a real app, this would create a new group chat)');
+                openChat(groupId);
+            }
+        }
+        
+        function createNewHouse() {
+            const houseName = prompt('Enter house name (e.g., "Widdersdorf 4"):');
+            if (houseName && houseName.trim()) {
+                const houseId = houseName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                
+                alert('House "' + houseName + '" created successfully! (In a real app, this would create a new house group)');
+                openChat(houseId);
+            }
+        }
+        
+        // Player status control functions
+        function changePlayerStatus(playerId, newStatus) {
+            const player = playerStorage.find(p => p.id === playerId);
+            if (!player) {
+                alert('Player not found!');
+                return;
+            }
+            
+            const statusOptions = {
+                'active': 'Active - Available for all activities',
+                'injured': 'Injured - Limited participation',
+                'suspended': 'Suspended - Temporarily restricted',
+                'on-loan': 'On Loan - Playing for another team'
+            };
+            
+            if (confirm('Change player status to: ' + statusOptions[newStatus] + '?')) {
+                player.status = newStatus;
+                alert('Player status updated successfully!');
+                
+                // Refresh display
+                if (document.getElementById('players').style.display !== 'none') {
+                    showPage('players');
+                }
+            }
+        }
+        
+        function showPlayerStatusMenu(playerId) {
+            const player = playerStorage.find(p => p.id === playerId);
+            if (!player) return;
+            
+            const statusMenu = 'Current Status: ' + player.status + '\n\n' +
+                '1. Active - Available for all activities\n' +
+                '2. Injured - Limited participation\n' +
+                '3. Suspended - Temporarily restricted\n' +
+                '4. On Loan - Playing for another team\n\n' +
+                'Enter number (1-4) to change status:';
+            
+            const choice = prompt(statusMenu);
+            const statusMap = {
+                '1': 'active',
+                '2': 'injured', 
+                '3': 'suspended',
+                '4': 'on-loan'
+            };
+            
+            if (statusMap[choice]) {
+                changePlayerStatus(playerId, statusMap[choice]);
+            }
         }
 
 
@@ -11373,6 +11646,318 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                         <div class="form-group">
                             <label>Room Number</label>
                             <input type="text" id="editRoom" class="form-control" placeholder="e.g., 12A">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contract Period</label>
+                            <input type="text" id="editContract" class="form-control" placeholder="e.g., 2024-2026">
+                        </div>
+                        <div class="form-group">
+                            <label>Special Notes</label>
+                            <textarea id="editNotes" class="form-control" rows="3" placeholder="Medical info, dietary requirements, etc."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePlayerEditModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePlayerChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Mobile Communication Layout Improvements */
+        @media (max-width: 768px) {
+            .chat-container {
+                display: flex;
+                flex-direction: column;
+                height: calc(100vh - 120px);
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+                height: 300px;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                overflow-y: auto;
+            }
+            
+            .chat-main {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+            }
+            
+            .chat-container.chat-open .chat-sidebar {
+                display: none;
+            }
+            
+            .chat-container.chat-open .chat-main {
+                height: 100%;
+            }
+            
+            .messages-container {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1rem;
+                min-height: 200px;
+                max-height: calc(100vh - 200px);
+            }
+            
+            .message-input-container {
+                position: sticky;
+                bottom: 0;
+                background: white;
+                border-top: 1px solid #e5e7eb;
+                padding: 1rem;
+                margin: 0;
+            }
+            
+            .message-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+                min-height: 44px; /* Touch target size */
+            }
+            
+            .send-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            /* Back button for mobile */
+            .mobile-back-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 0.5rem;
+                color: #dc2626;
+            }
+            
+            .chat-header .mobile-back-btn {
+                margin-right: 1rem;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-back-btn {
+                display: none;
+            }
+            
+            .chat-container {
+                height: calc(100vh - 120px);
+                display: flex;
+            }
+            
+            .chat-sidebar {
+                width: 300px;
+                border-right: 1px solid #e5e7eb;
+            }
+            
+            .chat-main {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+        
+        /* Enhanced Mobile Layout for All Pages */
+        @media (max-width: 768px) {
+            .page {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+                max-height: calc(100vh - 2rem);
+                overflow-y: auto;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            
+            .btn {
+                min-height: 44px;
+                font-size: 16px;
+            }
+            
+            .calendar-grid {
+                font-size: 0.85rem;
+            }
+            
+            .calendar-day {
+                min-height: 60px;
+                padding: 0.25rem;
+            }
+            
+            .player-card {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Player Status Control UI */
+        .player-status-controls {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .status-control-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-control-btn:hover {
+            background: #4b5563;
+        }
+        
+        .status-control-btn.active {
+            background: #dc2626;
+        }
+        
+        .status-control-btn.injured {
+            background: #f59e0b;
+        }
+        
+        .status-control-btn.suspended {
+            background: #ef4444;
+        }
+        
+        .status-control-btn.on-loan {
+            background: #3b82f6;
+        }
+        
+        /* Enhanced Chat Tab Functionality */
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+        }
+        
+        .chat-tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .chat-tab-btn.active {
+            border-bottom-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .chat-list-container {
+            display: none;
+        }
+        
+        .chat-list-container.active {
+            display: block;
+        }
+        
+        /* New Group/House Creation Buttons */
+        .chat-creation-buttons {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            background: #f8f9fa;
+        }
+        
+        .create-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .create-btn:hover {
+            background: #b91c1c;
+        }
+    </style>
+
+    <script>
+        // Add mobile back button functionality
+        function addMobileBackButton() {
+            const chatHeader = document.querySelector('.chat-header');
+            if (chatHeader && !chatHeader.querySelector('.mobile-back-btn')) {
+                const backBtn = document.createElement('button');
+                backBtn.className = 'mobile-back-btn';
+                backBtn.innerHTML = '←';
+                backBtn.onclick = function() {
+                    document.querySelector('.chat-container').classList.remove('chat-open');
+                };
+                chatHeader.insertBefore(backBtn, chatHeader.firstChild);
+            }
+        }
+        
+        // Add chat tab functionality
+        function showChatTab(tabType) {
+            // Remove active class from all tabs and containers
+            document.querySelectorAll('.chat-tab-btn').forEach(function(btn) { 
+                btn.classList.remove('active'); 
+            });
+            document.querySelectorAll('.chat-list-container').forEach(function(container) { 
+                container.classList.remove('active'); 
+            });
+            
+            // Add active class to selected tab and container
+            document.querySelector('[onclick="showChatTab(\'' + tabType + '\')"]').classList.add('active');
+            
+            let containerId;
+            switch(tabType) {
+                case 'direct':
+                    containerId = 'direct-chats';
+                    break;
+                case 'groups':
+                    containerId = 'group-chats';
+                    break;
+                case 'channels':
+                    containerId = 'house-chats';
+                    break;
+            }
+            
+            if (containerId) {
+                document.getElementById(containerId).classList.add('active');
+            }
+        }
+        
+        // Initialize mobile improvements
+        document.addEventListener('DOMContentLoaded', function() {
+            addMobileBackButton();
+            
+            // Add creation buttons to chat sidebar
+            const chatSidebar = document.querySelector('.chat-sidebar');
+            if (chatSidebar && !chatSidebar.querySelector('.chat-creation-buttons')) {
+                const creationDiv = document.createElement('div');
+                creationDiv.className = 'chat-creation-buttons';
+                creationDiv.innerHTML = 
+                    '<button class="create-btn" onclick="startNewChat()">+ Start New Chat</button>' +
+                    '<button class="create-btn" onclick="createNewGroup()">+ Create Group</button>' +
+                    '<button class="create-btn" onclick="createNewHouse()">+ Create House</button>';
+                chatSidebar.appendChild(creationDiv);
+            }
+        });
+    </script>
                         </div>
                     </div>
                     <div class="form-row">

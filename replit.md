@@ -14,6 +14,15 @@ Preferred communication style: Simple, everyday language.
 - **Chat System Cleanup**: Removed Ahmad Hassan and other test users from communications/chat functionality
 - **User Management**: System now properly separates administrators from players - player database is empty and ready for actual player registrations
 
+### Communication System Improvements (August 4, 2025)
+- **Fixed User Switching**: Chat window now correctly updates when switching between users/conversations
+- **Mobile Layout**: Optimized communication section for mobile devices with proper message display and input field positioning
+- **Calendar Event Management**: Fully implemented edit and delete functionality for calendar events
+- **Player Profile Editing**: Complete player profile editing functionality with save/cancel buttons and form validation
+- **New Group Creation**: Added ability to create new message groups, houses, and direct chats
+- **Player Status Control**: Implemented clear UI for managing player availability status (active, injured, suspended, on-loan)
+- **Enhanced Mobile Experience**: Added responsive design improvements, back buttons, and touch-friendly interface elements
+
 ## System Architecture
 
 ### UI/UX Decisions
