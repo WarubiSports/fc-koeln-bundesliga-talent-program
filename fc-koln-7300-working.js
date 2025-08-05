@@ -7888,8 +7888,8 @@ const FC_KOLN_APP = `<!DOCTYPE html>
                 <div id="user-management" class="admin-section active">
                     <h3>👥 User Management</h3>
                     <div class="admin-tabs">
-                        <button class="tab-btn active" onclick="showAdminTab('pending')">Pending Approvals</button>
-                        <button class="tab-btn" onclick="showAdminTab('users')">Active Users</button>
+                        <button class="tab-btn active" onclick="showAuthTab('pending')">Pending Approvals</button>
+                        <button class="tab-btn" onclick="showAuthTab('users')">Active Users</button>
                     </div>
 
                     <div id="pending-tab" class="admin-tab-content active">
@@ -11567,6 +11567,31 @@ const FC_KOLN_APP = `<!DOCTYPE html>
         function systemRestart() { if(confirm('Restart system?')) alert('System restart initiated'); }
         function systemWipe() { if(confirm('WIPE ENTIRE SYSTEM? This cannot be undone.')) alert('System wipe initiated'); }
         function viewActiveUsers() { alert('Active Users - Currently logged in users and sessions'); }
+        
+        // Add missing showAuthTab function
+        function showAuthTab(tabName) {
+            // Hide all tab content
+            document.querySelectorAll('.admin-tab-content').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const selectedTab = document.getElementById(tabName + '-tab');
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Add active class to selected button
+            const selectedBtn = document.querySelector('[onclick*="showAuthTab(\'' + tabName + '\')"]');
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+        }
 
         console.log('1.FC Köln Bundesliga Talent Program loaded successfully');
         console.log('Complete application with Dashboard, Players, Chores, Calendar, Food Orders, Communications, House Management, and Admin');
@@ -11921,7 +11946,11 @@ const FC_KOLN_APP = `<!DOCTYPE html>
             });
             
             // Add active class to selected tab and container
-            document.querySelector('[onclick="showChatTab(\'' + tabType + '\')"]').classList.add('active');
+            const tabSelector = '[onclick*="showChatTab(\'' + tabType + '\')"]';
+            const selectedTab = document.querySelector(tabSelector);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
             
             let containerId;
             switch(tabType) {
