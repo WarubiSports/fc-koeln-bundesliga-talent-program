@@ -741,6 +741,125 @@ app.get('/', (req, res) => {
             border-left: 4px solid #dc143c;
         }
         
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .player-overview-section, .recent-activity-section, .house-competition-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .player-overview-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .player-overview-card {
+            background: white;
+            border: 2px solid #dc143c;
+            border-radius: 8px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .player-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .player-position {
+            color: #dc143c;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .player-house {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .player-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        
+        .status-active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .status-training {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .status-rest {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .view-all-link {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: #dc143c;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+        
+        .rank-trophy {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .week-challenges {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
         .stat-header {
             color: #dc143c;
             font-size: 0.9rem;
@@ -1001,8 +1120,32 @@ app.get('/', (req, res) => {
                 padding: 1rem;
             }
             
-            .dashboard-grid {
+            .dashboard-stats {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .dashboard-content-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .player-overview-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .player-info {
+                align-items: center;
+            }
+            
+            .house-rank {
+                padding: 0.75rem;
+            }
+            
+            .rank-trophy {
+                margin-right: 0.5rem;
+                width: 20px;
             }
         }
     </style>
@@ -1397,7 +1540,8 @@ app.get('/', (req, res) => {
                     <h1 class="page-title">1.FC Köln Bundesliga Talent Program Dashboard</h1>
                 </div>
                 
-                <div class="dashboard-grid">
+                <!-- Top Stats Cards -->
+                <div class="dashboard-stats">
                     <div class="stat-card">
                         <div class="stat-header">Total Players</div>
                         <div class="stat-value" id="totalPlayers">24</div>
@@ -1420,26 +1564,58 @@ app.get('/', (req, res) => {
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <div class="player-overview-card">
-                        <div class="competition-header">
-                            <span>🏆</span>
-                            <span>Player Overview</span>
+                <!-- Dashboard Content Grid -->
+                <div class="dashboard-content-grid">
+                    <!-- Player Overview Section -->
+                    <div class="player-overview-section">
+                        <div class="section-header">
+                            <h2>🏆 Player Overview</h2>
                         </div>
-                        <div id="playerOverview">
-                            <!-- Player cards will be populated here -->
+                        <div class="player-overview-cards">
+                            <div class="player-overview-card">
+                                <div class="player-info">
+                                    <div class="player-name">Max Finkgräfe</div>
+                                    <div class="player-position">⚽ STRIKER</div>
+                                    <div class="player-house">Widdersdorf 1</div>
+                                </div>
+                                <div class="player-status status-active">ACTIVE</div>
+                            </div>
+                            <div class="player-overview-card">
+                                <div class="player-info">
+                                    <div class="player-name">Tim Lemperle</div>
+                                    <div class="player-position">⚽ WINGER</div>
+                                    <div class="player-house">Widdersdorf 3</div>
+                                </div>
+                                <div class="player-status status-active">ACTIVE</div>
+                            </div>
+                            <div class="player-overview-card">
+                                <div class="player-info">
+                                    <div class="player-name">Linton Maina</div>
+                                    <div class="player-position">⚽ WINGER</div>
+                                    <div class="player-house">Widdersdorf 2</div>
+                                </div>
+                                <div class="player-status status-training">TRAINING</div>
+                            </div>
+                            <div class="player-overview-card">
+                                <div class="player-info">
+                                    <div class="player-name">Florian Kainz</div>
+                                    <div class="player-position">⚽ MIDFIELDER</div>
+                                    <div class="player-house">Widdersdorf 1</div>
+                                </div>
+                                <div class="player-status status-rest">REST DAY</div>
+                            </div>
                         </div>
-                        <div style="text-align: center; margin-top: 1rem;">
-                            <a href="#" data-page="players" style="color: #dc143c; text-decoration: none; font-weight: 500;">View All Players →</a>
+                        <div class="view-all-link">
+                            <button class="btn-link" data-page="players">View All Players →</button>
                         </div>
                     </div>
                     
-                    <div class="recent-activity">
-                        <div class="activity-header">
-                            <span>📊</span>
-                            <span>Recent Activity</span>
+                    <!-- Recent Activity Section -->
+                    <div class="recent-activity-section">
+                        <div class="section-header">
+                            <h2>📈 Recent Activity</h2>
                         </div>
-                        <div id="recentActivityFeed">
+                        <div class="recent-activity">
                             <div class="activity-item">
                                 <div class="activity-time">10:30 AM</div>
                                 <div class="activity-content">
@@ -1447,7 +1623,6 @@ app.get('/', (req, res) => {
                                     <div class="activity-description">Morning fitness training - 18 players attended</div>
                                 </div>
                             </div>
-                            
                             <div class="activity-item">
                                 <div class="activity-time">9:15 AM</div>
                                 <div class="activity-content">
@@ -1455,7 +1630,6 @@ app.get('/', (req, res) => {
                                     <div class="activity-description">Dennis Huseinbasic completed profile setup</div>
                                 </div>
                             </div>
-                            
                             <div class="activity-item">
                                 <div class="activity-time">8:45 AM</div>
                                 <div class="activity-content">
@@ -1463,44 +1637,49 @@ app.get('/', (req, res) => {
                                     <div class="activity-description">22 players submitted lunch preferences</div>
                                 </div>
                             </div>
+                            <div class="activity-item">
+                                <div class="activity-time">8:00 AM</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">House Chore Completed</div>
+                                    <div class="activity-description">Widdersdorf 2 completed weekly cleaning tasks</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="house-competition">
-                    <div class="competition-header">
-                        <span>🏠</span>
-                        <span>House Competition Leaderboard</span>
+                <!-- House Competition Leaderboard -->
+                <div class="house-competition-section">
+                    <div class="section-header">
+                        <h2>🏠 House Competition Leaderboard</h2>
                     </div>
-                    
-                    <div class="house-rank house-rank-1">
-                        <div class="rank-number">🥇</div>
-                        <div class="house-info">
-                            <div class="house-name">Widdersdorf 2</div>
-                            <div class="house-stats">8 players • Clean record</div>
+                    <div class="house-leaderboard">
+                        <div class="house-rank house-rank-1">
+                            <div class="rank-trophy">🥇</div>
+                            <div class="house-info">
+                                <div class="house-name">Widdersdorf 2</div>
+                                <div class="house-stats">8 players • Clean record</div>
+                            </div>
+                            <div class="house-points">945 pts</div>
                         </div>
-                        <div class="house-points">945 pts</div>
-                    </div>
-                    
-                    <div class="house-rank house-rank-2">
-                        <div class="rank-number">🥈</div>
-                        <div class="house-info">
-                            <div class="house-name">Widdersdorf 1</div>
-                            <div class="house-stats">9 players • 2 pending tasks</div>
+                        <div class="house-rank house-rank-2">
+                            <div class="rank-trophy">🥈</div>
+                            <div class="house-info">
+                                <div class="house-name">Widdersdorf 1</div>
+                                <div class="house-stats">9 players • 2 pending tasks</div>
+                            </div>
+                            <div class="house-points">920 pts</div>
                         </div>
-                        <div class="house-points">920 pts</div>
-                    </div>
-                    
-                    <div class="house-rank house-rank-3">
-                        <div class="rank-number">🥉</div>
-                        <div class="house-info">
-                            <div class="house-name">Widdersdorf 3</div>
-                            <div class="house-stats">7 players • 1 pending task</div>
+                        <div class="house-rank house-rank-3">
+                            <div class="rank-trophy">🥉</div>
+                            <div class="house-info">
+                                <div class="house-name">Widdersdorf 3</div>
+                                <div class="house-stats">7 players • 1 pending task</div>
+                            </div>
+                            <div class="house-points">885 pts</div>
                         </div>
-                        <div class="house-points">885 pts</div>
                     </div>
-                    
-                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.9rem;">
+                    <div class="week-challenges">
                         <strong>This Week:</strong> Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)
                     </div>
                 </div>
