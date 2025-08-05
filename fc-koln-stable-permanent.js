@@ -2394,14 +2394,7 @@ app.get('/', (req, res) => {
             container.innerHTML = html;
         }
         
-        function formatHouseName(house) {
-            const houseMap = {
-                'widdersdorf1': 'Widdersdorf 1',
-                'widdersdorf2': 'Widdersdorf 2',
-                'widdersdorf3': 'Widdersdorf 3'
-            };
-            return houseMap[house] || house;
-        }
+        // formatHouseName function moved to player management section
         
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
