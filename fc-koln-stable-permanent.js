@@ -171,6 +171,50 @@ app.post('/api/messages', (req, res) => {
     res.json({ success: true, message });
 });
 
+// Serve the FC Köln logo
+app.get('/api/logo', (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    
+    try {
+        // Try multiple possible paths
+        const possiblePaths = [
+            'attached_assets/1.FC Köln Football School_1754388855553.png',
+            'attached_assets/fc-koln-logo.png'
+        ];
+        
+        // Also search for any FC Köln related PNG files
+        try {
+            const files = fs.readdirSync('attached_assets/');
+            const fcKolnFile = files.find(file => 
+                file.toLowerCase().includes('fc') && 
+                file.toLowerCase().includes('köln') && 
+                file.toLowerCase().endsWith('.png')
+            );
+            if (fcKolnFile) {
+                possiblePaths.unshift(path.join('attached_assets', fcKolnFile));
+            }
+        } catch (e) {
+            console.log('Could not read directory');
+        }
+        
+        for (const logoPath of possiblePaths) {
+            if (fs.existsSync(logoPath)) {
+                const logoData = fs.readFileSync(logoPath);
+                res.setHeader('Content-Type', 'image/png');
+                res.setHeader('Cache-Control', 'public, max-age=86400');
+                res.send(logoData);
+                return;
+            }
+        }
+        
+        res.status(404).send('Logo not found');
+    } catch (error) {
+        console.error('Logo error:', error);
+        res.status(500).send('Error loading logo');
+    }
+});
+
 // Serve the main HTML file
 app.get('/', (req, res) => {
     res.send(`
@@ -730,7 +774,7 @@ app.get('/', (req, res) => {
         <div class="auth-card">
             <!-- FC Köln Logo -->
             <div class="fc-koln-logo" style="text-align: center; margin-bottom: 30px;">
-                <img src="/attached_assets/fc-koln-logo.png" alt="1.FC Köln Football School" style="max-width: 200px; height: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="/api/logo" alt="1.FC Köln Football School" style="max-width: 200px; height: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <svg width="200" height="140" viewBox="0 0 200 140" style="display: none;">
                     <!-- Goat silhouette (jumping goat mascot) -->
                     <path d="M75 25 Q85 15 95 20 Q105 25 115 35 Q125 45 120 55 Q115 65 110 70 Q105 75 95 75 Q85 75 80 70 Q75 65 70 55 Q65 45 75 35 Z" fill="black"/>
