@@ -2291,11 +2291,13 @@ app.get('/', (req, res) => {
         
         async function loadPlayers() {
             try {
-                const response = await fetch('/api/players');
+                // Add cache-busting timestamp
+                const response = await fetch('/api/players?_=' + Date.now());
                 const data = await response.json();
                 
                 if (data.success) {
                     players = data.players;
+                    console.log('Loaded players:', players); // Debug log
                     renderPlayersGrid();
                     updatePlayerOverviewStats();
                 }
@@ -2549,18 +2551,8 @@ app.get('/', (req, res) => {
         }
         
         function formatHouseName(house) {
-            if (!house) return 'N/A';
-            
-            // Handle different formats
-            if (house.toLowerCase().includes('widdersdorf')) {
-                // Extract number and format properly
-                const match = house.match(/(\d+)/);
-                const number = match ? match[1] : '';
-                return 'Widdersdorf ' + number;
-            }
-            
-            // Default capitalization
-            return house.charAt(0).toUpperCase() + house.slice(1);
+            // Since backend data is already properly formatted, just return it
+            return house || 'N/A';
         }
         
         async function viewPlayerDetails(playerId) {
