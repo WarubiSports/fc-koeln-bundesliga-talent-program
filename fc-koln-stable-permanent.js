@@ -2032,7 +2032,6 @@ app.get('/', (req, res) => {
                 <div class="player-directory">
                     <div class="directory-header">
                         <h3>👥 Player Directory</h3>
-                        <button class="btn btn-primary" data-action="add-player">Add New Player</button>
                     </div>
                     <div class="players-grid" id="playersGrid">
                         <div class="no-players-message">
@@ -2040,96 +2039,6 @@ app.get('/', (req, res) => {
                         </div>
                     </div>
                 </div>
-                
-                <!-- Add Player Modal -->
-                <div class="modal" id="addPlayerModal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Add New Player</h3>
-                            <button class="modal-close" data-action="close-modal">&times;</button>
-                        </div>
-                        <form id="addPlayerForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="playerName">Full Name</label>
-                                    <input type="text" id="playerName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerAge">Age</label>
-                                    <input type="number" id="playerAge" min="16" max="25" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerPosition">Position</label>
-                                    <select id="playerPosition" required>
-                                        <option value="">Select Position</option>
-                                        <option value="GOALKEEPER">Goalkeeper</option>
-                                        <option value="DEFENDER">Defender</option>
-                                        <option value="MIDFIELDER">Midfielder</option>
-                                        <option value="STRIKER">Striker</option>
-                                        <option value="WINGER">Winger</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerHouse">House Assignment</label>
-                                    <select id="playerHouse" required>
-                                        <option value="">Select House</option>
-                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerNationality">Nationality</label>
-                                    <input type="text" id="playerNationality" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerStatus">Status</label>
-                                    <select id="playerStatus" required>
-                                        <option value="active">Active</option>
-                                        <option value="training">Training</option>
-                                        <option value="injured">Injured</option>
-                                        <option value="rest">Rest</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-action="close-modal">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Add Player</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-                                <label for="playerAge">Age</label>
-                                <input type="number" id="playerAge" min="16" max="25" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="playerPosition">Position</label>
-                                <select id="playerPosition" required>
-                                    <option value="">Select Position</option>
-                                    <option value="GOALKEEPER">Goalkeeper</option>
-                                    <option value="DEFENDER">Defender</option>
-                                    <option value="MIDFIELDER">Midfielder</option>
-                                    <option value="FORWARD">Forward</option>
-                                    <option value="STRIKER">Striker</option>
-                                    <option value="WINGER">Winger</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="playerHouse">House Assignment</label>
-                                <select id="playerHouse" required>
-                                    <option value="">Select House</option>
-                                    <option value="widdersdorf1">Widdersdorf 1</option>
-                                    <option value="widdersdorf2">Widdersdorf 2</option>
-                                    <option value="widdersdorf3">Widdersdorf 3</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn">Add Player</button>
-                    </form>
-                </div>
-                
-
             </div>
             
             <!-- Other pages would go here -->
@@ -2441,8 +2350,7 @@ app.get('/', (req, res) => {
                         '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
                     '<div class="player-card-actions">' +
-                        '<button class="btn btn-small btn-secondary" data-action="edit-player" data-id="' + player.id + '">Edit</button>' +
-                        '<button class="btn btn-small btn-danger" data-action="delete-player" data-id="' + player.id + '">Remove</button>' +
+                        '<button class="btn btn-small btn-secondary" data-action="view-player" data-id="' + player.id + '">View Details</button>' +
                     '</div>' +
                 '</div>';
             });
@@ -2618,24 +2526,7 @@ app.get('/', (req, res) => {
                 }
             });
             
-            document.getElementById('addPlayerForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const player = {
-                    name: document.getElementById('playerName').value,
-                    age: parseInt(document.getElementById('playerAge').value),
-                    position: document.getElementById('playerPosition').value,
-                    house: document.getElementById('playerHouse').value
-                };
-                
-                const result = await apiRequest('/api/players', player);
-                
-                if (result.success) {
-                    this.reset();
-                    loadPlayers();
-                    loadDashboardData();
-                }
-            });
+            // Player form removed - all user management handled in dedicated User Management section
         });
         
         // Player management functionality
@@ -2651,56 +2542,31 @@ app.get('/', (req, res) => {
             if (houseFilter) houseFilter.addEventListener('change', renderPlayersGrid);
             if (statusFilter) statusFilter.addEventListener('change', renderPlayersGrid);
             
-            // Modal functionality
-            const modal = document.getElementById('addPlayerModal');
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.classList.remove('active');
-                    }
-                });
-            }
+            // Player management is now view-only - editing handled in User Management section
             
             // Enhanced event delegation for player management
             document.addEventListener('click', function(e) {
                 const action = e.target.getAttribute('data-action');
                 
-                if (action === 'add-player') {
-                    const modal = document.getElementById('addPlayerModal');
-                    if (modal) modal.classList.add('active');
-                } else if (action === 'close-modal') {
-                    const modal = document.getElementById('addPlayerModal');
-                    if (modal) modal.classList.remove('active');
-                } else if (action === 'edit-player') {
+                if (action === 'view-player') {
                     const playerId = e.target.getAttribute('data-id');
-                    editPlayer(playerId);
-                } else if (action === 'delete-player') {
-                    const playerId = e.target.getAttribute('data-id');
-                    deletePlayer(playerId);
+                    viewPlayerDetails(playerId);
                 }
             });
         }
         
-        async function editPlayer(playerId) {
-            console.log('Edit player:', playerId);
-            // Future: Open edit modal with player data
-        }
-        
-        async function deletePlayer(playerId) {
-            if (confirm('Are you sure you want to remove this player?')) {
-                try {
-                    const response = await fetch('/api/players/' + playerId, {
-                        method: 'DELETE'
-                    });
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        loadPlayers();
-                        loadDashboardData();
-                    }
-                } catch (error) {
-                    console.error('Failed to delete player:', error);
-                }
+        async function viewPlayerDetails(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (player) {
+                alert('Player Details:\\n\\n' +
+                    'Name: ' + player.name + '\\n' +
+                    'Age: ' + player.age + '\\n' +
+                    'Position: ' + player.position + '\\n' +
+                    'House: ' + player.house + '\\n' +
+                    'Status: ' + player.status + '\\n' +
+                    'Nationality: ' + (player.nationality || 'N/A') + '\\n' +
+                    'Joined: ' + new Date(player.joinDate).toLocaleDateString()
+                );
             }
         }
         
