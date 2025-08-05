@@ -1058,9 +1058,17 @@ app.get('/', (req, res) => {
         <!-- App Header -->
         <div class="app-header">
             <div class="app-logo">
-                <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: #dc143c; font-weight: bold;">FC</span>
-                </div>
+                <svg width="40" height="40" viewBox="0 0 40 40" style="background: white; border-radius: 50%; padding: 2px;">
+                    <!-- Red circle background -->
+                    <circle cx="20" cy="20" r="18" fill="#dc143c"/>
+                    <!-- White inner circle -->
+                    <circle cx="20" cy="20" r="12" fill="white"/>
+                    <!-- Red center with text -->
+                    <circle cx="20" cy="20" r="8" fill="#dc143c"/>
+                    <text x="20" y="24" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">1.FC</text>
+                    <!-- Goat silhouette (simplified) -->
+                    <path d="M15 10 Q18 8 22 10 Q24 12 22 15 Q20 16 18 15 Q16 12 15 10" fill="black" opacity="0.8"/>
+                </svg>
                 <div class="app-title">1.FC Köln Bundesliga Talent Program</div>
             </div>
             <div class="app-user">
@@ -1073,7 +1081,7 @@ app.get('/', (req, res) => {
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
             <button class="nav-tab" onclick="showPage('players')">Players</button>
-            <button class="nav-tab" onclick="showPage('housing')">Housing</button>
+            <button class="nav-tab" onclick="showPage('chores')">Housing</button>
             <button class="nav-tab" onclick="showPage('food-orders')">Food Orders</button>
             <button class="nav-tab" onclick="showPage('communications')">Communications</button>
             <button class="nav-tab" onclick="showPage('calendar')">Calendar</button>
@@ -1295,7 +1303,7 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
-            <!-- Chores Page -->
+            <!-- Housing/Chores Page -->
             <div class="page" id="chores">
                 <div class="page-header">
                     <h1 class="page-title">Chore Management</h1>
@@ -1619,7 +1627,12 @@ app.get('/', (req, res) => {
             });
             
             document.getElementById(pageId).classList.add('active');
-            document.querySelector('[onclick*="showPage(' + pageId + ')"]').classList.add('active');
+            
+            // Find and activate the correct tab
+            const targetTab = document.querySelector('[onclick="showPage(\'' + pageId + '\')"]');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
             
             // Load page-specific data
             if (pageId === 'players') {
