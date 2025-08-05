@@ -1026,6 +1026,7 @@ app.get('/', (req, res) => {
             <div class="tab-buttons">
                 <button class="tab-btn active" data-tab="login">Sign In</button>
                 <button class="tab-btn" data-tab="register">Join Program</button>
+                <button class="tab-btn" data-tab="forgot">Reset Password</button>
             </div>
             
             <div id="authMessage"></div>
