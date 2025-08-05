@@ -1628,11 +1628,20 @@ app.get('/', (req, res) => {
             
             document.getElementById(pageId).classList.add('active');
             
-            // Find and activate the correct tab
-            const targetTab = document.querySelector('[onclick="showPage(\'' + pageId + '\')"]');
-            if (targetTab) {
-                targetTab.classList.add('active');
-            }
+            // Find and activate the correct tab - use simpler approach
+            const allTabs = document.querySelectorAll('.nav-tab');
+            allTabs.forEach(function(tab) {
+                if (tab.textContent.toLowerCase().includes(pageId.toLowerCase()) || 
+                    (pageId === 'dashboard' && tab.textContent === 'Dashboard') ||
+                    (pageId === 'players' && tab.textContent === 'Players') ||
+                    (pageId === 'chores' && tab.textContent === 'Housing') ||
+                    (pageId === 'food-orders' && tab.textContent === 'Food Orders') ||
+                    (pageId === 'communications' && tab.textContent === 'Communications') ||
+                    (pageId === 'calendar' && tab.textContent === 'Calendar') ||
+                    (pageId === 'admin' && tab.textContent === 'User Management')) {
+                    tab.classList.add('active');
+                }
+            });
             
             // Load page-specific data
             if (pageId === 'players') {
