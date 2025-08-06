@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Database**: PostgreSQL (configured for Neon serverless) managed by Drizzle ORM and Drizzle Kit for migrations.
 - **Authentication**: Token-based authentication with role-based access control (admin, staff, player). Critical authentication functions are isolated, protected, and continuously monitored for stability.
 - **Key Features**:
-    - Player management and status tracking with a comprehensive editing system.
+    - Player management and status tracking with view-only interface (advanced features planned for future implementation)
     - Administrative dashboard with full admin controls (5 categories of system management).
     - Event scheduling and facility booking.
     - Notification system with email integration.
@@ -53,6 +53,13 @@ Preferred communication style: Simple, everyday language.
     - Internal messaging system.
     - Chore management system for houses with deadlines and priority levels.
     - Security controls and emergency protocols.
+- **Future Player Management Enhancements** (planned for later development phases):
+    - Player photos/avatars and detailed profile information
+    - Performance metrics and training analytics dashboard
+    - Medical records and injury tracking system
+    - Training attendance monitoring
+    - Coach feedback and assessment tools
+    - Advanced reporting and data export capabilities
 
 ### System Design Choices
 - **Monorepo Structure**: Clear separation between client, server, and shared type definitions.
