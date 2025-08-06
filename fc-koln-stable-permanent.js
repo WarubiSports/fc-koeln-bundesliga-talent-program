@@ -2043,152 +2043,129 @@ app.get('/', (req, res) => {
             
             <!-- Housing & Chore Management Page -->
             <div class="page" id="chores">
-                <div class="p-6 space-y-6">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-red-100 p-2 rounded-lg">
-                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l2 2 4-4"></path>
-                                </svg>
-                            </div>
-                            <h2 class="text-2xl font-bold text-gray-800">Housing & Chore Management</h2>
+                <div class="page-header">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-red-100 p-2 rounded-lg">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l2 2 4-4"></path>
+                            </svg>
                         </div>
+                        <h1 class="page-title">Housing & Chore Management</h1>
                     </div>
+                </div>
 
-                    <!-- Create New Chore Assignment -->
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                        <div class="p-4 border-b border-gray-200">
-                            <button class="flex items-center gap-2 text-gray-700 font-medium hover:text-red-600" 
-                                    data-action="toggle-chore-form">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Create New Chore Assignment
-                            </button>
+                <!-- Create New Chore Assignment -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex items-center gap-2 mb-4 cursor-pointer" data-action="toggle-chore-form">
+                        <div class="w-8 h-8 border border-gray-300 rounded flex items-center justify-center text-gray-600 hover:text-red-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-gray-700">Create New Chore Assignment</span>
+                    </div>
+                    
+                    <div id="choreForm" class="hidden">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Chore Title *</label>
+                                <input type="text" id="choreTitle" placeholder="e.g., Kitchen Deep Clean, Garden Maintenance"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority Level *</label>
+                                <select id="chorePriority" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                                    <option value="">Select Priority</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Target House *</label>
+                                <select id="choreHouse" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                                    <option value="">Select House</option>
+                                    <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                    <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                    <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Assignment Type *</label>
+                                <select id="choreType" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                                    <option value="">Select Assignment</option>
+                                    <option value="individual">Individual</option>
+                                    <option value="group">Group Task</option>
+                                    <option value="rotating">Rotating</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Deadline *</label>
+                                <input type="datetime-local" id="choreDeadline"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Points Reward</label>
+                                <input type="number" id="chorePoints" placeholder="15" min="1" max="100"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
+                            </div>
                         </div>
                         
-                        <div id="choreForm" class="p-6 hidden">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Chore Title <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" id="choreTitle" 
-                                           placeholder="e.g., Kitchen Deep Clean, Garden Maintenance"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Priority Level <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="chorePriority" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                        <option value="">Select Priority</option>
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent">Urgent</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Target House <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="choreHouse" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                        <option value="">Select House</option>
-                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Assignment Type <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="choreType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                        <option value="">Select Assignment</option>
-                                        <option value="individual">Individual</option>
-                                        <option value="group">Group Task</option>
-                                        <option value="rotating">Rotating</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Deadline <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="datetime-local" id="choreDeadline"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Points Reward
-                                    </label>
-                                    <input type="number" id="chorePoints" placeholder="15" min="1" max="100"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Description & Instructions <span class="text-red-500">*</span>
-                                </label>
-                                <textarea id="choreDescription" rows="4" 
-                                          placeholder="Detailed instructions for completing this chore..."
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-                            </div>
-                            
-                            <div class="flex gap-3 mt-6">
-                                <button class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 font-medium"
-                                        data-action="create-chore">
-                                    Create Chore Assignment
-                                </button>
-                                <button class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 font-medium"
-                                        data-action="clear-chore-form">
-                                    Clear Form
-                                </button>
-                            </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description & Instructions *</label>
+                            <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for completing this chore..."
+                                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                                    data-action="create-chore">Create Chore Assignment</button>
+                            <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                                    data-action="clear-chore-form">Clear Form</button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- House Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="houseCards">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
+                <!-- House Cards -->
+                <div class="grid grid-cols-3 gap-6 mb-6" id="houseCards">
+                    <!-- Will be populated by JavaScript -->
+                </div>
 
-                    <!-- Active Chore Assignments -->
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                        <div class="p-4 border-b border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-800">Active Chore Assignments</h3>
-                            </div>
-                        </div>
-                        <div id="activeChores" class="p-6">
-                            <p class="text-gray-500 text-center py-8">No active chores assigned yet.</p>
+                <!-- Active Chore Assignments -->
+                <div class="bg-white rounded-lg shadow-sm mb-6">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-gray-800">Active Chore Assignments</h3>
                         </div>
                     </div>
+                    <div id="activeChores" class="p-6">
+                        <p class="text-gray-500 text-center py-8">No active chores assigned yet.</p>
+                    </div>
+                </div>
 
-                    <!-- Chore Completion Analytics -->
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                        <div class="p-4 border-b border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 002 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 002 2v4zm6 0a2 2 0 002 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-800">Chore Completion Analytics</h3>
-                            </div>
+                <!-- Chore Completion Analytics -->
+                <div class="bg-white rounded-lg shadow-sm">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 002 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 002 2v4zm6 0a2 2 0 002 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-gray-800">Chore Completion Analytics</h3>
                         </div>
-                        <div class="p-6">
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="choreAnalytics">
-                                <!-- Will be populated by JavaScript -->
-                            </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-4 gap-6" id="choreAnalytics">
+                            <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -2763,48 +2740,17 @@ app.get('/', (req, res) => {
             
             let html = '';
             houses.forEach(house => {
-                const completionColor = house.completion >= 90 ? 'bg-green-500' : 
-                                       house.completion >= 75 ? 'bg-yellow-500' : 'bg-red-500';
-                
-                html += '<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" style="border-left: 4px solid #dc143c;">' +
-                    '<div class="flex items-center gap-3 mb-4">' +
-                        '<div class="bg-red-100 p-2 rounded-lg">' +
-                            '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>' +
-                            '</svg>' +
-                        '</div>' +
-                        '<h3 class="text-lg font-semibold text-red-600">' + house.name + '</h3>' +
+                html += '<div class="bg-white rounded-lg border-l-4 border-red-600 p-4 shadow-sm">' +
+                    '<div class="mb-2">' +
+                        '<h3 class="font-bold text-black">' + house.name + '</h3>' +
                     '</div>' +
-                    
-                    '<div class="space-y-3 text-sm">' +
-                        '<div class="flex justify-between">' +
-                            '<span class="text-gray-600">Residents:</span>' +
-                            '<span class="font-medium">' + house.residents + ' players</span>' +
-                        '</div>' +
-                        
-                        '<div class="flex justify-between">' +
-                            '<span class="text-gray-600">House Leader:</span>' +
-                            '<span class="font-medium">' + house.leader + '</span>' +
-                        '</div>' +
-                        
-                        '<div class="space-y-2">' +
-                            '<div class="flex justify-between">' +
-                                '<span class="text-gray-600">Chore Completion:</span>' +
-                                '<span class="font-medium">' + house.completion + '%</span>' +
-                            '</div>' +
-                            '<div class="w-full bg-gray-200 rounded-full h-2">' +
-                                '<div class="' + completionColor + ' h-2 rounded-full transition-all duration-300" ' +
-                                     'style="width: ' + house.completion + '%"></div>' +
-                            '</div>' +
-                        '</div>' +
-                        
-                        '<div class="flex justify-between">' +
-                            '<span class="text-gray-600">Active Tasks:</span>' +
-                            '<span class="font-medium">' + house.activeTasks + ' pending</span>' +
-                        '</div>' +
+                    '<div class="text-sm text-gray-800 space-y-1">' +
+                        '<div class="text-black"><span class="font-medium">Residents:</span> ' + house.residents + ' players</div>' +
+                        '<div class="text-black"><span class="font-medium">House Leader:</span> ' + house.leader + '</div>' +
+                        '<div class="text-black"><span class="font-medium">Chore Completion:</span> ' + house.completion + '%</div>' +
+                        '<div class="text-black"><span class="font-medium">Active Tasks:</span> ' + house.activeTasks + ' pending</div>' +
                     '</div>' +
-                    
-                    '<button class="w-full mt-4 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 font-medium transition-colors"' +
+                    '<button class="text-red-600 underline text-sm mt-3 hover:text-red-700"' +
                             'data-action="view-house-details" data-house="' + house.name + '">' +
                         'View Details' +
                     '</button>' +
