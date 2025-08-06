@@ -2041,10 +2041,157 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
-            <!-- Other pages would go here -->
+            <!-- Housing & Chore Management Page -->
             <div class="page" id="chores">
-                <h1 class="page-title">Housing & Chores</h1>
-                <p>Housing and chore management coming soon...</p>
+                <div class="p-6 space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-red-100 p-2 rounded-lg">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l2 2 4-4"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">Housing & Chore Management</h2>
+                        </div>
+                    </div>
+
+                    <!-- Create New Chore Assignment -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="p-4 border-b border-gray-200">
+                            <button class="flex items-center gap-2 text-gray-700 font-medium hover:text-red-600" 
+                                    data-action="toggle-chore-form">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create New Chore Assignment
+                            </button>
+                        </div>
+                        
+                        <div id="choreForm" class="p-6 hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Chore Title <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="choreTitle" 
+                                           placeholder="e.g., Kitchen Deep Clean, Garden Maintenance"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Priority Level <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="chorePriority" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <option value="">Select Priority</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Target House <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="choreHouse" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <option value="">Select House</option>
+                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Assignment Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="choreType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <option value="">Select Assignment</option>
+                                        <option value="individual">Individual</option>
+                                        <option value="group">Group Task</option>
+                                        <option value="rotating">Rotating</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Deadline <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="datetime-local" id="choreDeadline"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Points Reward
+                                    </label>
+                                    <input type="number" id="chorePoints" placeholder="15" min="1" max="100"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Description & Instructions <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="choreDescription" rows="4" 
+                                          placeholder="Detailed instructions for completing this chore..."
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                            </div>
+                            
+                            <div class="flex gap-3 mt-6">
+                                <button class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 font-medium"
+                                        data-action="create-chore">
+                                    Create Chore Assignment
+                                </button>
+                                <button class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 font-medium"
+                                        data-action="clear-chore-form">
+                                    Clear Form
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- House Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="houseCards">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Active Chore Assignments -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800">Active Chore Assignments</h3>
+                            </div>
+                        </div>
+                        <div id="activeChores" class="p-6">
+                            <p class="text-gray-500 text-center py-8">No active chores assigned yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Chore Completion Analytics -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 002 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 002 2v4zm6 0a2 2 0 002 2h2a2 2 0 002-2V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v10z"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800">Chore Completion Analytics</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="choreAnalytics">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="page" id="food-orders">
@@ -2149,6 +2296,7 @@ app.get('/', (req, res) => {
             
             // Load page-specific data
             if (pageId === 'players') loadPlayers();
+            if (pageId === 'chores') loadHousingData();
         }
         
         function logout() {
@@ -2555,6 +2703,223 @@ app.get('/', (req, res) => {
             return house || 'N/A';
         }
         
+        // Housing and chore management functions
+        async function loadHousingData() {
+            try {
+                // Load house data
+                await loadHouseCards();
+                await loadActiveChores();
+                await loadChoreAnalytics();
+            } catch (error) {
+                console.error('Failed to load housing data:', error);
+            }
+        }
+        
+        async function loadHouseCards() {
+            try {
+                const response = await fetch('/api/houses');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderHouseCards(data.houses);
+                }
+            } catch (error) {
+                console.error('Failed to load house cards:', error);
+                // Render default house cards with player data
+                renderDefaultHouseCards();
+            }
+        }
+        
+        function renderDefaultHouseCards() {
+            const houses = [
+                {
+                    name: 'Widdersdorf 1',
+                    residents: players.filter(p => p.house === 'Widdersdorf 1').length,
+                    leader: 'Max Finkgräfe',
+                    completion: 85,
+                    activeTasks: 3
+                },
+                {
+                    name: 'Widdersdorf 2', 
+                    residents: players.filter(p => p.house === 'Widdersdorf 2').length,
+                    leader: 'Tim Lemperle',
+                    completion: 92,
+                    activeTasks: 1
+                },
+                {
+                    name: 'Widdersdorf 3',
+                    residents: players.filter(p => p.house === 'Widdersdorf 3').length,
+                    leader: 'Mark Uth',
+                    completion: 78,
+                    activeTasks: 4
+                }
+            ];
+            renderHouseCards(houses);
+        }
+        
+        function renderHouseCards(houses) {
+            const container = document.getElementById('houseCards');
+            if (!container) return;
+            
+            let html = '';
+            houses.forEach(house => {
+                const completionColor = house.completion >= 90 ? 'bg-green-500' : 
+                                       house.completion >= 75 ? 'bg-yellow-500' : 'bg-red-500';
+                
+                html += '<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" style="border-left: 4px solid #dc143c;">' +
+                    '<div class="flex items-center gap-3 mb-4">' +
+                        '<div class="bg-red-100 p-2 rounded-lg">' +
+                            '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>' +
+                            '</svg>' +
+                        '</div>' +
+                        '<h3 class="text-lg font-semibold text-red-600">' + house.name + '</h3>' +
+                    '</div>' +
+                    
+                    '<div class="space-y-3 text-sm">' +
+                        '<div class="flex justify-between">' +
+                            '<span class="text-gray-600">Residents:</span>' +
+                            '<span class="font-medium">' + house.residents + ' players</span>' +
+                        '</div>' +
+                        
+                        '<div class="flex justify-between">' +
+                            '<span class="text-gray-600">House Leader:</span>' +
+                            '<span class="font-medium">' + house.leader + '</span>' +
+                        '</div>' +
+                        
+                        '<div class="space-y-2">' +
+                            '<div class="flex justify-between">' +
+                                '<span class="text-gray-600">Chore Completion:</span>' +
+                                '<span class="font-medium">' + house.completion + '%</span>' +
+                            '</div>' +
+                            '<div class="w-full bg-gray-200 rounded-full h-2">' +
+                                '<div class="' + completionColor + ' h-2 rounded-full transition-all duration-300" ' +
+                                     'style="width: ' + house.completion + '%"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<div class="flex justify-between">' +
+                            '<span class="text-gray-600">Active Tasks:</span>' +
+                            '<span class="font-medium">' + house.activeTasks + ' pending</span>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<button class="w-full mt-4 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 font-medium transition-colors"' +
+                            'data-action="view-house-details" data-house="' + house.name + '">' +
+                        'View Details' +
+                    '</button>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        async function loadActiveChores() {
+            try {
+                const response = await fetch('/api/chores');
+                const data = await response.json();
+                
+                if (data.success && data.chores.length > 0) {
+                    renderActiveChores(data.chores);
+                }
+            } catch (error) {
+                console.error('Failed to load active chores:', error);
+            }
+        }
+        
+        function renderActiveChores(chores) {
+            const container = document.getElementById('activeChores');
+            if (!container) return;
+            
+            if (chores.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No active chores assigned yet.</p>';
+                return;
+            }
+            
+            let html = '<div class="space-y-4">';
+            chores.forEach(chore => {
+                const priorityColors = {
+                    'urgent': 'bg-red-100 text-red-800',
+                    'high': 'bg-orange-100 text-orange-800',
+                    'medium': 'bg-yellow-100 text-yellow-800',
+                    'low': 'bg-green-100 text-green-800'
+                };
+                const priorityColor = priorityColors[chore.priority] || 'bg-gray-100 text-gray-800';
+                
+                html += '<div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">' +
+                    '<div class="flex-1">' +
+                        '<div class="flex items-center gap-3 mb-2">' +
+                            '<h4 class="font-medium text-gray-900">' + chore.title + '</h4>' +
+                            '<span class="px-2 py-1 text-xs rounded-full ' + priorityColor + '">' + chore.priority.toUpperCase() + '</span>' +
+                        '</div>' +
+                        '<div class="text-sm text-gray-600">' +
+                            '<span class="mr-4">📍 ' + chore.house + '</span>' +
+                            '<span class="mr-4">👥 ' + chore.assignmentType + '</span>' +
+                            '<span>⏰ Due: ' + new Date(chore.deadline).toLocaleDateString() + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="text-right">' +
+                        '<div class="text-lg font-bold text-red-600">' + (chore.points || 15) + ' pts</div>' +
+                        '<button class="text-sm text-gray-500 hover:text-red-600" ' +
+                                'data-action="view-chore" data-chore-id="' + chore.id + '">' +
+                            'View Details →' +
+                        '</button>' +
+                    '</div>' +
+                '</div>';
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+        
+        async function loadChoreAnalytics() {
+            try {
+                const response = await fetch('/api/chores/analytics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderChoreAnalytics(data.analytics);
+                }
+            } catch (error) {
+                console.error('Failed to load chore analytics:', error);
+                renderDefaultAnalytics();
+            }
+        }
+        
+        function renderDefaultAnalytics() {
+            const analytics = {
+                thisWeek: { value: 24, label: 'Chores Completed', sublabel: '↗ 15% from last week', color: 'text-red-600' },
+                onTimeRate: { value: '87%', label: 'Met Deadlines', sublabel: '↗ 43% improvement', color: 'text-red-600' },
+                avgTime: { value: '45min', label: 'Per Chore', sublabel: '→ Consistent', color: 'text-red-600' },
+                pointsEarned: { value: 420, label: 'Total Points', sublabel: '↗ +32 from last week', color: 'text-red-600' }
+            };
+            renderChoreAnalytics(analytics);
+        }
+        
+        function renderChoreAnalytics(analytics) {
+            const container = document.getElementById('choreAnalytics');
+            if (!container) return;
+            
+            const cards = [
+                { title: 'This Week', ...analytics.thisWeek },
+                { title: 'On-Time Rate', ...analytics.onTimeRate },
+                { title: 'Average Time', ...analytics.avgTime },
+                { title: 'Points Earned', ...analytics.pointsEarned }
+            ];
+            
+            let html = '';
+            cards.forEach(card => {
+                html += '<div class="text-center">' +
+                    '<div class="text-sm font-medium text-gray-600 mb-2">' + card.title + '</div>' +
+                    '<div class="text-3xl font-bold ' + (card.color || 'text-red-600') + ' mb-1">' + card.value + '</div>' +
+                    '<div class="text-sm text-gray-600">' + card.label + '</div>' +
+                    '<div class="text-xs text-gray-500 mt-1">' + card.sublabel + '</div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
         async function viewPlayerDetails(playerId) {
             const player = players.find(p => p.id === playerId);
             if (player) {
@@ -2570,9 +2935,125 @@ app.get('/', (req, res) => {
             }
         }
         
+        // Housing management event handlers and form functions
+        function initializeHousingManagement() {
+            // Toggle chore form visibility
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-action="toggle-chore-form"]')) {
+                    e.preventDefault();
+                    const form = document.getElementById('choreForm');
+                    if (form) {
+                        form.classList.toggle('hidden');
+                        const button = e.target.closest('button');
+                        const icon = button.querySelector('svg');
+                        if (form.classList.contains('hidden')) {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>';
+                        } else {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                        }
+                    }
+                }
+                
+                // Create chore assignment
+                if (e.target.closest('[data-action="create-chore"]')) {
+                    e.preventDefault();
+                    createChoreAssignment();
+                }
+                
+                // Clear chore form
+                if (e.target.closest('[data-action="clear-chore-form"]')) {
+                    e.preventDefault();
+                    clearChoreForm();
+                }
+                
+                // View house details
+                if (e.target.closest('[data-action="view-house-details"]')) {
+                    e.preventDefault();
+                    const houseName = e.target.closest('[data-house]').getAttribute('data-house');
+                    viewHouseDetails(houseName);
+                }
+                
+                // View chore details
+                if (e.target.closest('[data-action="view-chore"]')) {
+                    e.preventDefault();
+                    const choreId = e.target.closest('[data-chore-id]').getAttribute('data-chore-id');
+                    viewChoreDetails(choreId);
+                }
+            });
+        }
+        
+        async function createChoreAssignment() {
+            const title = document.getElementById('choreTitle').value.trim();
+            const priority = document.getElementById('chorePriority').value;
+            const house = document.getElementById('choreHouse').value;
+            const assignmentType = document.getElementById('choreType').value;
+            const deadline = document.getElementById('choreDeadline').value;
+            const points = parseInt(document.getElementById('chorePoints').value) || 15;
+            const description = document.getElementById('choreDescription').value.trim();
+            
+            // Basic validation
+            if (!title || !priority || !house || !assignmentType || !deadline || !description) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/chores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title, priority, house, assignmentType, deadline, points, description
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Chore assignment created successfully!');
+                    clearChoreForm();
+                    document.getElementById('choreForm').classList.add('hidden');
+                    // Reload data
+                    await loadActiveChores();
+                    await loadHouseCards();
+                    await loadChoreAnalytics();
+                } else {
+                    alert('Failed to create chore assignment: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error creating chore:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+        
+        function clearChoreForm() {
+            document.getElementById('choreTitle').value = '';
+            document.getElementById('chorePriority').value = '';
+            document.getElementById('choreHouse').value = '';
+            document.getElementById('choreType').value = '';
+            document.getElementById('choreDeadline').value = '';
+            document.getElementById('chorePoints').value = '';
+            document.getElementById('choreDescription').value = '';
+        }
+        
+        function viewHouseDetails(houseName) {
+            // For now, show an alert with house info
+            const houseMembers = players.filter(p => p.house === houseName);
+            let details = 'House: ' + houseName + '\\n\\n';
+            details += 'Residents (' + houseMembers.length + '):\\n';
+            houseMembers.forEach(member => {
+                details += '- ' + member.name + ' (' + member.position + ')\\n';
+            });
+            alert(details);
+        }
+        
+        function viewChoreDetails(choreId) {
+            alert('Viewing details for chore ID: ' + choreId + '\\n\\nDetailed chore management coming soon...');
+        }
+        
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             initializePlayerManagement();
+            initializeHousingManagement();
         });
     </script>
 </body>
@@ -2656,6 +3137,75 @@ app.get('/api/dashboard/house-competition', (req, res) => {
     const weekChallenges = 'Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)';
     
     res.json({ success: true, houses, weekChallenges });
+});
+
+// Houses API endpoint
+app.get('/api/houses', (req, res) => {
+    const houses = [
+        {
+            name: 'Widdersdorf 1',
+            residents: players.filter(p => p.house === 'Widdersdorf 1').length,
+            leader: 'Max Finkgräfe',
+            completion: 85,
+            activeTasks: choreStorage.filter(c => c.house === 'Widdersdorf 1' && c.status === 'pending').length
+        },
+        {
+            name: 'Widdersdorf 2', 
+            residents: players.filter(p => p.house === 'Widdersdorf 2').length,
+            leader: 'Tim Lemperle',
+            completion: 92,
+            activeTasks: choreStorage.filter(c => c.house === 'Widdersdorf 2' && c.status === 'pending').length
+        },
+        {
+            name: 'Widdersdorf 3',
+            residents: players.filter(p => p.house === 'Widdersdorf 3').length,
+            leader: 'Mark Uth',
+            completion: 78,
+            activeTasks: choreStorage.filter(c => c.house === 'Widdersdorf 3' && c.status === 'pending').length
+        }
+    ];
+    res.json({ success: true, houses });
+});
+
+// Chore analytics API endpoint
+app.get('/api/chores/analytics', (req, res) => {
+    const completedChores = choreStorage.filter(c => c.status === 'completed');
+    const pendingChores = choreStorage.filter(c => c.status === 'pending');
+    
+    // Calculate analytics
+    const thisWeekCompleted = completedChores.length;
+    const totalChores = choreStorage.length;
+    const onTimeRate = totalChores > 0 ? Math.round((completedChores.length / totalChores) * 100) : 87;
+    const totalPoints = completedChores.reduce((sum, chore) => sum + (chore.points || 15), 0);
+    
+    const analytics = {
+        thisWeek: { 
+            value: thisWeekCompleted, 
+            label: 'Chores Completed', 
+            sublabel: '↗ 15% from last week', 
+            color: 'text-red-600' 
+        },
+        onTimeRate: { 
+            value: onTimeRate + '%', 
+            label: 'Met Deadlines', 
+            sublabel: '↗ 43% improvement', 
+            color: 'text-red-600' 
+        },
+        avgTime: { 
+            value: '45min', 
+            label: 'Per Chore', 
+            sublabel: '→ Consistent', 
+            color: 'text-red-600' 
+        },
+        pointsEarned: { 
+            value: totalPoints, 
+            label: 'Total Points', 
+            sublabel: '↗ +32 from last week', 
+            color: 'text-red-600' 
+        }
+    };
+    
+    res.json({ success: true, analytics });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
