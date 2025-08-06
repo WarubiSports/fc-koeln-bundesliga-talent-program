@@ -2043,100 +2043,83 @@ app.get('/', (req, res) => {
             
             <!-- Housing & Chore Management Page -->
             <div class="page" id="chores">
-                <div class="page-header">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-red-100 p-2 rounded-lg">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4l2 2 4-4"></path>
-                            </svg>
-                        </div>
-                        <h1 class="page-title">Housing & Chore Management</h1>
-                    </div>
-                </div>
+                <div style="padding: 20px;">
+                    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #000;">Housing & Chore Management</h1>
 
-                <!-- Create New Chore Assignment -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                    <div class="flex items-center gap-2 mb-4 cursor-pointer" data-action="toggle-chore-form">
-                        <div class="w-8 h-8 border border-gray-300 rounded flex items-center justify-center text-gray-600 hover:text-red-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </div>
-                        <span class="font-medium text-gray-700">Create New Chore Assignment</span>
-                    </div>
-                    
-                    <div id="choreForm" class="hidden">
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Chore Title *</label>
-                                <input type="text" id="choreTitle" placeholder="e.g., Kitchen Deep Clean, Garden Maintenance"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority Level *</label>
-                                <select id="chorePriority" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                                    <option value="">Select Priority</option>
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Target House *</label>
-                                <select id="choreHouse" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                                    <option value="">Select House</option>
-                                    <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                    <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                    <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Assignment Type *</label>
-                                <select id="choreType" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                                    <option value="">Select Assignment</option>
-                                    <option value="individual">Individual</option>
-                                    <option value="group">Group Task</option>
-                                    <option value="rotating">Rotating</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Deadline *</label>
-                                <input type="datetime-local" id="choreDeadline"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Points Reward</label>
-                                <input type="number" id="chorePoints" placeholder="15" min="1" max="100"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500">
-                            </div>
+                    <!-- Create New Chore Assignment -->
+                    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin-bottom: 30px; background: #f9f9f9;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer;" data-action="toggle-chore-form">
+                            <div style="width: 60px; height: 60px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold;">+</div>
+                            <span style="font-weight: 500; color: #333;">Create New Chore Assignment</span>
                         </div>
                         
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description & Instructions *</label>
-                            <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for completing this chore..."
-                                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
-                        </div>
-                        
-                        <div class="flex gap-3">
-                            <button class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                                    data-action="create-chore">Create Chore Assignment</button>
-                            <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                                    data-action="clear-chore-form">Clear Form</button>
+                        <div id="choreForm" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Chore Title * <span style="color: #999;">e.g., Kitchen Deep Clean, Garden Maintenance</span></label>
+                                    <input type="text" id="choreTitle" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Priority Level *</label>
+                                    <select id="chorePriority" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        <option value="">Select Priority 🔽</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Target House *</label>
+                                    <select id="choreHouse" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        <option value="">Select House 🔽</option>
+                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Assignment Type *</label>
+                                    <select id="choreType" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        <option value="">Select Assignment 🔽</option>
+                                        <option value="individual">Individual</option>
+                                        <option value="group">Group Task</option>
+                                        <option value="rotating">Rotating</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Deadline *</label>
+                                    <input type="datetime-local" id="choreDeadline" placeholder="06/03/2025, 12:30" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Points Reward</label>
+                                    <input type="number" id="chorePoints" placeholder="15 🔺" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Description & Instructions *</label>
+                                <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for completing this chore..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px;">
+                                <button style="background: #dc143c; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;" data-action="create-chore">Create Chore Assignment</button>
+                                <button style="background: #ccc; color: #333; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;" data-action="clear-chore-form">Clear Form</button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- House Cards -->
-                <div class="grid grid-cols-3 gap-6 mb-6" id="houseCards">
-                    <!-- Will be populated by JavaScript -->
+                    <!-- House Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;" id="houseCards">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
                 </div>
+            </div>
 
                 <!-- Active Chore Assignments -->
                 <div class="bg-white rounded-lg shadow-sm mb-6">
@@ -2740,20 +2723,25 @@ app.get('/', (req, res) => {
             
             let html = '';
             houses.forEach(house => {
-                html += '<div class="bg-white rounded-lg border-l-4 border-red-600 p-4 shadow-sm">' +
-                    '<div class="mb-2">' +
-                        '<h3 class="font-bold text-black">' + house.name + '</h3>' +
+                html += '<div style="border-left: 4px solid #dc143c; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                    '<div style="display: flex; align-items: center; margin-bottom: 15px;">' +
+                        '<div style="width: 100px; height: 60px; background: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">' +
+                            '<div style="color: white; font-weight: bold; font-size: 24px;">🏠</div>' +
+                        '</div>' +
+                        '<h3 style="font-weight: bold; font-size: 18px; color: black; margin: 0;">' + house.name + '</h3>' +
                     '</div>' +
-                    '<div class="text-sm text-gray-800 space-y-1">' +
-                        '<div class="text-black"><span class="font-medium">Residents:</span> ' + house.residents + ' players</div>' +
-                        '<div class="text-black"><span class="font-medium">House Leader:</span> ' + house.leader + '</div>' +
-                        '<div class="text-black"><span class="font-medium">Chore Completion:</span> ' + house.completion + '%</div>' +
-                        '<div class="text-black"><span class="font-medium">Active Tasks:</span> ' + house.activeTasks + ' pending</div>' +
+                    '<div style="color: black; line-height: 1.4;">' +
+                        '<div><strong>Residents:</strong> ' + house.residents + ' players</div>' +
+                        '<div><strong>House Leader:</strong> ' + house.leader + '</div>' +
+                        '<div><strong>Chore Completion:</strong> ' + house.completion + '%</div>' +
+                        '<div><strong>Active Tasks:</strong> ' + house.activeTasks + ' pending</div>' +
                     '</div>' +
-                    '<button class="text-red-600 underline text-sm mt-3 hover:text-red-700"' +
-                            'data-action="view-house-details" data-house="' + house.name + '">' +
-                        'View Details' +
-                    '</button>' +
+                    '<div style="margin-top: 15px;">' +
+                        '<button style="color: #dc143c; text-decoration: underline; background: none; border: none; cursor: pointer; font-size: 14px;"' +
+                                'data-action="view-house-details" data-house="' + house.name + '">' +
+                            'View Details' +
+                        '</button>' +
+                    '</div>' +
                 '</div>';
             });
             
