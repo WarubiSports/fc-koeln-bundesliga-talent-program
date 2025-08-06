@@ -1227,114 +1227,201 @@ app.get('/', (req, res) => {
         
         /* Housing & Chore Management Styles */
         .section-header {
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1.5rem 0;
+            text-align: center;
+            position: relative;
         }
         
         .section-header h2 {
             color: #1f2937;
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
             margin: 0;
+            position: relative;
+            display: inline-block;
+            padding: 0 2rem;
+            background: #f5f7fa;
+        }
+        
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #dc143c 0%, #b91c3c 50%, #dc143c 100%);
+            z-index: 1;
+        }
+        
+        .section-header h2 {
+            z-index: 2;
+            position: relative;
         }
         
         .house-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
         }
         
         .house-card {
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            border: 3px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .house-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #dc143c 0%, #b91c3c 100%);
         }
         
         .house-card:hover {
             border-color: #dc143c;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(220, 20, 60, 0.2);
         }
         
         .house-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
         }
         
         .house-card-header h3 {
             color: #1f2937;
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 800;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .chore-completion-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
             text-align: center;
-            min-width: 50px;
+            min-width: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chore-completion-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            pointer-events: none;
         }
         
         .chore-completion-badge[data-completion="85"] {
-            background: #fef3c7;
-            color: #92400e;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
         }
         
         .chore-completion-badge[data-completion="92"] {
-            background: #d1fae5;
-            color: #065f46;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
         }
         
         .chore-completion-badge[data-completion="78"] {
-            background: #fed7d7;
-            color: #c53030;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
         }
         
         .house-info {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            background: rgba(248, 250, 252, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
         }
         
         .house-stat {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .house-stat:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
         
         .house-stat .stat-label {
             color: #6b7280;
-            font-weight: 500;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .house-stat .stat-value {
             color: #1f2937;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1rem;
         }
         
         .btn-view-details {
             width: 100%;
-            background: #dc143c;
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
             color: white;
             border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+        
+        .btn-view-details::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-view-details:hover::before {
+            left: 100%;
         }
         
         .btn-view-details:hover {
-            background: #b91c3c;
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, #b91c3c 0%, #991b3c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
         }
         
         .active-chores-section {
@@ -1358,60 +1445,76 @@ app.get('/', (req, res) => {
         
         .analytics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
         }
         
         .analytics-card {
             background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
             color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 20px;
+            padding: 2rem;
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         .analytics-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+        
+        .analytics-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(220, 20, 60, 0.4);
         }
         
         .analytics-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
         
         .analytics-number {
             font-size: 2.5rem;
-            font-weight: bold;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
         
         .analytics-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            opacity: 0.95;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
         
         .analytics-trend {
-            font-size: 0.8rem;
-            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 600;
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .chore-form-container {
@@ -2489,15 +2592,15 @@ app.get('/', (req, res) => {
                         </div>
                         <div class="house-info">
                             <div class="house-stat">
-                                <span class="stat-label">Residents:</span>
+                                <span class="stat-label">👥 Residents:</span>
                                 <span class="stat-value" id="house1-residents">8 players</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-label">👑 House Leader:</span>
                                 <span class="stat-value">Max Finkgräfe</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-label">📋 Pending Tasks:</span>
                                 <span class="stat-value">3 pending</span>
                             </div>
                         </div>
@@ -2511,15 +2614,15 @@ app.get('/', (req, res) => {
                         </div>
                         <div class="house-info">
                             <div class="house-stat">
-                                <span class="stat-label">Residents:</span>
+                                <span class="stat-label">👥 Residents:</span>
                                 <span class="stat-value" id="house2-residents">7 players</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-label">👑 House Leader:</span>
                                 <span class="stat-value">Linton Maina</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-label">📋 Pending Tasks:</span>
                                 <span class="stat-value">1 pending</span>
                             </div>
                         </div>
@@ -2533,15 +2636,15 @@ app.get('/', (req, res) => {
                         </div>
                         <div class="house-info">
                             <div class="house-stat">
-                                <span class="stat-label">Residents:</span>
+                                <span class="stat-label">👥 Residents:</span>
                                 <span class="stat-value" id="house3-residents">9 players</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-label">👑 House Leader:</span>
                                 <span class="stat-value">Tim Lemperle</span>
                             </div>
                             <div class="house-stat">
-                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-label">📋 Pending Tasks:</span>
                                 <span class="stat-value">5 pending</span>
                             </div>
                         </div>
@@ -2764,7 +2867,12 @@ app.get('/', (req, res) => {
             if (targetTab) targetTab.classList.add('active');
             
             // Load page-specific data
-            if (pageId === 'players') loadPlayers();
+            if (pageId === 'players') {
+                loadPlayers();
+            } else if (pageId === 'chores') {
+                updateHouseStatistics();
+                loadActiveChores();
+            }
         }
         
         function logout() {
