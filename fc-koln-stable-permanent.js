@@ -2043,80 +2043,79 @@ app.get('/', (req, res) => {
             
             <!-- Housing & Chore Management Page -->
             <div class="page" id="chores">
-                <div style="padding: 20px;">
-                    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #000;">Housing & Chore Management</h1>
-
-                    <!-- Create New Chore Assignment -->
-                    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin-bottom: 30px; background: #f9f9f9;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer;" data-action="toggle-chore-form">
-                            <div style="width: 60px; height: 60px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold;">+</div>
-                            <span style="font-weight: 500; color: #333;">Create New Chore Assignment</span>
+                <div style="padding: 20px; background: white; min-height: 100vh;">
+                    <h1 style="font-size: 24px; font-weight: bold; color: black; margin-bottom: 20px;">Housing & Chore Management</h1>
+                    
+                    <!-- Plus icon and form -->
+                    <div style="display: flex; flex-direction: column; border-left: 3px solid #dc143c; padding-left: 20px;">
+                        <!-- Plus icon box -->
+                        <div style="width: 100px; height: 100px; border: 2px solid #ccc; background: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; cursor: pointer;" data-action="toggle-chore-form">
+                            <div style="font-size: 48px; font-weight: bold; color: black;">+</div>
                         </div>
                         
-                        <div id="choreForm" style="display: none;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Chore Title * <span style="color: #999;">e.g., Kitchen Deep Clean, Garden Maintenance</span></label>
-                                    <input type="text" id="choreTitle" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Priority Level *</label>
-                                    <select id="chorePriority" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        <option value="">Select Priority 🔽</option>
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent">Urgent</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Target House *</label>
-                                    <select id="choreHouse" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        <option value="">Select House 🔽</option>
-                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Assignment Type *</label>
-                                    <select id="choreType" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        <option value="">Select Assignment 🔽</option>
-                                        <option value="individual">Individual</option>
-                                        <option value="group">Group Task</option>
-                                        <option value="rotating">Rotating</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Deadline *</label>
-                                    <input type="datetime-local" id="choreDeadline" placeholder="06/03/2025, 12:30" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Points Reward</label>
-                                    <input type="number" id="chorePoints" placeholder="15 🔺" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                </div>
+                        <div style="margin-bottom: 10px; font-size: 14px; color: #666;">Create New Chore Assignment</div>
+                        
+                        <div id="choreForm" style="display: block;">
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Chore Title * <span style="color: #999; font-weight: normal;">e.g., Kitchen Deep Clean, Garden Maintenance</span></label>
                             </div>
                             
                             <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Description & Instructions *</label>
-                                <textarea id="choreDescription" rows="3" placeholder="Detailed instructions for completing this chore..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Priority Level *</label>
+                                <select style="padding: 5px; border: 1px solid #ccc;">
+                                    <option>Select Priority 🔽</option>
+                                    <option>Low</option>
+                                    <option>Medium</option>
+                                    <option>High</option>
+                                    <option>Urgent</option>
+                                </select>
                             </div>
                             
-                            <div style="display: flex; gap: 10px;">
-                                <button style="background: #dc143c; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;" data-action="create-chore">Create Chore Assignment</button>
-                                <button style="background: #ccc; color: #333; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;" data-action="clear-chore-form">Clear Form</button>
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Target House *</label>
+                                <select style="padding: 5px; border: 1px solid #ccc;">
+                                    <option>Select House 🔽</option>
+                                    <option>Widdersdorf 1</option>
+                                    <option>Widdersdorf 2</option>
+                                    <option>Widdersdorf 3</option>
+                                </select>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Assignment Type *</label>
+                                <select style="padding: 5px; border: 1px solid #ccc;">
+                                    <option>Select Assignment 🔽</option>
+                                    <option>Individual</option>
+                                    <option>Group Task</option>
+                                    <option>Rotating</option>
+                                </select>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Deadline *</label>
+                                <div style="color: #999;">06/03/2025, 12:30</div>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Points Reward</label>
+                                <div style="color: #999;">15 🔺</div>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <label style="font-weight: bold; color: black; margin-bottom: 5px; display: block;">Description & Instructions *</label>
+                                <textarea style="width: 300px; height: 60px; padding: 8px; border: 1px solid #ccc; resize: none;" placeholder="Detailed instructions for completing this chore..."></textarea>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <button style="background: none; border: none; color: black; padding: 0; margin-right: 15px; text-decoration: underline; cursor: pointer;">Create Chore Assignment</button>
+                                <button style="background: none; border: none; color: black; padding: 0; text-decoration: underline; cursor: pointer;">Clear Form</button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- House Cards -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;" id="houseCards">
-                        <!-- Will be populated by JavaScript -->
+                        
+                        <!-- House display area -->
+                        <div id="houseCards" style="margin-top: 20px;">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2723,21 +2722,22 @@ app.get('/', (req, res) => {
             
             let html = '';
             houses.forEach(house => {
-                html += '<div style="border-left: 4px solid #dc143c; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
-                    '<div style="display: flex; align-items: center; margin-bottom: 15px;">' +
-                        '<div style="width: 100px; height: 60px; background: black; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">' +
-                            '<div style="color: white; font-weight: bold; font-size: 24px;">🏠</div>' +
+                html += '<div style="margin-bottom: 20px;">' +
+                    '<div style="width: 150px; height: 100px; background: black; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">' +
+                        '<div style="width: 90px; height: 60px; background: white; border-radius: 8px; position: relative;">' +
+                            '<div style="position: absolute; top: 20px; left: 25px; width: 40px; height: 20px; background: white; border-top: 8px solid black; border-left: 8px solid black; border-right: 8px solid black;"></div>' +
+                            '<div style="position: absolute; top: 35px; left: 35px; width: 20px; height: 15px; background: white; border-left: 3px solid black; border-right: 3px solid black; border-bottom: 3px solid black;"></div>' +
                         '</div>' +
-                        '<h3 style="font-weight: bold; font-size: 18px; color: black; margin: 0;">' + house.name + '</h3>' +
                     '</div>' +
-                    '<div style="color: black; line-height: 1.4;">' +
-                        '<div><strong>Residents:</strong> ' + house.residents + ' players</div>' +
-                        '<div><strong>House Leader:</strong> ' + house.leader + '</div>' +
-                        '<div><strong>Chore Completion:</strong> ' + house.completion + '%</div>' +
-                        '<div><strong>Active Tasks:</strong> ' + house.activeTasks + ' pending</div>' +
+                    '<div style="color: black; font-weight: bold; font-size: 16px; margin-bottom: 5px;">' + house.name + '</div>' +
+                    '<div style="color: black; font-size: 14px; line-height: 1.3;">' +
+                        '<div><span style="font-weight: bold;">Residents:</span> ' + house.residents + ' players</div>' +
+                        '<div><span style="font-weight: bold;">House Leader:</span> ' + house.leader + '</div>' +
+                        '<div><span style="font-weight: bold;">Chore Completion:</span> ' + house.completion + '%</div>' +
+                        '<div><span style="font-weight: bold;">Active Tasks:</span> ' + house.activeTasks + ' pending</div>' +
                     '</div>' +
-                    '<div style="margin-top: 15px;">' +
-                        '<button style="color: #dc143c; text-decoration: underline; background: none; border: none; cursor: pointer; font-size: 14px;"' +
+                    '<div style="margin-top: 8px;">' +
+                        '<button style="color: black; text-decoration: underline; background: none; border: none; cursor: pointer; font-size: 14px;"' +
                                 'data-action="view-house-details" data-house="' + house.name + '">' +
                             'View Details' +
                         '</button>' +
