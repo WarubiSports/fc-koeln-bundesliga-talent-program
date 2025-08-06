@@ -1225,6 +1225,436 @@ app.get('/', (req, res) => {
             font-size: 0.9rem;
         }
         
+        /* Housing & Chore Management Styles */
+        .section-header {
+            margin: 2rem 0 1rem 0;
+        }
+        
+        .section-header h2 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .house-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .house-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .house-card:hover {
+            border-color: #dc143c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
+        }
+        
+        .house-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .house-card-header h3 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .chore-completion-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 50px;
+        }
+        
+        .chore-completion-badge[data-completion="85"] {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .chore-completion-badge[data-completion="92"] {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .chore-completion-badge[data-completion="78"] {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        
+        .house-info {
+            margin-bottom: 1.5rem;
+        }
+        
+        .house-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .house-stat .stat-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .house-stat .stat-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .btn-view-details {
+            width: 100%;
+            background: #dc143c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-view-details:hover {
+            background: #b91c3c;
+            transform: translateY(-1px);
+        }
+        
+        .active-chores-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .no-chores-message {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+        
+        .no-chores-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .analytics-card {
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analytics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .analytics-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .analytics-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .analytics-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .analytics-trend {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .chore-form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .chore-form {
+            max-width: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-red {
+            background: #dc143c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-red:hover {
+            background: #b91c3c;
+            transform: translateY(-1px);
+        }
+        
+        .btn-gray {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gray:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+        
+        /* Active Chores Styles */
+        .chore-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #6b7280;
+        }
+        
+        .chore-item.priority-urgent {
+            border-left-color: #dc2626;
+        }
+        
+        .chore-item.priority-high {
+            border-left-color: #ea580c;
+        }
+        
+        .chore-item.priority-medium {
+            border-left-color: #d97706;
+        }
+        
+        .chore-item.priority-low {
+            border-left-color: #16a34a;
+        }
+        
+        .chore-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .chore-header h4 {
+            color: #1f2937;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .chore-priority {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-urgent .chore-priority {
+            background: #fecaca;
+            color: #dc2626;
+        }
+        
+        .priority-high .chore-priority {
+            background: #fed7aa;
+            color: #ea580c;
+        }
+        
+        .priority-medium .chore-priority {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .priority-low .chore-priority {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .chore-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .chore-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .detail-value.overdue {
+            color: #dc2626;
+            font-weight: 700;
+        }
+        
+        .chore-description {
+            color: #4b5563;
+            font-size: 0.9rem;
+            margin: 0;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        /* Responsive Design for Chore Management */
+        @media (max-width: 768px) {
+            .house-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .chore-form-container {
+                padding: 1rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.25rem;
+            }
+            
+            .chore-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .chore-detail {
+                padding: 0.25rem 0;
+            }
+        }
+        }
+        
         .house-competition {
             background: white;
             border-radius: 12px;
@@ -2043,8 +2473,194 @@ app.get('/', (req, res) => {
             
             <!-- Other pages would go here -->
             <div class="page" id="chores">
-                <h1 class="page-title">Housing & Chores</h1>
-                <p>Housing and chore management coming soon...</p>
+                <div class="page-header">
+                    <h1 class="page-title">Housing & Chore Management</h1>
+                </div>
+                
+                <!-- Three House Cards Section -->
+                <div class="section-header">
+                    <h2>🏡 House Overview</h2>
+                </div>
+                <div class="house-cards-grid">
+                    <div class="house-card" data-house="Widdersdorf 1">
+                        <div class="house-card-header">
+                            <h3>🏡 Widdersdorf 1</h3>
+                            <div class="chore-completion-badge" data-completion="85">85%</div>
+                        </div>
+                        <div class="house-info">
+                            <div class="house-stat">
+                                <span class="stat-label">Residents:</span>
+                                <span class="stat-value" id="house1-residents">8 players</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-value">Max Finkgräfe</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-value">3 pending</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-red btn-view-details" data-house="Widdersdorf 1">View Details</button>
+                    </div>
+                    
+                    <div class="house-card" data-house="Widdersdorf 2">
+                        <div class="house-card-header">
+                            <h3>🏡 Widdersdorf 2</h3>
+                            <div class="chore-completion-badge" data-completion="92">92%</div>
+                        </div>
+                        <div class="house-info">
+                            <div class="house-stat">
+                                <span class="stat-label">Residents:</span>
+                                <span class="stat-value" id="house2-residents">7 players</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-value">Linton Maina</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-value">1 pending</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-red btn-view-details" data-house="Widdersdorf 2">View Details</button>
+                    </div>
+                    
+                    <div class="house-card" data-house="Widdersdorf 3">
+                        <div class="house-card-header">
+                            <h3>🏡 Widdersdorf 3</h3>
+                            <div class="chore-completion-badge" data-completion="78">78%</div>
+                        </div>
+                        <div class="house-info">
+                            <div class="house-stat">
+                                <span class="stat-label">Residents:</span>
+                                <span class="stat-value" id="house3-residents">9 players</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">House Leader:</span>
+                                <span class="stat-value">Tim Lemperle</span>
+                            </div>
+                            <div class="house-stat">
+                                <span class="stat-label">Pending Tasks:</span>
+                                <span class="stat-value">5 pending</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-red btn-view-details" data-house="Widdersdorf 3">View Details</button>
+                    </div>
+                </div>
+                
+                <!-- Active Chore Assignments Section -->
+                <div class="section-header">
+                    <h2>📋 Active Chore Assignments</h2>
+                </div>
+                <div class="active-chores-section">
+                    <div class="no-chores-message" id="noChoresMessage">
+                        <div class="no-chores-icon">📋</div>
+                        <p>No active chores assigned yet.</p>
+                    </div>
+                    <div class="chores-list" id="choresList" style="display: none;">
+                        <!-- Active chores will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Chore Completion Analytics Section -->
+                <div class="section-header">
+                    <h2>📊 Chore Completion Analytics</h2>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-icon">📈</div>
+                        <div class="analytics-number">24</div>
+                        <div class="analytics-label">Chores Completed This Week</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-icon">⏰</div>
+                        <div class="analytics-number">89%</div>
+                        <div class="analytics-label">On-Time Rate</div>
+                        <div class="analytics-trend">+5% from last week</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-icon">⏱️</div>
+                        <div class="analytics-number">45min</div>
+                        <div class="analytics-label">Average Time per Chore</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-icon">🏆</div>
+                        <div class="analytics-number">342</div>
+                        <div class="analytics-label">Points Earned</div>
+                        <div class="analytics-trend">+18 from last week</div>
+                    </div>
+                </div>
+                
+                <!-- Create New Chore Assignment Form -->
+                <div class="section-header">
+                    <h2>➕ Create New Chore Assignment</h2>
+                </div>
+                <div class="chore-form-container">
+                    <form class="chore-form" id="choreForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="choreTitle">Chore Title *</label>
+                                <input type="text" id="choreTitle" name="title" required placeholder="e.g., Weekly Kitchen Deep Clean">
+                            </div>
+                            <div class="form-group">
+                                <label for="chorePriority">Priority Level *</label>
+                                <select id="chorePriority" name="priority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="low">Low Priority</option>
+                                    <option value="medium">Medium Priority</option>
+                                    <option value="high">High Priority</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="choreHouse">Target House *</label>
+                                <select id="choreHouse" name="house" required>
+                                    <option value="">Select House</option>
+                                    <option value="Widdersdorf 1">Widdersdorf 1</option>
+                                    <option value="Widdersdorf 2">Widdersdorf 2</option>
+                                    <option value="Widdersdorf 3">Widdersdorf 3</option>
+                                    <option value="all">All Houses</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="choreType">Assignment Type *</label>
+                                <select id="choreType" name="type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="cleaning">Cleaning</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="organization">Organization</option>
+                                    <option value="preparation">Preparation</option>
+                                    <option value="inspection">Inspection</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="choreDeadline">Deadline *</label>
+                                <input type="datetime-local" id="choreDeadline" name="deadline" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="chorePoints">Points Reward</label>
+                                <input type="number" id="chorePoints" name="points" value="15" min="5" max="50">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="choreDescription">Description & Instructions</label>
+                            <textarea id="choreDescription" name="description" rows="4" placeholder="Provide detailed instructions for completing this chore..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-red">Create Chore Assignment</button>
+                            <button type="button" class="btn btn-gray" id="clearFormBtn">Clear Form</button>
+                        </div>
+                    </form>
+                </div>
             </div>
             
             <div class="page" id="food-orders">
@@ -2573,7 +3189,168 @@ app.get('/', (req, res) => {
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             initializePlayerManagement();
+            initializeHousingManagement();
         });
+        
+        // Housing & Chore Management Functions
+        function initializeHousingManagement() {
+            updateHouseStatistics();
+            loadActiveChores();
+            
+            // View details button event listeners
+            const viewDetailsButtons = document.querySelectorAll('.btn-view-details');
+            viewDetailsButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const house = this.getAttribute('data-house');
+                    viewHouseDetails(house);
+                });
+            });
+            
+            // Chore form event listeners
+            const choreForm = document.getElementById('choreForm');
+            const clearFormBtn = document.getElementById('clearFormBtn');
+            
+            if (choreForm) {
+                choreForm.addEventListener('submit', handleChoreFormSubmit);
+            }
+            
+            if (clearFormBtn) {
+                clearFormBtn.addEventListener('click', clearChoreForm);
+            }
+        }
+        
+        function updateHouseStatistics() {
+            // Update resident counts based on actual player data
+            const house1Count = players.filter(p => p.house === 'Widdersdorf 1').length;
+            const house2Count = players.filter(p => p.house === 'Widdersdorf 2').length;
+            const house3Count = players.filter(p => p.house === 'Widdersdorf 3').length;
+            
+            const house1Element = document.getElementById('house1-residents');
+            const house2Element = document.getElementById('house2-residents');
+            const house3Element = document.getElementById('house3-residents');
+            
+            if (house1Element) house1Element.textContent = house1Count + ' players';
+            if (house2Element) house2Element.textContent = house2Count + ' players';
+            if (house3Element) house3Element.textContent = house3Count + ' players';
+        }
+        
+        function loadActiveChores() {
+            fetch('/api/chores')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderActiveChores(data.chores);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to load chores:', error);
+                });
+        }
+        
+        function renderActiveChores(chores) {
+            const choresList = document.getElementById('choresList');
+            const noChoresMessage = document.getElementById('noChoresMessage');
+            
+            if (chores.length === 0) {
+                noChoresMessage.style.display = 'block';
+                choresList.style.display = 'none';
+                return;
+            }
+            
+            noChoresMessage.style.display = 'none';
+            choresList.style.display = 'block';
+            
+            let html = '';
+            chores.forEach(chore => {
+                const deadlineDate = new Date(chore.deadline);
+                const isOverdue = deadlineDate < new Date();
+                const priorityClass = 'priority-' + chore.priority;
+                const overdueClass = isOverdue ? 'overdue' : '';
+                const descriptionHtml = chore.description ? '<p class="chore-description">' + chore.description + '</p>' : '';
+                
+                html += '<div class="chore-item ' + priorityClass + '">' +
+                    '<div class="chore-header">' +
+                        '<h4>' + chore.title + '</h4>' +
+                        '<span class="chore-priority">' + chore.priority.toUpperCase() + '</span>' +
+                    '</div>' +
+                    '<div class="chore-details">' +
+                        '<div class="chore-detail">' +
+                            '<span class="detail-label">House:</span>' +
+                            '<span class="detail-value">' + chore.house + '</span>' +
+                        '</div>' +
+                        '<div class="chore-detail">' +
+                            '<span class="detail-label">Type:</span>' +
+                            '<span class="detail-value">' + chore.type + '</span>' +
+                        '</div>' +
+                        '<div class="chore-detail">' +
+                            '<span class="detail-label">Deadline:</span>' +
+                            '<span class="detail-value ' + overdueClass + '">' + deadlineDate.toLocaleDateString() + ' ' + deadlineDate.toLocaleTimeString() + '</span>' +
+                        '</div>' +
+                        '<div class="chore-detail">' +
+                            '<span class="detail-label">Points:</span>' +
+                            '<span class="detail-value">' + chore.points + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    descriptionHtml +
+                '</div>';
+            });
+            
+            choresList.innerHTML = html;
+        }
+        
+        function viewHouseDetails(house) {
+            alert('Viewing details for ' + house + '. This feature will show detailed house information, assigned chores, and resident management.');
+        }
+        
+        async function handleChoreFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const choreData = {
+                title: formData.get('title'),
+                priority: formData.get('priority'),
+                house: formData.get('house'),
+                type: formData.get('type'),
+                deadline: formData.get('deadline'),
+                points: parseInt(formData.get('points')) || 15,
+                description: formData.get('description') || ''
+            };
+            
+            try {
+                const response = await fetch('/api/chores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(choreData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Chore assignment created successfully!');
+                    clearChoreForm();
+                    loadActiveChores(); // Refresh the chores list
+                } else {
+                    alert('Failed to create chore assignment. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error creating chore:', error);
+                alert('Error creating chore assignment. Please try again.');
+            }
+        }
+        
+        function clearChoreForm() {
+            const form = document.getElementById('choreForm');
+            if (form) {
+                form.reset();
+                // Reset points to default value
+                const pointsInput = document.getElementById('chorePoints');
+                if (pointsInput) {
+                    pointsInput.value = '15';
+                }
+            }
+        }
     </script>
 </body>
 </html>
