@@ -1942,6 +1942,297 @@ app.get('/', (req, res) => {
             color: white;
         }
         
+        /* House Details Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .house-details-modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+        
+        .house-header {
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .house-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .house-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        
+        .house-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .house-stat-card:hover {
+            border-color: #dc143c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
+        }
+        
+        .house-stat-card.stat-warning {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .house-sections {
+            padding: 2rem;
+        }
+        
+        .house-section {
+            margin-bottom: 2rem;
+        }
+        
+        .house-section h3 {
+            color: #1f2937;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .residents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .resident-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .resident-card:hover {
+            border-color: #dc143c;
+            transform: translateY(-2px);
+        }
+        
+        .resident-name {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resident-details {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resident-position, .resident-age {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            background: #e5e7eb;
+            color: #4b5563;
+            font-weight: 600;
+        }
+        
+        .resident-status {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-training {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-rest {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .house-chores-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .house-chore-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .house-chore-item:hover {
+            border-color: #dc143c;
+        }
+        
+        .house-chore-item.overdue {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .house-chore-item.completed {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        
+        .chore-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chore-title {
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .chore-meta {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .chore-priority, .chore-points, .chore-overdue, .chore-completed {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        
+        .chore-priority {
+            background: #dc143c;
+            color: white;
+        }
+        
+        .chore-points {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .chore-overdue {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .chore-completed {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .chore-details-summary {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 1rem;
+            }
+            
+            .house-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 1rem;
+            }
+            
+            .house-sections {
+                padding: 1rem;
+            }
+            
+            .residents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -3957,7 +4248,203 @@ app.get('/', (req, res) => {
         }
         
         function viewHouseDetails(house) {
-            alert('Viewing details for ' + house + '. This feature will show detailed house information, assigned chores, and resident management.');
+            // Get house residents
+            const houseResidents = players.filter(p => p.house === house);
+            
+            // Get house chores (active and completed)
+            const houseChores = choreStorage.filter(c => c.house === house && !c.archived);
+            const completedChores = houseChores.filter(c => c.completed);
+            const activeChores = houseChores.filter(c => !c.completed);
+            const overdueChores = activeChores.filter(c => new Date(c.deadline) < new Date());
+            
+            // Calculate house statistics
+            const totalPoints = completedChores.reduce((sum, chore) => sum + chore.points, 0);
+            const completionRate = houseChores.length > 0 ? Math.round((completedChores.length / houseChores.length) * 100) : 0;
+            
+            // Create house details modal content
+            let modalContent = 
+                '<div class="house-details-modal">' +
+                    '<div class="house-header">' +
+                        '<h2>🏠 ' + house + ' - House Details</h2>' +
+                        '<button class="modal-close-btn" onclick="closeHouseModal()">✕</button>' +
+                    '</div>'
+                    +
+                    '<div class="house-stats-grid">' +
+                        '<div class="house-stat-card">' +
+                            '<div class="stat-icon">👥</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + houseResidents.length + '</div>' +
+                                '<div class="stat-label">Residents</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-stat-card">' +
+                            '<div class="stat-icon">📋</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + activeChores.length + '</div>' +
+                                '<div class="stat-label">Active Chores</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-stat-card">' +
+                            '<div class="stat-icon">✅</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + completedChores.length + '</div>' +
+                                '<div class="stat-label">Completed</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-stat-card">' +
+                            '<div class="stat-icon">🏆</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + totalPoints + '</div>' +
+                                '<div class="stat-label">Total Points</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-stat-card ' + (overdueChores.length > 0 ? 'stat-warning' : '') + '">' +
+                            '<div class="stat-icon">⚠️</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + overdueChores.length + '</div>' +
+                                '<div class="stat-label">Overdue</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-stat-card">' +
+                            '<div class="stat-icon">📊</div>' +
+                            '<div class="stat-info">' +
+                                '<div class="stat-value">' + completionRate + '%</div>' +
+                                '<div class="stat-label">Completion Rate</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="house-sections">' +
+                        '<div class="house-section">' +
+                            '<h3>👥 House Residents</h3>' +
+                            '<div class="residents-grid">';
+            
+            if (houseResidents.length === 0) {
+                modalContent += '<p class="no-data">No residents assigned to this house yet.</p>';
+            } else {
+                houseResidents.forEach(resident => {
+                    const statusClass = resident.status === 'active' ? 'status-active' : 
+                                      resident.status === 'training' ? 'status-training' : 'status-rest';
+                    modalContent += 
+                        '<div class="resident-card">' +
+                            '<div class="resident-info">' +
+                                '<div class="resident-name">' + resident.name + '</div>' +
+                                '<div class="resident-details">' +
+                                    '<span class="resident-position">' + resident.position + '</span>' +
+                                    '<span class="resident-age">Age ' + resident.age + '</span>' +
+                                '</div>' +
+                                '<div class="resident-status ' + statusClass + '">' + resident.status.toUpperCase() + '</div>' +
+                            '</div>' +
+                        '</div>';
+                });
+            }
+            
+            modalContent += 
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-section">' +
+                            '<h3>📋 Active Chores (' + activeChores.length + ')</h3>' +
+                            '<div class="house-chores-list">';
+            
+            if (activeChores.length === 0) {
+                modalContent += '<p class="no-data">No active chores for this house.</p>';
+            } else {
+                activeChores.forEach(chore => {
+                    const deadlineDate = new Date(chore.deadline);
+                    const isOverdue = deadlineDate < new Date();
+                    const assignedPlayer = chore.assignedTo ? players.find(p => p.id === chore.assignedTo) : null;
+                    
+                    modalContent += 
+                        '<div class="house-chore-item ' + (isOverdue ? 'overdue' : '') + ' ' + chore.priority + '">' +
+                            '<div class="chore-summary">' +
+                                '<div class="chore-title">' + chore.title + '</div>' +
+                                '<div class="chore-meta">' +
+                                    '<span class="chore-priority">' + chore.priority.toUpperCase() + '</span>' +
+                                    '<span class="chore-points">' + chore.points + ' pts</span>' +
+                                    (isOverdue ? '<span class="chore-overdue">OVERDUE</span>' : '') +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="chore-details-summary">' +
+                                '<div>Deadline: ' + deadlineDate.toLocaleDateString() + ' ' + deadlineDate.toLocaleTimeString() + '</div>' +
+                                (assignedPlayer ? '<div>Assigned to: ' + assignedPlayer.name + '</div>' : '<div>Unassigned</div>') +
+                            '</div>' +
+                        '</div>';
+                });
+            }
+            
+            modalContent += 
+                            '</div>' +
+                        '</div>' +
+                        '<div class="house-section">' +
+                            '<h3>✅ Recent Completions (' + Math.min(completedChores.length, 5) + ')</h3>' +
+                            '<div class="house-chores-list">';
+            
+            const recentCompletions = completedChores
+                .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+                .slice(0, 5);
+            
+            if (recentCompletions.length === 0) {
+                modalContent += '<p class="no-data">No completed chores yet.</p>';
+            } else {
+                recentCompletions.forEach(chore => {
+                    const completedPlayer = chore.completedBy ? players.find(p => p.id === chore.completedBy) : null;
+                    const completedDate = new Date(chore.completedAt);
+                    
+                    modalContent += 
+                        '<div class="house-chore-item completed">' +
+                            '<div class="chore-summary">' +
+                                '<div class="chore-title">' + chore.title + '</div>' +
+                                '<div class="chore-meta">' +
+                                    '<span class="chore-points">' + chore.points + ' pts</span>' +
+                                    '<span class="chore-completed">✅ COMPLETED</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="chore-details-summary">' +
+                                '<div>Completed: ' + completedDate.toLocaleDateString() + ' ' + completedDate.toLocaleTimeString() + '</div>' +
+                                (completedPlayer ? '<div>By: ' + completedPlayer.name + '</div>' : '<div>By: Unknown</div>') +
+                            '</div>' +
+                        '</div>';
+                });
+            }
+            
+            modalContent += 
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            
+            // Create and show modal
+            showHouseModal(modalContent);
+        }
+        
+        function showHouseModal(content) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('houseModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'houseModal';
+            modalOverlay.className = 'modal-overlay';
+            modalOverlay.innerHTML = content;
+            
+            // Add to body
+            document.body.appendChild(modalOverlay);
+            
+            // Add click outside to close
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) {
+                    closeHouseModal();
+                }
+            });
+        }
+        
+        function closeHouseModal() {
+            const modal = document.getElementById('houseModal');
+            if (modal) {
+                modal.remove();
+            }
         }
         
         async function handleChoreFormSubmit(e) {
