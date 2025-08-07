@@ -4107,18 +4107,19 @@ app.get('/', (req, res) => {
                 <!-- Admin Delivery Summary Section -->
                 <div class="admin-only" style="margin-top: 3rem;">
                     <div class="page-header">
-                        <h2>📋 Delivery Summary for Kitchen Staff</h2>
-                        <p>Summary of all orders organized by house and delivery date</p>
+                        <h2>📋 House Delivery Summary</h2>
+                        <p>Order summary for staff to purchase and deliver groceries to each house</p>
                     </div>
                     
                     <div class="delivery-summary-container">
                         <div class="summary-controls">
-                            <button class="btn btn-primary" id="generateSummaryBtn">📊 Generate Current Summary</button>
-                            <button class="btn btn-secondary" id="exportDeliverySummaryBtn">📁 Export for Kitchen</button>
+                            <button class="btn btn-primary" id="generateSummaryBtn">📊 Generate Delivery Summary</button>
+                            <button class="btn btn-secondary" id="exportDeliverySummaryBtn">📁 Export House Details</button>
+                            <button class="btn btn-success" id="exportConsolidatedListBtn">🛒 Export Consolidated Shopping List</button>
                         </div>
                         
                         <div id="deliverySummaryContent">
-                            <p class="no-items">Click "Generate Current Summary" to view all pending orders</p>
+                            <p class="no-items">Click "Generate Delivery Summary" to view orders organized by house for grocery shopping and delivery</p>
                         </div>
                     </div>
                 </div>
@@ -4888,6 +4889,7 @@ app.get('/', (req, res) => {
             const clearBtn = document.getElementById('clearOrderBtn');
             const generateSummaryBtn = document.getElementById('generateSummaryBtn');
             const exportDeliverySummaryBtn = document.getElementById('exportDeliverySummaryBtn');
+            const exportConsolidatedListBtn = document.getElementById('exportConsolidatedListBtn');
             
             if (placeOrderBtn) {
                 placeOrderBtn.addEventListener('click', placeOrder);
@@ -4907,6 +4909,10 @@ app.get('/', (req, res) => {
             
             if (exportDeliverySummaryBtn) {
                 exportDeliverySummaryBtn.addEventListener('click', exportDeliverySummaryForKitchen);
+            }
+            
+            if (exportConsolidatedListBtn) {
+                exportConsolidatedListBtn.addEventListener('click', exportConsolidatedShoppingList);
             }
         }
         
@@ -5538,10 +5544,11 @@ app.get('/', (req, res) => {
             
             const ordersByHouse = groupOrdersByHouse(currentOrders);
             
-            // Create comprehensive CSV for kitchen staff
-            let csvContent = 'FC Köln Kitchen Delivery Summary\\n';
+            // Create comprehensive CSV for staff shopping and delivery
+            let csvContent = 'FC Köln House Delivery Shopping List\\n';
             csvContent += 'Delivery Date: ' + getNextDeliveryDate() + '\\n';
-            csvContent += 'Generated: ' + new Date().toLocaleString() + '\\n\\n';
+            csvContent += 'Generated: ' + new Date().toLocaleString() + '\\n';
+            csvContent += 'Purpose: Staff shopping list for house delivery coordination\\n\\n';
             
             csvContent += 'House,Player Name,Item,Quantity,Unit Price,Total Price,Order Number\\n';
             
@@ -5569,13 +5576,96 @@ app.get('/', (req, res) => {
             
             csvContent += '\\n,,,,,€' + grandTotal.toFixed(2) + ',TOTAL AMOUNT\\n';
             csvContent += ',,,,' + currentOrders.length + ' orders,,TOTAL ORDERS\\n';
+            csvContent += '\\nNOTE: Use this list to shop for groceries and deliver items to each respective house.\\n';
             
             // Create and download file
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', 'fc_koln_kitchen_delivery_' + new Date().toISOString().split('T')[0] + '.csv');
+            link.setAttribute('download', 'fc_koln_house_delivery_details_' + new Date().toISOString().split('T')[0] + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function exportConsolidatedShoppingList() {
+            const orderHistory = JSON.parse(localStorage.getItem('fckoln_order_history') || '[]');
+            const currentOrders = getCurrentActiveOrders();
+            
+            if (currentOrders.length === 0) {
+                alert('No orders to export for the next delivery.');
+                return;
+            }
+            
+            // Consolidate all items across all orders
+            const consolidatedItems = {};
+            let grandTotal = 0;
+            
+            currentOrders.forEach(order => {
+                grandTotal += order.total;
+                
+                Object.keys(order.items).forEach(itemId => {
+                    const orderItem = order.items[itemId];
+                    const itemData = findItemById(itemId);
+                    
+                    if (itemData && orderItem.selected && orderItem.quantity > 0) {
+                        if (!consolidatedItems[itemId]) {
+                            consolidatedItems[itemId] = {
+                                name: itemData.name,
+                                price: itemData.price,
+                                totalQuantity: 0,
+                                category: itemData.category || 'Other'
+                            };
+                        }
+                        consolidatedItems[itemId].totalQuantity += orderItem.quantity;
+                    }
+                });
+            });
+            
+            // Create consolidated shopping list CSV
+            let csvContent = 'FC Köln Consolidated Shopping List\\n';
+            csvContent += 'Delivery Date: ' + getNextDeliveryDate() + '\\n';
+            csvContent += 'Generated: ' + new Date().toLocaleString() + '\\n';
+            csvContent += 'Total Orders: ' + currentOrders.length + ' orders\\n';
+            csvContent += 'Total Budget: €' + grandTotal.toFixed(2) + '\\n\\n';
+            
+            csvContent += 'Category,Item Name,Total Quantity,Unit Price,Total Cost\\n';
+            
+            // Sort items by category for easier shopping
+            const sortedItems = Object.keys(consolidatedItems).sort((a, b) => {
+                const categoryA = consolidatedItems[a].category;
+                const categoryB = consolidatedItems[b].category;
+                if (categoryA !== categoryB) {
+                    return categoryA.localeCompare(categoryB);
+                }
+                return consolidatedItems[a].name.localeCompare(consolidatedItems[b].name);
+            });
+            
+            let categoryTotal = 0;
+            sortedItems.forEach(itemId => {
+                const item = consolidatedItems[itemId];
+                const totalCost = item.totalQuantity * item.price;
+                categoryTotal += totalCost;
+                
+                csvContent += '"' + item.category + '","' + item.name + '",' + 
+                             item.totalQuantity + ',' + item.price.toFixed(2) + ',' + 
+                             totalCost.toFixed(2) + '\\n';
+            });
+            
+            csvContent += '\\n,,,TOTAL:,€' + categoryTotal.toFixed(2) + '\\n';
+            csvContent += '\\nShopping Instructions:\\n';
+            csvContent += '- Purchase all items in the quantities listed above\\n';
+            csvContent += '- Sort items by house using the House Delivery Details export\\n';
+            csvContent += '- Deliver sorted items to respective houses on delivery date\\n';
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'fc_koln_consolidated_shopping_list_' + new Date().toISOString().split('T')[0] + '.csv');
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
