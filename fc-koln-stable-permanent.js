@@ -2298,6 +2298,61 @@ app.get('/', (req, res) => {
             gap: 0.5rem;
         }
         
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: 2px solid #16a34a;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+            border-color: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-success:disabled {
+            background: #9ca3af;
+            border-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .order-confirmation {
+            background: #dcfce7;
+            border: 2px solid #16a34a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .order-confirmation h4 {
+            color: #166534;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+        }
+        
+        .order-confirmation p {
+            color: #15803d;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .order-number {
+            background: #166534;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+        
         .no-items {
             color: #6b7280;
             font-style: italic;
@@ -3826,6 +3881,7 @@ app.get('/', (req, res) => {
                             <p class="no-items">No items selected yet</p>
                         </div>
                         <div class="summary-actions">
+                            <button class="btn btn-success" id="placeOrderBtn" disabled>🛒 Place Order</button>
                             <button class="btn btn-primary" id="exportOrderBtn">📊 Export as CSV</button>
                             <button class="btn btn-secondary" id="clearOrderBtn">🗑️ Clear All</button>
                         </div>
@@ -4682,9 +4738,14 @@ app.get('/', (req, res) => {
                 });
             });
             
-            // Export and clear button functionality
+            // Button functionality
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
             const exportBtn = document.getElementById('exportOrderBtn');
             const clearBtn = document.getElementById('clearOrderBtn');
+            
+            if (placeOrderBtn) {
+                placeOrderBtn.addEventListener('click', placeOrder);
+            }
             
             if (exportBtn) {
                 exportBtn.addEventListener('click', exportOrderAsCSV);
@@ -4809,6 +4870,7 @@ app.get('/', (req, res) => {
             // Update order summary and budget
             updateOrderSummary();
             updateBudgetDisplay();
+            updatePlaceOrderButton();
         }
         
         function isAuthorizedToOrder() {
@@ -4956,6 +5018,7 @@ app.get('/', (req, res) => {
             updateOrderSummary();
             updateBudgetDisplay();
             updateItemAvailability();
+            updatePlaceOrderButton();
         }
         
         function calculateOrderTotal(order) {
@@ -5040,6 +5103,149 @@ app.get('/', (req, res) => {
             });
         }
         
+        function updatePlaceOrderButton() {
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+            if (!placeOrderBtn) return;
+            
+            const currentTotal = calculateOrderTotal(currentOrder);
+            const hasItems = Object.keys(currentOrder).length > 0;
+            const withinBudget = currentTotal <= BUDGET_LIMIT;
+            
+            if (hasItems && withinBudget && currentTotal > 0) {
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.textContent = '🛒 Place Order (€' + currentTotal.toFixed(2) + ')';
+            } else {
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.textContent = '🛒 Place Order';
+            }
+        }
+        
+        function placeOrder() {
+            const currentTotal = calculateOrderTotal(currentOrder);
+            const orderItems = Object.keys(currentOrder);
+            
+            if (orderItems.length === 0) {
+                alert('Please select items before placing an order.');
+                return;
+            }
+            
+            if (currentTotal > BUDGET_LIMIT) {
+                alert('Order exceeds budget limit of €' + BUDGET_LIMIT.toFixed(2));
+                return;
+            }
+            
+            // Generate order confirmation
+            const orderNumber = 'FC' + Date.now().toString().slice(-6);
+            const orderDate = new Date();
+            const deliveryDate = getNextDeliveryDate();
+            
+            // Create order summary for confirmation
+            let orderSummary = 'Order Confirmation\\n\\n';
+            orderSummary += 'Order #: ' + orderNumber + '\\n';
+            orderSummary += 'Player: ' + currentUser.name + '\\n';
+            orderSummary += 'Order Date: ' + orderDate.toLocaleDateString() + '\\n';
+            orderSummary += 'Expected Delivery: ' + deliveryDate + '\\n\\n';
+            orderSummary += 'Items Ordered:\\n';
+            
+            orderItems.forEach(itemId => {
+                const order = currentOrder[itemId];
+                const itemData = findItemById(itemId);
+                
+                if (itemData && order.selected && order.quantity > 0) {
+                    const itemTotal = itemData.price * order.quantity;
+                    orderSummary += '- ' + itemData.name + ' (x' + order.quantity + ') - €' + itemTotal.toFixed(2) + '\\n';
+                }
+            });
+            
+            orderSummary += '\\nTotal: €' + currentTotal.toFixed(2) + '\\n';
+            orderSummary += 'Budget Remaining: €' + (BUDGET_LIMIT - currentTotal).toFixed(2);
+            
+            // Confirm order placement
+            if (confirm(orderSummary + '\\n\\nConfirm order placement?')) {
+                // Save order to order history
+                saveOrderToHistory(orderNumber, currentOrder, currentTotal, orderDate);
+                
+                // Show success message
+                showOrderConfirmation(orderNumber, deliveryDate, currentTotal);
+                
+                // Clear current order
+                currentOrder = {};
+                const orderKey = 'fckoln_food_order_' + currentUser.id;
+                localStorage.removeItem(orderKey);
+                
+                // Refresh display
+                loadFoodOrderData();
+            }
+        }
+        
+        function getNextDeliveryDate() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Tuesday delivery (day 2) if ordered by Monday 8 AM
+            // Friday delivery (day 5) if ordered by Thursday 8 AM
+            
+            if (dayOfWeek === 1 && today.getHours() < 8) {
+                // Monday before 8 AM - Tuesday delivery
+                const tuesday = new Date(today);
+                tuesday.setDate(today.getDate() + 1);
+                return tuesday.toLocaleDateString() + ' (Tuesday, 6-8 PM)';
+            } else if (dayOfWeek <= 4 && !(dayOfWeek === 4 && today.getHours() >= 8)) {
+                // Monday after 8 AM through Thursday before 8 AM - Friday delivery
+                const friday = new Date(today);
+                friday.setDate(today.getDate() + (5 - dayOfWeek));
+                return friday.toLocaleDateString() + ' (Friday, 6-8 PM)';
+            } else {
+                // Thursday after 8 AM through Sunday - Next Tuesday delivery
+                const nextTuesday = new Date(today);
+                const daysUntilTuesday = (9 - dayOfWeek) % 7;
+                nextTuesday.setDate(today.getDate() + daysUntilTuesday);
+                return nextTuesday.toLocaleDateString() + ' (Tuesday, 6-8 PM)';
+            }
+        }
+        
+        function saveOrderToHistory(orderNumber, order, total, date) {
+            const orderHistory = JSON.parse(localStorage.getItem('fckoln_order_history') || '[]');
+            
+            const newOrder = {
+                orderNumber: orderNumber,
+                playerId: currentUser.id,
+                playerName: currentUser.name,
+                items: { ...order },
+                total: total,
+                orderDate: date.toISOString(),
+                status: 'placed',
+                deliveryDate: getNextDeliveryDate()
+            };
+            
+            orderHistory.push(newOrder);
+            localStorage.setItem('fckoln_order_history', JSON.stringify(orderHistory));
+        }
+        
+        function showOrderConfirmation(orderNumber, deliveryDate, total) {
+            const summaryContainer = document.getElementById('orderSummaryContent');
+            if (!summaryContainer) return;
+            
+            summaryContainer.innerHTML = '<div class="order-confirmation">' +
+                '<h4>🎉 Order Placed Successfully!</h4>' +
+                '<div class="order-number">' + orderNumber + '</div>' +
+                '<p><strong>Total:</strong> €' + total.toFixed(2) + '</p>' +
+                '<p><strong>Expected Delivery:</strong><br>' + deliveryDate + '</p>' +
+                '<p>Your order has been submitted to the kitchen staff.</p>' +
+            '</div>';
+            
+            // Hide place order button temporarily
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+            if (placeOrderBtn) {
+                placeOrderBtn.style.display = 'none';
+            }
+            
+            // Show success message for a few seconds, then refresh
+            setTimeout(() => {
+                loadFoodOrderData();
+            }, 5000);
+        }
+        
         function updateOrderSummary() {
             const summaryContainer = document.getElementById('orderSummaryContent');
             if (!summaryContainer) return;
@@ -5080,6 +5286,7 @@ app.get('/', (req, res) => {
             }
             
             summaryContainer.innerHTML = html;
+            updatePlaceOrderButton();
         }
         
         function findItemById(itemId) {
