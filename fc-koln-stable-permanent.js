@@ -3979,12 +3979,12 @@ app.get('/', (req, res) => {
                     <div class="delivery-info-card">
                         <div class="delivery-day">📅 Tuesday Delivery</div>
                         <div class="order-deadline">Order by Monday 12:00 PM</div>
-                        <div class="delivery-time">Delivery: By 12:00 PM</div>
+                        <div class="delivery-time">Delivery: 6:00 PM - 8:00 PM</div>
                     </div>
                     <div class="delivery-info-card">
                         <div class="delivery-day">📅 Friday Delivery</div>
                         <div class="order-deadline">Order by Thursday 12:00 PM</div>
-                        <div class="delivery-time">Delivery: By 12:00 PM</div>
+                        <div class="delivery-time">Delivery: 6:00 PM - 8:00 PM</div>
                     </div>
                 </div>
                 
@@ -5349,18 +5349,18 @@ app.get('/', (req, res) => {
                 // Monday before 12 PM - Tuesday delivery
                 const tuesday = new Date(today);
                 tuesday.setDate(today.getDate() + 1);
-                return tuesday.toLocaleDateString() + ' (Tuesday, by 12 PM)';
+                return tuesday.toLocaleDateString() + ' (Tuesday, 6-8 PM)';
             } else if (dayOfWeek <= 4 && !(dayOfWeek === 4 && today.getHours() >= 12)) {
                 // Monday after 12 PM through Thursday before 12 PM - Friday delivery
                 const friday = new Date(today);
                 friday.setDate(today.getDate() + (5 - dayOfWeek));
-                return friday.toLocaleDateString() + ' (Friday, by 12 PM)';
+                return friday.toLocaleDateString() + ' (Friday, 6-8 PM)';
             } else {
                 // Thursday after 12 PM through Sunday - Next Tuesday delivery
                 const nextTuesday = new Date(today);
                 const daysUntilTuesday = (9 - dayOfWeek) % 7;
                 nextTuesday.setDate(today.getDate() + daysUntilTuesday);
-                return nextTuesday.toLocaleDateString() + ' (Tuesday, by 12 PM)';
+                return nextTuesday.toLocaleDateString() + ' (Tuesday, 6-8 PM)';
             }
         }
         
