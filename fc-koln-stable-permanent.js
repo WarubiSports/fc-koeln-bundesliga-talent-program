@@ -2233,6 +2233,115 @@ app.get('/', (req, res) => {
             }
         }
         
+        /* Archive Management Styles */
+        .archive-controls {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .archive-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .total-archived {
+            color: #dc143c;
+            font-weight: 700;
+        }
+        
+        .page-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .archive-filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #dc143c;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-btn:hover {
+            border-color: #dc143c;
+            background: #fef2f2;
+            color: #dc143c;
+        }
+        
+        .pagination-btn.active {
+            background: #dc143c;
+            color: white;
+            border-color: #dc143c;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .archive-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-select {
+                min-width: unset;
+            }
+            
+            .pagination-controls {
+                gap: 0.25rem;
+            }
+            
+            .pagination-btn {
+                min-width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -4120,11 +4229,36 @@ app.get('/', (req, res) => {
         }
         
         function loadArchivedChores() {
+            loadArchivedChoresWithFilters(1);
+        }
+        
+        function loadArchivedChoresWithFilters(page = 1) {
             fetch('/api/chores/archived')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        renderArchivedChores(data.chores);
+                        let filteredChores = data.chores;
+                        
+                        // Apply house filter
+                        const houseFilter = document.getElementById('archiveHouseFilter');
+                        if (houseFilter && houseFilter.value) {
+                            filteredChores = filteredChores.filter(chore => chore.house === houseFilter.value);
+                        }
+                        
+                        // Apply month filter
+                        const monthFilter = document.getElementById('archiveMonthFilter');
+                        if (monthFilter && monthFilter.value) {
+                            filteredChores = filteredChores.filter(chore => {
+                                const archivedDate = new Date(chore.archivedAt);
+                                const yearMonth = archivedDate.getFullYear() + '-' + String(archivedDate.getMonth() + 1).padStart(2, '0');
+                                return yearMonth === monthFilter.value;
+                            });
+                        }
+                        
+                        // Sort by archived date (newest first)
+                        filteredChores.sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+                        
+                        renderArchivedChores(filteredChores, page);
                     }
                 })
                 .catch(error => {
@@ -4150,7 +4284,7 @@ app.get('/', (req, res) => {
             } else if (view === 'archived') {
                 activeSection.style.display = 'none';
                 archivedSection.style.display = 'block';
-                loadArchivedChores();
+                loadArchivedChoresWithFilters(1);
             }
         }
         
@@ -4576,7 +4710,7 @@ app.get('/', (req, res) => {
             }
         }
         
-        function renderArchivedChores(chores) {
+        function renderArchivedChores(chores, currentPage = 1, itemsPerPage = 20) {
             const archivedChoresList = document.getElementById('archivedChoresList');
             const noArchivedMessage = document.getElementById('noArchivedMessage');
             
@@ -4589,8 +4723,43 @@ app.get('/', (req, res) => {
             noArchivedMessage.style.display = 'none';
             archivedChoresList.style.display = 'block';
             
-            let html = '';
-            chores.forEach(chore => {
+            // Calculate pagination
+            const totalPages = Math.ceil(chores.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedChores = chores.slice(startIndex, endIndex);
+            
+            // Add archive controls
+            let html = '<div class="archive-controls">' +
+                '<div class="archive-stats">' +
+                    '<span class="total-archived">Total: ' + chores.length + ' archived chores</span>' +
+                    '<span class="page-info">Page ' + currentPage + ' of ' + totalPages + '</span>' +
+                '</div>' +
+                '<div class="archive-filters">' +
+                    '<select id="archiveHouseFilter" class="filter-select">' +
+                        '<option value="">All Houses</option>' +
+                        '<option value="Widdersdorf 1">Widdersdorf 1</option>' +
+                        '<option value="Widdersdorf 2">Widdersdorf 2</option>' +
+                        '<option value="Widdersdorf 3">Widdersdorf 3</option>' +
+                    '</select>' +
+                    '<select id="archiveMonthFilter" class="filter-select">' +
+                        '<option value="">All Months</option>' +
+                        '<option value="2025-01">January 2025</option>' +
+                        '<option value="2025-02">February 2025</option>' +
+                        '<option value="2025-03">March 2025</option>' +
+                        '<option value="2025-04">April 2025</option>' +
+                        '<option value="2025-05">May 2025</option>' +
+                        '<option value="2025-06">June 2025</option>' +
+                        '<option value="2025-07">July 2025</option>' +
+                        '<option value="2025-08">August 2025</option>' +
+                        '<option value="2025-09">September 2025</option>' +
+                        '<option value="2025-10">October 2025</option>' +
+                    '</select>' +
+                    '<button id="applyArchiveFilters" class="btn btn-primary">Apply Filters</button>' +
+                '</div>' +
+            '</div>';
+            
+            paginatedChores.forEach(chore => {
                 const deadlineDate = new Date(chore.deadline);
                 const archivedDate = chore.archivedAt ? new Date(chore.archivedAt) : null;
                 const priorityClass = 'priority-' + chore.priority;
@@ -4649,7 +4818,50 @@ app.get('/', (req, res) => {
                 '</div>';
             });
             
+            // Add pagination controls
+            if (totalPages > 1) {
+                html += '<div class="pagination-controls">';
+                
+                // Previous button
+                if (currentPage > 1) {
+                    html += '<button class="btn btn-secondary pagination-btn" data-page="' + (currentPage - 1) + '">← Previous</button>';
+                }
+                
+                // Page numbers
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? ' active' : '';
+                    html += '<button class="btn btn-outline pagination-btn' + activeClass + '" data-page="' + i + '">' + i + '</button>';
+                }
+                
+                // Next button
+                if (currentPage < totalPages) {
+                    html += '<button class="btn btn-secondary pagination-btn" data-page="' + (currentPage + 1) + '">Next →</button>';
+                }
+                
+                html += '</div>';
+            }
+            
             archivedChoresList.innerHTML = html;
+            
+            // Add event listeners for pagination and filters
+            document.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.getAttribute('data-page'));
+                    loadArchivedChoresWithFilters(page);
+                });
+            });
+            
+            document.getElementById('applyArchiveFilters').addEventListener('click', function() {
+                loadArchivedChoresWithFilters(1); // Reset to first page when filtering
+            });
         }
         
         function clearChoreForm() {
