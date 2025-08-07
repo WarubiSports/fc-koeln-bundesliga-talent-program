@@ -2233,6 +2233,293 @@ app.get('/', (req, res) => {
             }
         }
         
+        /* Food Order Management Styles */
+        .delivery-schedule-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .delivery-info-card {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.2);
+        }
+        
+        .delivery-day {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .order-deadline {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .delivery-time {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .food-order-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .order-summary {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .order-summary h3 {
+            color: #dc143c;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .summary-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .no-items {
+            color: #6b7280;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .food-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .food-category {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .food-category:hover {
+            border-color: #dc143c;
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
+        }
+        
+        .category-header {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .category-header h3 {
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .category-toggle {
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .food-category.collapsed .category-toggle {
+            transform: rotate(-90deg);
+        }
+        
+        .category-content {
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .food-category.collapsed .category-content {
+            display: none;
+        }
+        
+        .food-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .food-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .food-item:hover {
+            border-color: #dc143c;
+            background: #fef2f2;
+        }
+        
+        .food-item.selected {
+            border-color: #dc143c;
+            background: #fef2f2;
+        }
+        
+        .food-item-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #dc143c;
+        }
+        
+        .food-item-details {
+            flex: 1;
+        }
+        
+        .food-item-name {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .food-item-price {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            border-color: #dc143c;
+            background: #fef2f2;
+            color: #dc143c;
+        }
+        
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .order-summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-item-details {
+            flex: 1;
+        }
+        
+        .summary-item-name {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .summary-item-qty {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .summary-item-price {
+            font-weight: 600;
+            color: #dc143c;
+        }
+        
+        .summary-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #dc143c;
+        }
+        
+        @media (max-width: 1024px) {
+            .food-order-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .order-summary {
+                position: static;
+                order: 2;
+            }
+            
+            .food-categories {
+                order: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .delivery-schedule-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .food-items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .food-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            
+            .quantity-selector {
+                justify-content: center;
+            }
+        }
+        
         /* Archive Management Styles */
         .archive-controls {
             background: #f8fafc;
@@ -3404,6 +3691,134 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
+            <!-- Food Orders Page -->
+            <div class="page" id="food-orders">
+                <div class="page-header">
+                    <h1 class="page-title">🛒 Food Order Management</h1>
+                    <p class="page-subtitle">Weekly grocery ordering system for all houses</p>
+                </div>
+                
+                <!-- Delivery Schedule Info -->
+                <div class="delivery-schedule-info">
+                    <div class="delivery-info-card">
+                        <div class="delivery-day">📅 Tuesday Delivery</div>
+                        <div class="order-deadline">Order by Monday 8:00 AM</div>
+                        <div class="delivery-time">Delivery: 6:00 PM - 8:00 PM</div>
+                    </div>
+                    <div class="delivery-info-card">
+                        <div class="delivery-day">📅 Friday Delivery</div>
+                        <div class="order-deadline">Order by Thursday 8:00 AM</div>
+                        <div class="delivery-time">Delivery: 6:00 PM - 8:00 PM</div>
+                    </div>
+                </div>
+                
+                <!-- Food Order Form -->
+                <div class="food-order-container">
+                    <!-- Order Summary Sidebar -->
+                    <div class="order-summary">
+                        <h3>📋 Order Summary</h3>
+                        <div id="orderSummaryContent">
+                            <p class="no-items">No items selected yet</p>
+                        </div>
+                        <div class="summary-actions">
+                            <button class="btn btn-primary" id="exportOrderBtn">📊 Export as CSV</button>
+                            <button class="btn btn-secondary" id="clearOrderBtn">🗑️ Clear All</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Food Categories -->
+                    <div class="food-categories">
+                        <!-- Household Category -->
+                        <div class="food-category" data-category="household">
+                            <div class="category-header">
+                                <h3>🏠 Household</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="householdItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fruits & Vegetables Category -->
+                        <div class="food-category" data-category="produce">
+                            <div class="category-header">
+                                <h3>🥬 Gemüse & Obst</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="produceItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Meat Category -->
+                        <div class="food-category" data-category="meat">
+                            <div class="category-header">
+                                <h3>🥩 Fleisch</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="meatItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dairy Category -->
+                        <div class="food-category" data-category="dairy">
+                            <div class="category-header">
+                                <h3>🥛 Dairy</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="dairyItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Carbohydrates Category -->
+                        <div class="food-category" data-category="carbs">
+                            <div class="category-header">
+                                <h3>🍞 Carbohydrates</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="carbsItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Drinks Category -->
+                        <div class="food-category" data-category="drinks">
+                            <div class="category-header">
+                                <h3>🥤 Drinks</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="drinksItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Spices & Sauces Category -->
+                        <div class="food-category" data-category="spices">
+                            <div class="category-header">
+                                <h3>🧂 Spices & Sauces</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="spicesItems"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Frozen Category -->
+                        <div class="food-category" data-category="frozen">
+                            <div class="category-header">
+                                <h3>🧊 Frozen</h3>
+                                <span class="category-toggle">▼</span>
+                            </div>
+                            <div class="category-content">
+                                <div class="food-items-grid" id="frozenItems"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Other pages would go here -->
             <div class="page" id="chores">
                 <div class="page-header">
@@ -3728,6 +4143,8 @@ app.get('/', (req, res) => {
             } else if (pageId === 'chores') {
                 updateHouseStatistics();
                 loadActiveChores();
+            } else if (pageId === 'food-orders') {
+                loadFoodOrderData();
             }
         }
         
@@ -4150,10 +4567,371 @@ app.get('/', (req, res) => {
             }
         }
         
+        // Food Order Management Functions
+        function initializeFoodOrdering() {
+            // Category toggle functionality
+            document.querySelectorAll('.category-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const category = this.parentElement;
+                    category.classList.toggle('collapsed');
+                });
+            });
+            
+            // Export and clear button functionality
+            const exportBtn = document.getElementById('exportOrderBtn');
+            const clearBtn = document.getElementById('clearOrderBtn');
+            
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportOrderAsCSV);
+            }
+            
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearAllOrders);
+            }
+        }
+        
+        // Food items data
+        const foodItemsData = {
+            household: [
+                { id: 'toilet_paper', name: 'Toilet Paper', price: 4.99 },
+                { id: 'paper_towels', name: 'Paper Towels', price: 3.49 },
+                { id: 'dish_soap', name: 'Dish Soap', price: 2.99 },
+                { id: 'laundry_detergent', name: 'Laundry Detergent', price: 8.99 },
+                { id: 'trash_bags', name: 'Trash Bags', price: 5.49 },
+                { id: 'aluminum_foil', name: 'Aluminum Foil', price: 3.99 },
+                { id: 'plastic_wrap', name: 'Plastic Wrap', price: 3.49 },
+                { id: 'cleaning_spray', name: 'All-Purpose Cleaner', price: 4.49 }
+            ],
+            produce: [
+                { id: 'bananas', name: 'Bananas (1kg)', price: 1.99 },
+                { id: 'apples', name: 'Apples (1kg)', price: 2.49 },
+                { id: 'carrots', name: 'Carrots (500g)', price: 0.99 },
+                { id: 'onions', name: 'Onions (1kg)', price: 1.49 },
+                { id: 'tomatoes', name: 'Tomatoes (500g)', price: 2.99 },
+                { id: 'potatoes', name: 'Potatoes (2kg)', price: 2.49 },
+                { id: 'lettuce', name: 'Lettuce Head', price: 1.99 },
+                { id: 'cucumbers', name: 'Cucumbers (3 pieces)', price: 1.49 },
+                { id: 'bell_peppers', name: 'Bell Peppers (3 pieces)', price: 2.99 },
+                { id: 'spinach', name: 'Fresh Spinach (250g)', price: 2.49 }
+            ],
+            meat: [
+                { id: 'chicken_breast', name: 'Chicken Breast (1kg)', price: 8.99 },
+                { id: 'ground_beef', name: 'Ground Beef (500g)', price: 6.99 },
+                { id: 'pork_chops', name: 'Pork Chops (4 pieces)', price: 7.49 },
+                { id: 'salmon', name: 'Salmon Fillets (400g)', price: 12.99 },
+                { id: 'turkey_slices', name: 'Turkey Slices (200g)', price: 4.99 },
+                { id: 'sausages', name: 'Bratwurst (6 pieces)', price: 5.49 },
+                { id: 'ham', name: 'Ham Slices (200g)', price: 4.49 },
+                { id: 'beef_steak', name: 'Beef Steak (400g)', price: 15.99 }
+            ],
+            dairy: [
+                { id: 'milk', name: 'Whole Milk (1L)', price: 1.29 },
+                { id: 'eggs', name: 'Eggs (12 pieces)', price: 2.49 },
+                { id: 'butter', name: 'Butter (250g)', price: 2.99 },
+                { id: 'cheese_gouda', name: 'Gouda Cheese (200g)', price: 3.99 },
+                { id: 'yogurt', name: 'Greek Yogurt (500g)', price: 2.99 },
+                { id: 'cream_cheese', name: 'Cream Cheese (200g)', price: 2.49 },
+                { id: 'sour_cream', name: 'Sour Cream (200g)', price: 1.99 },
+                { id: 'mozzarella', name: 'Mozzarella (125g)', price: 2.49 }
+            ],
+            carbs: [
+                { id: 'bread', name: 'Whole Wheat Bread', price: 1.99 },
+                { id: 'pasta', name: 'Spaghetti (500g)', price: 1.49 },
+                { id: 'rice', name: 'Basmati Rice (1kg)', price: 2.99 },
+                { id: 'potatoes_bag', name: 'Potatoes (5kg)', price: 4.99 },
+                { id: 'bagels', name: 'Bagels (6 pieces)', price: 2.99 },
+                { id: 'cereal', name: 'Breakfast Cereal', price: 4.49 },
+                { id: 'oats', name: 'Rolled Oats (500g)', price: 2.49 },
+                { id: 'quinoa', name: 'Quinoa (500g)', price: 5.99 }
+            ],
+            drinks: [
+                { id: 'water', name: 'Sparkling Water (6x1L)', price: 2.99 },
+                { id: 'orange_juice', name: 'Orange Juice (1L)', price: 2.49 },
+                { id: 'coffee', name: 'Ground Coffee (250g)', price: 4.99 },
+                { id: 'tea', name: 'Tea Bags (20 pieces)', price: 2.99 },
+                { id: 'energy_drink', name: 'Energy Drink (4 cans)', price: 5.99 },
+                { id: 'soft_drink', name: 'Cola (6x330ml)', price: 3.99 },
+                { id: 'beer', name: 'Beer (6x500ml)', price: 7.99 },
+                { id: 'wine', name: 'Red Wine (750ml)', price: 8.99 }
+            ],
+            spices: [
+                { id: 'salt', name: 'Sea Salt (500g)', price: 1.49 },
+                { id: 'pepper', name: 'Black Pepper (100g)', price: 2.99 },
+                { id: 'paprika', name: 'Paprika (50g)', price: 1.99 },
+                { id: 'garlic_powder', name: 'Garlic Powder (100g)', price: 2.49 },
+                { id: 'oregano', name: 'Dried Oregano (20g)', price: 1.99 },
+                { id: 'ketchup', name: 'Ketchup (500ml)', price: 2.49 },
+                { id: 'mustard', name: 'Mustard (200ml)', price: 1.99 },
+                { id: 'bbq_sauce', name: 'BBQ Sauce (400ml)', price: 3.49 }
+            ],
+            frozen: [
+                { id: 'pizza', name: 'Frozen Pizza (400g)', price: 3.99 },
+                { id: 'ice_cream', name: 'Vanilla Ice Cream (1L)', price: 4.99 },
+                { id: 'frozen_vegetables', name: 'Mixed Vegetables (1kg)', price: 2.99 },
+                { id: 'fish_sticks', name: 'Fish Sticks (400g)', price: 4.49 },
+                { id: 'french_fries', name: 'French Fries (1kg)', price: 2.99 },
+                { id: 'chicken_nuggets', name: 'Chicken Nuggets (500g)', price: 5.49 },
+                { id: 'frozen_berries', name: 'Mixed Berries (300g)', price: 3.99 },
+                { id: 'frozen_fish', name: 'Frozen Fish Fillets (400g)', price: 6.99 }
+            ]
+        };
+        
+        let currentOrder = {};
+        
+        function loadFoodOrderData() {
+            // Load existing order if any
+            const savedOrder = localStorage.getItem('fckoln_food_order');
+            if (savedOrder) {
+                currentOrder = JSON.parse(savedOrder);
+            }
+            
+            // Render all food categories
+            Object.keys(foodItemsData).forEach(categoryKey => {
+                renderFoodCategory(categoryKey, foodItemsData[categoryKey]);
+            });
+            
+            // Update order summary
+            updateOrderSummary();
+        }
+        
+        function renderFoodCategory(categoryKey, items) {
+            const containerMap = {
+                household: 'householdItems',
+                produce: 'produceItems',
+                meat: 'meatItems',
+                dairy: 'dairyItems',
+                carbs: 'carbsItems',
+                drinks: 'drinksItems',
+                spices: 'spicesItems',
+                frozen: 'frozenItems'
+            };
+            
+            const container = document.getElementById(containerMap[categoryKey]);
+            if (!container) return;
+            
+            let html = '';
+            items.forEach(item => {
+                const itemOrder = currentOrder[item.id] || { selected: false, quantity: 0 };
+                const selectedClass = itemOrder.selected ? ' selected' : '';
+                
+                html += '<div class="food-item' + selectedClass + '" data-item-id="' + item.id + '">' +
+                    '<input type="checkbox" class="food-item-checkbox" ' + (itemOrder.selected ? 'checked' : '') + '>' +
+                    '<div class="food-item-details">' +
+                        '<div class="food-item-name">' + item.name + '</div>' +
+                        '<div class="food-item-price">€' + item.price.toFixed(2) + '</div>' +
+                    '</div>' +
+                    '<div class="quantity-selector">' +
+                        '<button class="quantity-btn" data-action="decrease">-</button>' +
+                        '<input type="number" class="quantity-input" value="' + itemOrder.quantity + '" min="0" max="20">' +
+                        '<button class="quantity-btn" data-action="increase">+</button>' +
+                    '</div>' +
+                '</div>';
+            });
+            
+            container.innerHTML = html;
+            
+            // Add event listeners for this category
+            container.querySelectorAll('.food-item').forEach(item => {
+                const itemId = item.getAttribute('data-item-id');
+                const checkbox = item.querySelector('.food-item-checkbox');
+                const quantityInput = item.querySelector('.quantity-input');
+                const decreaseBtn = item.querySelector('[data-action="decrease"]');
+                const increaseBtn = item.querySelector('[data-action="increase"]');
+                
+                checkbox.addEventListener('change', function() {
+                    updateItemSelection(itemId, this.checked, parseInt(quantityInput.value) || 0);
+                });
+                
+                quantityInput.addEventListener('change', function() {
+                    const quantity = parseInt(this.value) || 0;
+                    updateItemSelection(itemId, quantity > 0, quantity);
+                });
+                
+                decreaseBtn.addEventListener('click', function() {
+                    const currentQty = parseInt(quantityInput.value) || 0;
+                    const newQty = Math.max(0, currentQty - 1);
+                    quantityInput.value = newQty;
+                    updateItemSelection(itemId, newQty > 0, newQty);
+                });
+                
+                increaseBtn.addEventListener('click', function() {
+                    const currentQty = parseInt(quantityInput.value) || 0;
+                    const newQty = Math.min(20, currentQty + 1);
+                    quantityInput.value = newQty;
+                    updateItemSelection(itemId, newQty > 0, newQty);
+                });
+            });
+        }
+        
+        function updateItemSelection(itemId, selected, quantity) {
+            if (selected && quantity > 0) {
+                currentOrder[itemId] = { selected: true, quantity: quantity };
+            } else {
+                delete currentOrder[itemId];
+            }
+            
+            // Update UI
+            const itemElement = document.querySelector('[data-item-id="' + itemId + '"]');
+            if (itemElement) {
+                if (selected && quantity > 0) {
+                    itemElement.classList.add('selected');
+                    itemElement.querySelector('.food-item-checkbox').checked = true;
+                } else {
+                    itemElement.classList.remove('selected');
+                    itemElement.querySelector('.food-item-checkbox').checked = false;
+                }
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('fckoln_food_order', JSON.stringify(currentOrder));
+            
+            // Update summary
+            updateOrderSummary();
+        }
+        
+        function updateOrderSummary() {
+            const summaryContainer = document.getElementById('orderSummaryContent');
+            if (!summaryContainer) return;
+            
+            const orderItems = Object.keys(currentOrder);
+            
+            if (orderItems.length === 0) {
+                summaryContainer.innerHTML = '<p class="no-items">No items selected yet</p>';
+                return;
+            }
+            
+            let html = '';
+            let totalCost = 0;
+            
+            orderItems.forEach(itemId => {
+                const order = currentOrder[itemId];
+                const itemData = findItemById(itemId);
+                
+                if (itemData && order.selected && order.quantity > 0) {
+                    const itemTotal = itemData.price * order.quantity;
+                    totalCost += itemTotal;
+                    
+                    html += '<div class="order-summary-item">' +
+                        '<div class="summary-item-details">' +
+                            '<div class="summary-item-name">' + itemData.name + '</div>' +
+                            '<div class="summary-item-qty">Qty: ' + order.quantity + '</div>' +
+                        '</div>' +
+                        '<div class="summary-item-price">€' + itemTotal.toFixed(2) + '</div>' +
+                    '</div>';
+                }
+            });
+            
+            if (totalCost > 0) {
+                html += '<div class="summary-total">' +
+                    '<span>Total:</span>' +
+                    '<span>€' + totalCost.toFixed(2) + '</span>' +
+                '</div>';
+            }
+            
+            summaryContainer.innerHTML = html;
+        }
+        
+        function findItemById(itemId) {
+            for (const category of Object.values(foodItemsData)) {
+                const item = category.find(item => item.id === itemId);
+                if (item) return item;
+            }
+            return null;
+        }
+        
+        function exportOrderAsCSV() {
+            const orderItems = Object.keys(currentOrder);
+            
+            if (orderItems.length === 0) {
+                alert('No items in order to export.');
+                return;
+            }
+            
+            let csvContent = 'Category,Item Name,Quantity,Unit Price,Total Price\\n';
+            let grandTotal = 0;
+            
+            // Group items by category
+            const categoryGroups = {};
+            orderItems.forEach(itemId => {
+                const order = currentOrder[itemId];
+                const itemData = findItemById(itemId);
+                
+                if (itemData && order.selected && order.quantity > 0) {
+                    const category = findCategoryForItem(itemId);
+                    if (!categoryGroups[category]) {
+                        categoryGroups[category] = [];
+                    }
+                    categoryGroups[category].push({
+                        item: itemData,
+                        order: order
+                    });
+                }
+            });
+            
+            // Add items to CSV by category
+            Object.keys(categoryGroups).forEach(category => {
+                const categoryName = getCategoryDisplayName(category);
+                categoryGroups[category].forEach(({ item, order }) => {
+                    const totalPrice = item.price * order.quantity;
+                    grandTotal += totalPrice;
+                    
+                    csvContent += '"' + categoryName + '","' + item.name + '",' + order.quantity + ',' + 
+                                 item.price.toFixed(2) + ',' + totalPrice.toFixed(2) + '\\n';
+                });
+            });
+            
+            csvContent += '\\n,"TOTAL",,,€' + grandTotal.toFixed(2);
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'fc_koln_food_order_' + new Date().toISOString().split('T')[0] + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function findCategoryForItem(itemId) {
+            for (const [category, items] of Object.entries(foodItemsData)) {
+                if (items.find(item => item.id === itemId)) {
+                    return category;
+                }
+            }
+            return 'unknown';
+        }
+        
+        function getCategoryDisplayName(category) {
+            const displayNames = {
+                household: 'Household',
+                produce: 'Gemüse & Obst',
+                meat: 'Fleisch',
+                dairy: 'Dairy',
+                carbs: 'Carbohydrates',
+                drinks: 'Drinks',
+                spices: 'Spices & Sauces',
+                frozen: 'Frozen'
+            };
+            return displayNames[category] || category;
+        }
+        
+        function clearAllOrders() {
+            if (confirm('Are you sure you want to clear all selected items?')) {
+                currentOrder = {};
+                localStorage.removeItem('fckoln_food_order');
+                
+                // Refresh the food order display
+                loadFoodOrderData();
+            }
+        }
+        
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             initializePlayerManagement();
             initializeHousingManagement();
+            initializeFoodOrdering();
         });
         
         // Housing & Chore Management Functions
