@@ -2635,8 +2635,8 @@ app.get('/', (req, res) => {
             font-size: 0.9rem;
         }
         
-        /* Order Overview Styles */
-        .order-overview-filters {
+        /* Order Overview Styles - Scoped to order-overview page */
+        #order-overview .order-overview-filters {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
             gap: 1rem;
@@ -2647,19 +2647,19 @@ app.get('/', (req, res) => {
             border: 2px solid #e5e7eb;
         }
         
-        .filter-group {
+        #order-overview .filter-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
         
-        .filter-group label {
+        #order-overview .filter-group label {
             font-weight: 600;
             color: #374151;
             font-size: 0.9rem;
         }
         
-        .filter-select {
+        #order-overview .filter-select {
             padding: 0.5rem;
             border: 2px solid #d1d5db;
             border-radius: 6px;
@@ -2668,20 +2668,20 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        .filter-select:focus {
+        #order-overview .filter-select:focus {
             border-color: #dc143c;
             outline: none;
             box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
         }
         
-        .house-summary-cards {
+        #order-overview .house-summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
-        .summary-card {
+        #order-overview .summary-card {
             background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
             border: 2px solid #d1d5db;
             border-radius: 12px;
@@ -2689,26 +2689,26 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        .summary-card:hover {
+        #order-overview .summary-card:hover {
             border-color: #dc143c;
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
             transform: translateY(-2px);
         }
         
-        .summary-card h3 {
+        #order-overview .summary-card h3 {
             color: #dc143c;
             margin: 0 0 1rem 0;
             font-weight: 700;
             font-size: 1.2rem;
         }
         
-        .summary-stats {
+        #order-overview .summary-stats {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
         
-        .stat-item {
+        #order-overview .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2716,32 +2716,32 @@ app.get('/', (req, res) => {
             border-bottom: 1px solid #e5e7eb;
         }
         
-        .stat-item:last-child {
+        #order-overview .stat-item:last-child {
             border-bottom: none;
         }
         
-        .stat-label {
+        #order-overview .stat-label {
             color: #6b7280;
             font-weight: 500;
         }
         
-        .stat-value {
+        #order-overview .stat-value {
             color: #dc143c;
             font-weight: 700;
             font-size: 1.1rem;
         }
         
-        .detailed-orders-section {
+        #order-overview .detailed-orders-section {
             margin: 2rem 0;
         }
         
-        .detailed-orders-section h2 {
+        #order-overview .detailed-orders-section h2 {
             color: #dc143c;
             margin-bottom: 1rem;
             font-weight: 700;
         }
         
-        .order-card {
+        #order-overview .order-card {
             background: white;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
@@ -2750,12 +2750,12 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        .order-card:hover {
+        #order-overview .order-card:hover {
             border-color: #dc143c;
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
         }
         
-        .order-header {
+        #order-overview .order-header {
             background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             padding: 1rem 1.5rem;
@@ -2764,33 +2764,33 @@ app.get('/', (req, res) => {
             gap: 1rem;
         }
         
-        .order-info {
+        #order-overview .order-info {
             display: flex;
             flex-direction: column;
         }
         
-        .order-info-label {
+        #order-overview .order-info-label {
             font-size: 0.8rem;
             opacity: 0.9;
             margin-bottom: 0.25rem;
         }
         
-        .order-info-value {
+        #order-overview .order-info-value {
             font-weight: 700;
             font-size: 1rem;
         }
         
-        .order-items {
+        #order-overview .order-items {
             padding: 1rem 1.5rem;
         }
         
-        .order-items-grid {
+        #order-overview .order-items-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 0.75rem;
         }
         
-        .order-item {
+        #order-overview .order-item {
             background: #f9fafb;
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
@@ -2800,46 +2800,46 @@ app.get('/', (req, res) => {
             align-items: center;
         }
         
-        .order-item-name {
+        #order-overview .order-item-name {
             font-weight: 500;
             color: #374151;
             flex: 1;
         }
         
-        .order-item-qty {
+        #order-overview .order-item-qty {
             color: #6b7280;
             font-size: 0.9rem;
             margin: 0 0.5rem;
         }
         
-        .order-item-price {
+        #order-overview .order-item-price {
             color: #dc143c;
             font-weight: 600;
         }
         
-        .shopping-list-section {
+        #order-overview .shopping-list-section {
             margin: 2rem 0;
         }
         
-        .shopping-list-section h2 {
+        #order-overview .shopping-list-section h2 {
             color: #dc143c;
             margin-bottom: 1rem;
             font-weight: 700;
         }
         
-        .shopping-list-header {
+        #order-overview .shopping-list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
         
-        .shopping-list-header p {
+        #order-overview .shopping-list-header p {
             color: #6b7280;
             margin: 0;
         }
         
-        .consolidated-item {
+        #order-overview .consolidated-item {
             background: white;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
@@ -2851,35 +2851,35 @@ app.get('/', (req, res) => {
             align-items: center;
         }
         
-        .consolidated-item:hover {
+        #order-overview .consolidated-item:hover {
             border-color: #dc143c;
             background: #fef2f2;
         }
         
-        .consolidated-item-name {
+        #order-overview .consolidated-item-name {
             font-weight: 600;
             color: #374151;
         }
         
-        .consolidated-item-qty {
+        #order-overview .consolidated-item-qty {
             text-align: center;
             font-weight: 600;
             color: #dc143c;
         }
         
-        .consolidated-item-houses {
+        #order-overview .consolidated-item-houses {
             text-align: center;
             color: #6b7280;
             font-size: 0.9rem;
         }
         
-        .consolidated-item-total {
+        #order-overview .consolidated-item-total {
             text-align: right;
             font-weight: 700;
             color: #dc143c;
         }
         
-        .no-orders {
+        #order-overview .no-orders {
             text-align: center;
             color: #6b7280;
             font-style: italic;
@@ -2887,17 +2887,17 @@ app.get('/', (req, res) => {
         }
         
         @media (max-width: 1024px) {
-            .order-overview-filters {
+            #order-overview .order-overview-filters {
                 grid-template-columns: 1fr 1fr;
                 gap: 1rem;
             }
             
-            .order-header {
+            #order-overview .order-header {
                 grid-template-columns: 1fr 1fr;
                 gap: 0.5rem;
             }
             
-            .consolidated-item {
+            #order-overview .consolidated-item {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
                 text-align: center;
@@ -2905,20 +2905,20 @@ app.get('/', (req, res) => {
         }
         
         @media (max-width: 768px) {
-            .order-overview-filters {
+            #order-overview .order-overview-filters {
                 grid-template-columns: 1fr;
             }
             
-            .house-summary-cards {
+            #order-overview .house-summary-cards {
                 grid-template-columns: 1fr;
             }
             
-            .order-header {
+            #order-overview .order-header {
                 grid-template-columns: 1fr;
                 text-align: center;
             }
             
-            .shopping-list-header {
+            #order-overview .shopping-list-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 1rem;
