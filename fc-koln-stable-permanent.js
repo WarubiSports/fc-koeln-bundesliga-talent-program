@@ -60,7 +60,8 @@ let choreStorage = [
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        archived: false
     },
     {
         id: 'ch2',
@@ -76,7 +77,8 @@ let choreStorage = [
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        archived: false
     },
     {
         id: 'ch3',
@@ -92,7 +94,8 @@ let choreStorage = [
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        archived: false
     },
     {
         id: 'ch4',
@@ -108,9 +111,12 @@ let choreStorage = [
         completedBy: 'p4',
         completedAt: '2025-08-07T10:30:00',
         createdDate: new Date().toISOString(),
-        status: 'completed'
+        status: 'completed',
+        archived: false
     }
 ];
+
+let archivedChores = [];
 let calendarEvents = [];
 let foodOrders = [];
 let messages = [];
@@ -426,7 +432,38 @@ app.post('/api/players', (req, res) => {
 });
 
 app.get('/api/chores', (req, res) => {
-    res.json({ success: true, chores: choreStorage });
+    const activeChores = choreStorage.filter(chore => !chore.archived);
+    res.json({ success: true, chores: activeChores });
+});
+
+app.get('/api/chores/archived', (req, res) => {
+    res.json({ success: true, chores: archivedChores });
+});
+
+// Archive chore endpoint (admin only)
+app.patch('/api/chores/:id/archive', (req, res) => {
+    const choreId = req.params.id;
+    const { userRole } = req.body;
+    
+    // Only allow admin to archive chores
+    if (userRole !== 'admin') {
+        return res.json({ success: false, message: 'Only admin can archive chores' });
+    }
+    
+    const choreIndex = choreStorage.findIndex(c => c.id === choreId);
+    if (choreIndex === -1) {
+        return res.json({ success: false, message: 'Chore not found' });
+    }
+    
+    const chore = choreStorage[choreIndex];
+    chore.archived = true;
+    chore.archivedAt = new Date().toISOString();
+    
+    // Move to archived storage
+    archivedChores.push(chore);
+    choreStorage.splice(choreIndex, 1);
+    
+    res.json({ success: true, message: 'Chore archived successfully' });
 });
 
 app.post('/api/chores', (req, res) => {
@@ -438,16 +475,22 @@ app.post('/api/chores', (req, res) => {
         completed: false,
         completedBy: null,
         completedAt: null,
-        assignedTo: null
+        assignedTo: null,
+        archived: false
     };
     choreStorage.push(chore);
     res.json({ success: true, chore });
 });
 
-// Complete chore endpoint
+// Complete chore endpoint (staff/admin only)
 app.patch('/api/chores/:id/complete', (req, res) => {
     const choreId = req.params.id;
-    const { playerId } = req.body;
+    const { playerId, userRole } = req.body;
+    
+    // Only allow staff and admin to mark chores as completed
+    if (userRole !== 'admin' && userRole !== 'staff') {
+        return res.json({ success: false, message: 'Only staff and admin can mark chores as completed' });
+    }
     
     const chore = choreStorage.find(c => c.id === choreId);
     if (!chore) {
@@ -1814,6 +1857,91 @@ app.get('/', (req, res) => {
             font-size: 0.9rem;
         }
         
+        .completion-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .permission-info {
+            padding: 0.75rem 1rem;
+            background: #fef2f2;
+            color: #991b1b;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid #fecaca;
+        }
+        
+        .btn-gray {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-gray:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+        }
+        
+        .chores-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .chores-nav-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .chores-nav-btn.active {
+            border-color: #dc143c;
+            box-shadow: 0 2px 8px rgba(220, 20, 60, 0.2);
+        }
+        
+        .archived-chores-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .chore-item.archived {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            opacity: 0.8;
+        }
+        
+        .chore-item.archived::before {
+            background: linear-gradient(90deg, #6b7280 0%, #4b5563 100%);
+        }
+        
+        .archived-badge {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-left: 0.5rem;
+        }
+        
+        .status-archived {
+            background: #6b7280;
+            color: white;
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -2958,13 +3086,26 @@ app.get('/', (req, res) => {
                 <div class="section-header">
                     <h2>📋 Active Chore Assignments</h2>
                 </div>
-                <div class="active-chores-section">
+                <div class="chores-navigation">
+                    <button class="btn btn-red chores-nav-btn active" data-view="active">Active Chores</button>
+                    <button class="btn btn-gray chores-nav-btn admin-only" data-view="archived">Archived Chores</button>
+                </div>
+                <div class="active-chores-section" id="activeChoresSection">
                     <div class="no-chores-message" id="noChoresMessage">
                         <div class="no-chores-icon">📋</div>
                         <p>No active chores assigned yet.</p>
                     </div>
                     <div class="chores-list" id="choresList" style="display: none;">
                         <!-- Active chores will be populated here -->
+                    </div>
+                </div>
+                <div class="archived-chores-section" id="archivedChoresSection" style="display: none;">
+                    <div class="no-chores-message" id="noArchivedMessage">
+                        <div class="no-chores-icon">📦</div>
+                        <p>No archived chores yet.</p>
+                    </div>
+                    <div class="chores-list" id="archivedChoresList" style="display: none;">
+                        <!-- Archived chores will be populated here -->
                     </div>
                 </div>
                 
@@ -3620,12 +3761,29 @@ app.get('/', (req, res) => {
             updateHouseStatistics();
             loadActiveChores();
             
+            // Hide admin-only elements for non-admin users
+            if (currentUser && currentUser.role !== 'admin') {
+                const adminOnlyElements = document.querySelectorAll('.admin-only');
+                adminOnlyElements.forEach(element => {
+                    element.style.display = 'none';
+                });
+            }
+            
             // View details button event listeners
             const viewDetailsButtons = document.querySelectorAll('.btn-view-details');
             viewDetailsButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const house = this.getAttribute('data-house');
                     viewHouseDetails(house);
+                });
+            });
+            
+            // Chore navigation event listeners
+            const choreNavButtons = document.querySelectorAll('.chores-nav-btn');
+            choreNavButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const view = this.getAttribute('data-view');
+                    switchChoreView(view);
                 });
             });
             
@@ -3668,6 +3826,41 @@ app.get('/', (req, res) => {
                 .catch(error => {
                     console.error('Failed to load chores:', error);
                 });
+        }
+        
+        function loadArchivedChores() {
+            fetch('/api/chores/archived')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderArchivedChores(data.chores);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to load archived chores:', error);
+                });
+        }
+        
+        function switchChoreView(view) {
+            // Update navigation buttons
+            document.querySelectorAll('.chores-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('[data-view="' + view + '"]').classList.add('active');
+            
+            // Switch sections
+            const activeSection = document.getElementById('activeChoresSection');
+            const archivedSection = document.getElementById('archivedChoresSection');
+            
+            if (view === 'active') {
+                activeSection.style.display = 'block';
+                archivedSection.style.display = 'none';
+                loadActiveChores();
+            } else if (view === 'archived') {
+                activeSection.style.display = 'none';
+                archivedSection.style.display = 'block';
+                loadArchivedChores();
+            }
         }
         
         function renderActiveChores(chores) {
@@ -3739,17 +3932,27 @@ app.get('/', (req, res) => {
                     '</div>' +
                     '<div class="chore-actions">' +
                         (!chore.completed ? 
-                            '<button class="btn btn-green chore-complete-btn" data-chore-id="' + chore.id + '" data-assigned-to="' + (chore.assignedTo || '') + '">Mark as Completed</button>' : 
-                            '<div class="completion-info">Completed on ' + (chore.completedAt ? new Date(chore.completedAt).toLocaleString() : 'Unknown date') + '</div>') +
+                            (currentUser && (currentUser.role === 'admin' || currentUser.role === 'staff') ?
+                                '<button class="btn btn-green chore-complete-btn" data-chore-id="' + chore.id + '" data-assigned-to="' + (chore.assignedTo || '') + '">Mark as Completed</button>' :
+                                '<div class="permission-info">Only staff and admin can mark chores as completed</div>') : 
+                            '<div class="completion-actions">' +
+                                '<div class="completion-info">Completed on ' + (chore.completedAt ? new Date(chore.completedAt).toLocaleString() : 'Unknown date') + '</div>' +
+                                (currentUser && currentUser.role === 'admin' ?
+                                    '<button class="btn btn-gray chore-archive-btn" data-chore-id="' + chore.id + '">Archive</button>' : '') +
+                            '</div>') +
                     '</div>' +
                 '</div>';
             });
             
             choresList.innerHTML = html;
             
-            // Add event listeners for completion buttons
+            // Add event listeners for completion and archive buttons
             document.querySelectorAll('.chore-complete-btn').forEach(btn => {
                 btn.addEventListener('click', handleChoreCompletion);
+            });
+            
+            document.querySelectorAll('.chore-archive-btn').forEach(btn => {
+                btn.addEventListener('click', handleChoreArchive);
             });
         }
         
@@ -3820,7 +4023,10 @@ app.get('/', (req, res) => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ playerId: completedBy })
+                    body: JSON.stringify({ 
+                        playerId: completedBy,
+                        userRole: currentUser.role 
+                    })
                 });
                 
                 const result = await response.json();
@@ -3835,6 +4041,114 @@ app.get('/', (req, res) => {
                 console.error('Error completing chore:', error);
                 alert('Error completing chore. Please try again.');
             }
+        }
+        
+        async function handleChoreArchive(e) {
+            const choreId = e.target.getAttribute('data-chore-id');
+            
+            if (!confirm('Are you sure you want to archive this chore? Archived chores will be moved to the archive and no longer visible in the active list.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/chores/' + choreId + '/archive', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        userRole: currentUser.role 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Chore archived successfully!');
+                    loadActiveChores(); // Refresh the chores list
+                } else {
+                    alert('Failed to archive chore: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error archiving chore:', error);
+                alert('Error archiving chore. Please try again.');
+            }
+        }
+        
+        function renderArchivedChores(chores) {
+            const archivedChoresList = document.getElementById('archivedChoresList');
+            const noArchivedMessage = document.getElementById('noArchivedMessage');
+            
+            if (chores.length === 0) {
+                noArchivedMessage.style.display = 'block';
+                archivedChoresList.style.display = 'none';
+                return;
+            }
+            
+            noArchivedMessage.style.display = 'none';
+            archivedChoresList.style.display = 'block';
+            
+            let html = '';
+            chores.forEach(chore => {
+                const deadlineDate = new Date(chore.deadline);
+                const archivedDate = chore.archivedAt ? new Date(chore.archivedAt) : null;
+                const priorityClass = 'priority-' + chore.priority;
+                
+                // Find assigned and completed players
+                const assignedPlayer = chore.assignedTo ? players.find(p => p.id === chore.assignedTo) : null;
+                const completedPlayer = chore.completedBy ? players.find(p => p.id === chore.completedBy) : null;
+                
+                html += '<div class="chore-item archived ' + priorityClass + '">' +
+                    '<div class="chore-header">' +
+                        '<h4>' + chore.title + ' <span class="archived-badge">📦 ARCHIVED</span></h4>' +
+                        '<div class="chore-badges">' +
+                            '<span class="chore-priority">' + chore.priority.toUpperCase() + '</span>' +
+                            '<span class="chore-status status-archived">ARCHIVED</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="chore-details">' +
+                        '<div class="chore-info-grid">' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">🏠 House:</span>' +
+                                '<span class="detail-value">' + chore.house + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">📂 Type:</span>' +
+                                '<span class="detail-value">' + chore.type + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">⏰ Original Deadline:</span>' +
+                                '<span class="detail-value">' + deadlineDate.toLocaleDateString() + ' ' + deadlineDate.toLocaleTimeString() + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">🏆 Points:</span>' +
+                                '<span class="detail-value">' + chore.points + '</span>' +
+                            '</div>' +
+                            (assignedPlayer ? 
+                                '<div class="chore-detail">' +
+                                    '<span class="detail-label">👤 Was assigned to:</span>' +
+                                    '<span class="detail-value">' + assignedPlayer.name + '</span>' +
+                                '</div>' : '') +
+                            (completedPlayer && chore.completed ?
+                                '<div class="chore-detail">' +
+                                    '<span class="detail-label">✅ Completed by:</span>' +
+                                    '<span class="detail-value">' + completedPlayer.name + '</span>' +
+                                '</div>' : '') +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">📦 Archived on:</span>' +
+                                '<span class="detail-value">' + (archivedDate ? archivedDate.toLocaleString() : 'Unknown date') + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        (chore.description ? 
+                            '<div class="chore-description">' +
+                                '<span class="detail-label">📝 Description:</span>' +
+                                '<p>' + chore.description + '</p>' +
+                            '</div>' : '') +
+                    '</div>' +
+                '</div>';
+            });
+            
+            archivedChoresList.innerHTML = html;
         }
         
         function clearChoreForm() {
