@@ -45,7 +45,72 @@ let players = [
     { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest', joinDate: new Date().toISOString() }
 ];
 
-let choreStorage = [];
+let choreStorage = [
+    {
+        id: 'ch1',
+        title: 'Kitchen Deep Clean',
+        priority: 'high',
+        house: 'Widdersdorf 1',
+        type: 'cleaning',
+        deadline: '2025-08-08T14:00:00',
+        points: 25,
+        description: 'Deep clean kitchen including appliances, counters, and floors',
+        assignedTo: 'p1', // Max Finkgräfe
+        completed: false,
+        completedBy: null,
+        completedAt: null,
+        createdDate: new Date().toISOString(),
+        status: 'pending'
+    },
+    {
+        id: 'ch2',
+        title: 'Garden Maintenance',
+        priority: 'medium',
+        house: 'Widdersdorf 2',
+        type: 'maintenance',
+        deadline: '2025-08-09T16:00:00',
+        points: 15,
+        description: 'Trim hedges and water plants in front garden',
+        assignedTo: 'p3', // Linton Maina
+        completed: false,
+        completedBy: null,
+        completedAt: null,
+        createdDate: new Date().toISOString(),
+        status: 'pending'
+    },
+    {
+        id: 'ch3',
+        title: 'Common Room Organization',
+        priority: 'low',
+        house: 'Widdersdorf 3',
+        type: 'organization',
+        deadline: '2025-08-10T18:00:00',
+        points: 10,
+        description: 'Organize books, games, and furniture in the common room',
+        assignedTo: 'p2', // Tim Lemperle
+        completed: false,
+        completedBy: null,
+        completedAt: null,
+        createdDate: new Date().toISOString(),
+        status: 'pending'
+    },
+    {
+        id: 'ch4',
+        title: 'Laundry Room Clean',
+        priority: 'medium',
+        house: 'Widdersdorf 1',
+        type: 'cleaning',
+        deadline: '2025-08-11T12:00:00',
+        points: 20,
+        description: 'Clean washing machines, dryers, and organize supplies',
+        assignedTo: 'p4', // Florian Kainz
+        completed: true,
+        completedBy: 'p4',
+        completedAt: '2025-08-07T10:30:00',
+        createdDate: new Date().toISOString(),
+        status: 'completed'
+    }
+];
 let calendarEvents = [];
 let foodOrders = [];
 let messages = [];
@@ -369,9 +434,49 @@ app.post('/api/chores', (req, res) => {
         id: `chore_${Date.now()}`,
         ...req.body,
         createdDate: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        completed: false,
+        completedBy: null,
+        completedAt: null,
+        assignedTo: null
     };
     choreStorage.push(chore);
+    res.json({ success: true, chore });
+});
+
+// Complete chore endpoint
+app.patch('/api/chores/:id/complete', (req, res) => {
+    const choreId = req.params.id;
+    const { playerId } = req.body;
+    
+    const chore = choreStorage.find(c => c.id === choreId);
+    if (!chore) {
+        return res.json({ success: false, message: 'Chore not found' });
+    }
+    
+    if (chore.completed) {
+        return res.json({ success: false, message: 'Chore already completed' });
+    }
+    
+    chore.completed = true;
+    chore.completedBy = playerId;
+    chore.completedAt = new Date().toISOString();
+    chore.status = 'completed';
+    
+    res.json({ success: true, chore });
+});
+
+// Assign chore to player endpoint
+app.patch('/api/chores/:id/assign', (req, res) => {
+    const choreId = req.params.id;
+    const { playerId } = req.body;
+    
+    const chore = choreStorage.find(c => c.id === choreId);
+    if (!chore) {
+        return res.json({ success: false, message: 'Chore not found' });
+    }
+    
+    chore.assignedTo = playerId;
     res.json({ success: true, chore });
 });
 
@@ -1515,6 +1620,203 @@ app.get('/', (req, res) => {
             position: relative;
             z-index: 2;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Enhanced Chore Item Styles */
+        .chore-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chore-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc143c 0%, #b91c3c 100%);
+        }
+        
+        .chore-item:hover {
+            border-color: #dc143c;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .chore-item.completed {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        
+        .chore-item.completed::before {
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+        }
+        
+        .chore-item.overdue {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+        
+        .chore-item.overdue::before {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .chore-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .chore-header h4 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .chore-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .chore-priority, .chore-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .chore-priority {
+            background: #dc143c;
+            color: white;
+        }
+        
+        .priority-high .chore-priority {
+            background: #ef4444;
+        }
+        
+        .priority-medium .chore-priority {
+            background: #f59e0b;
+        }
+        
+        .priority-low .chore-priority {
+            background: #10b981;
+        }
+        
+        .priority-urgent .chore-priority {
+            background: #dc2626;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-completed {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .status-overdue {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .chore-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .chore-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #dc143c;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .detail-value {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 0.9rem;
+        }
+        
+        .chore-description {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc143c;
+        }
+        
+        .chore-description .detail-label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chore-description p {
+            margin: 0;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        
+        .chore-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-green:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+        
+        .completion-info {
+            padding: 0.75rem 1rem;
+            background: #f0fdf4;
+            color: #166534;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .chore-form-container {
@@ -2753,6 +3055,19 @@ app.get('/', (req, res) => {
                             </div>
                         </div>
                         
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="choreAssignTo">Assign to Player</label>
+                                <select id="choreAssignTo" name="assignedTo">
+                                    <option value="">Auto-assign to house member</option>
+                                    <option value="p1">Max Finkgräfe (Widdersdorf 1)</option>
+                                    <option value="p2">Tim Lemperle (Widdersdorf 3)</option>
+                                    <option value="p3">Linton Maina (Widdersdorf 2)</option>
+                                    <option value="p4">Florian Kainz (Widdersdorf 1)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
                         <div class="form-group full-width">
                             <label for="choreDescription">Description & Instructions</label>
                             <textarea id="choreDescription" name="description" rows="4" placeholder="Provide detailed instructions for completing this chore..."></textarea>
@@ -3371,39 +3686,71 @@ app.get('/', (req, res) => {
             let html = '';
             chores.forEach(chore => {
                 const deadlineDate = new Date(chore.deadline);
-                const isOverdue = deadlineDate < new Date();
+                const isOverdue = deadlineDate < new Date() && !chore.completed;
                 const priorityClass = 'priority-' + chore.priority;
-                const overdueClass = isOverdue ? 'overdue' : '';
-                const descriptionHtml = chore.description ? '<p class="chore-description">' + chore.description + '</p>' : '';
                 
-                html += '<div class="chore-item ' + priorityClass + '">' +
+                // Find assigned and completed players
+                const assignedPlayer = chore.assignedTo ? players.find(p => p.id === chore.assignedTo) : null;
+                const completedPlayer = chore.completedBy ? players.find(p => p.id === chore.completedBy) : null;
+                
+                html += '<div class="chore-item ' + priorityClass + (chore.completed ? ' completed' : '') + (isOverdue ? ' overdue' : '') + '">' +
                     '<div class="chore-header">' +
                         '<h4>' + chore.title + '</h4>' +
-                        '<span class="chore-priority">' + chore.priority.toUpperCase() + '</span>' +
+                        '<div class="chore-badges">' +
+                            '<span class="chore-priority">' + chore.priority.toUpperCase() + '</span>' +
+                            (chore.completed ? '<span class="chore-status status-completed">✓ COMPLETED</span>' : '') +
+                            (isOverdue ? '<span class="chore-status status-overdue">⚠ OVERDUE</span>' : '') +
+                        '</div>' +
                     '</div>' +
                     '<div class="chore-details">' +
-                        '<div class="chore-detail">' +
-                            '<span class="detail-label">House:</span>' +
-                            '<span class="detail-value">' + chore.house + '</span>' +
+                        '<div class="chore-info-grid">' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">🏠 House:</span>' +
+                                '<span class="detail-value">' + chore.house + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">📂 Type:</span>' +
+                                '<span class="detail-value">' + chore.type + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">⏰ Deadline:</span>' +
+                                '<span class="detail-value">' + deadlineDate.toLocaleDateString() + ' ' + deadlineDate.toLocaleTimeString() + '</span>' +
+                            '</div>' +
+                            '<div class="chore-detail">' +
+                                '<span class="detail-label">🏆 Points:</span>' +
+                                '<span class="detail-value">' + chore.points + '</span>' +
+                            '</div>' +
+                            (assignedPlayer ? 
+                                '<div class="chore-detail">' +
+                                    '<span class="detail-label">👤 Assigned to:</span>' +
+                                    '<span class="detail-value">' + assignedPlayer.name + '</span>' +
+                                '</div>' : '') +
+                            (completedPlayer && chore.completed ?
+                                '<div class="chore-detail">' +
+                                    '<span class="detail-label">✅ Completed by:</span>' +
+                                    '<span class="detail-value">' + completedPlayer.name + '</span>' +
+                                '</div>' : '') +
                         '</div>' +
-                        '<div class="chore-detail">' +
-                            '<span class="detail-label">Type:</span>' +
-                            '<span class="detail-value">' + chore.type + '</span>' +
-                        '</div>' +
-                        '<div class="chore-detail">' +
-                            '<span class="detail-label">Deadline:</span>' +
-                            '<span class="detail-value ' + overdueClass + '">' + deadlineDate.toLocaleDateString() + ' ' + deadlineDate.toLocaleTimeString() + '</span>' +
-                        '</div>' +
-                        '<div class="chore-detail">' +
-                            '<span class="detail-label">Points:</span>' +
-                            '<span class="detail-value">' + chore.points + '</span>' +
-                        '</div>' +
+                        (chore.description ? 
+                            '<div class="chore-description">' +
+                                '<span class="detail-label">📝 Description:</span>' +
+                                '<p>' + chore.description + '</p>' +
+                            '</div>' : '') +
                     '</div>' +
-                    descriptionHtml +
+                    '<div class="chore-actions">' +
+                        (!chore.completed ? 
+                            '<button class="btn btn-green chore-complete-btn" data-chore-id="' + chore.id + '" data-assigned-to="' + (chore.assignedTo || '') + '">Mark as Completed</button>' : 
+                            '<div class="completion-info">Completed on ' + (chore.completedAt ? new Date(chore.completedAt).toLocaleString() : 'Unknown date') + '</div>') +
+                    '</div>' +
                 '</div>';
             });
             
             choresList.innerHTML = html;
+            
+            // Add event listeners for completion buttons
+            document.querySelectorAll('.chore-complete-btn').forEach(btn => {
+                btn.addEventListener('click', handleChoreCompletion);
+            });
         }
         
         function viewHouseDetails(house) {
@@ -3421,7 +3768,8 @@ app.get('/', (req, res) => {
                 type: formData.get('type'),
                 deadline: formData.get('deadline'),
                 points: parseInt(formData.get('points')) || 15,
-                description: formData.get('description') || ''
+                description: formData.get('description') || '',
+                assignedTo: formData.get('assignedTo') || null
             };
             
             try {
@@ -3445,6 +3793,47 @@ app.get('/', (req, res) => {
             } catch (error) {
                 console.error('Error creating chore:', error);
                 alert('Error creating chore assignment. Please try again.');
+            }
+        }
+        
+        async function handleChoreCompletion(e) {
+            const choreId = e.target.getAttribute('data-chore-id');
+            const assignedTo = e.target.getAttribute('data-assigned-to');
+            
+            // For now, we'll use the assigned player or prompt for who completed it
+            let completedBy = assignedTo;
+            
+            if (!completedBy) {
+                // If no one is assigned, let the user select who completed it
+                const playerOptions = players.map(p => p.id + ':' + p.name).join('\\n');
+                const selectedPlayer = prompt('Who completed this chore? Please enter player ID:\\n\\n' + playerOptions);
+                if (selectedPlayer) {
+                    completedBy = selectedPlayer.split(':')[0];
+                } else {
+                    return; // User cancelled
+                }
+            }
+            
+            try {
+                const response = await fetch('/api/chores/' + choreId + '/complete', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ playerId: completedBy })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Chore marked as completed successfully!');
+                    loadActiveChores(); // Refresh the chores list
+                } else {
+                    alert('Failed to mark chore as completed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error completing chore:', error);
+                alert('Error completing chore. Please try again.');
             }
         }
         
