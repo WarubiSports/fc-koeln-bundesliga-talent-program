@@ -2635,6 +2635,131 @@ app.get('/', (req, res) => {
             font-size: 0.9rem;
         }
         
+        /* Delivery Summary Styles */
+        .delivery-summary-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .summary-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .house-summary-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .house-summary-header {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .house-summary-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .house-order-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .house-summary-content {
+            padding: 1.5rem;
+        }
+        
+        .player-order-summary {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .player-order-summary:last-child {
+            margin-bottom: 0;
+        }
+        
+        .player-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .order-total {
+            font-weight: 700;
+            color: #dc143c;
+        }
+        
+        .order-items-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .order-item {
+            font-size: 0.9rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .delivery-summary-totals {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-total-row:last-child {
+            margin-bottom: 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-top: 1px solid #3b82f6;
+            padding-top: 0.5rem;
+        }
+        
+        .no-orders-message {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 2rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
         @media (max-width: 1024px) {
             .food-order-container {
                 grid-template-columns: 1fr;
@@ -3978,6 +4103,25 @@ app.get('/', (req, res) => {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Admin Delivery Summary Section -->
+                <div class="admin-only" style="margin-top: 3rem;">
+                    <div class="page-header">
+                        <h2>📋 Delivery Summary for Kitchen Staff</h2>
+                        <p>Summary of all orders organized by house and delivery date</p>
+                    </div>
+                    
+                    <div class="delivery-summary-container">
+                        <div class="summary-controls">
+                            <button class="btn btn-primary" id="generateSummaryBtn">📊 Generate Current Summary</button>
+                            <button class="btn btn-secondary" id="exportDeliverySummaryBtn">📁 Export for Kitchen</button>
+                        </div>
+                        
+                        <div id="deliverySummaryContent">
+                            <p class="no-items">Click "Generate Current Summary" to view all pending orders</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Other pages would go here -->
@@ -4742,6 +4886,8 @@ app.get('/', (req, res) => {
             const placeOrderBtn = document.getElementById('placeOrderBtn');
             const exportBtn = document.getElementById('exportOrderBtn');
             const clearBtn = document.getElementById('clearOrderBtn');
+            const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+            const exportDeliverySummaryBtn = document.getElementById('exportDeliverySummaryBtn');
             
             if (placeOrderBtn) {
                 placeOrderBtn.addEventListener('click', placeOrder);
@@ -4753,6 +4899,14 @@ app.get('/', (req, res) => {
             
             if (clearBtn) {
                 clearBtn.addEventListener('click', clearAllOrders);
+            }
+            
+            if (generateSummaryBtn) {
+                generateSummaryBtn.addEventListener('click', generateDeliverySummary);
+            }
+            
+            if (exportDeliverySummaryBtn) {
+                exportDeliverySummaryBtn.addEventListener('click', exportDeliverySummaryForKitchen);
             }
         }
         
@@ -5244,6 +5398,188 @@ app.get('/', (req, res) => {
             setTimeout(() => {
                 loadFoodOrderData();
             }, 5000);
+        }
+        
+        // Admin Delivery Summary Functions
+        function generateDeliverySummary() {
+            const orderHistory = JSON.parse(localStorage.getItem('fckoln_order_history') || '[]');
+            const currentOrders = getCurrentActiveOrders();
+            
+            if (currentOrders.length === 0) {
+                showNoOrdersMessage();
+                return;
+            }
+            
+            // Group orders by house
+            const ordersByHouse = groupOrdersByHouse(currentOrders);
+            
+            // Display summary
+            displayDeliverySummary(ordersByHouse);
+        }
+        
+        function getCurrentActiveOrders() {
+            const orderHistory = JSON.parse(localStorage.getItem('fckoln_order_history') || '[]');
+            const nextDeliveryDate = getNextDeliveryDate();
+            
+            // Filter orders for the next delivery
+            return orderHistory.filter(order => {
+                return order.status === 'placed' && order.deliveryDate === nextDeliveryDate;
+            });
+        }
+        
+        function groupOrdersByHouse(orders) {
+            const houses = {
+                'Widdersdorf 1': [],
+                'Widdersdorf 2': [],
+                'Widdersdorf 3': []
+            };
+            
+            orders.forEach(order => {
+                // Find player's house
+                const player = players.find(p => p.id === order.playerId);
+                if (player && houses[player.house]) {
+                    houses[player.house].push(order);
+                }
+            });
+            
+            return houses;
+        }
+        
+        function displayDeliverySummary(ordersByHouse) {
+            const container = document.getElementById('deliverySummaryContent');
+            if (!container) return;
+            
+            let html = '<div class="delivery-summary-header">';
+            html += '<h3>Delivery Summary for ' + getNextDeliveryDate() + '</h3>';
+            html += '</div>';
+            
+            let totalOrders = 0;
+            let totalAmount = 0;
+            
+            Object.keys(ordersByHouse).forEach(house => {
+                const houseOrders = ordersByHouse[house];
+                
+                if (houseOrders.length > 0) {
+                    totalOrders += houseOrders.length;
+                    
+                    html += '<div class="house-summary-card">';
+                    html += '<div class="house-summary-header">';
+                    html += '<h4 class="house-summary-title">🏡 ' + house + '</h4>';
+                    html += '<div class="house-order-count">' + houseOrders.length + ' orders</div>';
+                    html += '</div>';
+                    html += '<div class="house-summary-content">';
+                    
+                    houseOrders.forEach(order => {
+                        totalAmount += order.total;
+                        
+                        html += '<div class="player-order-summary">';
+                        html += '<div class="player-order-header">';
+                        html += '<span class="player-name">' + order.playerName + '</span>';
+                        html += '<span class="order-total">€' + order.total.toFixed(2) + '</span>';
+                        html += '</div>';
+                        html += '<div class="order-items-list">';
+                        
+                        Object.keys(order.items).forEach(itemId => {
+                            const orderItem = order.items[itemId];
+                            const itemData = findItemById(itemId);
+                            
+                            if (itemData && orderItem.selected && orderItem.quantity > 0) {
+                                html += '<div class="order-item">';
+                                html += '<span>' + itemData.name + '</span>';
+                                html += '<span>x' + orderItem.quantity + '</span>';
+                                html += '</div>';
+                            }
+                        });
+                        
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    
+                    html += '</div>';
+                    html += '</div>';
+                }
+            });
+            
+            // Add totals section
+            html += '<div class="delivery-summary-totals">';
+            html += '<h4>📊 Delivery Totals</h4>';
+            html += '<div class="summary-total-row">';
+            html += '<span>Total Orders:</span>';
+            html += '<span>' + totalOrders + '</span>';
+            html += '</div>';
+            html += '<div class="summary-total-row">';
+            html += '<span>Total Amount:</span>';
+            html += '<span>€' + totalAmount.toFixed(2) + '</span>';
+            html += '</div>';
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+        
+        function showNoOrdersMessage() {
+            const container = document.getElementById('deliverySummaryContent');
+            if (!container) return;
+            
+            container.innerHTML = '<div class="no-orders-message">' +
+                '<h4>📦 No Orders Found</h4>' +
+                '<p>No pending orders for the next delivery date: ' + getNextDeliveryDate() + '</p>' +
+                '<p>Orders will appear here once players place them.</p>' +
+            '</div>';
+        }
+        
+        function exportDeliverySummaryForKitchen() {
+            const orderHistory = JSON.parse(localStorage.getItem('fckoln_order_history') || '[]');
+            const currentOrders = getCurrentActiveOrders();
+            
+            if (currentOrders.length === 0) {
+                alert('No orders to export for the next delivery.');
+                return;
+            }
+            
+            const ordersByHouse = groupOrdersByHouse(currentOrders);
+            
+            // Create comprehensive CSV for kitchen staff
+            let csvContent = 'FC Köln Kitchen Delivery Summary\\n';
+            csvContent += 'Delivery Date: ' + getNextDeliveryDate() + '\\n';
+            csvContent += 'Generated: ' + new Date().toLocaleString() + '\\n\\n';
+            
+            csvContent += 'House,Player Name,Item,Quantity,Unit Price,Total Price,Order Number\\n';
+            
+            let grandTotal = 0;
+            
+            Object.keys(ordersByHouse).forEach(house => {
+                const houseOrders = ordersByHouse[house];
+                
+                houseOrders.forEach(order => {
+                    grandTotal += order.total;
+                    
+                    Object.keys(order.items).forEach(itemId => {
+                        const orderItem = order.items[itemId];
+                        const itemData = findItemById(itemId);
+                        
+                        if (itemData && orderItem.selected && orderItem.quantity > 0) {
+                            const itemTotal = itemData.price * orderItem.quantity;
+                            csvContent += '"' + house + '","' + order.playerName + '","' + itemData.name + '",' +
+                                         orderItem.quantity + ',' + itemData.price.toFixed(2) + ',' +
+                                         itemTotal.toFixed(2) + ',"' + order.orderNumber + '"\\n';
+                        }
+                    });
+                });
+            });
+            
+            csvContent += '\\n,,,,,€' + grandTotal.toFixed(2) + ',TOTAL AMOUNT\\n';
+            csvContent += ',,,,' + currentOrders.length + ' orders,,TOTAL ORDERS\\n';
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'fc_koln_kitchen_delivery_' + new Date().toISOString().split('T')[0] + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
         function updateOrderSummary() {
