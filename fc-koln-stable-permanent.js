@@ -4063,9 +4063,9 @@ app.get('/', (req, res) => {
             // View details button event listeners
             const viewDetailsButtons = document.querySelectorAll('.btn-view-details');
             viewDetailsButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function() {
                     const house = this.getAttribute('data-house');
-                    viewHouseDetails(house);
+                    await viewHouseDetails(house);
                 });
             });
             
@@ -4247,19 +4247,29 @@ app.get('/', (req, res) => {
             });
         }
         
-        function viewHouseDetails(house) {
-            // Get house residents
-            const houseResidents = players.filter(p => p.house === house);
-            
-            // Get house chores (active and completed)
-            const houseChores = choreStorage.filter(c => c.house === house && !c.archived);
-            const completedChores = houseChores.filter(c => c.completed);
-            const activeChores = houseChores.filter(c => !c.completed);
-            const overdueChores = activeChores.filter(c => new Date(c.deadline) < new Date());
-            
-            // Calculate house statistics
-            const totalPoints = completedChores.reduce((sum, chore) => sum + chore.points, 0);
-            const completionRate = houseChores.length > 0 ? Math.round((completedChores.length / houseChores.length) * 100) : 0;
+        async function viewHouseDetails(house) {
+            try {
+                // Get house residents
+                const houseResidents = players.filter(p => p.house === house);
+                
+                // Fetch chore data from API
+                const choreResponse = await fetch('/api/chores');
+                const choreData = await choreResponse.json();
+                
+                if (!choreData.success) {
+                    alert('Failed to load chore data');
+                    return;
+                }
+                
+                // Get house chores (active and completed)
+                const houseChores = choreData.chores.filter(c => c.house === house);
+                const completedChores = houseChores.filter(c => c.completed);
+                const activeChores = houseChores.filter(c => !c.completed);
+                const overdueChores = activeChores.filter(c => new Date(c.deadline) < new Date());
+                
+                // Calculate house statistics
+                const totalPoints = completedChores.reduce((sum, chore) => sum + chore.points, 0);
+                const completionRate = houseChores.length > 0 ? Math.round((completedChores.length / houseChores.length) * 100) : 0;
             
             // Create house details modal content
             let modalContent = 
@@ -4412,8 +4422,12 @@ app.get('/', (req, res) => {
                     '</div>' +
                 '</div>';
             
-            // Create and show modal
-            showHouseModal(modalContent);
+                // Create and show modal
+                showHouseModal(modalContent);
+            } catch (error) {
+                console.error('Error loading house details:', error);
+                alert('Failed to load house details. Please try again.');
+            }
         }
         
         function showHouseModal(content) {
