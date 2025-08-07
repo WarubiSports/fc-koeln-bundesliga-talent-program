@@ -2635,8 +2635,8 @@ app.get('/', (req, res) => {
             font-size: 0.9rem;
         }
         
-        /* Order Overview Styles - Scoped to order-overview page */
-        #order-overview .order-overview-filters {
+        /* Order Overview Styles */
+        .order-overview-filters {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
             gap: 1rem;
@@ -2647,19 +2647,19 @@ app.get('/', (req, res) => {
             border: 2px solid #e5e7eb;
         }
         
-        #order-overview .filter-group {
+        .filter-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
         
-        #order-overview .filter-group label {
+        .filter-group label {
             font-weight: 600;
             color: #374151;
             font-size: 0.9rem;
         }
         
-        #order-overview .filter-select {
+        .filter-select {
             padding: 0.5rem;
             border: 2px solid #d1d5db;
             border-radius: 6px;
@@ -2668,20 +2668,20 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        #order-overview .filter-select:focus {
+        .filter-select:focus {
             border-color: #dc143c;
             outline: none;
             box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
         }
         
-        #order-overview .house-summary-cards {
+        .house-summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
-        #order-overview .summary-card {
+        .summary-card {
             background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
             border: 2px solid #d1d5db;
             border-radius: 12px;
@@ -2689,26 +2689,26 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        #order-overview .summary-card:hover {
+        .summary-card:hover {
             border-color: #dc143c;
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
             transform: translateY(-2px);
         }
         
-        #order-overview .summary-card h3 {
+        .summary-card h3 {
             color: #dc143c;
             margin: 0 0 1rem 0;
             font-weight: 700;
             font-size: 1.2rem;
         }
         
-        #order-overview .summary-stats {
+        .summary-stats {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
         
-        #order-overview .stat-item {
+        .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2716,32 +2716,32 @@ app.get('/', (req, res) => {
             border-bottom: 1px solid #e5e7eb;
         }
         
-        #order-overview .stat-item:last-child {
+        .stat-item:last-child {
             border-bottom: none;
         }
         
-        #order-overview .stat-label {
+        .stat-label {
             color: #6b7280;
             font-weight: 500;
         }
         
-        #order-overview .stat-value {
+        .stat-value {
             color: #dc143c;
             font-weight: 700;
             font-size: 1.1rem;
         }
         
-        #order-overview .detailed-orders-section {
+        .detailed-orders-section {
             margin: 2rem 0;
         }
         
-        #order-overview .detailed-orders-section h2 {
+        .detailed-orders-section h2 {
             color: #dc143c;
             margin-bottom: 1rem;
             font-weight: 700;
         }
         
-        #order-overview .order-card {
+        .order-card {
             background: white;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
@@ -2750,12 +2750,12 @@ app.get('/', (req, res) => {
             transition: all 0.3s ease;
         }
         
-        #order-overview .order-card:hover {
+        .order-card:hover {
             border-color: #dc143c;
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
         }
         
-        #order-overview .order-header {
+        .order-header {
             background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             padding: 1rem 1.5rem;
@@ -2764,33 +2764,33 @@ app.get('/', (req, res) => {
             gap: 1rem;
         }
         
-        #order-overview .order-info {
+        .order-info {
             display: flex;
             flex-direction: column;
         }
         
-        #order-overview .order-info-label {
+        .order-info-label {
             font-size: 0.8rem;
             opacity: 0.9;
             margin-bottom: 0.25rem;
         }
         
-        #order-overview .order-info-value {
+        .order-info-value {
             font-weight: 700;
             font-size: 1rem;
         }
         
-        #order-overview .order-items {
+        .order-items {
             padding: 1rem 1.5rem;
         }
         
-        #order-overview .order-items-grid {
+        .order-items-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 0.75rem;
         }
         
-        #order-overview .order-item {
+        .order-item {
             background: #f9fafb;
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
@@ -2800,46 +2800,46 @@ app.get('/', (req, res) => {
             align-items: center;
         }
         
-        #order-overview .order-item-name {
+        .order-item-name {
             font-weight: 500;
             color: #374151;
             flex: 1;
         }
         
-        #order-overview .order-item-qty {
+        .order-item-qty {
             color: #6b7280;
             font-size: 0.9rem;
             margin: 0 0.5rem;
         }
         
-        #order-overview .order-item-price {
+        .order-item-price {
             color: #dc143c;
             font-weight: 600;
         }
         
-        #order-overview .shopping-list-section {
+        .shopping-list-section {
             margin: 2rem 0;
         }
         
-        #order-overview .shopping-list-section h2 {
+        .shopping-list-section h2 {
             color: #dc143c;
             margin-bottom: 1rem;
             font-weight: 700;
         }
         
-        #order-overview .shopping-list-header {
+        .shopping-list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
         
-        #order-overview .shopping-list-header p {
+        .shopping-list-header p {
             color: #6b7280;
             margin: 0;
         }
         
-        #order-overview .consolidated-item {
+        .consolidated-item {
             background: white;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
@@ -2851,35 +2851,35 @@ app.get('/', (req, res) => {
             align-items: center;
         }
         
-        #order-overview .consolidated-item:hover {
+        .consolidated-item:hover {
             border-color: #dc143c;
             background: #fef2f2;
         }
         
-        #order-overview .consolidated-item-name {
+        .consolidated-item-name {
             font-weight: 600;
             color: #374151;
         }
         
-        #order-overview .consolidated-item-qty {
+        .consolidated-item-qty {
             text-align: center;
             font-weight: 600;
             color: #dc143c;
         }
         
-        #order-overview .consolidated-item-houses {
+        .consolidated-item-houses {
             text-align: center;
             color: #6b7280;
             font-size: 0.9rem;
         }
         
-        #order-overview .consolidated-item-total {
+        .consolidated-item-total {
             text-align: right;
             font-weight: 700;
             color: #dc143c;
         }
         
-        #order-overview .no-orders {
+        .no-orders {
             text-align: center;
             color: #6b7280;
             font-style: italic;
@@ -2887,17 +2887,17 @@ app.get('/', (req, res) => {
         }
         
         @media (max-width: 1024px) {
-            #order-overview .order-overview-filters {
+            .order-overview-filters {
                 grid-template-columns: 1fr 1fr;
                 gap: 1rem;
             }
             
-            #order-overview .order-header {
+            .order-header {
                 grid-template-columns: 1fr 1fr;
                 gap: 0.5rem;
             }
             
-            #order-overview .consolidated-item {
+            .consolidated-item {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
                 text-align: center;
@@ -2905,20 +2905,20 @@ app.get('/', (req, res) => {
         }
         
         @media (max-width: 768px) {
-            #order-overview .order-overview-filters {
+            .order-overview-filters {
                 grid-template-columns: 1fr;
             }
             
-            #order-overview .house-summary-cards {
+            .house-summary-cards {
                 grid-template-columns: 1fr;
             }
             
-            #order-overview .order-header {
+            .order-header {
                 grid-template-columns: 1fr;
                 text-align: center;
             }
             
-            #order-overview .shopping-list-header {
+            .shopping-list-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 1rem;
@@ -4133,7 +4133,113 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
-
+            <!-- Order Overview Page (Admin Only) -->
+            <div class="page admin-only" id="order-overview">
+                <div class="page-header">
+                    <h1 class="page-title">📊 Food Order Overview - Administrative Dashboard</h1>
+                    <p class="page-description">Comprehensive view of all food orders organized by houses and delivery schedules</p>
+                </div>
+                
+                <div class="order-overview-filters">
+                    <div class="filter-group">
+                        <label for="deliveryFilter">Filter by Delivery:</label>
+                        <select id="deliveryFilter" class="filter-select">
+                            <option value="all">All Deliveries</option>
+                            <option value="upcoming">Upcoming Deliveries</option>
+                            <option value="tuesday">Tuesday Delivery</option>
+                            <option value="friday">Friday Delivery</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by Status:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Orders</option>
+                            <option value="placed">Placed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refreshOverviewBtn">🔄 Refresh Data</button>
+                    <button class="btn btn-secondary" id="exportAllOrdersBtn">📊 Export All Orders</button>
+                </div>
+                
+                <div class="house-overview-container">
+                    <div class="house-summary-cards">
+                        <div class="summary-card" id="w1Summary">
+                            <h3>🏠 Widdersdorf 1</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w1ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w1TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w1PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card" id="w2Summary">
+                            <h3>🏠 Widdersdorf 2</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w2ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w2TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w2PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card" id="w3Summary">
+                            <h3>🏠 Widdersdorf 3</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w3ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w3TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w3PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detailed-orders-section">
+                        <h2>📋 Detailed Order Information</h2>
+                        <div id="orderDetailsContainer">
+                            <p class="no-orders">Loading order data...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shopping-list-section">
+                        <h2>🛒 Consolidated Shopping List</h2>
+                        <div class="shopping-list-header">
+                            <p>Combined items from all orders for efficient procurement</p>
+                            <button class="btn btn-primary" id="generateShoppingListBtn">📋 Generate Shopping List</button>
+                        </div>
+                        <div id="consolidatedShoppingList">
+                            <p class="no-items">Click "Generate Shopping List" to create consolidated list</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Food Orders Page -->
             <div class="page" id="food-orders">
                 <div class="page-header">
@@ -4272,114 +4378,7 @@ app.get('/', (req, res) => {
                 </div>
             </div>
 
-            <!-- Order Overview Page (Admin Only) -->
-            <div class="page admin-only" id="order-overview">
-                <div class="page-header">
-                    <h1 class="page-title">📊 Food Order Overview - Administrative Dashboard</h1>
-                    <p class="page-description">Comprehensive view of all food orders organized by houses and delivery schedules</p>
-                </div>
-                
-                <div class="order-overview-filters">
-                    <div class="filter-group">
-                        <label for="deliveryFilter">Filter by Delivery:</label>
-                        <select id="deliveryFilter" class="filter-select">
-                            <option value="all">All Deliveries</option>
-                            <option value="upcoming">Upcoming Deliveries</option>
-                            <option value="tuesday">Tuesday Delivery</option>
-                            <option value="friday">Friday Delivery</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="statusFilter">Filter by Status:</label>
-                        <select id="statusFilter" class="filter-select">
-                            <option value="all">All Orders</option>
-                            <option value="placed">Placed</option>
-                            <option value="preparing">Preparing</option>
-                            <option value="delivered">Delivered</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" id="refreshOverviewBtn">🔄 Refresh Data</button>
-                    <button class="btn btn-secondary" id="exportAllOrdersBtn">📊 Export All Orders</button>
-                </div>
-                
-                <div class="house-overview-container">
-                    <div class="house-summary-cards">
-                        <div class="summary-card" id="w1Summary">
-                            <h3>🏠 Widdersdorf 1</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w1ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w1TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w1PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card" id="w2Summary">
-                            <h3>🏠 Widdersdorf 2</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w2ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w2TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w2PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card" id="w3Summary">
-                            <h3>🏠 Widdersdorf 3</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w3ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w3TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w3PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detailed-orders-section">
-                        <h2>📋 Detailed Order Information</h2>
-                        <div id="orderDetailsContainer">
-                            <p class="no-orders">Loading order data...</p>
-                        </div>
-                    </div>
-                    
-                    <div class="shopping-list-section">
-                        <h2>🛒 Consolidated Shopping List</h2>
-                        <div class="shopping-list-header">
-                            <p>Combined items from all orders for efficient procurement</p>
-                            <button class="btn btn-primary" id="generateShoppingListBtn">📋 Generate Shopping List</button>
-                        </div>
-                        <div id="consolidatedShoppingList">
-                            <p class="no-items">Click "Generate Shopping List" to create consolidated list</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Housing & Chore Management Page -->
+            <!-- Other pages would go here -->
             <div class="page" id="chores">
                 <div class="page-header">
                     <h1 class="page-title">Housing & Chore Management</h1>
