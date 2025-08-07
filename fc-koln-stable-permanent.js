@@ -2484,6 +2484,102 @@ app.get('/', (req, res) => {
             color: #dc143c;
         }
         
+        .budget-info {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .budget-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .budget-label {
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+        
+        .budget-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #dc143c;
+        }
+        
+        .budget-amount.over-budget {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #dc2626;
+        }
+        
+        .budget-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .budget-used {
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a 0%, #eab308 70%, #dc2626 100%);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .budget-warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .budget-error {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+            color: #991b1b;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .food-item.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .player-access-only {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .access-message {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .access-details {
+            color: #3730a3;
+            font-size: 0.9rem;
+        }
+        
         @media (max-width: 1024px) {
             .food-order-container {
                 grid-template-columns: 1fr;
@@ -3717,6 +3813,15 @@ app.get('/', (req, res) => {
                     <!-- Order Summary Sidebar -->
                     <div class="order-summary">
                         <h3>📋 Order Summary</h3>
+                        <div class="budget-info">
+                            <div class="budget-display">
+                                <span class="budget-label">Budget Remaining:</span>
+                                <span class="budget-amount" id="budgetRemaining">€35.00</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-used" id="budgetUsedBar" style="width: 0%"></div>
+                            </div>
+                        </div>
                         <div id="orderSummaryContent">
                             <p class="no-items">No items selected yet</p>
                         </div>
@@ -4677,21 +4782,62 @@ app.get('/', (req, res) => {
         };
         
         let currentOrder = {};
+        const BUDGET_LIMIT = 35.00; // €35 budget limit per player
         
         function loadFoodOrderData() {
-            // Load existing order if any
-            const savedOrder = localStorage.getItem('fckoln_food_order');
+            // Check if user is authorized to order food
+            if (!isAuthorizedToOrder()) {
+                showUnauthorizedMessage();
+                return;
+            }
+            
+            // Load existing order for the current user
+            const orderKey = 'fckoln_food_order_' + currentUser.id;
+            const savedOrder = localStorage.getItem(orderKey);
             if (savedOrder) {
                 currentOrder = JSON.parse(savedOrder);
             }
+            
+            // Show player access information
+            showPlayerAccessInfo();
             
             // Render all food categories
             Object.keys(foodItemsData).forEach(categoryKey => {
                 renderFoodCategory(categoryKey, foodItemsData[categoryKey]);
             });
             
-            // Update order summary
+            // Update order summary and budget
             updateOrderSummary();
+            updateBudgetDisplay();
+        }
+        
+        function isAuthorizedToOrder() {
+            // Only players can place food orders for themselves
+            return currentUser && (currentUser.role === 'player' || currentUser.role === 'admin');
+        }
+        
+        function showUnauthorizedMessage() {
+            const container = document.querySelector('.food-order-container');
+            if (container) {
+                container.innerHTML = '<div class="player-access-only">' +
+                    '<div class="access-message">🔒 Food Orders - Player Access Only</div>' +
+                    '<div class="access-details">Only registered players can place food orders. Staff members can view but not modify orders.</div>' +
+                '</div>';
+            }
+        }
+        
+        function showPlayerAccessInfo() {
+            if (currentUser.role === 'player') {
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'player-access-only';
+                infoDiv.innerHTML = '<div class="access-message">🛒 Personal Food Order</div>' +
+                    '<div class="access-details">Ordering for: ' + currentUser.name + ' | Budget: €35.00 per week</div>';
+                
+                const container = document.querySelector('.food-order-container');
+                if (container) {
+                    container.insertBefore(infoDiv, container.firstChild);
+                }
+            }
         }
         
         function renderFoodCategory(categoryKey, items) {
@@ -4764,6 +4910,26 @@ app.get('/', (req, res) => {
         }
         
         function updateItemSelection(itemId, selected, quantity) {
+            const itemData = findItemById(itemId);
+            if (!itemData) return;
+            
+            // Calculate potential new total
+            const tempOrder = { ...currentOrder };
+            if (selected && quantity > 0) {
+                tempOrder[itemId] = { selected: true, quantity: quantity };
+            } else {
+                delete tempOrder[itemId];
+            }
+            
+            const newTotal = calculateOrderTotal(tempOrder);
+            
+            // Check budget limit
+            if (newTotal > BUDGET_LIMIT) {
+                alert('Budget exceeded! You have a €' + BUDGET_LIMIT.toFixed(2) + ' weekly limit. Current selection would cost €' + newTotal.toFixed(2));
+                return;
+            }
+            
+            // Update order
             if (selected && quantity > 0) {
                 currentOrder[itemId] = { selected: true, quantity: quantity };
             } else {
@@ -4782,11 +4948,96 @@ app.get('/', (req, res) => {
                 }
             }
             
-            // Save to localStorage
-            localStorage.setItem('fckoln_food_order', JSON.stringify(currentOrder));
+            // Save to user-specific localStorage
+            const orderKey = 'fckoln_food_order_' + currentUser.id;
+            localStorage.setItem(orderKey, JSON.stringify(currentOrder));
             
-            // Update summary
+            // Update summary and budget
             updateOrderSummary();
+            updateBudgetDisplay();
+            updateItemAvailability();
+        }
+        
+        function calculateOrderTotal(order) {
+            let total = 0;
+            Object.keys(order).forEach(itemId => {
+                const orderItem = order[itemId];
+                const itemData = findItemById(itemId);
+                
+                if (itemData && orderItem.selected && orderItem.quantity > 0) {
+                    total += itemData.price * orderItem.quantity;
+                }
+            });
+            return total;
+        }
+        
+        function updateBudgetDisplay() {
+            const currentTotal = calculateOrderTotal(currentOrder);
+            const remaining = BUDGET_LIMIT - currentTotal;
+            const percentUsed = (currentTotal / BUDGET_LIMIT) * 100;
+            
+            const budgetAmountEl = document.getElementById('budgetRemaining');
+            const budgetBarEl = document.getElementById('budgetUsedBar');
+            
+            if (budgetAmountEl) {
+                budgetAmountEl.textContent = '€' + remaining.toFixed(2);
+                
+                if (remaining < 0) {
+                    budgetAmountEl.classList.add('over-budget');
+                } else {
+                    budgetAmountEl.classList.remove('over-budget');
+                }
+            }
+            
+            if (budgetBarEl) {
+                budgetBarEl.style.width = Math.min(100, percentUsed) + '%';
+            }
+            
+            // Update summary with budget warnings
+            updateBudgetWarnings(currentTotal, remaining);
+        }
+        
+        function updateBudgetWarnings(currentTotal, remaining) {
+            const summaryContainer = document.getElementById('orderSummaryContent');
+            if (!summaryContainer) return;
+            
+            // Remove existing warnings
+            const existingWarnings = summaryContainer.querySelectorAll('.budget-warning, .budget-error');
+            existingWarnings.forEach(warning => warning.remove());
+            
+            // Add warnings if needed
+            if (remaining < 0) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'budget-error';
+                errorDiv.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2) + '!';
+                summaryContainer.appendChild(errorDiv);
+            } else if (remaining < 5) {
+                const warningDiv = document.createElement('div');
+                warningDiv.className = 'budget-warning';
+                warningDiv.textContent = 'Low budget: €' + remaining.toFixed(2) + ' remaining';
+                summaryContainer.appendChild(warningDiv);
+            }
+        }
+        
+        function updateItemAvailability() {
+            const currentTotal = calculateOrderTotal(currentOrder);
+            
+            // Disable items that would exceed budget
+            document.querySelectorAll('.food-item').forEach(itemEl => {
+                const itemId = itemEl.getAttribute('data-item-id');
+                const itemData = findItemById(itemId);
+                
+                if (itemData) {
+                    const isCurrentlySelected = currentOrder[itemId]?.selected;
+                    const wouldExceedBudget = !isCurrentlySelected && (currentTotal + itemData.price) > BUDGET_LIMIT;
+                    
+                    if (wouldExceedBudget) {
+                        itemEl.classList.add('disabled');
+                    } else {
+                        itemEl.classList.remove('disabled');
+                    }
+                }
+            });
         }
         
         function updateOrderSummary() {
@@ -4881,6 +5132,10 @@ app.get('/', (req, res) => {
             });
             
             csvContent += '\\n,"TOTAL",,,€' + grandTotal.toFixed(2);
+            csvContent += '\\n,"BUDGET LIMIT",,,€' + BUDGET_LIMIT.toFixed(2);
+            csvContent += '\\n,"REMAINING BUDGET",,,€' + (BUDGET_LIMIT - grandTotal).toFixed(2);
+            csvContent += '\\n,"ORDERED BY",,,"' + currentUser.name + '"';
+            csvContent += '\\n,"ORDER DATE",,,"' + new Date().toLocaleDateString() + '"';
             
             // Create and download file
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -4920,7 +5175,8 @@ app.get('/', (req, res) => {
         function clearAllOrders() {
             if (confirm('Are you sure you want to clear all selected items?')) {
                 currentOrder = {};
-                localStorage.removeItem('fckoln_food_order');
+                const orderKey = 'fckoln_food_order_' + currentUser.id;
+                localStorage.removeItem(orderKey);
                 
                 // Refresh the food order display
                 loadFoodOrderData();
