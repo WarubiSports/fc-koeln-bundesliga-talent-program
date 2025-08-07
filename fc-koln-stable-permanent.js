@@ -4133,113 +4133,7 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
-            <!-- Order Overview Page (Admin Only) -->
-            <div class="page admin-only" id="order-overview">
-                <div class="page-header">
-                    <h1 class="page-title">📊 Food Order Overview - Administrative Dashboard</h1>
-                    <p class="page-description">Comprehensive view of all food orders organized by houses and delivery schedules</p>
-                </div>
-                
-                <div class="order-overview-filters">
-                    <div class="filter-group">
-                        <label for="deliveryFilter">Filter by Delivery:</label>
-                        <select id="deliveryFilter" class="filter-select">
-                            <option value="all">All Deliveries</option>
-                            <option value="upcoming">Upcoming Deliveries</option>
-                            <option value="tuesday">Tuesday Delivery</option>
-                            <option value="friday">Friday Delivery</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="statusFilter">Filter by Status:</label>
-                        <select id="statusFilter" class="filter-select">
-                            <option value="all">All Orders</option>
-                            <option value="placed">Placed</option>
-                            <option value="preparing">Preparing</option>
-                            <option value="delivered">Delivered</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" id="refreshOverviewBtn">🔄 Refresh Data</button>
-                    <button class="btn btn-secondary" id="exportAllOrdersBtn">📊 Export All Orders</button>
-                </div>
-                
-                <div class="house-overview-container">
-                    <div class="house-summary-cards">
-                        <div class="summary-card" id="w1Summary">
-                            <h3>🏠 Widdersdorf 1</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w1ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w1TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w1PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card" id="w2Summary">
-                            <h3>🏠 Widdersdorf 2</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w2ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w2TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w2PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="summary-card" id="w3Summary">
-                            <h3>🏠 Widdersdorf 3</h3>
-                            <div class="summary-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Active Orders:</span>
-                                    <span class="stat-value" id="w3ActiveCount">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Value:</span>
-                                    <span class="stat-value" id="w3TotalValue">€0.00</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Players Ordered:</span>
-                                    <span class="stat-value" id="w3PlayersCount">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detailed-orders-section">
-                        <h2>📋 Detailed Order Information</h2>
-                        <div id="orderDetailsContainer">
-                            <p class="no-orders">Loading order data...</p>
-                        </div>
-                    </div>
-                    
-                    <div class="shopping-list-section">
-                        <h2>🛒 Consolidated Shopping List</h2>
-                        <div class="shopping-list-header">
-                            <p>Combined items from all orders for efficient procurement</p>
-                            <button class="btn btn-primary" id="generateShoppingListBtn">📋 Generate Shopping List</button>
-                        </div>
-                        <div id="consolidatedShoppingList">
-                            <p class="no-items">Click "Generate Shopping List" to create consolidated list</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+
             <!-- Food Orders Page -->
             <div class="page" id="food-orders">
                 <div class="page-header">
@@ -4378,7 +4272,114 @@ app.get('/', (req, res) => {
                 </div>
             </div>
 
-            <!-- Other pages would go here -->
+            <!-- Order Overview Page (Admin Only) -->
+            <div class="page admin-only" id="order-overview">
+                <div class="page-header">
+                    <h1 class="page-title">📊 Food Order Overview - Administrative Dashboard</h1>
+                    <p class="page-description">Comprehensive view of all food orders organized by houses and delivery schedules</p>
+                </div>
+                
+                <div class="order-overview-filters">
+                    <div class="filter-group">
+                        <label for="deliveryFilter">Filter by Delivery:</label>
+                        <select id="deliveryFilter" class="filter-select">
+                            <option value="all">All Deliveries</option>
+                            <option value="upcoming">Upcoming Deliveries</option>
+                            <option value="tuesday">Tuesday Delivery</option>
+                            <option value="friday">Friday Delivery</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Filter by Status:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Orders</option>
+                            <option value="placed">Placed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refreshOverviewBtn">🔄 Refresh Data</button>
+                    <button class="btn btn-secondary" id="exportAllOrdersBtn">📊 Export All Orders</button>
+                </div>
+                
+                <div class="house-overview-container">
+                    <div class="house-summary-cards">
+                        <div class="summary-card" id="w1Summary">
+                            <h3>🏠 Widdersdorf 1</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w1ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w1TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w1PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card" id="w2Summary">
+                            <h3>🏠 Widdersdorf 2</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w2ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w2TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w2PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card" id="w3Summary">
+                            <h3>🏠 Widdersdorf 3</h3>
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Active Orders:</span>
+                                    <span class="stat-value" id="w3ActiveCount">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Value:</span>
+                                    <span class="stat-value" id="w3TotalValue">€0.00</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Players Ordered:</span>
+                                    <span class="stat-value" id="w3PlayersCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detailed-orders-section">
+                        <h2>📋 Detailed Order Information</h2>
+                        <div id="orderDetailsContainer">
+                            <p class="no-orders">Loading order data...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shopping-list-section">
+                        <h2>🛒 Consolidated Shopping List</h2>
+                        <div class="shopping-list-header">
+                            <p>Combined items from all orders for efficient procurement</p>
+                            <button class="btn btn-primary" id="generateShoppingListBtn">📋 Generate Shopping List</button>
+                        </div>
+                        <div id="consolidatedShoppingList">
+                            <p class="no-items">Click "Generate Shopping List" to create consolidated list</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Housing & Chore Management Page -->
             <div class="page" id="chores">
                 <div class="page-header">
                     <h1 class="page-title">Housing & Chore Management</h1>
