@@ -2777,6 +2777,162 @@ app.get('/', (req, res) => {
             }
         }
         
+        /* Communications Styles */
+        .communications-container {
+            display: flex;
+            height: 70vh;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .chat-list {
+            width: 300px;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-list-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+        }
+        
+        .chat-list-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .chat-search input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .chat-list-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chat-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .chat-item:hover {
+            background: #f9fafb;
+        }
+        
+        .chat-item.active {
+            background: #eff6ff;
+            border-right: 3px solid #dc143c;
+        }
+        
+        .chat-item-name {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .message.sent {
+            justify-content: flex-end;
+        }
+        
+        .message.received {
+            justify-content: flex-start;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+        }
+        
+        .message.sent .message-bubble {
+            background: #dc143c;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.received .message-bubble {
+            background: white;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+        
+        .send-btn {
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.125rem;
+        }
+        
+        .send-btn:hover {
+            background: #b91c3c;
+        }
+
         @media (max-width: 768px) {
             .delivery-schedule-info {
                 grid-template-columns: 1fr;
@@ -2794,6 +2950,22 @@ app.get('/', (req, res) => {
             
             .quantity-selector {
                 justify-content: center;
+            }
+            
+            .communications-container {
+                flex-direction: column;
+                height: 80vh;
+            }
+            
+            .chat-list {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            .chat-window {
+                height: calc(100% - 200px);
             }
         }
         
@@ -4349,9 +4521,95 @@ app.get('/', (req, res) => {
                 <p>Food ordering system coming soon...</p>
             </div>
             
+            <!-- Communications Page -->
             <div class="page" id="communications">
-                <h1 class="page-title">Communications</h1>
-                <p>Communication system coming soon...</p>
+                <div class="communications-container">
+                    <!-- Chat List Sidebar -->
+                    <div class="chat-list">
+                        <div class="chat-list-header">
+                            <h2>💬 Messages</h2>
+                            <button class="btn btn-primary" id="newChatBtn">+ New Chat</button>
+                        </div>
+                        <div class="chat-search">
+                            <input type="text" placeholder="Search conversations..." id="chatSearch">
+                        </div>
+                        <div class="chat-list-content" id="chatListContent">
+                            <div class="no-chats-message">
+                                No conversations yet. Start a new chat!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Window -->
+                    <div class="chat-window">
+                        <div class="chat-header" id="chatHeader" style="display: none;">
+                            <div class="chat-header-info">
+                                <h3 id="chatTitle">Select a conversation</h3>
+                                <span id="chatSubtitle"></span>
+                            </div>
+                            <div class="chat-header-actions">
+                                <button class="btn btn-secondary" id="chatInfoBtn">ℹ️</button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="no-chat-selected">
+                                Select a conversation to start messaging
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                            <div class="chat-input">
+                                <input type="text" placeholder="Type a message..." id="messageInput">
+                                <button class="send-btn" id="sendBtn">➤</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Chat Modal -->
+                <div class="modal" id="newChatModal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Start New Chat</h3>
+                            <button class="close-btn" id="closeNewChatModal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="chat-type-selection">
+                                <button class="btn btn-primary chat-type-btn active" data-type="direct">Direct Message</button>
+                                <button class="btn btn-secondary chat-type-btn" data-type="group">Group Chat</button>
+                            </div>
+                            
+                            <!-- Direct Message Form -->
+                            <div class="chat-form" id="directChatForm">
+                                <div class="form-group">
+                                    <label>Select Person:</label>
+                                    <select id="directChatRecipient" class="form-control">
+                                        <option value="">Choose a person...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Group Chat Form -->
+                            <div class="chat-form" id="groupChatForm" style="display: none;">
+                                <div class="form-group">
+                                    <label>Group Name:</label>
+                                    <input type="text" id="groupChatName" placeholder="Enter group name..." class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Add Members:</label>
+                                    <div class="member-selection" id="memberSelection">
+                                        <!-- Members will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" id="cancelNewChat">Cancel</button>
+                            <button class="btn btn-primary" id="createChatBtn">Create Chat</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="page" id="calendar">
@@ -4452,6 +4710,8 @@ app.get('/', (req, res) => {
                 loadActiveChores();
             } else if (pageId === 'food-orders') {
                 loadFoodOrderData();
+            } else if (pageId === 'communications') {
+                initializeCommunications();
             }
         }
         
@@ -5674,6 +5934,320 @@ app.get('/', (req, res) => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // Communications System Functions
+        function initializeCommunications() {
+            conversations = JSON.parse(localStorage.getItem('fckoln_conversations') || '[]');
+            loadChatList();
+            initializeCommunicationEvents();
+        }
+
+        function initializeCommunicationEvents() {
+            // New Chat Button
+            const newChatBtn = document.getElementById('newChatBtn');
+            if (newChatBtn) {
+                newChatBtn.addEventListener('click', () => showNewChatModal());
+            }
+
+            // Chat Type Selection
+            document.querySelectorAll('.chat-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chat-type-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.add('btn-secondary');
+                        b.classList.remove('btn-primary');
+                    });
+                    this.classList.add('active');
+                    this.classList.add('btn-primary');
+                    this.classList.remove('btn-secondary');
+                    
+                    const type = this.dataset.type;
+                    document.getElementById('directChatForm').style.display = type === 'direct' ? 'block' : 'none';
+                    document.getElementById('groupChatForm').style.display = type === 'group' ? 'block' : 'none';
+                    
+                    if (type === 'direct') {
+                        populateDirectChatUsers();
+                    } else {
+                        populateGroupMembers();
+                    }
+                });
+            });
+
+            // Close Modal
+            document.getElementById('closeNewChatModal')?.addEventListener('click', hideNewChatModal);
+            document.getElementById('cancelNewChat')?.addEventListener('click', hideNewChatModal);
+
+            // Create Chat
+            document.getElementById('createChatBtn')?.addEventListener('click', createNewChat);
+
+            // Send Message
+            document.getElementById('sendBtn')?.addEventListener('click', sendMessage);
+            document.getElementById('messageInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // Chat Search
+            document.getElementById('chatSearch')?.addEventListener('input', function(e) {
+                filterChats(e.target.value);
+            });
+        }
+
+        function showNewChatModal() {
+            document.getElementById('newChatModal').style.display = 'flex';
+            populateDirectChatUsers();
+        }
+
+        function hideNewChatModal() {
+            document.getElementById('newChatModal').style.display = 'none';
+            document.getElementById('directChatRecipient').value = '';
+            document.getElementById('groupChatName').value = '';
+            document.querySelectorAll('.member-checkbox').forEach(cb => cb.checked = false);
+        }
+
+        function populateDirectChatUsers() {
+            const select = document.getElementById('directChatRecipient');
+            if (!select) return;
+
+            let html = '<option value="">Choose a person...</option>';
+            players.forEach(player => {
+                if (player.id !== currentUser.id) {
+                    html += '<option value="' + player.id + '">' + player.name + '</option>';
+                }
+            });
+
+            select.innerHTML = html;
+        }
+
+        function populateGroupMembers() {
+            const container = document.getElementById('memberSelection');
+            if (!container) return;
+
+            let html = '';
+            players.forEach(player => {
+                if (player.id !== currentUser.id) {
+                    html += '<div class="member-option">' +
+                        '<input type="checkbox" class="member-checkbox" value="' + player.id + '" id="member_' + player.id + '">' +
+                        '<label for="member_' + player.id + '">' + player.name + '</label>' +
+                    '</div>';
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function createNewChat() {
+            const activeType = document.querySelector('.chat-type-btn.active').dataset.type;
+            
+            if (activeType === 'direct') {
+                const recipientId = document.getElementById('directChatRecipient').value;
+                if (!recipientId) {
+                    alert('Please select a person to message.');
+                    return;
+                }
+
+                const recipient = players.find(p => p.id === recipientId);
+                if (!recipient) return;
+
+                // Check if conversation already exists
+                const existingConvo = conversations.find(c => 
+                    c.type === 'direct' && 
+                    c.participants.includes(currentUser.id) && 
+                    c.participants.includes(recipientId)
+                );
+
+                if (existingConvo) {
+                    selectConversation(existingConvo.id);
+                    hideNewChatModal();
+                    return;
+                }
+
+                // Create new direct conversation
+                const newConvo = {
+                    id: generateId(),
+                    type: 'direct',
+                    name: recipient.name,
+                    participants: [currentUser.id, recipientId],
+                    messages: [],
+                    lastActivity: new Date().toISOString()
+                };
+
+                conversations.push(newConvo);
+                saveConversations();
+                loadChatList();
+                selectConversation(newConvo.id);
+                hideNewChatModal();
+            } else {
+                const groupName = document.getElementById('groupChatName').value.trim();
+                if (!groupName) {
+                    alert('Please enter a group name.');
+                    return;
+                }
+
+                const selectedMembers = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => cb.value);
+                if (selectedMembers.length === 0) {
+                    alert('Please select at least one member.');
+                    return;
+                }
+
+                // Create new group conversation
+                const newConvo = {
+                    id: generateId(),
+                    type: 'group',
+                    name: groupName,
+                    participants: [currentUser.id, ...selectedMembers],
+                    messages: [],
+                    lastActivity: new Date().toISOString()
+                };
+
+                conversations.push(newConvo);
+                saveConversations();
+                loadChatList();
+                selectConversation(newConvo.id);
+                hideNewChatModal();
+            }
+        }
+
+        function loadChatList() {
+            const container = document.getElementById('chatListContent');
+            if (!container) return;
+
+            if (conversations.length === 0) {
+                container.innerHTML = '<div class="no-chats-message">No conversations yet. Start a new chat!</div>';
+                return;
+            }
+
+            // Sort conversations by last activity
+            const sortedConvos = conversations.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity));
+
+            let html = '';
+            sortedConvos.forEach(convo => {
+                const lastMessage = convo.messages[convo.messages.length - 1];
+                const lastMessageText = lastMessage ? lastMessage.text.substring(0, 50) + (lastMessage.text.length > 50 ? '...' : '') : 'No messages yet';
+                const lastTime = lastMessage ? new Date(lastMessage.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+                html += '<div class="chat-item" data-conversation-id="' + convo.id + '">' +
+                    '<div class="chat-item-header">' +
+                        '<div class="chat-item-name">' + convo.name + '</div>' +
+                        '<div class="chat-item-time">' + lastTime + '</div>' +
+                    '</div>' +
+                    '<div class="chat-item-preview">' + lastMessageText + '</div>' +
+                '</div>';
+            });
+
+            container.innerHTML = html;
+
+            // Add click handlers to chat items
+            container.querySelectorAll('.chat-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    selectConversation(item.dataset.conversationId);
+                });
+            });
+        }
+
+        function selectConversation(conversationId) {
+            currentConversation = conversations.find(c => c.id === conversationId);
+            if (!currentConversation) return;
+
+            // Update active chat item
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeItem = document.querySelector('[data-conversation-id="' + conversationId + '"]');
+            if (activeItem) activeItem.classList.add('active');
+
+            // Show chat header and input
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('chatInputContainer').style.display = 'block';
+
+            // Update header info
+            document.getElementById('chatTitle').textContent = currentConversation.name;
+            const subtitle = currentConversation.type === 'group' ? 
+                (currentConversation.participants.length + ' members') : 
+                'Direct message';
+            document.getElementById('chatSubtitle').textContent = subtitle;
+
+            // Load messages
+            loadMessages();
+        }
+
+        function loadMessages() {
+            const container = document.getElementById('chatMessages');
+            if (!container || !currentConversation) return;
+
+            if (currentConversation.messages.length === 0) {
+                container.innerHTML = '<div class="no-chat-selected">No messages yet. Start the conversation!</div>';
+                return;
+            }
+
+            let html = '';
+            currentConversation.messages.forEach(message => {
+                const isCurrentUser = message.senderId === currentUser.id;
+                const messageClass = isCurrentUser ? 'sent' : 'received';
+                const time = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                html += '<div class="message ' + messageClass + '">' +
+                    '<div class="message-bubble">' +
+                        (!isCurrentUser && currentConversation.type === 'group' ? '<div class="message-sender">' + message.senderName + '</div>' : '') +
+                        '<div class="message-text">' + message.text + '</div>' +
+                        '<div class="message-time">' + time + '</div>' +
+                    '</div>' +
+                '</div>';
+            });
+
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (!input || !currentConversation) return;
+
+            const text = input.value.trim();
+            if (!text) return;
+
+            const message = {
+                id: generateId(),
+                senderId: currentUser.id,
+                senderName: currentUser.name,
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+
+            currentConversation.messages.push(message);
+            currentConversation.lastActivity = new Date().toISOString();
+
+            saveConversations();
+            loadMessages();
+            loadChatList();
+
+            input.value = '';
+        }
+
+        function filterChats(searchTerm) {
+            const items = document.querySelectorAll('.chat-item');
+            const term = searchTerm.toLowerCase();
+
+            items.forEach(item => {
+                const name = item.querySelector('.chat-item-name').textContent.toLowerCase();
+                const preview = item.querySelector('.chat-item-preview').textContent.toLowerCase();
+                
+                if (name.includes(term) || preview.includes(term)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function saveConversations() {
+            localStorage.setItem('fckoln_conversations', JSON.stringify(conversations));
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
         
         function updateOrderSummary() {
