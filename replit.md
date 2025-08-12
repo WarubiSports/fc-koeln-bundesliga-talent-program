@@ -28,7 +28,15 @@ Preferred communication style: Simple, everyday language.
   - Complete admin controls and role-based access
 - **Technical Architecture**: Built on Express.js with REST API endpoints, robust JavaScript frontend using modern event delegation, and comprehensive data management
 
-### Communication System Improvements (August 4, 2025)
+### Communication System Improvements (August 12, 2025)
+- **30-Day Message Retention**: Implemented automatic cleanup of messages older than 30 days for storage efficiency and privacy compliance
+- **Smart Cleanup System**: Daily cleanup check that runs once per session to maintain performance
+- **User-Friendly Notification**: Added retention policy notice in communications UI
+- **Group Chat Creation Fix**: Fixed visibility of Group Chat button alongside Direct Message option
+- **Complete Messaging Functionality**: All core features working - persistence, real-time updates, search, mobile responsive
+- **WhatsApp-Style Interface**: Clean message bubbles with FC Köln red theme and proper timestamps
+
+### Previous Communication System Features (August 4, 2025)
 - **Fixed User Switching**: Chat window now correctly updates when switching between users/conversations
 - **Mobile Layout**: Optimized communication section for mobile devices with proper message display and input field positioning
 - **Calendar Event Management**: Fully implemented edit and delete functionality for calendar events

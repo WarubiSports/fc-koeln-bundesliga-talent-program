@@ -4591,6 +4591,9 @@ app.get('/', (req, res) => {
                         <div class="chat-search">
                             <input type="text" placeholder="Search conversations..." id="chatSearch">
                         </div>
+                        <div class="retention-notice" style="padding: 0.5rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; margin: 0.5rem; font-size: 0.75rem; color: #dc143c; text-align: center;">
+                            💬 Messages automatically deleted after 30 days
+                        </div>
                         <div class="chat-list-content" id="chatListContent">
                             <div class="no-chats-message">
                                 No conversations yet. Start a new chat!
@@ -5997,8 +6000,55 @@ app.get('/', (req, res) => {
         // Communications System Functions
         function initializeCommunications() {
             conversations = JSON.parse(localStorage.getItem('fckoln_conversations') || '[]');
+            scheduleDailyCleanup();
             loadChatList();
             initializeCommunicationEvents();
+        }
+
+        function cleanupOldMessages() {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            let cleanupCount = 0;
+            
+            conversations.forEach(conversation => {
+                const initialMessageCount = conversation.messages.length;
+                
+                // Remove messages older than 30 days
+                conversation.messages = conversation.messages.filter(message => {
+                    const messageDate = new Date(message.timestamp);
+                    return messageDate > thirtyDaysAgo;
+                });
+                
+                cleanupCount += (initialMessageCount - conversation.messages.length);
+                
+                // Update last activity if no messages remain
+                if (conversation.messages.length === 0) {
+                    conversation.lastActivity = new Date().toISOString();
+                }
+            });
+            
+            // Remove conversations with no messages and no recent activity
+            const initialConversationCount = conversations.length;
+            conversations = conversations.filter(conversation => {
+                if (conversation.messages.length === 0) {
+                    const lastActivity = new Date(conversation.lastActivity);
+                    return lastActivity > thirtyDaysAgo;
+                }
+                return true;
+            });
+            
+            const removedConversations = initialConversationCount - conversations.length;
+            
+            // Save cleaned data
+            if (cleanupCount > 0 || removedConversations > 0) {
+                saveConversations();
+                console.log('Communications cleanup completed:', {
+                    messagesRemoved: cleanupCount,
+                    conversationsRemoved: removedConversations,
+                    remainingConversations: conversations.length
+                });
+            }
         }
 
         function initializeCommunicationEvents() {
@@ -6306,6 +6356,17 @@ app.get('/', (req, res) => {
 
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Daily cleanup check (runs once per day per user session)
+        function scheduleDailyCleanup() {
+            const lastCleanup = localStorage.getItem('fckoln_last_cleanup');
+            const today = new Date().toDateString();
+            
+            if (lastCleanup !== today) {
+                cleanupOldMessages();
+                localStorage.setItem('fckoln_last_cleanup', today);
+            }
         }
         
         function updateOrderSummary() {
