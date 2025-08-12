@@ -5293,7 +5293,7 @@ app.get('/', (req, res) => {
             if (householdTotal > 0) {
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'household-note';
-                noteDiv.textContent = 'Household items (€' + householdTotal.toFixed(2) + ') don\'t count towards your €35 food budget.';
+                noteDiv.textContent = 'Household items (€' + householdTotal.toFixed(2) + ') do not count towards your €35 food budget.';
                 summaryContainer.appendChild(noteDiv);
             }
             
@@ -5374,12 +5374,12 @@ app.get('/', (req, res) => {
             const deliveryDate = getNextDeliveryDate();
             
             // Create order summary for confirmation
-            let orderSummary = 'Order Confirmation\\n\\n';
-            orderSummary += 'Order #: ' + orderNumber + '\\n';
-            orderSummary += 'Player: ' + currentUser.name + '\\n';
-            orderSummary += 'Order Date: ' + orderDate.toLocaleDateString() + '\\n';
-            orderSummary += 'Expected Delivery: ' + deliveryDate + '\\n\\n';
-            orderSummary += 'Items Ordered:\\n';
+            let orderSummary = 'Order Confirmation\n\n';
+            orderSummary += 'Order #: ' + orderNumber + '\n';
+            orderSummary += 'Player: ' + currentUser.name + '\n';
+            orderSummary += 'Order Date: ' + orderDate.toLocaleDateString() + '\n';
+            orderSummary += 'Expected Delivery: ' + deliveryDate + '\n\n';
+            orderSummary += 'Items Ordered:\n';
             
             orderItems.forEach(itemId => {
                 const order = currentOrder[itemId];
@@ -5392,19 +5392,19 @@ app.get('/', (req, res) => {
                     if (isHousehold) {
                         orderSummary += ' [Household]';
                     }
-                    orderSummary += '\\n';
+                    orderSummary += '\n';
                 }
             });
             
-            orderSummary += '\\nFood Total: €' + foodTotal.toFixed(2) + '\\n';
+            orderSummary += '\nFood Total: €' + foodTotal.toFixed(2) + '\n';
             if (householdTotal > 0) {
-                orderSummary += 'Household Total: €' + householdTotal.toFixed(2) + '\\n';
+                orderSummary += 'Household Total: €' + householdTotal.toFixed(2) + '\n';
             }
-            orderSummary += 'Grand Total: €' + grandTotal.toFixed(2) + '\\n';
+            orderSummary += 'Grand Total: €' + grandTotal.toFixed(2) + '\n';
             orderSummary += 'Food Budget Remaining: €' + (BUDGET_LIMIT - foodTotal).toFixed(2);
             
             // Confirm order placement
-            if (confirm(orderSummary + '\\n\\nConfirm order placement?')) {
+            if (confirm(orderSummary + '\n\nConfirm order placement?')) {
                 // Save order to order history
                 saveOrderToHistory(orderNumber, currentOrder, grandTotal, orderDate);
                 
