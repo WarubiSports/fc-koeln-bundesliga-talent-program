@@ -2932,6 +2932,64 @@ app.get('/', (req, res) => {
         .send-btn:hover {
             background: #b91c3c;
         }
+        
+        /* Chat Type Selection Styles */
+        .chat-type-selection {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chat-type-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .chat-type-btn:hover {
+            border-color: #dc143c;
+            background: #fef2f2;
+        }
+        
+        .chat-type-btn.active {
+            background: #dc143c !important;
+            color: white !important;
+            border-color: #dc143c !important;
+        }
+        
+        .chat-form {
+            margin-top: 1rem;
+        }
+        
+        .member-selection {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+        
+        .member-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .member-option:hover {
+            background: #f9fafb;
+        }
+        
+        .member-checkbox {
+            margin: 0;
+        }
 
         @media (max-width: 768px) {
             .delivery-schedule-info {
