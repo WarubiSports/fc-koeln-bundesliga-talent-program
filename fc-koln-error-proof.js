@@ -50,6 +50,12 @@ let players = [
     { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest', joinDate: new Date().toISOString() }
 ];
 
+// Registration requests storage
+let registrationRequests = [];
+
+// Password reset tokens storage
+const passwordResetTokens = new Map();
+
 // Auth API endpoint
 app.post('/api/auth', (req, res) => {
     const { email, password } = req.body;
@@ -64,6 +70,61 @@ app.post('/api/auth', (req, res) => {
     } else {
         res.json({ success: false, message: 'Invalid credentials' });
     }
+});
+
+// Registration API endpoint
+app.post('/api/register', (req, res) => {
+    const { name, email, position, age } = req.body;
+    
+    // Check if email already exists
+    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (existingUser) {
+        return res.json({ success: false, message: 'Email already registered' });
+    }
+    
+    // Create registration request
+    const registrationRequest = {
+        id: `req_${Date.now()}`,
+        name,
+        email,
+        position,
+        age: parseInt(age),
+        status: 'pending',
+        requestDate: new Date().toISOString()
+    };
+    
+    registrationRequests.push(registrationRequest);
+    
+    res.json({ 
+        success: true, 
+        message: 'Registration request submitted successfully. An administrator will review your application.' 
+    });
+});
+
+// Password reset request API endpoint
+app.post('/api/reset-password', (req, res) => {
+    const { email } = req.body;
+    
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+        return res.json({ success: false, message: 'Email address not found' });
+    }
+    
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    passwordResetTokens.set(resetToken, {
+        email: user.email,
+        expires: Date.now() + 3600000 // 1 hour
+    });
+    
+    // In a real app, you would send an email here
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+    
+    res.json({ 
+        success: true, 
+        message: 'Password reset instructions have been sent to your email address.',
+        resetToken // Only for demo purposes
+    });
 });
 
 // Players API
@@ -165,12 +226,17 @@ app.get('/', (req, res) => {
             font-weight: 500;
         }
         
-        input {
+        input, select {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1rem;
+            background: white;
+        }
+        
+        select {
+            cursor: pointer;
         }
         
         .btn {
@@ -202,6 +268,51 @@ app.get('/', (req, res) => {
             margin-top: 1rem;
             font-size: 0.8rem;
             color: #666;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 0.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn.active {
+            background: #dc143c;
+            color: white;
+        }
+        
+        .tab-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
         }
         
         .hidden {
@@ -268,18 +379,70 @@ app.get('/', (req, res) => {
                 <p>Bundesliga Talent Program</p>
             </div>
             
-            <div class="error" id="errorMessage"></div>
+            <!-- Tab Navigation -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showAuthTab('login')">Sign In</button>
+                <button class="tab-btn" onclick="showAuthTab('register')">Join Program</button>
+                <button class="tab-btn" onclick="showAuthTab('reset')">Reset Password</button>
+            </div>
             
-            <form id="loginForm">
+            <div class="error" id="errorMessage"></div>
+            <div class="success" id="successMessage"></div>
+            
+            <!-- Sign In Form -->
+            <form class="auth-form active" id="loginForm">
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" value="max.bisinger@warubi-sports.com" required>
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" value="max.bisinger@warubi-sports.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" value="ITP2024" required>
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" value="ITP2024" required>
                 </div>
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            
+            <!-- Join Program Form -->
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Full Name:</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email Address:</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPosition">Preferred Position:</label>
+                    <select id="registerPosition" required>
+                        <option value="">Select your position</option>
+                        <option value="STRIKER">Striker</option>
+                        <option value="WINGER">Winger</option>
+                        <option value="MIDFIELDER">Midfielder</option>
+                        <option value="DEFENDER">Defender</option>
+                        <option value="GOALKEEPER">Goalkeeper</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerAge">Age:</label>
+                    <input type="number" id="registerAge" min="16" max="25" placeholder="Enter your age" required>
+                </div>
+                <button type="submit" class="btn">Submit Application</button>
+                <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; text-align: center;">
+                    Your application will be reviewed by our coaching staff
+                </p>
+            </form>
+            
+            <!-- Reset Password Form -->
+            <form class="auth-form" id="resetForm">
+                <div class="form-group">
+                    <label for="resetEmail">Email Address:</label>
+                    <input type="email" id="resetEmail" placeholder="Enter your registered email" required>
+                </div>
+                <button type="submit" class="btn">Send Reset Instructions</button>
+                <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem; text-align: center;">
+                    Reset instructions will be sent to your email
+                </p>
             </form>
             
             <div class="credentials">
@@ -337,13 +500,52 @@ app.get('/', (req, res) => {
             
             let currentUser = null;
             
+            // Tab switching function
+            function showAuthTab(tabName) {
+                // Hide all forms
+                document.querySelectorAll('.auth-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                
+                // Hide all tab buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Show selected form and tab
+                document.getElementById(tabName + 'Form').classList.add('active');
+                event.target.classList.add('active');
+                
+                // Clear messages
+                hideMessages();
+            }
+            
+            function hideMessages() {
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+            
+            function showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                const successDiv = document.getElementById('successMessage');
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+            
             // Authentication functions
             async function handleLogin(e) {
                 e.preventDefault();
+                hideMessages();
                 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const errorDiv = document.getElementById('errorMessage');
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
                 
                 try {
                     const response = await fetch('/api/auth', {
@@ -359,13 +561,72 @@ app.get('/', (req, res) => {
                         localStorage.setItem('fckoln_currentUser', JSON.stringify(currentUser));
                         showMainApp();
                     } else {
-                        errorDiv.textContent = result.message || 'Login failed';
-                        errorDiv.style.display = 'block';
+                        showError(result.message || 'Login failed');
                     }
                 } catch (error) {
                     console.error('Login error:', error);
-                    errorDiv.textContent = 'Connection error. Please try again.';
-                    errorDiv.style.display = 'block';
+                    showError('Connection error. Please try again.');
+                }
+            }
+            
+            async function handleRegister(e) {
+                e.preventDefault();
+                hideMessages();
+                
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const position = document.getElementById('registerPosition').value;
+                const age = document.getElementById('registerAge').value;
+                
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, position, age })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess(result.message);
+                        document.getElementById('registerForm').reset();
+                    } else {
+                        showError(result.message || 'Registration failed');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError('Connection error. Please try again.');
+                }
+            }
+            
+            async function handleReset(e) {
+                e.preventDefault();
+                hideMessages();
+                
+                const email = document.getElementById('resetEmail').value;
+                
+                try {
+                    const response = await fetch('/api/reset-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess(result.message);
+                        if (result.resetToken) {
+                            // For demo purposes, show the reset token
+                            showSuccess(result.message + ' (Demo token: ' + result.resetToken + ')');
+                        }
+                        document.getElementById('resetForm').reset();
+                    } else {
+                        showError(result.message || 'Reset failed');
+                    }
+                } catch (error) {
+                    console.error('Reset error:', error);
+                    showError('Connection error. Please try again.');
                 }
             }
             
@@ -429,12 +690,15 @@ app.get('/', (req, res) => {
                         showMainApp();
                     }
                     
-                    // Add login form handler
+                    // Add form handlers
                     document.getElementById('loginForm').addEventListener('submit', handleLogin);
+                    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+                    document.getElementById('resetForm').addEventListener('submit', handleReset);
                     
                     // Make functions global for onclick handlers
                     window.logout = logout;
                     window.showPage = showPage;
+                    window.showAuthTab = showAuthTab;
                     
                 } catch (error) {
                     console.error('Initialization error:', error);
