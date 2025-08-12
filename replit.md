@@ -9,6 +9,11 @@ This is a full-stack web application, rebranded as "1.FC Köln Bundesliga Talent
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 2025)
+- **Household Items Budget Fix (August 12, 2025)**: Removed prices from household items and excluded them from €35 budget calculations
+  - Set all household item prices to 0 (toilet paper, cleaning supplies, etc.)
+  - Modified budget calculation to only count items with price > 0
+  - Updated UI to show "Free" instead of prices for household items
+  - Fixed CSV exports to properly handle free household items
 - **Error-Proof System Created (August 12, 2025)**: Built completely bulletproof version with comprehensive error handling to eliminate recurring JavaScript authentication errors
 - **Bulletproof Authentication**: Implemented isolated authentication system with try-catch blocks at every level to prevent syntax errors from breaking login functionality
 - **Syntax Error Protection**: Created `fc-koln-error-proof.js` with comprehensive error boundaries and protected authentication that works even when main application has syntax issues

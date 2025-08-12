@@ -4920,14 +4920,14 @@ app.get('/', (req, res) => {
         // Food items data
         const foodItemsData = {
             household: [
-                { id: 'toilet_paper', name: 'Toilet Paper', price: 4.99 },
-                { id: 'paper_towels', name: 'Paper Towels', price: 3.49 },
-                { id: 'dish_soap', name: 'Dish Soap', price: 2.99 },
-                { id: 'laundry_detergent', name: 'Laundry Detergent', price: 8.99 },
-                { id: 'trash_bags', name: 'Trash Bags', price: 5.49 },
-                { id: 'aluminum_foil', name: 'Aluminum Foil', price: 3.99 },
-                { id: 'plastic_wrap', name: 'Plastic Wrap', price: 3.49 },
-                { id: 'cleaning_spray', name: 'All-Purpose Cleaner', price: 4.49 }
+                { id: 'toilet_paper', name: 'Toilet Paper', price: 0 },
+                { id: 'paper_towels', name: 'Paper Towels', price: 0 },
+                { id: 'dish_soap', name: 'Dish Soap', price: 0 },
+                { id: 'laundry_detergent', name: 'Laundry Detergent', price: 0 },
+                { id: 'trash_bags', name: 'Trash Bags', price: 0 },
+                { id: 'aluminum_foil', name: 'Aluminum Foil', price: 0 },
+                { id: 'plastic_wrap', name: 'Plastic Wrap', price: 0 },
+                { id: 'cleaning_spray', name: 'All-Purpose Cleaner', price: 0 }
             ],
             produce: [
                 { id: 'bananas', name: 'Bananas (1kg)', price: 1.99 },
@@ -5087,7 +5087,7 @@ app.get('/', (req, res) => {
                     '<input type="checkbox" class="food-item-checkbox" ' + (itemOrder.selected ? 'checked' : '') + '>' +
                     '<div class="food-item-details">' +
                         '<div class="food-item-name">' + item.name + '</div>' +
-                        '<div class="food-item-price">€' + item.price.toFixed(2) + '</div>' +
+                        (item.price > 0 ? '<div class="food-item-price">€' + item.price.toFixed(2) + '</div>' : '<div class="food-item-price">Free</div>') +
                     '</div>' +
                     '<div class="quantity-selector">' +
                         '<button class="quantity-btn" data-action="decrease">-</button>' +
@@ -5189,7 +5189,10 @@ app.get('/', (req, res) => {
                 const itemData = findItemById(itemId);
                 
                 if (itemData && orderItem.selected && orderItem.quantity > 0) {
-                    total += itemData.price * orderItem.quantity;
+                    // Household items are free (price = 0) and don't count toward budget
+                    if (itemData.price > 0) {
+                        total += itemData.price * orderItem.quantity;
+                    }
                 }
             });
             return total;
@@ -5568,8 +5571,8 @@ app.get('/', (req, res) => {
                         if (itemData && orderItem.selected && orderItem.quantity > 0) {
                             const itemTotal = itemData.price * orderItem.quantity;
                             csvContent += '"' + house + '","' + order.playerName + '","' + itemData.name + '",' +
-                                         orderItem.quantity + ',' + itemData.price.toFixed(2) + ',' +
-                                         itemTotal.toFixed(2) + ',"' + order.orderNumber + '"\\n';
+                                         orderItem.quantity + ',' + (itemData.price > 0 ? itemData.price.toFixed(2) : 'FREE') + ',' +
+                                         (itemTotal > 0 ? itemTotal.toFixed(2) : 'FREE') + ',"' + order.orderNumber + '"\\n';
                         }
                     });
                 });
@@ -5651,8 +5654,8 @@ app.get('/', (req, res) => {
                 categoryTotal += totalCost;
                 
                 csvContent += '"' + item.category + '","' + item.name + '",' + 
-                             item.totalQuantity + ',' + item.price.toFixed(2) + ',' + 
-                             totalCost.toFixed(2) + '\\n';
+                             item.totalQuantity + ',' + (item.price > 0 ? item.price.toFixed(2) : 'FREE') + ',' + 
+                             (totalCost > 0 ? totalCost.toFixed(2) : 'FREE') + '\\n';
             });
             
             csvContent += '\\n,,,TOTAL:,€' + categoryTotal.toFixed(2) + '\\n';
@@ -5700,7 +5703,7 @@ app.get('/', (req, res) => {
                             '<div class="summary-item-name">' + itemData.name + '</div>' +
                             '<div class="summary-item-qty">Qty: ' + order.quantity + '</div>' +
                         '</div>' +
-                        '<div class="summary-item-price">€' + itemTotal.toFixed(2) + '</div>' +
+                        (itemData.price > 0 ? '<div class="summary-item-price">€' + itemTotal.toFixed(2) + '</div>' : '<div class="summary-item-price">Free</div>') +
                     '</div>';
                 }
             });
