@@ -6248,9 +6248,9 @@ app.get('/', (req, res) => {
 
                 html += '<div class="message ' + messageClass + '">' +
                     '<div class="message-bubble">' +
-                        (!isCurrentUser && currentConversation.type === 'group' ? '<div class="message-sender">' + message.senderName + '</div>' : '') +
+                        (!isCurrentUser && currentConversation.type === 'group' ? '<div class="message-sender" style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">' + message.senderName + '</div>' : '') +
                         '<div class="message-text">' + message.text + '</div>' +
-                        '<div class="message-time">' + time + '</div>' +
+                        '<div class="message-time" style="font-size: 0.65rem; opacity: 0.7; margin-top: 0.25rem;">' + time + '</div>' +
                     '</div>' +
                 '</div>';
             });
