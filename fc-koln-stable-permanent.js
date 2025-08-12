@@ -2777,19 +2777,21 @@ app.get('/', (req, res) => {
             }
         }
         
-        /* Communications Styles - Enhanced Spacious Design */
+        /* Communications Styles - Ultra Spacious Design */
         .communications-container {
             display: flex;
-            height: 750px;
+            height: 90vh;
+            min-height: 800px;
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             border: 1px solid #e2e8f0;
+            margin: 2rem 0;
         }
         
         .chat-list {
-            width: 380px;
+            width: 420px;
             background: linear-gradient(135deg, #fafafa 0%, #f5f7fa 100%);
             border-right: 1px solid #e2e8f0;
             display: flex;
@@ -2797,7 +2799,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-list-header {
-            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            padding: 3rem 2rem 2rem 2rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
@@ -2806,27 +2808,27 @@ app.get('/', (req, res) => {
         }
         
         .chat-list-header h2 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #1e293b;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
         
         .chat-search {
-            padding: 1.5rem;
+            padding: 2rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
         }
         
         .chat-search input {
             width: 100%;
-            padding: 0.875rem 1.25rem;
+            padding: 1.125rem 1.5rem;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            border-radius: 16px;
+            font-size: 1rem;
             transition: all 0.2s ease;
             background: #f8fafc;
         }
@@ -2845,9 +2847,9 @@ app.get('/', (req, res) => {
         }
         
         .chat-item {
-            padding: 1.25rem 1.5rem;
-            margin: 0.25rem 1rem;
-            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin: 0.5rem 1.5rem;
+            border-radius: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
@@ -2872,12 +2874,12 @@ app.get('/', (req, res) => {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .chat-item-name {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             color: #1e293b;
         }
         
@@ -2886,7 +2888,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-item-time {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             opacity: 0.7;
             color: #64748b;
         }
@@ -2896,12 +2898,12 @@ app.get('/', (req, res) => {
         }
         
         .chat-item-preview {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             opacity: 0.8;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #64748b;
         }
         
@@ -2911,9 +2913,10 @@ app.get('/', (req, res) => {
         
         .no-chats-message {
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 4rem 2rem;
             color: #64748b;
             font-style: italic;
+            font-size: 1.1rem;
         }
         
         .chat-window {
@@ -2924,7 +2927,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-header {
-            padding: 2rem 2rem 1.5rem 2rem;
+            padding: 3rem 3rem 2rem 3rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
@@ -2934,20 +2937,20 @@ app.get('/', (req, res) => {
         
         .chat-header-info h3 {
             margin: 0;
-            font-size: 1.375rem;
+            font-size: 1.625rem;
             font-weight: 700;
             color: #1e293b;
         }
         
         .chat-header-info p {
-            margin: 0.25rem 0 0 0;
-            font-size: 0.85rem;
+            margin: 0.5rem 0 0 0;
+            font-size: 1rem;
             color: #64748b;
         }
         
         .chat-messages {
             flex: 1;
-            padding: 2rem;
+            padding: 3rem;
             overflow-y: auto;
             background: linear-gradient(135deg, #fafafa 0%, #f8fafc 100%);
         }
@@ -3029,7 +3032,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-input-container {
-            padding: 1.5rem 2rem;
+            padding: 2.5rem 3rem;
             background: white;
             border-top: 1px solid #e2e8f0;
         }
@@ -3065,13 +3068,13 @@ app.get('/', (req, res) => {
             color: white;
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             transition: all 0.2s ease;
             box-shadow: 0 2px 8px rgba(220, 20, 60, 0.2);
         }
@@ -4763,7 +4766,7 @@ app.get('/', (req, res) => {
                         <div class="chat-search">
                             <input type="text" placeholder="Search conversations..." id="chatSearch">
                         </div>
-                        <div class="retention-notice" style="padding: 0.5rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; margin: 0.5rem; font-size: 0.75rem; color: #dc143c; text-align: center;">
+                        <div class="retention-notice" style="padding: 1.25rem; background: linear-gradient(135deg, #fef2f2 0%, #fce7e7 100%); border: 1px solid #fecaca; border-radius: 16px; margin: 1.5rem; font-size: 0.85rem; color: #dc143c; text-align: center; font-weight: 500;">
                             💬 Messages automatically deleted after 30 days
                         </div>
                         <div class="chat-list-content" id="chatListContent">
