@@ -341,6 +341,7 @@ app.get('/reset-password', (req, res) => {
                 .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
                 .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
             </style>
+            <script src="auth-bulletproof.js"></script>
         </head>
         <body>
             <div class="reset-container">

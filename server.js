@@ -1,4 +1,4 @@
-// Load the clean FC Köln authentication system
-require('./fc-koln-clean-auth.js');
+// Load the ERROR-PROOF FC Köln authentication system
+require('./fc-koln-error-proof.js');
 
-// Clean authentication system is loaded via require above
+// Error-proof authentication system is loaded via require above
