@@ -5337,13 +5337,15 @@ app.get('/', (req, res) => {
             const placeOrderBtn = document.getElementById('placeOrderBtn');
             if (!placeOrderBtn) return;
             
-            const currentTotal = calculateOrderTotal(currentOrder);
+            const foodTotal = calculateOrderTotal(currentOrder);
+            const householdTotal = calculateHouseholdTotal(currentOrder);
+            const grandTotal = foodTotal + householdTotal;
             const hasItems = Object.keys(currentOrder).length > 0;
-            const withinBudget = currentTotal <= BUDGET_LIMIT;
+            const withinBudget = foodTotal <= BUDGET_LIMIT;
             
-            if (hasItems && withinBudget && currentTotal > 0) {
+            if (hasItems && withinBudget && grandTotal > 0) {
                 placeOrderBtn.disabled = false;
-                placeOrderBtn.textContent = '🛒 Place Order (€' + currentTotal.toFixed(2) + ')';
+                placeOrderBtn.textContent = '🛒 Place Order (€' + grandTotal.toFixed(2) + ')';
             } else {
                 placeOrderBtn.disabled = true;
                 placeOrderBtn.textContent = '🛒 Place Order';
@@ -5351,7 +5353,9 @@ app.get('/', (req, res) => {
         }
         
         function placeOrder() {
-            const currentTotal = calculateOrderTotal(currentOrder);
+            const foodTotal = calculateOrderTotal(currentOrder);
+            const householdTotal = calculateHouseholdTotal(currentOrder);
+            const grandTotal = foodTotal + householdTotal;
             const orderItems = Object.keys(currentOrder);
             
             if (orderItems.length === 0) {
@@ -5359,8 +5363,8 @@ app.get('/', (req, res) => {
                 return;
             }
             
-            if (currentTotal > BUDGET_LIMIT) {
-                alert('Order exceeds budget limit of €' + BUDGET_LIMIT.toFixed(2));
+            if (foodTotal > BUDGET_LIMIT) {
+                alert('Food items exceed budget limit of €' + BUDGET_LIMIT.toFixed(2));
                 return;
             }
             
@@ -5383,20 +5387,29 @@ app.get('/', (req, res) => {
                 
                 if (itemData && order.selected && order.quantity > 0) {
                     const itemTotal = itemData.price * order.quantity;
-                    orderSummary += '- ' + itemData.name + ' (x' + order.quantity + ') - €' + itemTotal.toFixed(2) + '\\n';
+                    const isHousehold = itemData.category === 'household';
+                    orderSummary += '- ' + itemData.name + ' (x' + order.quantity + ') - €' + itemTotal.toFixed(2);
+                    if (isHousehold) {
+                        orderSummary += ' [Household]';
+                    }
+                    orderSummary += '\\n';
                 }
             });
             
-            orderSummary += '\\nTotal: €' + currentTotal.toFixed(2) + '\\n';
-            orderSummary += 'Budget Remaining: €' + (BUDGET_LIMIT - currentTotal).toFixed(2);
+            orderSummary += '\\nFood Total: €' + foodTotal.toFixed(2) + '\\n';
+            if (householdTotal > 0) {
+                orderSummary += 'Household Total: €' + householdTotal.toFixed(2) + '\\n';
+            }
+            orderSummary += 'Grand Total: €' + grandTotal.toFixed(2) + '\\n';
+            orderSummary += 'Food Budget Remaining: €' + (BUDGET_LIMIT - foodTotal).toFixed(2);
             
             // Confirm order placement
             if (confirm(orderSummary + '\\n\\nConfirm order placement?')) {
                 // Save order to order history
-                saveOrderToHistory(orderNumber, currentOrder, currentTotal, orderDate);
+                saveOrderToHistory(orderNumber, currentOrder, grandTotal, orderDate);
                 
                 // Show success message
-                showOrderConfirmation(orderNumber, deliveryDate, currentTotal);
+                showOrderConfirmation(orderNumber, deliveryDate, grandTotal);
                 
                 // Clear current order
                 currentOrder = {};
