@@ -2760,50 +2760,6 @@ app.get('/', (req, res) => {
             border-radius: 8px;
         }
         
-        /* Household Item Styles */
-        .household-item {
-            background: #f0f9ff;
-            border-left: 4px solid #0ea5e9;
-        }
-        
-        .household-tag {
-            background: #0ea5e9;
-            color: white;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-        }
-        
-        .household-total {
-            background: #f0f9ff;
-            border: 1px solid #0ea5e9;
-        }
-        
-        .household-note {
-            background: #ecfeff;
-            border: 1px solid #67e8f9;
-            border-radius: 6px;
-            padding: 0.75rem;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #0e7490;
-            text-align: center;
-        }
-        
-        .summary-grand-total {
-            background: #374151;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            margin-top: 0.5rem;
-        }
-        
         @media (max-width: 1024px) {
             .food-order-container {
                 grid-template-columns: 1fr;
@@ -5232,22 +5188,6 @@ app.get('/', (req, res) => {
                 const itemData = findItemById(itemId);
                 
                 if (itemData && orderItem.selected && orderItem.quantity > 0) {
-                    // Household items don't count towards budget
-                    if (itemData.category !== 'household') {
-                        total += itemData.price * orderItem.quantity;
-                    }
-                }
-            });
-            return total;
-        }
-        
-        function calculateHouseholdTotal(order) {
-            let total = 0;
-            Object.keys(order).forEach(itemId => {
-                const orderItem = order[itemId];
-                const itemData = findItemById(itemId);
-                
-                if (itemData && orderItem.selected && orderItem.quantity > 0 && itemData.category === 'household') {
                     total += itemData.price * orderItem.quantity;
                 }
             });
@@ -5277,36 +5217,27 @@ app.get('/', (req, res) => {
             }
             
             // Update summary with budget warnings
-            const householdTotal = calculateHouseholdTotal(currentOrder);
-            updateBudgetWarnings(currentTotal, remaining, householdTotal);
+            updateBudgetWarnings(currentTotal, remaining);
         }
         
-        function updateBudgetWarnings(currentTotal, remaining, householdTotal) {
+        function updateBudgetWarnings(currentTotal, remaining) {
             const summaryContainer = document.getElementById('orderSummaryContent');
             if (!summaryContainer) return;
             
             // Remove existing warnings
-            const existingWarnings = summaryContainer.querySelectorAll('.budget-warning, .budget-error, .household-note');
+            const existingWarnings = summaryContainer.querySelectorAll('.budget-warning, .budget-error');
             existingWarnings.forEach(warning => warning.remove());
-            
-            // Add household note if there are household items
-            if (householdTotal > 0) {
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'household-note';
-                noteDiv.textContent = 'Household items (€' + householdTotal.toFixed(2) + ') don\'t count towards your €35 food budget.';
-                summaryContainer.appendChild(noteDiv);
-            }
             
             // Add warnings if needed
             if (remaining < 0) {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'budget-error';
-                errorDiv.textContent = 'Over food budget by €' + Math.abs(remaining).toFixed(2) + '!';
+                errorDiv.textContent = 'Over budget by €' + Math.abs(remaining).toFixed(2) + '!';
                 summaryContainer.appendChild(errorDiv);
             } else if (remaining < 5) {
                 const warningDiv = document.createElement('div');
                 warningDiv.className = 'budget-warning';
-                warningDiv.textContent = 'Low food budget: €' + remaining.toFixed(2) + ' remaining';
+                warningDiv.textContent = 'Low budget: €' + remaining.toFixed(2) + ' remaining';
                 summaryContainer.appendChild(warningDiv);
             }
         }
@@ -5321,8 +5252,7 @@ app.get('/', (req, res) => {
                 
                 if (itemData) {
                     const isCurrentlySelected = currentOrder[itemId]?.selected;
-                    const isHousehold = itemData.category === 'household';
-                    const wouldExceedBudget = !isCurrentlySelected && !isHousehold && (currentTotal + itemData.price) > BUDGET_LIMIT;
+                    const wouldExceedBudget = !isCurrentlySelected && (currentTotal + itemData.price) > BUDGET_LIMIT;
                     
                     if (wouldExceedBudget) {
                         itemEl.classList.add('disabled');
@@ -5754,8 +5684,7 @@ app.get('/', (req, res) => {
             }
             
             let html = '';
-            let foodTotal = 0;
-            let householdTotal = 0;
+            let totalCost = 0;
             
             orderItems.forEach(itemId => {
                 const order = currentOrder[itemId];
@@ -5763,18 +5692,11 @@ app.get('/', (req, res) => {
                 
                 if (itemData && order.selected && order.quantity > 0) {
                     const itemTotal = itemData.price * order.quantity;
-                    const isHousehold = itemData.category === 'household';
+                    totalCost += itemTotal;
                     
-                    if (isHousehold) {
-                        householdTotal += itemTotal;
-                    } else {
-                        foodTotal += itemTotal;
-                    }
-                    
-                    html += '<div class="order-summary-item' + (isHousehold ? ' household-item' : '') + '">' +
+                    html += '<div class="order-summary-item">' +
                         '<div class="summary-item-details">' +
-                            '<div class="summary-item-name">' + itemData.name + 
-                            (isHousehold ? ' <span class="household-tag">Household</span>' : '') + '</div>' +
+                            '<div class="summary-item-name">' + itemData.name + '</div>' +
                             '<div class="summary-item-qty">Qty: ' + order.quantity + '</div>' +
                         '</div>' +
                         '<div class="summary-item-price">€' + itemTotal.toFixed(2) + '</div>' +
@@ -5782,27 +5704,11 @@ app.get('/', (req, res) => {
                 }
             });
             
-            if (foodTotal > 0 || householdTotal > 0) {
-                if (foodTotal > 0) {
-                    html += '<div class="summary-total">' +
-                        '<span>Food Total:</span>' +
-                        '<span>€' + foodTotal.toFixed(2) + '</span>' +
-                    '</div>';
-                }
-                
-                if (householdTotal > 0) {
-                    html += '<div class="summary-total household-total">' +
-                        '<span>Household Total:</span>' +
-                        '<span>€' + householdTotal.toFixed(2) + '</span>' +
-                    '</div>';
-                }
-                
-                if (foodTotal > 0 && householdTotal > 0) {
-                    html += '<div class="summary-grand-total">' +
-                        '<span>Grand Total:</span>' +
-                        '<span>€' + (foodTotal + householdTotal).toFixed(2) + '</span>' +
-                    '</div>';
-                }
+            if (totalCost > 0) {
+                html += '<div class="summary-total">' +
+                    '<span>Total:</span>' +
+                    '<span>€' + totalCost.toFixed(2) + '</span>' +
+                '</div>';
             }
             
             summaryContainer.innerHTML = html;
