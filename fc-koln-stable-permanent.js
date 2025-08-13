@@ -2777,21 +2777,19 @@ app.get('/', (req, res) => {
             }
         }
         
-        /* Communications Styles - Ultra Spacious Design */
+        /* Communications Styles - Enhanced Spacious Design */
         .communications-container {
             display: flex;
-            height: 90vh;
-            min-height: 800px;
+            height: 750px;
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
-            margin: 2rem 0;
         }
         
         .chat-list {
-            width: 420px;
+            width: 380px;
             background: linear-gradient(135deg, #fafafa 0%, #f5f7fa 100%);
             border-right: 1px solid #e2e8f0;
             display: flex;
@@ -2799,7 +2797,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-list-header {
-            padding: 3rem 2rem 2rem 2rem;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
@@ -2808,27 +2806,27 @@ app.get('/', (req, res) => {
         }
         
         .chat-list-header h2 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #1e293b;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
         
         .chat-search {
-            padding: 2rem;
+            padding: 1.5rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
         }
         
         .chat-search input {
             width: 100%;
-            padding: 1.125rem 1.5rem;
+            padding: 0.875rem 1.25rem;
             border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
             background: #f8fafc;
         }
@@ -2847,9 +2845,9 @@ app.get('/', (req, res) => {
         }
         
         .chat-item {
-            padding: 1.75rem 2rem;
-            margin: 0.5rem 1.5rem;
-            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin: 0.25rem 1rem;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
@@ -2874,12 +2872,12 @@ app.get('/', (req, res) => {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         
         .chat-item-name {
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             color: #1e293b;
         }
         
@@ -2888,7 +2886,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-item-time {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.7;
             color: #64748b;
         }
@@ -2898,12 +2896,12 @@ app.get('/', (req, res) => {
         }
         
         .chat-item-preview {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.8;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.5;
+            line-height: 1.4;
             color: #64748b;
         }
         
@@ -2913,10 +2911,9 @@ app.get('/', (req, res) => {
         
         .no-chats-message {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3rem 2rem;
             color: #64748b;
             font-style: italic;
-            font-size: 1.1rem;
         }
         
         .chat-window {
@@ -2927,7 +2924,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-header {
-            padding: 3rem 3rem 2rem 3rem;
+            padding: 2rem 2rem 1.5rem 2rem;
             background: white;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
@@ -2937,20 +2934,20 @@ app.get('/', (req, res) => {
         
         .chat-header-info h3 {
             margin: 0;
-            font-size: 1.625rem;
+            font-size: 1.375rem;
             font-weight: 700;
             color: #1e293b;
         }
         
         .chat-header-info p {
-            margin: 0.5rem 0 0 0;
-            font-size: 1rem;
+            margin: 0.25rem 0 0 0;
+            font-size: 0.85rem;
             color: #64748b;
         }
         
         .chat-messages {
             flex: 1;
-            padding: 3rem;
+            padding: 2rem;
             overflow-y: auto;
             background: linear-gradient(135deg, #fafafa 0%, #f8fafc 100%);
         }
@@ -3032,7 +3029,7 @@ app.get('/', (req, res) => {
         }
         
         .chat-input-container {
-            padding: 2.5rem 3rem;
+            padding: 1.5rem 2rem;
             background: white;
             border-top: 1px solid #e2e8f0;
         }
@@ -3068,13 +3065,13 @@ app.get('/', (req, res) => {
             color: white;
             border: none;
             border-radius: 50%;
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             transition: all 0.2s ease;
             box-shadow: 0 2px 8px rgba(220, 20, 60, 0.2);
         }
@@ -3199,431 +3196,6 @@ app.get('/', (req, res) => {
             
             .chat-input-container {
                 padding: 1rem;
-            }
-        }
-        
-        /* Enhanced Player Management Styles */
-        .player-actions {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .directory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .view-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .view-btn.active {
-            background: #dc143c;
-            color: white;
-            border-color: #dc143c;
-        }
-        
-        .view-btn:hover:not(.active) {
-            border-color: #dc143c;
-            background: #fef2f2;
-        }
-        
-        .player-modal-content {
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .player-detail-content {
-            padding: 2rem;
-        }
-        
-        .player-form .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .player-form .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .player-form label {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #374151;
-        }
-        
-        .player-form input,
-        .player-form select {
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s ease;
-        }
-        
-        .player-form input:focus,
-        .player-form select:focus {
-            outline: none;
-            border-color: #dc143c;
-            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
-        }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .bulk-actions-content {
-            padding: 2rem;
-        }
-        
-        .bulk-action-group {
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .bulk-action-group:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        
-        .bulk-action-group h4 {
-            margin-bottom: 1rem;
-            color: #374151;
-            font-weight: 600;
-        }
-        
-        .bulk-action-btn {
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .transfer-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-        
-        .transfer-controls select {
-            flex: 1;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-        }
-        
-        .player-card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .player-card:hover {
-            border-color: #dc143c;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.15);
-        }
-        
-        .player-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-        
-        .player-name {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-        
-        .player-position {
-            font-size: 0.875rem;
-            color: #64748b;
-            font-weight: 500;
-        }
-        
-        .player-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .status-training {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        
-        .status-injured {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-        
-        .status-rest {
-            background: #fef3c7;
-            color: #d97706;
-        }
-        
-        .status-suspended {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
-        
-        .player-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-        
-        .player-detail {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .detail-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .detail-value {
-            font-size: 0.875rem;
-            color: #374151;
-            font-weight: 600;
-        }
-        
-        .player-actions-menu {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: none;
-        }
-        
-        .player-card:hover .player-actions-menu {
-            display: block;
-        }
-        
-        .actions-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .actions-btn {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 0.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-        }
-        
-        .actions-btn:hover {
-            background: #e2e8f0;
-        }
-        
-        .players-list {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .list-header {
-            display: grid;
-            grid-template-columns: 2fr 1fr 0.5fr 1.5fr 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            background: #f8fafc;
-            border-bottom: 1px solid #e5e7eb;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.875rem;
-        }
-        
-        .list-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 0.5fr 1.5fr 1fr 1fr;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #f3f4f6;
-            transition: background-color 0.2s ease;
-            align-items: center;
-        }
-        
-        .list-row:hover {
-            background: #fafafa;
-        }
-        
-        .list-row:last-child {
-            border-bottom: none;
-        }
-        
-        .list-cell {
-            font-size: 0.875rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .list-cell.player-name {
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-        }
-        
-        .profile-info h2 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.875rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .profile-subtitle {
-            font-size: 1.125rem;
-            color: #64748b;
-            margin-bottom: 1rem;
-        }
-        
-        .detail-group {
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .detail-group h4 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        
-        .detail-row label {
-            font-weight: 600;
-            color: #6b7280;
-        }
-        
-        .detail-row span {
-            color: #1e293b;
-            font-weight: 500;
-        }
-        
-        .profile-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        @media (max-width: 768px) {
-            .player-form .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .player-actions {
-                flex-direction: column;
-            }
-            
-            .directory-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-            
-            .transfer-controls {
-                flex-direction: column;
-            }
-            
-            .list-header,
-            .list-row {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-            
-            .list-cell {
-                padding: 0.25rem 0;
-            }
-            
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .profile-actions {
-                justify-content: center;
             }
         }
         
@@ -4785,137 +4357,14 @@ app.get('/', (req, res) => {
                     </div>
                 </div>
                 
-                <!-- Player Actions -->
-                <div class="player-actions admin-only">
-                    <button class="btn btn-primary" id="addPlayerBtn">+ Add New Player</button>
-                    <button class="btn btn-secondary" id="exportPlayersBtn">📊 Export Players</button>
-                    <button class="btn btn-secondary" id="bulkActionsBtn">⚡ Bulk Actions</button>
-                </div>
-                
                 <!-- Player Directory -->
                 <div class="player-directory">
                     <div class="directory-header">
                         <h3>👥 Player Directory</h3>
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">Grid</button>
-                            <button class="view-btn" data-view="list">List</button>
-                        </div>
                     </div>
                     <div class="players-grid" id="playersGrid">
                         <div class="no-players-message">
                             No players match the current filters.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Player Detail Modal -->
-                <div class="modal" id="playerDetailModal" style="display: none;">
-                    <div class="modal-content player-modal-content">
-                        <div class="modal-header">
-                            <h3 id="playerModalTitle">Player Details</h3>
-                            <button class="modal-close">&times;</button>
-                        </div>
-                        <div class="player-detail-content" id="playerDetailContent">
-                            <!-- Player details will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Add/Edit Player Modal -->
-                <div class="modal" id="addPlayerModal" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 id="addPlayerModalTitle">Add New Player</h3>
-                            <button class="modal-close">&times;</button>
-                        </div>
-                        <form id="addPlayerForm" class="player-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="playerName">Full Name *</label>
-                                    <input type="text" id="playerName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerAge">Age *</label>
-                                    <input type="number" id="playerAge" min="16" max="25" required>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="playerPosition">Position *</label>
-                                    <select id="playerPosition" required>
-                                        <option value="">Select Position</option>
-                                        <option value="GOALKEEPER">Goalkeeper</option>
-                                        <option value="DEFENDER">Defender</option>
-                                        <option value="MIDFIELDER">Midfielder</option>
-                                        <option value="FORWARD">Forward</option>
-                                        <option value="STRIKER">Striker</option>
-                                        <option value="WINGER">Winger</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerHouse">House Assignment *</label>
-                                    <select id="playerHouse" required>
-                                        <option value="">Select House</option>
-                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="playerStatus">Status</label>
-                                    <select id="playerStatus">
-                                        <option value="active">Active</option>
-                                        <option value="training">Training</option>
-                                        <option value="injured">Injured</option>
-                                        <option value="rest">Rest</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="playerNationality">Nationality</label>
-                                    <input type="text" id="playerNationality" placeholder="e.g., German">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" id="cancelPlayerBtn">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Player</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                
-                <!-- Bulk Actions Modal -->
-                <div class="modal" id="bulkActionsModal" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Bulk Player Actions</h3>
-                            <button class="modal-close">&times;</button>
-                        </div>
-                        <div class="bulk-actions-content">
-                            <div class="bulk-action-group">
-                                <h4>Status Updates</h4>
-                                <button class="btn btn-secondary bulk-action-btn" data-action="set-active">Set Selected as Active</button>
-                                <button class="btn btn-secondary bulk-action-btn" data-action="set-training">Set Selected as Training</button>
-                                <button class="btn btn-warning bulk-action-btn" data-action="set-injured">Set Selected as Injured</button>
-                            </div>
-                            <div class="bulk-action-group">
-                                <h4>House Transfers</h4>
-                                <div class="transfer-controls">
-                                    <select id="bulkHouseSelect">
-                                        <option value="">Select Target House</option>
-                                        <option value="Widdersdorf 1">Widdersdorf 1</option>
-                                        <option value="Widdersdorf 2">Widdersdorf 2</option>
-                                        <option value="Widdersdorf 3">Widdersdorf 3</option>
-                                    </select>
-                                    <button class="btn btn-primary" id="bulkTransferBtn">Transfer Selected</button>
-                                </div>
-                            </div>
-                            <div class="bulk-action-group">
-                                <h4>Export Options</h4>
-                                <button class="btn btn-secondary bulk-action-btn" data-action="export-selected">Export Selected Players</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -5314,7 +4763,7 @@ app.get('/', (req, res) => {
                         <div class="chat-search">
                             <input type="text" placeholder="Search conversations..." id="chatSearch">
                         </div>
-                        <div class="retention-notice" style="padding: 1.25rem; background: linear-gradient(135deg, #fef2f2 0%, #fce7e7 100%); border: 1px solid #fecaca; border-radius: 16px; margin: 1.5rem; font-size: 0.85rem; color: #dc143c; text-align: center; font-weight: 500;">
+                        <div class="retention-notice" style="padding: 0.5rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; margin: 0.5rem; font-size: 0.75rem; color: #dc143c; text-align: center;">
                             💬 Messages automatically deleted after 30 days
                         </div>
                         <div class="chat-list-content" id="chatListContent">
@@ -5656,13 +5105,12 @@ app.get('/', (req, res) => {
         
         function renderPlayersGrid() {
             const container = document.getElementById('playersGrid');
-            const viewMode = document.querySelector('.view-btn.active')?.dataset.view || 'grid';
             
             // Apply filters
-            const searchTerm = document.getElementById('playerSearch')?.value.toLowerCase() || '';
-            const positionFilter = document.getElementById('positionFilter')?.value || '';
-            const houseFilter = document.getElementById('houseFilter')?.value || '';
-            const statusFilter = document.getElementById('statusFilter')?.value || '';
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const positionFilter = document.getElementById('positionFilter').value;
+            const houseFilter = document.getElementById('houseFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
             
             let filteredPlayers = players.filter(player => {
                 const matchesSearch = player.name.toLowerCase().includes(searchTerm) ||
@@ -5680,86 +5128,32 @@ app.get('/', (req, res) => {
                 return;
             }
             
-            if (viewMode === 'list') {
-                renderPlayersList(container, filteredPlayers);
-            } else {
-                renderPlayersGridView(container, filteredPlayers);
-            }
-        }
-        
-        function renderPlayersGridView(container, filteredPlayers) {
             let html = '';
             filteredPlayers.forEach(player => {
                 const statusClass = 'status-' + player.status;
                 const statusText = player.status.charAt(0).toUpperCase() + player.status.slice(1);
                 const joinDate = new Date(player.joinDate).toLocaleDateString();
                 
-                html += '<div class="player-card" data-player-id="' + player.id + '">' +
+                html += '<div class="player-card">' +
                     '<div class="player-card-header">' +
-                        '<div class="player-info">' +
-                            '<div class="player-name">' + player.name + '</div>' +
-                            '<div class="player-position">⚽ ' + player.position + '</div>' +
+                        '<div>' +
+                            '<div class="player-card-name">' + player.name + '</div>' +
+                            '<div class="player-card-position">⚽ ' + player.position + '</div>' +
                         '</div>' +
-                        '<div class="player-status ' + statusClass + '">' + statusText + '</div>' +
+                        '<div class="player-card-status ' + statusClass + '">' + statusText + '</div>' +
                     '</div>' +
-                    '<div class="player-details">' +
-                        '<div class="player-detail">' +
-                            '<div class="detail-label">Age</div>' +
-                            '<div class="detail-value">' + player.age + '</div>' +
-                        '</div>' +
-                        '<div class="player-detail">' +
-                            '<div class="detail-label">House</div>' +
-                            '<div class="detail-value">' + formatHouseName(player.house) + '</div>' +
-                        '</div>' +
-                        '<div class="player-detail">' +
-                            '<div class="detail-label">Nationality</div>' +
-                            '<div class="detail-value">' + (player.nationality || 'N/A') + '</div>' +
-                        '</div>' +
-                        '<div class="player-detail">' +
-                            '<div class="detail-label">Joined</div>' +
-                            '<div class="detail-value">' + joinDate + '</div>' +
-                        '</div>' +
+                    '<div class="player-card-details">' +
+                        '<div class="player-card-detail"><strong>Age:</strong> ' + player.age + '</div>' +
+                        '<div class="player-card-detail"><strong>House:</strong> ' + formatHouseName(player.house) + '</div>' +
+                        '<div class="player-card-detail"><strong>Nationality:</strong> ' + (player.nationality || 'N/A') + '</div>' +
+                        '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
-                    '<div class="player-actions-menu admin-only">' +
-                        '<div class="actions-dropdown">' +
-                            '<button class="actions-btn" data-action="player-menu" data-id="' + player.id + '">⋯</button>' +
-                        '</div>' +
+                    '<div class="player-card-actions">' +
+                        '<button class="btn btn-small btn-secondary" data-action="view-player" data-id="' + player.id + '">View Details</button>' +
                     '</div>' +
                 '</div>';
             });
             
-            container.innerHTML = html;
-        }
-        
-        function renderPlayersList(container, filteredPlayers) {
-            let html = '<div class="players-list">';
-            html += '<div class="list-header">';
-            html += '<div class="list-cell">Name</div>';
-            html += '<div class="list-cell">Position</div>';
-            html += '<div class="list-cell">Age</div>';
-            html += '<div class="list-cell">House</div>';
-            html += '<div class="list-cell">Status</div>';
-            html += '<div class="list-cell admin-only">Actions</div>';
-            html += '</div>';
-            
-            filteredPlayers.forEach(player => {
-                const statusClass = 'status-' + player.status;
-                const statusText = player.status.charAt(0).toUpperCase() + player.status.slice(1);
-                
-                html += '<div class="list-row" data-player-id="' + player.id + '">';
-                html += '<div class="list-cell player-name">' + player.name + '</div>';
-                html += '<div class="list-cell">' + player.position + '</div>';
-                html += '<div class="list-cell">' + player.age + '</div>';
-                html += '<div class="list-cell">' + formatHouseName(player.house) + '</div>';
-                html += '<div class="list-cell"><span class="player-status ' + statusClass + '">' + statusText + '</span></div>';
-                html += '<div class="list-cell admin-only">';
-                html += '<button class="btn btn-small btn-primary" data-action="edit-player" data-id="' + player.id + '">Edit</button>';
-                html += '<button class="btn btn-small btn-secondary" data-action="view-player" data-id="' + player.id + '">View</button>';
-                html += '</div>';
-                html += '</div>';
-            });
-            
-            html += '</div>';
             container.innerHTML = html;
         }
         
@@ -5797,214 +5191,6 @@ app.get('/', (req, res) => {
             
             html += '</tbody></table>';
             container.innerHTML = html;
-        }
-        
-        // Enhanced Player Management Functions
-        
-        function showPlayerDetail(playerId) {
-            const player = players.find(p => p.id === playerId);
-            if (!player) return;
-            
-            const modal = document.getElementById('playerDetailModal');
-            const content = document.getElementById('playerDetailContent');
-            const title = document.getElementById('playerModalTitle');
-            
-            title.textContent = player.name + ' - Player Profile';
-            
-            const joinDate = new Date(player.joinDate).toLocaleDateString();
-            const statusClass = 'status-' + player.status;
-            const statusText = player.status.charAt(0).toUpperCase() + player.status.slice(1);
-            
-            let html = '<div class="player-profile">';
-            html += '<div class="profile-header">';
-            html += '<div class="profile-avatar">👤</div>';
-            html += '<div class="profile-info">';
-            html += '<h2>' + player.name + '</h2>';
-            html += '<div class="profile-subtitle">⚽ ' + player.position + ' • Age ' + player.age + '</div>';
-            html += '<div class="player-status ' + statusClass + '">' + statusText + '</div>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '<div class="profile-details">';
-            html += '<div class="detail-group">';
-            html += '<h4>Personal Information</h4>';
-            html += '<div class="detail-row"><label>Full Name:</label><span>' + player.name + '</span></div>';
-            html += '<div class="detail-row"><label>Age:</label><span>' + player.age + ' years</span></div>';
-            html += '<div class="detail-row"><label>Nationality:</label><span>' + (player.nationality || 'Not specified') + '</span></div>';
-            html += '<div class="detail-row"><label>Join Date:</label><span>' + joinDate + '</span></div>';
-            html += '</div>';
-            
-            html += '<div class="detail-group">';
-            html += '<h4>Program Details</h4>';
-            html += '<div class="detail-row"><label>Position:</label><span>' + player.position + '</span></div>';
-            html += '<div class="detail-row"><label>Current Status:</label><span class="player-status ' + statusClass + '">' + statusText + '</span></div>';
-            html += '<div class="detail-row"><label>House Assignment:</label><span>' + formatHouseName(player.house) + '</span></div>';
-            html += '</div>';
-            
-            html += '<div class="detail-group admin-only">';
-            html += '<h4>Management Actions</h4>';
-            html += '<div class="profile-actions">';
-            html += '<button class="btn btn-primary" data-action="edit-player" data-id="' + player.id + '">Edit Player</button>';
-            html += '<button class="btn btn-secondary" data-action="change-status" data-id="' + player.id + '">Change Status</button>';
-            html += '<button class="btn btn-secondary" data-action="transfer-house" data-id="' + player.id + '">Transfer House</button>';
-            html += '</div>';
-            html += '</div>';
-            
-            html += '</div>';
-            html += '</div>';
-            
-            content.innerHTML = html;
-            modal.style.display = 'flex';
-        }
-        
-        function showAddPlayerModal(playerId = null) {
-            const modal = document.getElementById('addPlayerModal');
-            const title = document.getElementById('addPlayerModalTitle');
-            const form = document.getElementById('addPlayerForm');
-            
-            if (playerId) {
-                const player = players.find(p => p.id === playerId);
-                if (player) {
-                    title.textContent = 'Edit Player: ' + player.name;
-                    document.getElementById('playerName').value = player.name;
-                    document.getElementById('playerAge').value = player.age;
-                    document.getElementById('playerPosition').value = player.position;
-                    document.getElementById('playerHouse').value = player.house;
-                    document.getElementById('playerStatus').value = player.status;
-                    document.getElementById('playerNationality').value = player.nationality || '';
-                    form.dataset.editId = playerId;
-                }
-            } else {
-                title.textContent = 'Add New Player';
-                form.reset();
-                delete form.dataset.editId;
-            }
-            
-            modal.style.display = 'flex';
-        }
-        
-        async function savePlayer(formData) {
-            const editId = document.getElementById('addPlayerForm').dataset.editId;
-            const method = editId ? 'PUT' : 'POST';
-            const url = editId ? '/api/players/' + editId : '/api/players';
-            
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    closeModal('addPlayerModal');
-                    await loadPlayers();
-                    showNotification(editId ? 'Player updated successfully!' : 'Player added successfully!', 'success');
-                } else {
-                    showNotification('Error saving player: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error saving player:', error);
-                showNotification('Error saving player. Please try again.', 'error');
-            }
-        }
-        
-        async function deletePlayer(playerId) {
-            const player = players.find(p => p.id === playerId);
-            if (!player) return;
-            
-            if (confirm('Are you sure you want to remove ' + player.name + ' from the program? This action cannot be undone.')) {
-                try {
-                    const response = await fetch('/api/players/' + playerId, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        closeModal('playerDetailModal');
-                        await loadPlayers();
-                        showNotification(player.name + ' has been removed from the program.', 'success');
-                    } else {
-                        showNotification('Error removing player: ' + result.message, 'error');
-                    }
-                } catch (error) {
-                    console.error('Error deleting player:', error);
-                    showNotification('Error removing player. Please try again.', 'error');
-                }
-            }
-        }
-        
-        function showBulkActionsModal() {
-            const modal = document.getElementById('bulkActionsModal');
-            modal.style.display = 'flex';
-        }
-        
-        function exportPlayersData(selectedOnly = false) {
-            let exportData = selectedOnly ? getSelectedPlayers() : players;
-            
-            if (exportData.length === 0) {
-                showNotification('No players to export.', 'warning');
-                return;
-            }
-            
-            let csv = 'Name,Age,Position,House,Status,Nationality,Join Date\\n';
-            
-            exportData.forEach(player => {
-                const joinDate = new Date(player.joinDate).toLocaleDateString();
-                csv += '"' + player.name + '",' + player.age + ',"' + player.position + '","' + 
-                       player.house + '","' + player.status + '","' + (player.nationality || '') + '","' + joinDate + '"\\n';
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fc_koln_players_' + new Date().toISOString().split('T')[0] + '.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
-            showNotification('Player data exported successfully!', 'success');
-        }
-        
-        function getSelectedPlayers() {
-            // Implementation for multi-select functionality would go here
-            return players.filter(p => p.selected);
-        }
-        
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-        
-        function showNotification(message, type = 'info') {
-            // Simple notification system
-            const notification = document.createElement('div');
-            notification.className = 'notification notification-' + type;
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                border-radius: 8px;
-                z-index: 10000;
-                font-weight: 500;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 4000);
         }
         
         // formatHouseName function moved to player management section
@@ -6148,111 +5334,13 @@ app.get('/', (req, res) => {
             if (houseFilter) houseFilter.addEventListener('change', renderPlayersGrid);
             if (statusFilter) statusFilter.addEventListener('change', renderPlayersGrid);
             
-            // Enhanced Player Management Event Listeners
+            // Player management is now view-only - editing handled in User Management section
             
-            // View Toggle
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('view-btn')) {
-                    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    renderPlayersGrid();
-                }
-            });
-            
-            // Add Player Button
-            if (document.getElementById('addPlayerBtn')) {
-                document.getElementById('addPlayerBtn').addEventListener('click', function() {
-                    showAddPlayerModal();
-                });
-            }
-            
-            // Export Players Button
-            if (document.getElementById('exportPlayersBtn')) {
-                document.getElementById('exportPlayersBtn').addEventListener('click', function() {
-                    exportPlayersData();
-                });
-            }
-            
-            // Bulk Actions Button
-            if (document.getElementById('bulkActionsBtn')) {
-                document.getElementById('bulkActionsBtn').addEventListener('click', function() {
-                    showBulkActionsModal();
-                });
-            }
-            
-            // Add Player Form
-            if (document.getElementById('addPlayerForm')) {
-                document.getElementById('addPlayerForm').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = {
-                        name: document.getElementById('playerName').value,
-                        age: parseInt(document.getElementById('playerAge').value),
-                        position: document.getElementById('playerPosition').value,
-                        house: document.getElementById('playerHouse').value,
-                        status: document.getElementById('playerStatus').value,
-                        nationality: document.getElementById('playerNationality').value
-                    };
-                    
-                    savePlayer(formData);
-                });
-            }
-            
-            // Cancel Player Button
-            if (document.getElementById('cancelPlayerBtn')) {
-                document.getElementById('cancelPlayerBtn').addEventListener('click', function() {
-                    closeModal('addPlayerModal');
-                });
-            }
-            
-            // Modal Close Buttons
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const modal = this.closest('.modal');
-                    if (modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Close modals when clicking outside
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal')) {
-                    e.target.style.display = 'none';
-                }
-            });
-            
-            // Player management is now fully enhanced with comprehensive CRUD operations
-            
-            // Enhanced event delegation for player management actions
+            // Enhanced event delegation for player management
             document.addEventListener('click', function(e) {
                 const action = e.target.getAttribute('data-action');
-                const playerId = e.target.getAttribute('data-id');
                 
-                switch (action) {
-                    case 'view-player':
-                        showPlayerDetail(playerId);
-                        break;
-                    case 'edit-player':
-                        showAddPlayerModal(playerId);
-                        break;
-                    case 'delete-player':
-                        deletePlayer(playerId);
-                        break;
-                    case 'change-status':
-                        changePlayerStatus(playerId);
-                        break;
-                    case 'transfer-house':
-                        transferPlayerHouse(playerId);
-                        break;
-                }
-            });
-            
-            // Original event delegation continues
-            document.addEventListener('click', function(e) {
-                const originalAction = e.target.getAttribute('data-action');
-                
-                if (originalAction === 'view-player') {
+                if (action === 'view-player') {
                     const playerId = e.target.getAttribute('data-id');
                     viewPlayerDetails(playerId);
                 }
