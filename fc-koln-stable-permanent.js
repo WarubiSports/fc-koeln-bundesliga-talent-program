@@ -6766,7 +6766,8 @@ app.get('/', (req, res) => {
             const houses = {
                 'Widdersdorf 1': [],
                 'Widdersdorf 2': [],
-                'Widdersdorf 3': []
+                'Widdersdorf 3': [],
+                'Admin/Staff Orders': []
             };
             
             orders.forEach(order => {
@@ -6774,6 +6775,9 @@ app.get('/', (req, res) => {
                 const player = players.find(p => p.id === order.playerId);
                 if (player && houses[player.house]) {
                     houses[player.house].push(order);
+                } else {
+                    // Admin/staff orders go to a special category
+                    houses['Admin/Staff Orders'].push(order);
                 }
             });
             
@@ -6879,12 +6883,15 @@ app.get('/', (req, res) => {
             csvContent += 'Generated: ' + new Date().toLocaleString() + '\\n';
             csvContent += 'Purpose: Staff shopping list for house delivery coordination\\n\\n';
             
-            csvContent += 'House,Player Name,Item,Quantity,Unit Price,Total Price,Order Number\\n';
+            csvContent += 'House/Category,Player Name,Item,Quantity,Unit Price,Total Price,Order Number\\n';
             
             let grandTotal = 0;
             
             Object.keys(ordersByHouse).forEach(house => {
                 const houseOrders = ordersByHouse[house];
+                
+                // Skip empty categories
+                if (houseOrders.length === 0) return;
                 
                 houseOrders.forEach(order => {
                     grandTotal += order.total;
@@ -6895,7 +6902,8 @@ app.get('/', (req, res) => {
                         
                         if (itemData && orderItem.selected && orderItem.quantity > 0) {
                             const itemTotal = itemData.price * orderItem.quantity;
-                            csvContent += '"' + house + '","' + order.playerName + '","' + itemData.name + '",' +
+                            const houseName = house === 'Admin/Staff Orders' ? 'Admin/Staff' : house;
+                            csvContent += '"' + houseName + '","' + order.playerName + '","' + itemData.name + '",' +
                                          orderItem.quantity + ',' + (itemData.price > 0 ? itemData.price.toFixed(2) : 'FREE') + ',' +
                                          (itemTotal > 0 ? itemTotal.toFixed(2) : 'FREE') + ',"' + order.orderNumber + '"\\n';
                         }
