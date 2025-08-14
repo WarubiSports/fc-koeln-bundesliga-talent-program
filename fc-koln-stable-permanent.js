@@ -3105,6 +3105,99 @@ app.get('/', (req, res) => {
             margin-bottom: 1rem;
         }
         
+        /* House Selection Modal Styles */
+        .house-selection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .house-selection-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .house-selection-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .house-selection-modal.show .house-selection-modal-content {
+            transform: scale(1);
+        }
+        
+        .house-selection-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .house-selection-header h3 {
+            color: #dc143c;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .house-selection-header p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .house-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .house-option {
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .house-option:hover {
+            border-color: #dc143c;
+            background: #fef2f2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
+        }
+        
+        .house-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .house-occupancy {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .house-selection-actions {
+            text-align: center;
+        }
+        
         .delivery-summary-totals {
             background: #eff6ff;
             border: 2px solid #3b82f6;
@@ -8623,7 +8716,7 @@ app.get('/', (req, res) => {
                     e.preventDefault();
                     switch (action) {
                         case 'approve':
-                            approveApplication(id);
+                            approveApplicationWithHouseSelection(id);
                             break;
                         case 'reject':
                             rejectApplication(id);
@@ -8722,6 +8815,108 @@ app.get('/', (req, res) => {
             } catch (error) {
                 console.error('Error approving application:', error);
                 showNotification('Error approving application', 'error');
+            }
+        }
+
+        async function approveApplicationWithHouseSelection(applicationId) {
+            const applications = JSON.parse(localStorage.getItem('fckoln_pending_applications') || '[]');
+            const application = applications.find(app => app.id === applicationId);
+            
+            if (!application) {
+                showNotification('Application not found', 'error');
+                return;
+            }
+            
+            // For staff applications, approve directly
+            if (application.type === 'staff') {
+                approveApplication(applicationId);
+                return;
+            }
+            
+            // For player applications, show house selection modal
+            const houseSelectionHtml = document.createElement('div');
+            houseSelectionHtml.className = 'house-selection-modal';
+            houseSelectionHtml.id = 'houseSelectionModal';
+            
+            // Get current house occupancy for display
+            const w1Count = players.filter(p => p.house === 'Widdersdorf 1').length;
+            const w2Count = players.filter(p => p.house === 'Widdersdorf 2').length;
+            const w3Count = players.filter(p => p.house === 'Widdersdorf 3').length;
+            
+            houseSelectionHtml.innerHTML = '<div class="house-selection-modal-content">' +
+                '<div class="house-selection-header">' +
+                    '<h3>Select House Assignment</h3>' +
+                    '<p>Player: <strong>' + application.name + '</strong> (' + application.position + ')</p>' +
+                '</div>' +
+                '<div class="house-selection-body">' +
+                    '<div class="house-options">' +
+                        '<div class="house-option" data-house="Widdersdorf 1">' +
+                            '<div class="house-name">Widdersdorf 1</div>' +
+                            '<div class="house-occupancy">' + w1Count + ' players currently</div>' +
+                        '</div>' +
+                        '<div class="house-option" data-house="Widdersdorf 2">' +
+                            '<div class="house-name">Widdersdorf 2</div>' +
+                            '<div class="house-occupancy">' + w2Count + ' players currently</div>' +
+                        '</div>' +
+                        '<div class="house-option" data-house="Widdersdorf 3">' +
+                            '<div class="house-name">Widdersdorf 3</div>' +
+                            '<div class="house-occupancy">' + w3Count + ' players currently</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="house-selection-actions">' +
+                        '<button class="btn btn-secondary" data-action="cancel-house">Cancel</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            
+            // Add event listeners
+            houseSelectionHtml.addEventListener('click', async function(e) {
+                const selectedHouse = e.target.closest('.house-option')?.dataset.house;
+                const action = e.target.dataset.action;
+                
+                if (selectedHouse) {
+                    // Approve with selected house
+                    if (!confirm('Assign ' + application.name + ' to ' + selectedHouse + '?')) return;
+                    
+                    try {
+                        const response = await fetch('/api/applications/' + applicationId + '/approve', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ house: selectedHouse })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showNotification('Application approved! Player assigned to ' + selectedHouse, 'success');
+                            closeHouseSelectionModal();
+                            await loadPendingApplications();
+                            await loadExistingUsers();
+                        } else {
+                            showNotification(data.message || 'Failed to approve application', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error approving application:', error);
+                        showNotification('Error approving application', 'error');
+                    }
+                } else if (action === 'cancel-house') {
+                    closeHouseSelectionModal();
+                }
+            });
+            
+            // Add modal to page
+            document.body.appendChild(houseSelectionHtml);
+            
+            // Show modal
+            houseSelectionHtml.classList.add('show');
+        }
+
+        function closeHouseSelectionModal() {
+            const modal = document.getElementById('houseSelectionModal');
+            if (modal) {
+                modal.remove();
             }
         }
 
@@ -8976,7 +9171,7 @@ app.get('/', (req, res) => {
                 if (action === 'close-details') {
                     closeApplicationDetailsModal();
                 } else if (action === 'approve' && id) {
-                    approveApplication(id);
+                    approveApplicationWithHouseSelection(id);
                     closeApplicationDetailsModal();
                 } else if (action === 'reject' && id) {
                     rejectApplication(id);

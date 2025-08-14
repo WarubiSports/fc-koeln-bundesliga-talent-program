@@ -13,7 +13,8 @@ Preferred communication style: Simple, everyday language.
   - Admin-only access control with pending applications approval/rejection system
   - Detailed application cards showing email, age, position/department, nationality, and notes
   - Existing user profile management with clean card-based interface
-  - Smart house assignment system for new players (auto-assigns to houses with fewest members)
+  - Manual house assignment system allowing admins to select houses based on multiple factors (personalities, training groups, mentor relationships)
+  - House selection modal shows current occupancy to help with administrative decisions
   - Fixed critical JavaScript syntax errors in template literals using data attributes instead of inline onclick handlers
   - Implemented proper event delegation to prevent string escaping issues that disrupted authentication
 - **Authentication System Stability (August 14, 2025)**: Resolved recurring JavaScript syntax errors permanently
