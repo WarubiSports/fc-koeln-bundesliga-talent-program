@@ -9964,7 +9964,7 @@ app.get('/', (req, res) => {
             const type = document.getElementById('eventType').value;
             const location = document.getElementById('eventLocation').value.trim();
             const description = document.getElementById('eventDescription').value.trim();
-            const isRecurring = document.getElementById('recurringEvent').checked;
+            // Recurring events disabled for now
             
             if (!title || !date || !time) {
                 showNotification('Please fill in all required fields', 'error');
@@ -9973,25 +9973,17 @@ app.get('/', (req, res) => {
             
             let events = [];
             
-            if (isRecurring) {
-                events = generateRecurringEvents(title, date, time, type, location, description);
-                if (events.length === 0) {
-                    showNotification('Please configure recurring options properly', 'error');
-                    return;
-                }
-            } else {
-                // Single event
-                events = [{
-                    id: Date.now().toString(),
-                    title,
-                    date,
-                    time,
-                    type,
-                    location,
-                    description,
-                    createdBy: currentUser.id
-                }];
-            }
+            // Single event only for now
+            events = [{
+                id: Date.now().toString(),
+                title: title,
+                date: date,
+                time: time,
+                type: type,
+                location: location,
+                description: description,
+                createdBy: currentUser.id
+            }];
             
             // Save all events
             try {
@@ -9999,12 +9991,7 @@ app.get('/', (req, res) => {
                     calendarEvents.push(event);
                 }
                 
-                showNotification(
-                    isRecurring 
-                        ? 'Created ' + events.length + ' recurring events successfully!' 
-                        : 'Event created successfully!', 
-                    'success'
-                );
+                showNotification('Event created successfully!', 'success');
                 closeAddEventModal();
                 renderCalendar();
             } catch (error) {
@@ -10013,107 +10000,18 @@ app.get('/', (req, res) => {
             }
         }
         
-        function generateRecurringEvents(title, startDate, time, type, location, description) {
-            const events = [];
-            const recurringType = document.getElementById('recurringType').value;
-            const endDate = document.getElementById('recurringEndDate').value;
-            const maxCount = parseInt(document.getElementById('recurringCount').value) || null;
-            
-            let currentDate = new Date(startDate);
-            const endDateObj = endDate ? new Date(endDate) : null;
-            let eventCount = 0;
-            const maxEvents = maxCount || 365; // Prevent infinite loops
-            
-            while (eventCount < maxEvents && (!endDateObj || currentDate <= endDateObj)) {
-                let shouldAddEvent = false;
-                
-                switch (recurringType) {
-                    case 'daily':
-                        shouldAddEvent = true;
-                        break;
-                        
-                    case 'weekdays':
-                        const dayOfWeek = currentDate.getDay();
-                        shouldAddEvent = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
-                        break;
-                        
-                    case 'weekly':
-                        shouldAddEvent = currentDate.getDay() === new Date(startDate).getDay();
-                        break;
-                        
-                    case 'custom':
-                        const customDays = getSelectedCustomDays();
-                        shouldAddEvent = customDays.includes(currentDate.getDay());
-                        break;
-                }
-                
-                if (shouldAddEvent) {
-                    events.push({
-                        id: Date.now() + '_' + eventCount,
-                        title: title + (events.length > 0 ? ' (' + (eventCount + 1) + ')' : ''),
-                        date: currentDate.toISOString().split('T')[0],
-                        time: time,
-                        type: type,
-                        location: location,
-                        description: description,
-                        createdBy: currentUser.id,
-                        isRecurring: true,
-                        recurringGroup: Date.now().toString()
-                    });
-                    eventCount++;
-                }
-                
-                // Move to next day
-                currentDate.setDate(currentDate.getDate() + 1);
-                
-                // Safety check to prevent infinite loops
-                if (currentDate.getFullYear() > new Date().getFullYear() + 2) {
-                    break;
-                }
-            }
-            
-            return events;
-        }
-        
-        function getSelectedCustomDays() {
-            const selectedDays = [];
-            const dayCheckboxes = document.querySelectorAll('.day-checkbox input[type="checkbox"]:checked');
-            dayCheckboxes.forEach(checkbox => {
-                selectedDays.push(parseInt(checkbox.value));
-            });
-            return selectedDays;
-            
-            const eventData = {
-                title: title,
-                date: date,
-                time: time,
-                type: type,
-                location: location,
-                description: description
-            };
-            
+        async function loadCalendarEvents() {
             try {
-                const response = await fetch('/api/calendar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(eventData)
-                });
+                const response = await fetch('/api/calendar');
+                const data = await response.json();
                 
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('Event created successfully!', 'success');
-                    closeAddEventModal();
-                    await loadCalendarEvents();
-                    renderCalendar();
+                if (data.success) {
+                    calendarEvents = data.events || [];
                 } else {
-                    showNotification(result.message || 'Failed to create event', 'error');
+                    console.error('Failed to load events:', data.message);
                 }
             } catch (error) {
-                console.error('Error creating event:', error);
-                showNotification('Error creating event', 'error');
+                console.error('Error loading calendar events:', error);
             }
         }
         
