@@ -6222,7 +6222,7 @@ app.get('/', (req, res) => {
                             <button class="view-btn" data-view="month">Month</button>
                         </div>
                         <div class="calendar-actions">
-                            <button class="btn btn-primary" id="addEventBtn">+ Add Event</button>
+                            <button class="btn btn-primary" id="addEventBtn" style="display: none;">+ Add Event</button>
                         </div>
                     </div>
                     
@@ -9342,6 +9342,15 @@ app.get('/', (req, res) => {
         
         function initializeCalendar() {
             console.log('Initializing calendar...');
+            
+            // Show/hide add event button based on user role
+            const addEventBtn = document.getElementById('addEventBtn');
+            if (addEventBtn && currentUser && currentUser.role === 'admin') {
+                addEventBtn.style.display = 'inline-block';
+            } else if (addEventBtn) {
+                addEventBtn.style.display = 'none';
+            }
+            
             // Clear any existing event listeners to prevent duplicates
             const existingPrev = document.getElementById('prevPeriod');
             const existingNext = document.getElementById('nextPeriod');
@@ -9556,8 +9565,8 @@ app.get('/', (req, res) => {
                 dayElement.appendChild(eventsContainer);
                 
                 dayElement.addEventListener('click', (e) => {
-                    // Only open modal if not clicking on an event
-                    if (!e.target.classList.contains('calendar-event')) {
+                    // Only open modal if not clicking on an event and user is admin
+                    if (!e.target.classList.contains('calendar-event') && currentUser && currentUser.role === 'admin') {
                         selectedDate = dayDate;
                         openAddEventModal(dayDate);
                     }
@@ -9642,9 +9651,9 @@ app.get('/', (req, res) => {
                     dayColumn.appendChild(eventElement);
                 });
                 
-                // Add click handler for adding events
+                // Add click handler for adding events (admin only)
                 dayColumn.addEventListener('click', (e) => {
-                    if (e.target === dayColumn) {
+                    if (e.target === dayColumn && currentUser && currentUser.role === 'admin') {
                         selectedDate = currentDay;
                         openAddEventModal(currentDay);
                     }
@@ -9725,7 +9734,7 @@ app.get('/', (req, res) => {
             });
             
             dayColumn.addEventListener('click', (e) => {
-                if (e.target === dayColumn) {
+                if (e.target === dayColumn && currentUser && currentUser.role === 'admin') {
                     selectedDate = currentCalendarDate;
                     openAddEventModal(currentCalendarDate);
                 }
@@ -9747,6 +9756,13 @@ app.get('/', (req, res) => {
         }
         
         function openAddEventModal(date = null) {
+            // Check if user is admin before allowing event creation
+            if (!currentUser || currentUser.role !== 'admin') {
+                console.log('Access denied: Only admins can create events');
+                showNotification('Only administrators can create calendar events', 'error');
+                return;
+            }
+            
             console.log('Opening add event modal for date:', date);
             
             const modal = document.getElementById('addEventModal');
@@ -9790,6 +9806,14 @@ app.get('/', (req, res) => {
         }
         
         async function saveCalendarEvent() {
+            // Double-check admin access
+            if (!currentUser || currentUser.role !== 'admin') {
+                console.log('Access denied: Only admins can save events');
+                showNotification('Only administrators can create calendar events', 'error');
+                closeAddEventModal();
+                return;
+            }
+            
             const title = document.getElementById('eventTitle').value.trim();
             const date = document.getElementById('eventDate').value;
             const time = document.getElementById('eventTime').value;
