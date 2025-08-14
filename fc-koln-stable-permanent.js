@@ -9338,6 +9338,7 @@ app.get('/', (req, res) => {
         let currentCalendarDate = new Date();
         let selectedDate = null;
         let currentView = 'week';
+        let isNavigating = false;
         
         function initializeCalendar() {
             console.log('Initializing calendar...');
@@ -9375,7 +9376,9 @@ app.get('/', (req, res) => {
                 const nextBtn = document.getElementById('nextPeriod');
                 
                 if (prevBtn) {
-                    prevBtn.addEventListener('click', () => {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         console.log('Previous period clicked');
                         navigatePeriod(-1);
                         renderCalendar();
@@ -9383,7 +9386,9 @@ app.get('/', (req, res) => {
                 }
                 
                 if (nextBtn) {
-                    nextBtn.addEventListener('click', () => {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         console.log('Next period clicked');
                         navigatePeriod(1);
                         renderCalendar();
@@ -9437,6 +9442,13 @@ app.get('/', (req, res) => {
         }
         
         function navigatePeriod(direction) {
+            // Prevent multiple rapid navigation calls
+            if (isNavigating) {
+                console.log('Navigation already in progress, ignoring...');
+                return;
+            }
+            
+            isNavigating = true;
             console.log('Navigating period, current date:', currentCalendarDate.toDateString(), 'direction:', direction, 'view:', currentView);
             
             if (currentView === 'day') {
@@ -9455,6 +9467,11 @@ app.get('/', (req, res) => {
             }
             
             console.log('New date after navigation:', currentCalendarDate.toDateString());
+            
+            // Reset navigation flag after a short delay
+            setTimeout(() => {
+                isNavigating = false;
+            }, 100);
         }
         
         function renderCalendar() {
