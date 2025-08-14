@@ -9774,6 +9774,7 @@ app.get('/', (req, res) => {
             console.log('Opening add event modal for date:', date);
             
             const modal = document.getElementById('addEventModal');
+            console.log('Modal element found:', modal);
             if (!modal) {
                 console.error('Add event modal not found in DOM');
                 return;
@@ -9802,7 +9803,17 @@ app.get('/', (req, res) => {
             if (locationInput) locationInput.value = '';
             if (descInput) descInput.value = '';
             
+            console.log('Adding show class to modal');
             modal.classList.add('show');
+            console.log('Modal classes after adding show:', modal.classList.toString());
+            
+            // Double-check if modal is now visible
+            setTimeout(() => {
+                const modalStyle = window.getComputedStyle(modal);
+                console.log('Modal display style:', modalStyle.display);
+                console.log('Modal visibility:', modalStyle.visibility);
+                console.log('Modal opacity:', modalStyle.opacity);
+            }, 100);
         }
         
         function closeAddEventModal() {
