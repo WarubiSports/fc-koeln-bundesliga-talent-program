@@ -6439,7 +6439,7 @@ app.get('/', (req, res) => {
             } else if (pageId === 'communications') {
                 initializeCommunications();
             } else if (pageId === 'calendar') {
-                loadCalendarEvents().then(() => renderCalendar());
+                initializeCalendar();
             }
         }
         
@@ -9340,49 +9340,100 @@ app.get('/', (req, res) => {
         let currentView = 'week';
         
         function initializeCalendar() {
-            renderCalendar();
+            console.log('Initializing calendar...');
+            // Clear any existing event listeners to prevent duplicates
+            const existingPrev = document.getElementById('prevPeriod');
+            const existingNext = document.getElementById('nextPeriod');
+            const existingAdd = document.getElementById('addEventBtn');
+            const existingSave = document.getElementById('saveEventBtn');
             
-            // Navigation event listeners
-            document.getElementById('prevPeriod').addEventListener('click', () => {
-                navigatePeriod(-1);
+            // Remove existing listeners by cloning elements
+            if (existingPrev) {
+                const newPrev = existingPrev.cloneNode(true);
+                existingPrev.parentNode.replaceChild(newPrev, existingPrev);
+            }
+            if (existingNext) {
+                const newNext = existingNext.cloneNode(true);
+                existingNext.parentNode.replaceChild(newNext, existingNext);
+            }
+            if (existingAdd) {
+                const newAdd = existingAdd.cloneNode(true);
+                existingAdd.parentNode.replaceChild(newAdd, existingAdd);
+            }
+            if (existingSave) {
+                const newSave = existingSave.cloneNode(true);
+                existingSave.parentNode.replaceChild(newSave, existingSave);
+            }
+            
+            // Load calendar events first, then render
+            loadCalendarEvents().then(() => {
+                console.log('Calendar events loaded, setting up UI...');
                 renderCalendar();
-            });
-            
-            document.getElementById('nextPeriod').addEventListener('click', () => {
-                navigatePeriod(1);
-                renderCalendar();
-            });
-            
-            // View switcher listeners
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentView = btn.dataset.view;
-                    renderCalendar();
-                });
-            });
-            
-            // Add event modal listeners
-            document.getElementById('addEventBtn').addEventListener('click', () => {
-                openAddEventModal();
-            });
-            
-            // Modal event listeners
-            document.addEventListener('click', (e) => {
-                const action = e.target.dataset.action;
-                if (action === 'close-event') {
-                    closeAddEventModal();
-                } else if (action === 'close-details') {
-                    closeEventDetailsModal();
+                
+                // Navigation event listeners
+                const prevBtn = document.getElementById('prevPeriod');
+                const nextBtn = document.getElementById('nextPeriod');
+                
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        console.log('Previous period clicked');
+                        navigatePeriod(-1);
+                        renderCalendar();
+                    });
                 }
+                
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        console.log('Next period clicked');
+                        navigatePeriod(1);
+                        renderCalendar();
+                    });
+                }
+                
+                // View switcher listeners
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        console.log('View switched to:', btn.dataset.view);
+                        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentView = btn.dataset.view;
+                        renderCalendar();
+                    });
+                });
+                
+                // Add event modal listeners
+                const addBtn = document.getElementById('addEventBtn');
+                if (addBtn) {
+                    addBtn.addEventListener('click', () => {
+                        console.log('Add Event button clicked');
+                        openAddEventModal();
+                    });
+                }
+                
+                // Modal event listeners for close buttons
+                document.addEventListener('click', (e) => {
+                    const action = e.target.dataset.action;
+                    if (action === 'close-event') {
+                        console.log('Closing add event modal');
+                        closeAddEventModal();
+                    } else if (action === 'close-details') {
+                        console.log('Closing event details modal');
+                        closeEventDetailsModal();
+                    }
+                });
+                
+                const saveBtn = document.getElementById('saveEventBtn');
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', () => {
+                        console.log('Save Event button clicked');
+                        saveCalendarEvent();
+                    });
+                }
+                
+                console.log('Calendar initialization complete!');
+            }).catch(error => {
+                console.error('Error initializing calendar:', error);
             });
-            
-            document.getElementById('saveEventBtn').addEventListener('click', () => {
-                saveCalendarEvent();
-            });
-            
-            loadCalendarEvents();
         }
         
         function navigatePeriod(direction) {
@@ -9476,9 +9527,12 @@ app.get('/', (req, res) => {
                 
                 dayElement.appendChild(eventsContainer);
                 
-                dayElement.addEventListener('click', () => {
-                    selectedDate = dayDate;
-                    openAddEventModal(dayDate);
+                dayElement.addEventListener('click', (e) => {
+                    // Only open modal if not clicking on an event
+                    if (!e.target.classList.contains('calendar-event')) {
+                        selectedDate = dayDate;
+                        openAddEventModal(dayDate);
+                    }
                 });
                 
                 grid.appendChild(dayElement);
@@ -9663,21 +9717,36 @@ app.get('/', (req, res) => {
         }
         
         function openAddEventModal(date = null) {
-            const modal = document.getElementById('addEventModal');
-            const dateInput = document.getElementById('eventDate');
+            console.log('Opening add event modal for date:', date);
             
-            if (date) {
-                dateInput.value = date.toISOString().split('T')[0];
-            } else {
-                dateInput.value = new Date().toISOString().split('T')[0];
+            const modal = document.getElementById('addEventModal');
+            if (!modal) {
+                console.error('Add event modal not found in DOM');
+                return;
+            }
+            
+            // Set date
+            const dateInput = document.getElementById('eventDate');
+            if (dateInput) {
+                if (date) {
+                    dateInput.value = date.toISOString().split('T')[0];
+                } else {
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                }
             }
             
             // Clear form
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventTime').value = '';
-            document.getElementById('eventType').value = 'training';
-            document.getElementById('eventLocation').value = '';
-            document.getElementById('eventDescription').value = '';
+            const titleInput = document.getElementById('eventTitle');
+            const timeInput = document.getElementById('eventTime');
+            const typeInput = document.getElementById('eventType');
+            const locationInput = document.getElementById('eventLocation');
+            const descInput = document.getElementById('eventDescription');
+            
+            if (titleInput) titleInput.value = '';
+            if (timeInput) timeInput.value = '09:00';
+            if (typeInput) typeInput.value = 'training';
+            if (locationInput) locationInput.value = '';
+            if (descInput) descInput.value = '';
             
             modal.classList.add('show');
         }
