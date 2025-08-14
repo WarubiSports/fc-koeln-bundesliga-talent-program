@@ -709,7 +709,22 @@ app.get('/api/logo', (req, res) => {
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'template.html'));
+    // Use the stable permanent system directly to maintain the complete interface
+    const fs = require('fs');
+    const stableContent = fs.readFileSync('fc-koln-stable-permanent.js', 'utf8');
+    
+    // Find the original HTML content and serve it
+    // For now, let's redirect to the comprehensive error-proof system
+    res.redirect('/comprehensive');
+});
+
+// Authentication check endpoint
+app.get('/api/auth/check', (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ success: true, user: req.session.user });
+    } else {
+        res.json({ success: false, message: 'Not authenticated' });
+    }
 });
 
 // Dashboard-specific endpoints
