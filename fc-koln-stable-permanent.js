@@ -45,6 +45,48 @@ let players = [
     { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest', joinDate: new Date().toISOString() }
 ];
 
+// Pending applications storage
+let pendingApplications = [
+    {
+        id: 'app1',
+        name: 'Dennis Huseinbasic',
+        email: 'dennis.huseinbasic@example.com',
+        age: 20,
+        position: 'MIDFIELDER',
+        nationality: 'Germany',
+        type: 'player',
+        applicationDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+        status: 'pending',
+        notes: 'Strong technical skills, previous experience with youth teams',
+        documents: ['medical_clearance.pdf', 'performance_stats.pdf']
+    },
+    {
+        id: 'app2',
+        name: 'Sarah Mueller',
+        email: 'sarah.mueller@warubi-sports.com',
+        age: 28,
+        department: 'Coaching',
+        type: 'staff',
+        applicationDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+        status: 'pending',
+        notes: 'UEFA B License, 5 years youth coaching experience',
+        documents: ['coaching_certificate.pdf', 'references.pdf']
+    },
+    {
+        id: 'app3',
+        name: 'Marco Reus Jr.',
+        email: 'marco.reus.jr@example.com',
+        age: 18,
+        position: 'WINGER',
+        nationality: 'Germany',
+        type: 'player',
+        applicationDate: new Date().toISOString(),
+        status: 'pending',
+        notes: 'Promising young talent from local academy',
+        documents: ['medical_clearance.pdf']
+    }
+];
+
 let choreStorage = [
     {
         id: 'ch1',
@@ -453,6 +495,164 @@ app.put('/api/players/:playerId/status', (req, res) => {
         player: player
     });
 });
+
+// User Management API endpoints
+app.get('/api/applications', (req, res) => {
+    // Only allow admin access
+    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Admin access required' 
+        });
+    }
+
+    const pendingApps = pendingApplications.filter(app => app.status === 'pending');
+    res.json({ success: true, applications: pendingApps });
+});
+
+app.get('/api/users', (req, res) => {
+    // Only allow admin access
+    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Admin access required' 
+        });
+    }
+
+    // Combine actual users with players as user objects
+    const allUsers = [
+        ...users.map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        })),
+        ...players.map(player => ({
+            id: player.id,
+            name: player.name,
+            email: player.email || player.name.toLowerCase().replace(' ', '.') + '@player.com',
+            role: 'player'
+        }))
+    ];
+
+    res.json({ success: true, users: allUsers });
+});
+
+app.post('/api/applications/:id/approve', (req, res) => {
+    // Only allow admin access
+    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Admin access required' 
+        });
+    }
+
+    const { id } = req.params;
+    const application = pendingApplications.find(app => app.id === id);
+    
+    if (!application) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'Application not found' 
+        });
+    }
+
+    if (application.status !== 'pending') {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Application already processed' 
+        });
+    }
+
+    // Approve the application
+    application.status = 'approved';
+    application.approvedAt = new Date().toISOString();
+    application.approvedBy = req.session.user.id;
+
+    // Create user account based on application type
+    if (application.type === 'player') {
+        // Add as player
+        const newPlayer = {
+            id: 'p' + Date.now(),
+            name: application.name,
+            age: application.age,
+            position: application.position,
+            nationality: application.nationality,
+            house: assignPlayerToHouse(), // Helper function to assign house
+            status: 'active',
+            joinDate: new Date().toISOString()
+        };
+        players.push(newPlayer);
+    } else if (application.type === 'staff') {
+        // Add as staff user
+        const newUser = {
+            id: 'staff' + Date.now(),
+            name: application.name,
+            email: application.email,
+            role: 'staff',
+            department: application.department,
+            password: 'TempPass123' // Should generate secure password and send via email
+        };
+        users.push(newUser);
+    }
+
+    res.json({ 
+        success: true, 
+        message: 'Application approved successfully',
+        application: application
+    });
+});
+
+app.post('/api/applications/:id/reject', (req, res) => {
+    // Only allow admin access
+    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Admin access required' 
+        });
+    }
+
+    const { id } = req.params;
+    const application = pendingApplications.find(app => app.id === id);
+    
+    if (!application) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'Application not found' 
+        });
+    }
+
+    if (application.status !== 'pending') {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Application already processed' 
+        });
+    }
+
+    // Reject the application
+    application.status = 'rejected';
+    application.rejectedAt = new Date().toISOString();
+    application.rejectedBy = req.session.user.id;
+
+    res.json({ 
+        success: true, 
+        message: 'Application rejected',
+        application: application
+    });
+});
+
+// Helper function to assign player to house with least members
+function assignPlayerToHouse() {
+    const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
+    const houseCounts = houses.map(house => ({
+        house,
+        count: players.filter(p => p.house === house).length
+    }));
+    
+    // Sort by count and return house with least members
+    houseCounts.sort((a, b) => a.count - b.count);
+    return houseCounts[0].house;
+}
 
 app.post('/api/players', (req, res) => {
     const player = {
@@ -3167,6 +3367,312 @@ app.get('/', (req, res) => {
             }
         }
 
+        /* User Management Styles */
+        .admin-section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .admin-section-header {
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .admin-section-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .admin-section-body {
+            padding: 3rem;
+        }
+
+        .application-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .application-card:hover {
+            border-color: #dc143c;
+            box-shadow: 0 4px 16px rgba(220, 20, 60, 0.1);
+        }
+
+        .application-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .application-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .application-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .application-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .application-type.player {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .application-type.staff {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .application-date {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .application-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item span {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .application-notes {
+            margin-top: 1rem;
+        }
+
+        .application-notes label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .application-notes p {
+            color: #1e293b;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-reject {
+            background: white;
+            color: #dc2626;
+            border: 2px solid #dc2626;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-view-details {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view-details:hover {
+            background: #475569;
+            transform: translateY(-1px);
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .user-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .user-card:hover {
+            border-color: #dc143c;
+            box-shadow: 0 4px 16px rgba(220, 20, 60, 0.1);
+        }
+
+        .user-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .user-email {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-role {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .user-role.admin {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .user-role.staff {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .user-role.player {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-edit-user {
+            background: #dc143c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit-user:hover {
+            background: #b91c3c;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
         /* Mobile responsive styles */
         @media (max-width: 768px) {
             .player-modal-content {
@@ -3194,6 +3700,26 @@ app.get('/', (req, res) => {
 
             .player-modal-title {
                 font-size: 1.5rem;
+            }
+
+            .admin-section-body {
+                padding: 2rem;
+            }
+
+            .application-card {
+                padding: 1.5rem;
+            }
+
+            .application-actions {
+                flex-direction: column;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
             }
         }
         
@@ -5132,8 +5658,42 @@ app.get('/', (req, res) => {
             </div>
             
             <div class="page" id="admin">
-                <h1 class="page-title">User Management</h1>
-                <p>Admin panel coming soon...</p>
+                <div class="page-header">
+                    <h1 class="page-title">User Management</h1>
+                    <p class="page-subtitle">Manage pending applications and existing user accounts</p>
+                </div>
+                
+                <!-- Pending Applications Section -->
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <div>
+                            <h2 class="admin-section-title">📝 Pending Applications</h2>
+                            <p class="admin-section-subtitle">Review and approve new staff and player applications</p>
+                        </div>
+                        <div class="pending-count" id="pendingCount">3 pending</div>
+                    </div>
+                    <div class="admin-section-body">
+                        <div id="pendingApplicationsList">
+                            <!-- Applications will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Users Section -->
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <div>
+                            <h2 class="admin-section-title">👥 Existing Users</h2>
+                            <p class="admin-section-subtitle">Manage current staff and player accounts</p>
+                        </div>
+                        <div class="users-count" id="usersCount">6 total users</div>
+                    </div>
+                    <div class="admin-section-body">
+                        <div class="users-grid" id="existingUsersList">
+                            <!-- Users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -5222,6 +5782,11 @@ app.get('/', (req, res) => {
             } else if (pageId === 'chores') {
                 updateHouseStatistics();
                 loadActiveChores();
+            } else if (pageId === 'admin') {
+                if (currentUser && currentUser.role === 'admin') {
+                    loadUserManagement();
+                }
+            }
             } else if (pageId === 'food-orders') {
                 loadFoodOrderData();
             } else if (pageId === 'communications') {
@@ -7805,6 +8370,209 @@ app.get('/', (req, res) => {
                 closePlayerModal();
             }
         });
+
+        // User Management Functions
+        async function loadUserManagement() {
+            if (currentUser.role !== 'admin') {
+                return;
+            }
+
+            await loadPendingApplications();
+            await loadExistingUsers();
+        }
+
+        async function loadPendingApplications() {
+            try {
+                const response = await fetch('/api/applications');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderPendingApplications(data.applications);
+                    updatePendingCount(data.applications.length);
+                }
+            } catch (error) {
+                console.error('Failed to load applications:', error);
+            }
+        }
+
+        function renderPendingApplications(applications) {
+            const container = document.getElementById('pendingApplicationsList');
+            if (!container) return;
+
+            if (applications.length === 0) {
+                container.innerHTML = '<div class="empty-state">' +
+                    '<div class="empty-state-icon">📝</div>' +
+                    '<h3>No Pending Applications</h3>' +
+                    '<p>All applications have been processed</p>' +
+                    '</div>';
+                return;
+            }
+
+            const html = applications.map(app => 
+                '<div class="application-card">' +
+                    '<div class="application-header">' +
+                        '<div class="application-info">' +
+                            '<h3>' + app.name + '</h3>' +
+                            '<div class="application-meta">' +
+                                '<span class="application-type ' + app.type + '">' + app.type + '</span>' +
+                                '<span class="application-date">Applied ' + new Date(app.applicationDate).toLocaleDateString() + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="application-details">' +
+                        '<div class="detail-grid">' +
+                            '<div class="detail-item">' +
+                                '<label>Email</label>' +
+                                '<span>' + app.email + '</span>' +
+                            '</div>' +
+                            '<div class="detail-item">' +
+                                '<label>Age</label>' +
+                                '<span>' + app.age + ' years</span>' +
+                            '</div>' +
+                            (app.type === 'player' ? 
+                                '<div class="detail-item">' +
+                                    '<label>Position</label>' +
+                                    '<span>' + app.position + '</span>' +
+                                '</div>' +
+                                '<div class="detail-item">' +
+                                    '<label>Nationality</label>' +
+                                    '<span>' + app.nationality + '</span>' +
+                                '</div>'
+                                : 
+                                '<div class="detail-item">' +
+                                    '<label>Department</label>' +
+                                    '<span>' + app.department + '</span>' +
+                                '</div>'
+                            ) +
+                        '</div>' +
+                        '<div class="application-notes">' +
+                            '<label>Notes</label>' +
+                            '<p>' + app.notes + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="application-actions">' +
+                        '<button class="btn-approve" onclick="approveApplication(\'' + app.id + '\')">Approve</button>' +
+                        '<button class="btn-reject" onclick="rejectApplication(\'' + app.id + '\')">Reject</button>' +
+                        '<button class="btn-view-details" onclick="viewApplicationDetails(\'' + app.id + '\')">View Details</button>' +
+                    '</div>' +
+                '</div>'
+            ).join('');
+
+            container.innerHTML = html;
+        }
+
+        async function loadExistingUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderExistingUsers(data.users);
+                    updateUsersCount(data.users.length);
+                }
+            } catch (error) {
+                console.error('Failed to load users:', error);
+            }
+        }
+
+        function renderExistingUsers(users) {
+            const container = document.getElementById('existingUsersList');
+            if (!container) return;
+
+            const html = users.map(user => 
+                '<div class="user-card">' +
+                    '<div class="user-card-header">' +
+                        '<div class="user-info">' +
+                            '<h3>' + user.name + '</h3>' +
+                            '<div class="user-email">' + user.email + '</div>' +
+                            '<span class="user-role ' + user.role + '">' + user.role + '</span>' +
+                        '</div>' +
+                        '<div class="user-actions">' +
+                            '<button class="btn-edit-user" onclick="editUser(\'' + user.id + '\')">Edit Profile</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            ).join('');
+
+            container.innerHTML = html;
+        }
+
+        function updatePendingCount(count) {
+            const element = document.getElementById('pendingCount');
+            if (element) {
+                element.textContent = count + ' pending';
+            }
+        }
+
+        function updateUsersCount(count) {
+            const element = document.getElementById('usersCount');
+            if (element) {
+                element.textContent = count + ' total users';
+            }
+        }
+
+        async function approveApplication(applicationId) {
+            if (!confirm('Are you sure you want to approve this application?')) return;
+
+            try {
+                const response = await fetch('/api/applications/' + applicationId + '/approve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Application approved successfully!', 'success');
+                    await loadPendingApplications();
+                    await loadExistingUsers();
+                } else {
+                    showNotification(data.message || 'Failed to approve application', 'error');
+                }
+            } catch (error) {
+                console.error('Error approving application:', error);
+                showNotification('Error approving application', 'error');
+            }
+        }
+
+        async function rejectApplication(applicationId) {
+            if (!confirm('Are you sure you want to reject this application? This action cannot be undone.')) return;
+
+            try {
+                const response = await fetch('/api/applications/' + applicationId + '/reject', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Application rejected', 'success');
+                    await loadPendingApplications();
+                } else {
+                    showNotification(data.message || 'Failed to reject application', 'error');
+                }
+            } catch (error) {
+                console.error('Error rejecting application:', error);
+                showNotification('Error rejecting application', 'error');
+            }
+        }
+
+        function viewApplicationDetails(applicationId) {
+            // For now, just show an alert with more details
+            // This could be expanded to show a detailed modal
+            showNotification('Application details view coming soon', 'info');
+        }
+
+        function editUser(userId) {
+            // For now, just show an alert
+            // This could be expanded to show an edit form modal
+            showNotification('User profile editing coming soon', 'info');
+        }
     </script>
 
     <!-- Player Details Modal -->
