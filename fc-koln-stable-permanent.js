@@ -5786,7 +5786,6 @@ app.get('/', (req, res) => {
                 if (currentUser && currentUser.role === 'admin') {
                     loadUserManagement();
                 }
-            }
             } else if (pageId === 'food-orders') {
                 loadFoodOrderData();
             } else if (pageId === 'communications') {
