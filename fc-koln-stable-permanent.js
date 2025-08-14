@@ -9964,7 +9964,7 @@ app.get('/', (req, res) => {
             const type = document.getElementById('eventType').value;
             const location = document.getElementById('eventLocation').value.trim();
             const description = document.getElementById('eventDescription').value.trim();
-            // Recurring events disabled for now
+            const isRecurring = document.getElementById('recurringEvent') ? document.getElementById('recurringEvent').checked : false;
             
             if (!title || !date || !time) {
                 showNotification('Please fill in all required fields', 'error');
@@ -9973,17 +9973,25 @@ app.get('/', (req, res) => {
             
             let events = [];
             
-            // Single event only for now
-            events = [{
-                id: Date.now().toString(),
-                title: title,
-                date: date,
-                time: time,
-                type: type,
-                location: location,
-                description: description,
-                createdBy: currentUser.id
-            }];
+            if (isRecurring) {
+                events = generateRecurringEvents(title, date, time, type, location, description);
+                if (events.length === 0) {
+                    showNotification('Please configure recurring options properly', 'error');
+                    return;
+                }
+            } else {
+                // Single event
+                events = [{
+                    id: Date.now().toString(),
+                    title: title,
+                    date: date,
+                    time: time,
+                    type: type,
+                    location: location,
+                    description: description,
+                    createdBy: currentUser.id
+                }];
+            }
             
             // Save all events
             try {
@@ -9991,13 +9999,85 @@ app.get('/', (req, res) => {
                     calendarEvents.push(event);
                 }
                 
-                showNotification('Event created successfully!', 'success');
+                showNotification(
+                    isRecurring 
+                        ? 'Created ' + events.length + ' recurring events successfully!' 
+                        : 'Event created successfully!', 
+                    'success'
+                );
                 closeAddEventModal();
                 renderCalendar();
             } catch (error) {
                 console.error('Error saving events:', error);
                 showNotification('Failed to save events', 'error');
             }
+        }
+        
+        function generateRecurringEvents(title, startDate, time, type, location, description) {
+            const events = [];
+            const recurringTypeEl = document.getElementById('recurringType');
+            const endDateEl = document.getElementById('recurringEndDate'); 
+            const maxCountEl = document.getElementById('recurringCount');
+            
+            if (!recurringTypeEl) return events;
+            
+            const recurringType = recurringTypeEl.value;
+            const endDate = endDateEl ? endDateEl.value : '';
+            const maxCount = maxCountEl ? parseInt(maxCountEl.value) || null : null;
+            
+            let currentDate = new Date(startDate);
+            const endDateObj = endDate ? new Date(endDate) : null;
+            let eventCount = 0;
+            const maxEvents = maxCount || 100; // Limit to prevent issues
+            
+            while (eventCount < maxEvents && (!endDateObj || currentDate <= endDateObj)) {
+                let shouldAddEvent = false;
+                
+                if (recurringType === 'daily') {
+                    shouldAddEvent = true;
+                } else if (recurringType === 'weekdays') {
+                    const dayOfWeek = currentDate.getDay();
+                    shouldAddEvent = dayOfWeek >= 1 && dayOfWeek <= 5;
+                } else if (recurringType === 'weekly') {
+                    shouldAddEvent = currentDate.getDay() === new Date(startDate).getDay();
+                } else if (recurringType === 'custom') {
+                    const customDays = getSelectedCustomDays();
+                    shouldAddEvent = customDays.includes(currentDate.getDay());
+                }
+                
+                if (shouldAddEvent) {
+                    events.push({
+                        id: Date.now() + '_' + eventCount,
+                        title: title + (eventCount > 0 ? ' (' + (eventCount + 1) + ')' : ''),
+                        date: currentDate.toISOString().split('T')[0],
+                        time: time,
+                        type: type,
+                        location: location,
+                        description: description,
+                        createdBy: currentUser.id,
+                        isRecurring: true,
+                        recurringGroup: Date.now().toString()
+                    });
+                    eventCount++;
+                }
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+                
+                if (currentDate.getFullYear() > new Date().getFullYear() + 2) {
+                    break;
+                }
+            }
+            
+            return events;
+        }
+        
+        function getSelectedCustomDays() {
+            const selectedDays = [];
+            const dayCheckboxes = document.querySelectorAll('.day-checkbox input[type="checkbox"]:checked');
+            dayCheckboxes.forEach(function(checkbox) {
+                selectedDays.push(parseInt(checkbox.value));
+            });
+            return selectedDays;
         }
         
         async function loadCalendarEvents() {
