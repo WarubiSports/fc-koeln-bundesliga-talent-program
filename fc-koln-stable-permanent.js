@@ -433,7 +433,7 @@ app.get('/reset-password', (req, res) => {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
-                                token: '${token}', 
+                                token: token, 
                                 newPassword: newPassword 
                             })
                         });
@@ -8298,7 +8298,7 @@ app.get('/', (req, res) => {
         }
         
         function loadActiveChores() {
-            fetch('/api/chores')
+            const fetchPromise = fetch('/api/chores')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -8315,7 +8315,7 @@ app.get('/', (req, res) => {
         }
         
         function loadArchivedChoresWithFilters(page = 1) {
-            fetch('/api/chores/archived')
+            const fetchPromise = fetch('/api/chores/archived')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
