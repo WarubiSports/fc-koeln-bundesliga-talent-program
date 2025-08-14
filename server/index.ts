@@ -3,8 +3,8 @@ const { spawn } = require('child_process');
 
 console.log('🔄 Starting STABLE PERMANENT FC Köln Management System...');
 
-// Start the stable permanent system with all features and no recurring errors
-const serverProcess = spawn('node', ['fc-koln-stable-permanent.js'], {
+// Start the error-proof system with all features and no recurring errors
+const serverProcess = spawn('node', ['fc-koln-error-proof.js'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: '5000' }
 });
