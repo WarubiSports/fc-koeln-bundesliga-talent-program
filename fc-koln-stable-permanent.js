@@ -641,6 +641,67 @@ app.post('/api/applications/:id/reject', (req, res) => {
     });
 });
 
+// Update user endpoint
+app.patch('/api/users/:id', (req, res) => {
+    // Only allow admin access
+    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Admin access required' 
+        });
+    }
+
+    const { id } = req.params;
+    const updatedData = req.body;
+    
+    // Find user in appropriate array
+    let userFound = false;
+    let userArray = null;
+    let userIndex = -1;
+    
+    // Check in players array
+    userIndex = players.findIndex(p => p.id === id);
+    if (userIndex !== -1) {
+        userArray = players;
+        userFound = true;
+    }
+    
+    // Check in users array (staff/admin)
+    if (!userFound) {
+        userIndex = users.findIndex(u => u.id === id);
+        if (userIndex !== -1) {
+            userArray = users;
+            userFound = true;
+        }
+    }
+    
+    if (!userFound) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'User not found' 
+        });
+    }
+    
+    // Update user data
+    const user = userArray[userIndex];
+    user.name = updatedData.name || user.name;
+    user.email = updatedData.email || user.email;
+    user.role = updatedData.role || user.role;
+    
+    // Update player-specific fields if applicable
+    if (updatedData.role === 'player' && userArray === players) {
+        user.house = updatedData.house || user.house;
+        user.age = updatedData.age || user.age;
+        user.position = updatedData.position || user.position;
+    }
+    
+    res.json({ 
+        success: true, 
+        message: 'User updated successfully',
+        user: user
+    });
+});
+
 // Helper function to assign player to house with least members
 function assignPlayerToHouse() {
     const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
@@ -2960,6 +3021,88 @@ app.get('/', (req, res) => {
             color: #6b7280;
             display: flex;
             justify-content: space-between;
+        }
+        
+        /* User Management Modal Styles */
+        .user-edit-modal, .application-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .user-edit-modal.show, .application-details-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .user-edit-modal-content, .application-details-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .user-edit-modal.show .user-edit-modal-content,
+        .application-details-modal.show .application-details-modal-content {
+            transform: scale(1);
+        }
+        
+        .user-edit-header, .application-details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-edit-header h3, .application-details-header h3 {
+            color: #dc143c;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            background-color: #f5f5f5;
+            color: #dc143c;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         
         .delivery-summary-totals {
@@ -8364,16 +8507,20 @@ app.get('/', (req, res) => {
         notificationStyles.textContent = '@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
         document.head.appendChild(notificationStyles);
 
-        // Close modal when clicking outside
-        document.getElementById('playerDetailsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePlayerModal();
-            }
-        });
+        // Close modal when clicking outside (only if modal exists)
+        const playerModal = document.getElementById('playerDetailsModal');
+        if (playerModal) {
+            playerModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePlayerModal();
+                }
+            });
+        }
 
-        // Close modal with Escape key
+        // Close modal with Escape key (only if modal exists)
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && document.getElementById('playerDetailsModal').classList.contains('show')) {
+            const playerModal = document.getElementById('playerDetailsModal');
+            if (e.key === 'Escape' && playerModal && playerModal.classList.contains('show')) {
                 closePlayerModal();
             }
         });
@@ -8610,9 +8757,245 @@ app.get('/', (req, res) => {
         }
 
         function editUser(userId) {
-            // For now, just show an alert
-            // This could be expanded to show an edit form modal
-            showNotification('User profile editing coming soon', 'info');
+            const users = [...players, ...staff, ...admins];
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) {
+                showNotification('User not found', 'error');
+                return;
+            }
+            
+            // Create edit modal HTML
+            const modalHtml = document.createElement('div');
+            modalHtml.className = 'user-edit-modal';
+            modalHtml.id = 'userEditModal';
+            modalHtml.innerHTML = '<div class="user-edit-modal-content">' +
+                '<div class="user-edit-header">' +
+                    '<h3>Edit User Profile</h3>' +
+                    '<button class="close-btn" data-action="close-edit">&times;</button>' +
+                '</div>' +
+                '<div class="user-edit-body">' +
+                    '<form id="userEditForm">' +
+                        '<input type="hidden" id="editUserId" value="' + user.id + '">' +
+                        '<div class="form-row">' +
+                            '<div class="form-group">' +
+                                '<label for="editUserName">Full Name *</label>' +
+                                '<input type="text" id="editUserName" value="' + user.name + '" required>' +
+                            '</div>' +
+                            '<div class="form-group">' +
+                                '<label for="editUserEmail">Email *</label>' +
+                                '<input type="email" id="editUserEmail" value="' + user.email + '" required>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="form-row">' +
+                            '<div class="form-group">' +
+                                '<label for="editUserRole">Role *</label>' +
+                                '<select id="editUserRole" required>' +
+                                    '<option value="admin"' + (user.role === 'admin' ? ' selected' : '') + '>Admin</option>' +
+                                    '<option value="staff"' + (user.role === 'staff' ? ' selected' : '') + '>Staff</option>' +
+                                    '<option value="player"' + (user.role === 'player' ? ' selected' : '') + '>Player</option>' +
+                                '</select>' +
+                            '</div>' +
+                            (user.role === 'player' ? 
+                                '<div class="form-group">' +
+                                    '<label for="editUserHouse">House Assignment</label>' +
+                                    '<select id="editUserHouse">' +
+                                        '<option value="Widdersdorf 1"' + (user.house === 'Widdersdorf 1' ? ' selected' : '') + '>Widdersdorf 1</option>' +
+                                        '<option value="Widdersdorf 2"' + (user.house === 'Widdersdorf 2' ? ' selected' : '') + '>Widdersdorf 2</option>' +
+                                        '<option value="Widdersdorf 3"' + (user.house === 'Widdersdorf 3' ? ' selected' : '') + '>Widdersdorf 3</option>' +
+                                    '</select>' +
+                                '</div>'
+                            : '') +
+                        '</div>' +
+                        (user.role === 'player' ? 
+                            '<div class="form-row">' +
+                                '<div class="form-group">' +
+                                    '<label for="editUserAge">Age</label>' +
+                                    '<input type="number" id="editUserAge" value="' + (user.age || '') + '" min="16" max="35">' +
+                                '</div>' +
+                                '<div class="form-group">' +
+                                    '<label for="editUserPosition">Position</label>' +
+                                    '<select id="editUserPosition">' +
+                                        '<option value="STRIKER"' + (user.position === 'STRIKER' ? ' selected' : '') + '>Striker</option>' +
+                                        '<option value="WINGER"' + (user.position === 'WINGER' ? ' selected' : '') + '>Winger</option>' +
+                                        '<option value="MIDFIELDER"' + (user.position === 'MIDFIELDER' ? ' selected' : '') + '>Midfielder</option>' +
+                                        '<option value="DEFENDER"' + (user.position === 'DEFENDER' ? ' selected' : '') + '>Defender</option>' +
+                                        '<option value="GOALKEEPER"' + (user.position === 'GOALKEEPER' ? ' selected' : '') + '>Goalkeeper</option>' +
+                                    '</select>' +
+                                '</div>' +
+                            '</div>'
+                        : '') +
+                        '<div class="form-actions">' +
+                            '<button type="button" class="btn btn-secondary" data-action="close-edit">Cancel</button>' +
+                            '<button type="submit" class="btn btn-primary">Save Changes</button>' +
+                        '</div>' +
+                    '</form>' +
+                '</div>' +
+            '</div>';
+            
+            // Add modal to page
+            document.body.appendChild(modalHtml);
+            
+            // Add close button event listener
+            modalHtml.addEventListener('click', function(e) {
+                if (e.target.dataset.action === 'close-edit') {
+                    closeUserEditModal();
+                }
+            });
+            
+            // Show modal
+            modalHtml.classList.add('show');
+            
+            // Add form submit handler
+            document.getElementById('userEditForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await saveUserChanges();
+            });
+        }
+
+        async function saveUserChanges() {
+            const formData = {
+                id: document.getElementById('editUserId').value,
+                name: document.getElementById('editUserName').value,
+                email: document.getElementById('editUserEmail').value,
+                role: document.getElementById('editUserRole').value
+            };
+            
+            // Add player-specific fields if applicable
+            if (formData.role === 'player') {
+                formData.house = document.getElementById('editUserHouse')?.value;
+                formData.age = parseInt(document.getElementById('editUserAge')?.value) || null;
+                formData.position = document.getElementById('editUserPosition')?.value;
+            }
+            
+            try {
+                const response = await fetch('/api/users/' + formData.id, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('User updated successfully!', 'success');
+                    closeUserEditModal();
+                    await loadExistingUsers();
+                } else {
+                    showNotification(data.message || 'Failed to update user', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating user:', error);
+                showNotification('Error updating user', 'error');
+            }
+        }
+
+        function closeUserEditModal() {
+            const modal = document.getElementById('userEditModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function viewApplicationDetails(applicationId) {
+            const applications = JSON.parse(localStorage.getItem('fckoln_pending_applications') || '[]');
+            const application = applications.find(app => app.id === applicationId);
+            
+            if (!application) {
+                showNotification('Application not found', 'error');
+                return;
+            }
+            
+            // Create detailed view modal
+            const modalHtml = document.createElement('div');
+            modalHtml.className = 'application-details-modal';
+            modalHtml.id = 'applicationDetailsModal';
+            
+            const basicInfo = '<div class="detail-section">' +
+                '<h4>📋 Basic Information</h4>' +
+                '<div class="detail-grid">' +
+                    '<div class="detail-item"><label>Full Name</label><span>' + application.name + '</span></div>' +
+                    '<div class="detail-item"><label>Email Address</label><span>' + application.email + '</span></div>' +
+                    '<div class="detail-item"><label>Age</label><span>' + application.age + ' years</span></div>' +
+                    '<div class="detail-item"><label>Application Type</label><span class="application-type ' + application.type + '">' + application.type + '</span></div>' +
+                '</div>' +
+            '</div>';
+            
+            const specificInfo = application.type === 'player' ? 
+                '<div class="detail-section">' +
+                    '<h4>⚽ Player Information</h4>' +
+                    '<div class="detail-grid">' +
+                        '<div class="detail-item"><label>Position</label><span>' + application.position + '</span></div>' +
+                        '<div class="detail-item"><label>Nationality</label><span>' + application.nationality + '</span></div>' +
+                    '</div>' +
+                '</div>'
+                :
+                '<div class="detail-section">' +
+                    '<h4>👨‍💼 Staff Information</h4>' +
+                    '<div class="detail-grid">' +
+                        '<div class="detail-item"><label>Department</label><span>' + application.department + '</span></div>' +
+                    '</div>' +
+                '</div>';
+            
+            modalHtml.innerHTML = '<div class="application-details-modal-content">' +
+                '<div class="application-details-header">' +
+                    '<h3>Application Details</h3>' +
+                    '<button class="close-btn" data-action="close-details">&times;</button>' +
+                '</div>' +
+                '<div class="application-details-body">' +
+                    basicInfo +
+                    specificInfo +
+                    '<div class="detail-section">' +
+                        '<h4>📝 Application Notes</h4>' +
+                        '<div class="notes-content">' +
+                            '<p>' + application.notes + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="detail-section">' +
+                        '<h4>📅 Application Timeline</h4>' +
+                        '<div class="detail-grid">' +
+                            '<div class="detail-item"><label>Submitted</label><span>' + new Date(application.applicationDate).toLocaleString() + '</span></div>' +
+                            '<div class="detail-item"><label>Status</label><span class="status-pending">Pending Review</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="application-actions-detailed">' +
+                        '<button class="btn btn-success" data-action="approve" data-id="' + application.id + '">✓ Approve Application</button>' +
+                        '<button class="btn btn-danger" data-action="reject" data-id="' + application.id + '">✗ Reject Application</button>' +
+                        '<button class="btn btn-secondary" data-action="close-details">Close</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            
+            // Add event listeners
+            modalHtml.addEventListener('click', function(e) {
+                const action = e.target.dataset.action;
+                const id = e.target.dataset.id;
+                
+                if (action === 'close-details') {
+                    closeApplicationDetailsModal();
+                } else if (action === 'approve' && id) {
+                    approveApplication(id);
+                    closeApplicationDetailsModal();
+                } else if (action === 'reject' && id) {
+                    rejectApplication(id);
+                    closeApplicationDetailsModal();
+                }
+            });
+            
+            // Add modal to page
+            document.body.appendChild(modalHtml);
+            
+            // Show modal
+            modalHtml.classList.add('show');
+        }
+
+        function closeApplicationDetailsModal() {
+            const modal = document.getElementById('applicationDetailsModal');
+            if (modal) {
+                modal.remove();
+            }
         }
     </script>
 
