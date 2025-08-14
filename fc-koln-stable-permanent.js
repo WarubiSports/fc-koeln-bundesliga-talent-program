@@ -9345,9 +9345,14 @@ app.get('/', (req, res) => {
             
             // Show/hide add event button based on user role
             const addEventBtn = document.getElementById('addEventBtn');
+            console.log('Calendar init - Current user:', currentUser);
+            console.log('Calendar init - User role:', currentUser ? currentUser.role : 'No user');
+            
             if (addEventBtn && currentUser && currentUser.role === 'admin') {
+                console.log('Showing add event button for admin');
                 addEventBtn.style.display = 'inline-block';
             } else if (addEventBtn) {
+                console.log('Hiding add event button - not admin');
                 addEventBtn.style.display = 'none';
             }
             
@@ -9756,6 +9761,9 @@ app.get('/', (req, res) => {
         }
         
         function openAddEventModal(date = null) {
+            console.log('Current user check:', currentUser);
+            console.log('User role:', currentUser ? currentUser.role : 'No user');
+            
             // Check if user is admin before allowing event creation
             if (!currentUser || currentUser.role !== 'admin') {
                 console.log('Access denied: Only admins can create events');
