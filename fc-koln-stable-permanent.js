@@ -9803,9 +9803,9 @@ app.get('/', (req, res) => {
             if (locationInput) locationInput.value = '';
             if (descInput) descInput.value = '';
             
-            console.log('Adding show class to modal');
-            modal.classList.add('show');
-            console.log('Modal classes after adding show:', modal.classList.toString());
+            console.log('Adding active class to modal');
+            modal.classList.add('active');
+            console.log('Modal classes after adding active:', modal.classList.toString());
             
             // Double-check if modal is now visible
             setTimeout(() => {
@@ -9817,11 +9817,11 @@ app.get('/', (req, res) => {
         }
         
         function closeAddEventModal() {
-            document.getElementById('addEventModal').classList.remove('show');
+            document.getElementById('addEventModal').classList.remove('active');
         }
         
         function closeEventDetailsModal() {
-            document.getElementById('eventDetailsModal').classList.remove('show');
+            document.getElementById('eventDetailsModal').classList.remove('active');
         }
         
         async function saveCalendarEvent() {
