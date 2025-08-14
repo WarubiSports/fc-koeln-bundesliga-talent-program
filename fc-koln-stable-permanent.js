@@ -421,6 +421,39 @@ app.get('/api/players', (req, res) => {
     res.json({ success: true, players });
 });
 
+// Update player status endpoint
+app.put('/api/players/:playerId/status', (req, res) => {
+    const { playerId } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    const validStatuses = ['active', 'training', 'injured', 'rest'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Invalid status. Must be one of: ' + validStatuses.join(', ') 
+        });
+    }
+
+    // Find player
+    const player = players.find(p => p.id === playerId);
+    if (!player) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'Player not found' 
+        });
+    }
+
+    // Update status
+    player.status = status;
+    
+    res.json({ 
+        success: true, 
+        message: 'Player status updated successfully',
+        player: player
+    });
+});
+
 app.post('/api/players', (req, res) => {
     const player = {
         id: `player_${Date.now()}`,
@@ -2918,6 +2951,251 @@ app.get('/', (req, res) => {
             font-style: italic;
             font-size: 1.1rem;
         }
+
+        /* Player Details Modal Styles */
+        .player-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .player-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .player-modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: slideInUp 0.3s ease;
+        }
+
+        .player-modal-header {
+            padding: 3rem 3rem 2rem 3rem;
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .player-modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .player-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .player-modal-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .player-modal-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .player-modal-body {
+            padding: 3rem;
+        }
+
+        .player-details-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .player-details-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #dc143c;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .detail-value {
+            color: #1e293b;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-training {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-rest {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-injured {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .player-modal-actions {
+            padding: 2rem 3rem 3rem 3rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-status-change {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dc143c;
+            background: white;
+            color: #dc143c;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-status-change:hover {
+            background: #dc143c;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+        }
+
+        .btn-close {
+            padding: 0.75rem 2rem;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-close:hover {
+            background: #475569;
+            transform: translateY(-1px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .player-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .player-modal-header {
+                padding: 2rem 2rem 1.5rem 2rem;
+            }
+
+            .player-modal-body {
+                padding: 2rem;
+            }
+
+            .player-modal-actions {
+                padding: 1.5rem 2rem 2rem 2rem;
+                flex-direction: column;
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .player-modal-title {
+                font-size: 1.5rem;
+            }
+        }
         
         .chat-window {
             flex: 1;
@@ -5355,20 +5633,7 @@ app.get('/', (req, res) => {
             return house || 'N/A';
         }
         
-        async function viewPlayerDetails(playerId) {
-            const player = players.find(p => p.id === playerId);
-            if (player) {
-                alert('Player Details:\\n\\n' +
-                    'Name: ' + player.name + '\\n' +
-                    'Age: ' + player.age + '\\n' +
-                    'Position: ' + player.position + '\\n' +
-                    'House: ' + formatHouseName(player.house) + '\\n' +
-                    'Status: ' + player.status + '\\n' +
-                    'Nationality: ' + (player.nationality || 'N/A') + '\\n' +
-                    'Joined: ' + new Date(player.joinDate).toLocaleDateString()
-                );
-            }
-        }
+        // viewPlayerDetails function is now defined in the modal script section
         
         // Food Order Management Functions
         function initializeFoodOrdering() {
@@ -7414,7 +7679,191 @@ app.get('/', (req, res) => {
                 }
             }
         }
+
+        // Player modal functions
+        let currentPlayerId = null;
+
+        async function viewPlayerDetails(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (!player) return;
+
+            currentPlayerId = playerId;
+
+            // Populate modal with player data
+            document.getElementById('playerModalName').textContent = player.name;
+            document.getElementById('playerModalPosition').textContent = player.position;
+            document.getElementById('modalPlayerName').textContent = player.name;
+            document.getElementById('modalPlayerAge').textContent = player.age + ' years old';
+            document.getElementById('modalPlayerPosition').textContent = player.position;
+            document.getElementById('modalPlayerNationality').textContent = player.nationality || 'Not specified';
+            document.getElementById('modalPlayerHouse').textContent = formatHouseName(player.house);
+            document.getElementById('modalPlayerJoinDate').textContent = new Date(player.joinDate).toLocaleDateString();
+
+            // Update status badge
+            const statusBadge = document.getElementById('modalPlayerStatus');
+            statusBadge.textContent = player.status.charAt(0).toUpperCase() + player.status.slice(1);
+            statusBadge.className = 'status-badge status-' + player.status;
+
+            // Show modal
+            const modal = document.getElementById('playerDetailsModal');
+            modal.classList.add('show');
+        }
+
+        function closePlayerModal() {
+            const modal = document.getElementById('playerDetailsModal');
+            modal.classList.remove('show');
+            currentPlayerId = null;
+        }
+
+        async function changePlayerStatus(newStatus) {
+            if (!currentPlayerId) return;
+
+            try {
+                const response = await fetch('/api/players/' + currentPlayerId + '/status', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update local player data
+                    const player = players.find(p => p.id === currentPlayerId);
+                    if (player) {
+                        player.status = newStatus;
+                    }
+
+                    // Update modal status display
+                    const statusBadge = document.getElementById('modalPlayerStatus');
+                    statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    statusBadge.className = 'status-badge status-' + newStatus;
+
+                    // Refresh player grid and stats
+                    renderPlayersGrid();
+                    updatePlayerOverviewStats();
+                    
+                    // Show success feedback
+                    showNotification('Player status updated successfully!', 'success');
+                } else {
+                    showNotification(data.message || 'Failed to update player status', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating player status:', error);
+                showNotification('Error updating player status', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-' + type;
+            
+            // Set styles programmatically to avoid template literal issues
+            notification.style.position = 'fixed';
+            notification.style.top = '2rem';
+            notification.style.right = '2rem';
+            notification.style.background = type === 'success' ? '#dcfce7' : type === 'error' ? '#fee2e2' : '#e0e7ff';
+            notification.style.color = type === 'success' ? '#166534' : type === 'error' ? '#dc2626' : '#1e40af';
+            notification.style.padding = '1rem 1.5rem';
+            notification.style.borderRadius = '12px';
+            notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            notification.style.zIndex = '2000';
+            notification.style.fontWeight = '600';
+            notification.style.borderLeft = '4px solid ' + (type === 'success' ? '#16a34a' : type === 'error' ? '#dc2626' : '#3b82f6');
+            notification.style.animation = 'slideInRight 0.3s ease';
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add notification animations to style
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = '@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
+        document.head.appendChild(notificationStyles);
+
+        // Close modal when clicking outside
+        document.getElementById('playerDetailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePlayerModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('playerDetailsModal').classList.contains('show')) {
+                closePlayerModal();
+            }
+        });
     </script>
+
+    <!-- Player Details Modal -->
+    <div class="player-modal" id="playerDetailsModal">
+        <div class="player-modal-content">
+            <div class="player-modal-header">
+                <button class="player-modal-close" onclick="closePlayerModal()">&times;</button>
+                <h2 class="player-modal-title" id="playerModalName">Player Name</h2>
+                <p class="player-modal-subtitle" id="playerModalPosition">Position</p>
+            </div>
+            <div class="player-modal-body">
+                <div class="player-details-section">
+                    <h3 class="section-title">👤 Personal Information</h3>
+                    <div class="detail-row">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value" id="modalPlayerName">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Age</div>
+                        <div class="detail-value" id="modalPlayerAge">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Position</div>
+                        <div class="detail-value" id="modalPlayerPosition">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Nationality</div>
+                        <div class="detail-value" id="modalPlayerNationality">-</div>
+                    </div>
+                </div>
+
+                <div class="player-details-section">
+                    <h3 class="section-title">🏠 Housing & Status</h3>
+                    <div class="detail-row">
+                        <div class="detail-label">Assigned House</div>
+                        <div class="detail-value" id="modalPlayerHouse">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Current Status</div>
+                        <div class="detail-value">
+                            <span class="status-badge" id="modalPlayerStatus">Active</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Join Date</div>
+                        <div class="detail-value" id="modalPlayerJoinDate">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-modal-actions">
+                <button class="btn-status-change" onclick="changePlayerStatus('active')">Set Active</button>
+                <button class="btn-status-change" onclick="changePlayerStatus('training')">Set Training</button>
+                <button class="btn-status-change" onclick="changePlayerStatus('rest')">Set Rest</button>
+                <button class="btn-status-change" onclick="changePlayerStatus('injured')">Set Injured</button>
+                <button class="btn-close" onclick="closePlayerModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
     `);
