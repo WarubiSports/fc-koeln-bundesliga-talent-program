@@ -9,6 +9,15 @@ This is a full-stack web application, rebranded as "1.FC Köln Bundesliga Talent
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 2025)
+- **Calendar System with Multi-View Support (August 14, 2025)**: Implemented comprehensive iCalendar system with professional functionality
+  - Daily, weekly, and monthly view options with smooth view switching
+  - Time-based event positioning in day/week views (6 AM - 10 PM time slots)
+  - Color-coded events by type (training: green, matches: red, meetings: blue, facility: purple, medical: orange)
+  - Professional calendar grid with FC Köln red branding and responsive design
+  - Event creation modal with full details (title, type, location, description, date/time)
+  - Event details viewer with formatted information display
+  - Navigation controls that adapt to current view (day/week/month periods)
+  - Mobile-optimized interface with touch-friendly controls
 - **User Management System Complete (August 14, 2025)**: Successfully implemented comprehensive admin-only User Management functionality
   - Admin-only access control with pending applications approval/rejection system
   - Detailed application cards showing email, age, position/department, nationality, and notes

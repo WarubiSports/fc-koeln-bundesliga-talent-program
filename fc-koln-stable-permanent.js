@@ -3221,13 +3221,42 @@ app.get('/', (req, res) => {
             gap: 1rem;
         }
         
-        .calendar-month-year {
+        .calendar-period-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: #333;
             margin: 0;
             min-width: 200px;
             text-align: center;
+        }
+        
+        .calendar-view-switcher {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 4px;
+            gap: 2px;
+        }
+        
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .view-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        
+        .view-btn.active {
+            background: #dc143c;
+            color: white;
         }
         
         .btn-icon {
@@ -3346,6 +3375,81 @@ app.get('/', (req, res) => {
             background: #6b7280;
         }
         
+        /* Day and Week View Styles */
+        .calendar-day-view {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 1px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .calendar-week-view {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .time-slot {
+            background: #f8f9fa;
+            padding: 8px 4px;
+            font-size: 0.7rem;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .day-column {
+            background: white;
+            position: relative;
+            border-right: 1px solid #e5e7eb;
+        }
+        
+        .day-column-header {
+            background: #dc143c;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .time-event {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            background: #dc143c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 5;
+            transition: all 0.2s ease;
+        }
+        
+        .time-event:hover {
+            background: #b91c3c;
+            transform: scale(1.02);
+        }
+        
+        .time-event.training { background: #22c55e; }
+        .time-event.match { background: #dc143c; }
+        .time-event.meeting { background: #3b82f6; }
+        .time-event.facility { background: #8b5cf6; }
+        .time-event.medical { background: #f59e0b; }
+        .time-event.other { background: #6b7280; }
+        
         /* Responsive Calendar */
         @media (max-width: 768px) {
             .calendar-container {
@@ -3355,6 +3459,11 @@ app.get('/', (req, res) => {
             .calendar-header {
                 flex-direction: column;
                 text-align: center;
+                gap: 1rem;
+            }
+            
+            .calendar-view-switcher {
+                order: -1;
             }
             
             .calendar-day {
@@ -3362,8 +3471,17 @@ app.get('/', (req, res) => {
                 font-size: 0.8rem;
             }
             
-            .calendar-month-year {
+            .calendar-period-title {
                 font-size: 1.2rem;
+            }
+            
+            .calendar-week-view {
+                grid-template-columns: 60px repeat(7, 1fr);
+            }
+            
+            .time-slot {
+                font-size: 0.6rem;
+                padding: 4px 2px;
             }
         }
         
@@ -6094,9 +6212,14 @@ app.get('/', (req, res) => {
                 <div class="calendar-container">
                     <div class="calendar-header">
                         <div class="calendar-nav">
-                            <button class="btn btn-icon" id="prevMonth">&larr;</button>
-                            <h2 class="calendar-month-year" id="calendarMonthYear">January 2025</h2>
-                            <button class="btn btn-icon" id="nextMonth">&rarr;</button>
+                            <button class="btn btn-icon" id="prevPeriod">&larr;</button>
+                            <h2 class="calendar-period-title" id="calendarPeriodTitle">January 2025</h2>
+                            <button class="btn btn-icon" id="nextPeriod">&rarr;</button>
+                        </div>
+                        <div class="calendar-view-switcher">
+                            <button class="view-btn" data-view="day">Day</button>
+                            <button class="view-btn active" data-view="week">Week</button>
+                            <button class="view-btn" data-view="month">Month</button>
                         </div>
                         <div class="calendar-actions">
                             <button class="btn btn-primary" id="addEventBtn">+ Add Event</button>
@@ -9214,19 +9337,30 @@ app.get('/', (req, res) => {
         // Calendar functionality
         let currentCalendarDate = new Date();
         let selectedDate = null;
+        let currentView = 'week';
         
         function initializeCalendar() {
             renderCalendar();
             
             // Navigation event listeners
-            document.getElementById('prevMonth').addEventListener('click', () => {
-                currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            document.getElementById('prevPeriod').addEventListener('click', () => {
+                navigatePeriod(-1);
                 renderCalendar();
             });
             
-            document.getElementById('nextMonth').addEventListener('click', () => {
-                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            document.getElementById('nextPeriod').addEventListener('click', () => {
+                navigatePeriod(1);
                 renderCalendar();
+            });
+            
+            // View switcher listeners
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    renderCalendar();
+                });
             });
             
             // Add event modal listeners
@@ -9251,23 +9385,48 @@ app.get('/', (req, res) => {
             loadCalendarEvents();
         }
         
+        function navigatePeriod(direction) {
+            if (currentView === 'day') {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + direction);
+            } else if (currentView === 'week') {
+                currentCalendarDate.setDate(currentCalendarDate.getDate() + (direction * 7));
+            } else if (currentView === 'month') {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            }
+        }
+        
         function renderCalendar() {
-            const monthYear = document.getElementById('calendarMonthYear');
+            const titleElement = document.getElementById('calendarPeriodTitle');
             const grid = document.getElementById('calendarGrid');
             
-            // Update month/year display
+            if (currentView === 'month') {
+                renderMonthView(titleElement, grid);
+            } else if (currentView === 'week') {
+                renderWeekView(titleElement, grid);
+            } else if (currentView === 'day') {
+                renderDayView(titleElement, grid);
+            }
+        }
+        
+        function renderMonthView(titleElement, grid) {
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
-            monthYear.textContent = monthNames[currentCalendarDate.getMonth()] + ' ' + currentCalendarDate.getFullYear();
+            titleElement.textContent = monthNames[currentCalendarDate.getMonth()] + ' ' + currentCalendarDate.getFullYear();
             
-            // Clear existing days (keep headers)
-            const dayHeaders = grid.querySelectorAll('.calendar-day-header');
+            grid.className = 'calendar-grid';
             grid.innerHTML = '';
-            dayHeaders.forEach(header => grid.appendChild(header));
             
-            // Calculate first day of month and number of days
+            // Add day headers
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            // Calculate first day of month
             const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
-            const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
             
@@ -9279,7 +9438,6 @@ app.get('/', (req, res) => {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
                 
-                // Add classes for styling
                 if (dayDate.getMonth() !== currentCalendarDate.getMonth()) {
                     dayElement.classList.add('other-month');
                 }
@@ -9289,17 +9447,14 @@ app.get('/', (req, res) => {
                     dayElement.classList.add('today');
                 }
                 
-                // Day number
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'calendar-day-number';
                 dayNumber.textContent = dayDate.getDate();
                 dayElement.appendChild(dayNumber);
                 
-                // Events container
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'calendar-events';
                 
-                // Add events for this day
                 const dayEvents = calendarEvents.filter(event => {
                     const eventDate = new Date(event.date);
                     return eventDate.toDateString() === dayDate.toDateString();
@@ -9321,13 +9476,189 @@ app.get('/', (req, res) => {
                 
                 dayElement.appendChild(eventsContainer);
                 
-                // Day click handler
                 dayElement.addEventListener('click', () => {
                     selectedDate = dayDate;
                     openAddEventModal(dayDate);
                 });
                 
                 grid.appendChild(dayElement);
+            }
+        }
+        
+        function renderWeekView(titleElement, grid) {
+            const startOfWeek = new Date(currentCalendarDate);
+            startOfWeek.setDate(currentCalendarDate.getDate() - currentCalendarDate.getDay());
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            
+            titleElement.textContent = formatDateRange(startOfWeek, endOfWeek);
+            
+            grid.className = 'calendar-week-view';
+            grid.innerHTML = '';
+            
+            // Time column
+            const timeColumn = document.createElement('div');
+            timeColumn.className = 'time-column';
+            
+            // Empty header for time column
+            const emptyHeader = document.createElement('div');
+            emptyHeader.className = 'day-column-header';
+            emptyHeader.textContent = 'Time';
+            timeColumn.appendChild(emptyHeader);
+            
+            // Time slots (6 AM to 10 PM)
+            for (let hour = 6; hour <= 22; hour++) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.style.height = '40px';
+                timeSlot.textContent = hour + ':00';
+                timeColumn.appendChild(timeSlot);
+            }
+            
+            grid.appendChild(timeColumn);
+            
+            // Day columns
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            for (let i = 0; i < 7; i++) {
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate() + i);
+                
+                const dayColumn = document.createElement('div');
+                dayColumn.className = 'day-column';
+                
+                const header = document.createElement('div');
+                header.className = 'day-column-header';
+                header.textContent = dayNames[i] + ' ' + currentDay.getDate();
+                dayColumn.appendChild(header);
+                
+                // Events for this day
+                const dayEvents = calendarEvents.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate.toDateString() === currentDay.toDateString();
+                });
+                
+                dayEvents.forEach(event => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'time-event ' + event.type;
+                    eventElement.textContent = event.title;
+                    eventElement.dataset.eventId = event.id;
+                    
+                    // Position based on time
+                    const eventTime = event.time.split(':');
+                    const hour = parseInt(eventTime[0]);
+                    const minutes = parseInt(eventTime[1]);
+                    const position = ((hour - 6) * 40) + (minutes / 60 * 40) + 45; // 45px for header
+                    
+                    eventElement.style.top = position + 'px';
+                    eventElement.style.height = '30px';
+                    
+                    eventElement.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showEventDetails(event.id);
+                    });
+                    
+                    dayColumn.appendChild(eventElement);
+                });
+                
+                // Add click handler for adding events
+                dayColumn.addEventListener('click', (e) => {
+                    if (e.target === dayColumn) {
+                        selectedDate = currentDay;
+                        openAddEventModal(currentDay);
+                    }
+                });
+                
+                grid.appendChild(dayColumn);
+            }
+        }
+        
+        function renderDayView(titleElement, grid) {
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            titleElement.textContent = dayNames[currentCalendarDate.getDay()] + ', ' + 
+                monthNames[currentCalendarDate.getMonth()] + ' ' + currentCalendarDate.getDate() + ', ' + 
+                currentCalendarDate.getFullYear();
+            
+            grid.className = 'calendar-day-view';
+            grid.innerHTML = '';
+            
+            // Time column
+            const timeColumn = document.createElement('div');
+            timeColumn.className = 'time-column';
+            
+            const emptyHeader = document.createElement('div');
+            emptyHeader.className = 'day-column-header';
+            emptyHeader.textContent = 'Time';
+            timeColumn.appendChild(emptyHeader);
+            
+            for (let hour = 6; hour <= 22; hour++) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.style.height = '60px';
+                timeSlot.textContent = hour + ':00';
+                timeColumn.appendChild(timeSlot);
+            }
+            
+            grid.appendChild(timeColumn);
+            
+            // Day column
+            const dayColumn = document.createElement('div');
+            dayColumn.className = 'day-column';
+            
+            const header = document.createElement('div');
+            header.className = 'day-column-header';
+            header.textContent = 'Events';
+            dayColumn.appendChild(header);
+            
+            // Events for this day
+            const dayEvents = calendarEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate.toDateString() === currentCalendarDate.toDateString();
+            });
+            
+            dayEvents.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'time-event ' + event.type;
+                eventElement.textContent = event.title + ' - ' + event.time;
+                eventElement.dataset.eventId = event.id;
+                
+                const eventTime = event.time.split(':');
+                const hour = parseInt(eventTime[0]);
+                const minutes = parseInt(eventTime[1]);
+                const position = ((hour - 6) * 60) + (minutes / 60 * 60) + 45;
+                
+                eventElement.style.top = position + 'px';
+                eventElement.style.height = '45px';
+                
+                eventElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showEventDetails(event.id);
+                });
+                
+                dayColumn.appendChild(eventElement);
+            });
+            
+            dayColumn.addEventListener('click', (e) => {
+                if (e.target === dayColumn) {
+                    selectedDate = currentCalendarDate;
+                    openAddEventModal(currentCalendarDate);
+                }
+            });
+            
+            grid.appendChild(dayColumn);
+        }
+        
+        function formatDateRange(start, end) {
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            if (start.getMonth() === end.getMonth()) {
+                return monthNames[start.getMonth()] + ' ' + start.getDate() + '-' + end.getDate() + ', ' + start.getFullYear();
+            } else {
+                return monthNames[start.getMonth()] + ' ' + start.getDate() + ' - ' + 
+                       monthNames[end.getMonth()] + ' ' + end.getDate() + ', ' + start.getFullYear();
             }
         }
         
