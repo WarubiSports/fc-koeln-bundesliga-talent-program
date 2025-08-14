@@ -6279,6 +6279,62 @@ app.get('/', (req, res) => {
                                 <label>Description</label>
                                 <textarea id="eventDescription" class="form-control" rows="3" placeholder="Event details..."></textarea>
                             </div>
+                            
+                            <div class="form-group recurring-section">
+                                <label>
+                                    <input type="checkbox" id="recurringEvent" style="margin-right: 8px;"> Recurring Event
+                                </label>
+                            </div>
+                            
+                            <div id="recurringOptions" class="recurring-options" style="display: none; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-top: 1rem; background: #f8fafc;">
+                                <div class="form-group">
+                                    <label>Repeat Pattern</label>
+                                    <select id="recurringType" class="form-control">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekdays">Monday to Friday</option>
+                                        <option value="custom">Custom Days</option>
+                                        <option value="weekly">Weekly</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="customDaysSection" class="form-group" style="display: none;">
+                                    <label>Select Days</label>
+                                    <div class="days-selector" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="1" style="margin-right: 4px;"> Mon
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="2" style="margin-right: 4px;"> Tue
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="3" style="margin-right: 4px;"> Wed
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="4" style="margin-right: 4px;"> Thu
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="5" style="margin-right: 4px;"> Fri
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="6" style="margin-right: 4px;"> Sat
+                                        </label>
+                                        <label class="day-checkbox" style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                            <input type="checkbox" value="0" style="margin-right: 4px;"> Sun
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>End Date</label>
+                                        <input type="date" id="recurringEndDate" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>OR Max Occurrences</label>
+                                        <input type="number" id="recurringCount" class="form-control" placeholder="e.g. 10" min="1" max="365">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" data-action="close-event">Cancel</button>
@@ -9356,6 +9412,9 @@ app.get('/', (req, res) => {
                 addEventBtn.style.display = 'none';
             }
             
+            // Setup recurring event form interactions
+            setupRecurringEventHandlers();
+            
             // Clear any existing event listeners to prevent duplicates
             const existingPrev = document.getElementById('prevPeriod');
             const existingNext = document.getElementById('nextPeriod');
@@ -9796,12 +9855,30 @@ app.get('/', (req, res) => {
             const typeInput = document.getElementById('eventType');
             const locationInput = document.getElementById('eventLocation');
             const descInput = document.getElementById('eventDescription');
+            const recurringInput = document.getElementById('recurringEvent');
+            const recurringTypeInput = document.getElementById('recurringType');
+            const recurringEndDateInput = document.getElementById('recurringEndDate');
+            const recurringCountInput = document.getElementById('recurringCount');
             
             if (titleInput) titleInput.value = '';
             if (timeInput) timeInput.value = '09:00';
             if (typeInput) typeInput.value = 'training';
             if (locationInput) locationInput.value = '';
             if (descInput) descInput.value = '';
+            if (recurringInput) recurringInput.checked = false;
+            if (recurringTypeInput) recurringTypeInput.value = 'daily';
+            if (recurringEndDateInput) recurringEndDateInput.value = '';
+            if (recurringCountInput) recurringCountInput.value = '';
+            
+            // Hide recurring options and clear custom days
+            const recurringOptions = document.getElementById('recurringOptions');
+            const customDaysSection = document.getElementById('customDaysSection');
+            if (recurringOptions) recurringOptions.style.display = 'none';
+            if (customDaysSection) customDaysSection.style.display = 'none';
+            
+            // Clear custom day checkboxes
+            const dayCheckboxes = document.querySelectorAll('.day-checkbox input[type="checkbox"]');
+            dayCheckboxes.forEach(checkbox => checkbox.checked = false);
             
             console.log('Adding active class to modal');
             modal.classList.add('active');
@@ -9824,6 +9901,54 @@ app.get('/', (req, res) => {
             document.getElementById('eventDetailsModal').classList.remove('active');
         }
         
+        function setupRecurringEventHandlers() {
+            const recurringCheckbox = document.getElementById('recurringEvent');
+            const recurringOptions = document.getElementById('recurringOptions');
+            const recurringType = document.getElementById('recurringType');
+            const customDaysSection = document.getElementById('customDaysSection');
+            
+            if (recurringCheckbox) {
+                recurringCheckbox.addEventListener('change', function() {
+                    if (recurringOptions) {
+                        recurringOptions.style.display = this.checked ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            if (recurringType) {
+                recurringType.addEventListener('change', function() {
+                    if (customDaysSection) {
+                        customDaysSection.style.display = this.value === 'custom' ? 'block' : 'none';
+                    }
+                });
+            }
+            
+            // Add hover effects to day checkboxes
+            const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+            dayCheckboxes.forEach(label => {
+                label.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f3f4f6';
+                    this.style.borderColor = '#dc143c';
+                });
+                label.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'white';
+                    this.style.borderColor = '#d1d5db';
+                });
+                label.addEventListener('click', function() {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) {
+                        this.style.backgroundColor = '#fef2f2';
+                        this.style.borderColor = '#dc143c';
+                        this.style.color = '#dc143c';
+                    } else {
+                        this.style.backgroundColor = 'white';
+                        this.style.borderColor = '#d1d5db';
+                        this.style.color = 'inherit';
+                    }
+                });
+            });
+        }
+
         async function saveCalendarEvent() {
             // Double-check admin access
             if (!currentUser || currentUser.role !== 'admin') {
@@ -9839,11 +9964,124 @@ app.get('/', (req, res) => {
             const type = document.getElementById('eventType').value;
             const location = document.getElementById('eventLocation').value.trim();
             const description = document.getElementById('eventDescription').value.trim();
+            const isRecurring = document.getElementById('recurringEvent').checked;
             
             if (!title || !date || !time) {
                 showNotification('Please fill in all required fields', 'error');
                 return;
             }
+            
+            let events = [];
+            
+            if (isRecurring) {
+                events = generateRecurringEvents(title, date, time, type, location, description);
+                if (events.length === 0) {
+                    showNotification('Please configure recurring options properly', 'error');
+                    return;
+                }
+            } else {
+                // Single event
+                events = [{
+                    id: Date.now().toString(),
+                    title,
+                    date,
+                    time,
+                    type,
+                    location,
+                    description,
+                    createdBy: currentUser.id
+                }];
+            }
+            
+            // Save all events
+            try {
+                for (const event of events) {
+                    calendarEvents.push(event);
+                }
+                
+                showNotification(
+                    isRecurring 
+                        ? 'Created ' + events.length + ' recurring events successfully!' 
+                        : 'Event created successfully!', 
+                    'success'
+                );
+                closeAddEventModal();
+                renderCalendar();
+            } catch (error) {
+                console.error('Error saving events:', error);
+                showNotification('Failed to save events', 'error');
+            }
+        }
+        
+        function generateRecurringEvents(title, startDate, time, type, location, description) {
+            const events = [];
+            const recurringType = document.getElementById('recurringType').value;
+            const endDate = document.getElementById('recurringEndDate').value;
+            const maxCount = parseInt(document.getElementById('recurringCount').value) || null;
+            
+            let currentDate = new Date(startDate);
+            const endDateObj = endDate ? new Date(endDate) : null;
+            let eventCount = 0;
+            const maxEvents = maxCount || 365; // Prevent infinite loops
+            
+            while (eventCount < maxEvents && (!endDateObj || currentDate <= endDateObj)) {
+                let shouldAddEvent = false;
+                
+                switch (recurringType) {
+                    case 'daily':
+                        shouldAddEvent = true;
+                        break;
+                        
+                    case 'weekdays':
+                        const dayOfWeek = currentDate.getDay();
+                        shouldAddEvent = dayOfWeek >= 1 && dayOfWeek <= 5; // Monday to Friday
+                        break;
+                        
+                    case 'weekly':
+                        shouldAddEvent = currentDate.getDay() === new Date(startDate).getDay();
+                        break;
+                        
+                    case 'custom':
+                        const customDays = getSelectedCustomDays();
+                        shouldAddEvent = customDays.includes(currentDate.getDay());
+                        break;
+                }
+                
+                if (shouldAddEvent) {
+                    events.push({
+                        id: Date.now() + '_' + eventCount,
+                        title: title + (events.length > 0 ? ' (' + (eventCount + 1) + ')' : ''),
+                        date: currentDate.toISOString().split('T')[0],
+                        time: time,
+                        type: type,
+                        location: location,
+                        description: description,
+                        createdBy: currentUser.id,
+                        isRecurring: true,
+                        recurringGroup: Date.now().toString()
+                    });
+                    eventCount++;
+                }
+                
+                // Move to next day
+                currentDate.setDate(currentDate.getDate() + 1);
+                
+                // Safety check to prevent infinite loops
+                if (currentDate.getFullYear() > new Date().getFullYear() + 2) {
+                    break;
+                }
+            }
+            
+            return events;
+        }
+        
+        function getSelectedCustomDays() {
+            const selectedDays = [];
+            const dayCheckboxes = document.querySelectorAll('.day-checkbox input[type="checkbox"]:checked');
+            dayCheckboxes.forEach(checkbox => {
+                selectedDays.push(parseInt(checkbox.value));
+            });
+            return selectedDays;
             
             const eventData = {
                 title: title,
