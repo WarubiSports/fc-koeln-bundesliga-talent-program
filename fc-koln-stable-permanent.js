@@ -8450,14 +8450,35 @@ app.get('/', (req, res) => {
                         '</div>' +
                     '</div>' +
                     '<div class="application-actions">' +
-                        '<button class="btn-approve" onclick="approveApplication(\'' + app.id + '\')">Approve</button>' +
-                        '<button class="btn-reject" onclick="rejectApplication(\'' + app.id + '\')">Reject</button>' +
-                        '<button class="btn-view-details" onclick="viewApplicationDetails(\'' + app.id + '\')">View Details</button>' +
+                        '<button class="btn-approve" data-action="approve" data-id="' + app.id + '">Approve</button>' +
+                        '<button class="btn-reject" data-action="reject" data-id="' + app.id + '">Reject</button>' +
+                        '<button class="btn-view-details" data-action="view" data-id="' + app.id + '">View Details</button>' +
                     '</div>' +
                 '</div>'
             ).join('');
 
             container.innerHTML = html;
+
+            // Add event listeners for application actions
+            container.addEventListener('click', function(e) {
+                const action = e.target.dataset.action;
+                const id = e.target.dataset.id;
+                
+                if (action && id) {
+                    e.preventDefault();
+                    switch (action) {
+                        case 'approve':
+                            approveApplication(id);
+                            break;
+                        case 'reject':
+                            rejectApplication(id);
+                            break;
+                        case 'view':
+                            viewApplicationDetails(id);
+                            break;
+                    }
+                }
+            });
         }
 
         async function loadExistingUsers() {
@@ -8487,13 +8508,26 @@ app.get('/', (req, res) => {
                             '<span class="user-role ' + user.role + '">' + user.role + '</span>' +
                         '</div>' +
                         '<div class="user-actions">' +
-                            '<button class="btn-edit-user" onclick="editUser(\'' + user.id + '\')">Edit Profile</button>' +
+                            '<button class="btn-edit-user" data-action="edit" data-id="' + user.id + '">Edit Profile</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>'
             ).join('');
 
             container.innerHTML = html;
+
+            // Add event listeners for user actions
+            container.addEventListener('click', function(e) {
+                const action = e.target.dataset.action;
+                const id = e.target.dataset.id;
+                
+                if (action && id) {
+                    e.preventDefault();
+                    if (action === 'edit') {
+                        editUser(id);
+                    }
+                }
+            });
         }
 
         function updatePendingCount(count) {
