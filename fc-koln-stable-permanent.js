@@ -9437,13 +9437,24 @@ app.get('/', (req, res) => {
         }
         
         function navigatePeriod(direction) {
+            console.log('Navigating period, current date:', currentCalendarDate.toDateString(), 'direction:', direction, 'view:', currentView);
+            
             if (currentView === 'day') {
-                currentCalendarDate.setDate(currentCalendarDate.getDate() + direction);
+                // Create new date to avoid mutation issues
+                const newDate = new Date(currentCalendarDate);
+                newDate.setDate(newDate.getDate() + direction);
+                currentCalendarDate = newDate;
             } else if (currentView === 'week') {
-                currentCalendarDate.setDate(currentCalendarDate.getDate() + (direction * 7));
+                const newDate = new Date(currentCalendarDate);
+                newDate.setDate(newDate.getDate() + (direction * 7));
+                currentCalendarDate = newDate;
             } else if (currentView === 'month') {
-                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+                const newDate = new Date(currentCalendarDate);
+                newDate.setMonth(newDate.getMonth() + direction);
+                currentCalendarDate = newDate;
             }
+            
+            console.log('New date after navigation:', currentCalendarDate.toDateString());
         }
         
         function renderCalendar() {
@@ -9630,6 +9641,8 @@ app.get('/', (req, res) => {
             const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            console.log('Rendering day view for:', currentCalendarDate.toDateString());
             
             titleElement.textContent = dayNames[currentCalendarDate.getDay()] + ', ' + 
                 monthNames[currentCalendarDate.getMonth()] + ' ' + currentCalendarDate.getDate() + ', ' + 
