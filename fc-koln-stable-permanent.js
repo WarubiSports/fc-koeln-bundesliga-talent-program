@@ -9621,6 +9621,7 @@ app.get('/', (req, res) => {
                     eventElement.className = 'calendar-event ' + event.type;
                     eventElement.textContent = event.title;
                     eventElement.dataset.eventId = event.id;
+                    eventElement.style.cursor = 'pointer';
                     
                     eventElement.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -9701,6 +9702,7 @@ app.get('/', (req, res) => {
                     eventElement.className = 'time-event ' + event.type;
                     eventElement.textContent = event.title;
                     eventElement.dataset.eventId = event.id;
+                    eventElement.style.cursor = 'pointer';
                     
                     // Position based on time
                     const eventStartTime = event.startTime ? event.startTime.split(':') : (event.time ? event.time.split(':') : ['09', '00']);
@@ -9787,6 +9789,10 @@ app.get('/', (req, res) => {
                     : (event.time || event.startTime || '');
                 eventElement.textContent = event.title + (timeDisplay ? ' - ' + timeDisplay : '');
                 eventElement.dataset.eventId = event.id;
+                eventElement.style.cursor = 'pointer';
+                eventElement.addEventListener('click', function() {
+                    showEventDetails(event.id);
+                });
                 
                 const eventStartTime = event.startTime ? event.startTime.split(':') : (event.time ? event.time.split(':') : ['09', '00']);
                 const hour = parseInt(eventStartTime[0]);
