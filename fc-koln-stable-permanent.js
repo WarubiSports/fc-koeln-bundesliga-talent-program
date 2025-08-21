@@ -1440,17 +1440,7 @@ app.get('/', (req, res) => {
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.15);
         }
         
-        .card-click-hint {
-            font-size: 0.8rem;
-            color: #6b7280;
-            font-style: italic;
-            text-align: center;
-            display: block;
-        }
-        
-        .player-card:hover .card-click-hint {
-            color: #dc143c;
-        }
+
         
         .player-card-header {
             display: flex;
@@ -6714,8 +6704,6 @@ app.get('/', (req, res) => {
                         '<div class="player-card-detail"><strong>Nationality:</strong> ' + (player.nationality || 'N/A') + '</div>' +
                         '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
-                    '<div class="player-card-actions">' +
-                        '<span class="card-click-hint">Click anywhere to view details</span>' +
                     '</div>' +
                 '</div>';
             });
