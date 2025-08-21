@@ -6256,8 +6256,12 @@ app.get('/', (req, res) => {
                                     <input type="date" id="eventDate" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Time</label>
-                                    <input type="time" id="eventTime" class="form-control" required>
+                                    <label>Start Time</label>
+                                    <input type="time" id="eventStartTime" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>End Time</label>
+                                    <input type="time" id="eventEndTime" class="form-control" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -9699,9 +9703,9 @@ app.get('/', (req, res) => {
                     eventElement.dataset.eventId = event.id;
                     
                     // Position based on time
-                    const eventTime = event.time.split(':');
-                    const hour = parseInt(eventTime[0]);
-                    const minutes = parseInt(eventTime[1]);
+                    const eventStartTime = event.startTime ? event.startTime.split(':') : (event.time ? event.time.split(':') : ['09', '00']);
+                    const hour = parseInt(eventStartTime[0]);
+                    const minutes = parseInt(eventStartTime[1]);
                     const position = ((hour - 6) * 40) + (minutes / 60 * 40) + 45; // 45px for header
                     
                     eventElement.style.top = position + 'px';
@@ -9778,12 +9782,15 @@ app.get('/', (req, res) => {
             dayEvents.forEach(event => {
                 const eventElement = document.createElement('div');
                 eventElement.className = 'time-event ' + event.type;
-                eventElement.textContent = event.title + ' - ' + event.time;
+                const timeDisplay = event.startTime && event.endTime 
+                    ? event.startTime + '-' + event.endTime 
+                    : (event.time || event.startTime || '');
+                eventElement.textContent = event.title + (timeDisplay ? ' - ' + timeDisplay : '');
                 eventElement.dataset.eventId = event.id;
                 
-                const eventTime = event.time.split(':');
-                const hour = parseInt(eventTime[0]);
-                const minutes = parseInt(eventTime[1]);
+                const eventStartTime = event.startTime ? event.startTime.split(':') : (event.time ? event.time.split(':') : ['09', '00']);
+                const hour = parseInt(eventStartTime[0]);
+                const minutes = parseInt(eventStartTime[1]);
                 const position = ((hour - 6) * 60) + (minutes / 60 * 60) + 45;
                 
                 eventElement.style.top = position + 'px';
@@ -9851,7 +9858,8 @@ app.get('/', (req, res) => {
             
             // Clear form
             const titleInput = document.getElementById('eventTitle');
-            const timeInput = document.getElementById('eventTime');
+            const startTimeInput = document.getElementById('eventStartTime');
+            const endTimeInput = document.getElementById('eventEndTime');
             const typeInput = document.getElementById('eventType');
             const locationInput = document.getElementById('eventLocation');
             const descInput = document.getElementById('eventDescription');
@@ -9861,7 +9869,8 @@ app.get('/', (req, res) => {
             const recurringCountInput = document.getElementById('recurringCount');
             
             if (titleInput) titleInput.value = '';
-            if (timeInput) timeInput.value = '09:00';
+            if (startTimeInput) startTimeInput.value = '09:00';
+            if (endTimeInput) endTimeInput.value = '10:00';
             if (typeInput) typeInput.value = 'training';
             if (locationInput) locationInput.value = '';
             if (descInput) descInput.value = '';
@@ -9960,21 +9969,28 @@ app.get('/', (req, res) => {
             
             const title = document.getElementById('eventTitle').value.trim();
             const date = document.getElementById('eventDate').value;
-            const time = document.getElementById('eventTime').value;
+            const startTime = document.getElementById('eventStartTime').value;
+            const endTime = document.getElementById('eventEndTime').value;
             const type = document.getElementById('eventType').value;
             const location = document.getElementById('eventLocation').value.trim();
             const description = document.getElementById('eventDescription').value.trim();
             const isRecurring = document.getElementById('recurringEvent') ? document.getElementById('recurringEvent').checked : false;
             
-            if (!title || !date || !time) {
+            if (!title || !date || !startTime || !endTime) {
                 showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Validate that end time is after start time
+            if (startTime >= endTime) {
+                showNotification('End time must be after start time', 'error');
                 return;
             }
             
             let events = [];
             
             if (isRecurring) {
-                events = generateRecurringEvents(title, date, time, type, location, description);
+                events = generateRecurringEvents(title, date, startTime, endTime, type, location, description);
                 if (events.length === 0) {
                     showNotification('Please configure recurring options properly', 'error');
                     return;
@@ -9985,7 +10001,8 @@ app.get('/', (req, res) => {
                     id: Date.now().toString(),
                     title: title,
                     date: date,
-                    time: time,
+                    startTime: startTime,
+                    endTime: endTime,
                     type: type,
                     location: location,
                     description: description,
@@ -10013,7 +10030,7 @@ app.get('/', (req, res) => {
             }
         }
         
-        function generateRecurringEvents(title, startDate, time, type, location, description) {
+        function generateRecurringEvents(title, startDate, startTime, endTime, type, location, description) {
             const events = [];
             const recurringTypeEl = document.getElementById('recurringType');
             const endDateEl = document.getElementById('recurringEndDate'); 
@@ -10050,7 +10067,8 @@ app.get('/', (req, res) => {
                         id: Date.now() + '_' + eventCount,
                         title: title,
                         date: currentDate.toISOString().split('T')[0],
-                        time: time,
+                        startTime: startTime,
+                        endTime: endTime,
                         type: type,
                         location: location,
                         description: description,
@@ -10117,7 +10135,9 @@ app.get('/', (req, res) => {
                 '<strong>Date:</strong> ' + formattedDate +
             '</div>' +
             '<div class="event-detail-item">' +
-                '<strong>Time:</strong> ' + event.time +
+                '<strong>Time:</strong> ' + (event.startTime && event.endTime 
+                    ? event.startTime + ' - ' + event.endTime 
+                    : (event.time || event.startTime || 'Not specified')) +
             '</div>' +
             '<div class="event-detail-item">' +
                 '<strong>Type:</strong> ' + event.type.charAt(0).toUpperCase() + event.type.slice(1) +
