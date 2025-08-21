@@ -103,7 +103,7 @@ Preferred communication style: Simple, everyday language.
 - **Monorepo Structure**: Clear separation between client, server, and shared type definitions.
 - **Authentication Stability**: A modular architecture with `auth-core.js` for immutable authentication functions, `features-module.js` for isolated feature functions, and `system-monitor.js` for continuous integrity checks and recovery. This includes non-writable, non-configurable function properties and multi-layered integrity verification.
 - **Event Handling Architecture**: Uses data attributes with event delegation instead of inline onclick handlers to prevent JavaScript string escaping issues that can disrupt authentication systems.
-- **Production Build**: Fixed production deployment to use `fc-koln-7300-working.js` instead of `app.js` to ensure deployed app matches development preview exactly (January 2025).
+- **Production Build**: Fixed production deployment to use `fc-koln-stable-permanent.js` instead of `app.js` to ensure deployed app matches development preview exactly (August 2025).
 - **Configuration**: Environment variables for critical settings, separate configurations for development and production, and TypeScript path mapping.
 
 ## Design System & UI Standards (Established August 2025)

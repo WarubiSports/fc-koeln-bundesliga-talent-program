@@ -10,10 +10,10 @@ if (!fs.existsSync('dist')) {
     fs.mkdirSync('dist');
 }
 
-// Copy our working fc-koln-7300-working.js to the expected production location
-fs.copyFileSync('fc-koln-7300-working.js', 'dist/index.js');
+// Copy our working fc-koln-stable-permanent.js to the expected production location
+fs.copyFileSync('fc-koln-stable-permanent.js', 'dist/index.js');
 
-console.log('✅ Copied fc-koln-7300-working.js → dist/index.js');
+console.log('✅ Copied fc-koln-stable-permanent.js → dist/index.js');
 console.log('📋 Production build configured for Replit deployment environment');
 
 // Create the expected production package.json
