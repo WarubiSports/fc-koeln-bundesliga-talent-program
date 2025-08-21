@@ -1,5 +1,7 @@
 // Simple HTTP server using Node.js built-in modules - no dependencies required
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const PORT = process.env.PORT || 80;
 
 const server = http.createServer((req, res) => {
@@ -9,6 +11,19 @@ const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.url === '/' || req.url === '') {
+        // Try to serve static HTML file first
+        try {
+            const htmlPath = path.join(__dirname, 'public', 'index.html');
+            if (fs.existsSync(htmlPath)) {
+                const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.end(htmlContent);
+                return;
+            }
+        } catch (err) {
+            console.log('Static file not found, serving dynamic content');
+        }
+        
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`
             <!DOCTYPE html>
