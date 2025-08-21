@@ -6895,8 +6895,14 @@ app.get('/', (req, res) => {
                 const action = e.target.getAttribute('data-action');
                 
                 if (action === 'view-player') {
+                    console.log('Player view button clicked');
                     const playerId = e.target.getAttribute('data-id');
+                    console.log('Opening player details for ID:', playerId);
                     viewPlayerDetails(playerId);
+                } else if (action === 'change-status') {
+                    const status = e.target.getAttribute('data-status');
+                    console.log('Changing player status to:', status);
+                    changePlayerStatus(status);
                 }
             });
         }
