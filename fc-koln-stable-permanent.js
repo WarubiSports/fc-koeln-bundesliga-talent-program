@@ -8971,11 +8971,27 @@ app.get('/', (req, res) => {
         let currentPlayerId = null;
 
         async function viewPlayerDetails(playerId) {
+            console.log('viewPlayerDetails called with:', playerId);
             const player = players.find(p => p.id === playerId);
-            if (!player) return;
+            if (!player) {
+                console.log('Player not found for ID:', playerId);
+                return;
+            }
 
+            console.log('Found player:', player);
             currentPlayerId = playerId;
 
+            // Ensure modal is closed first
+            const modal = document.getElementById('playerDetailsModal');
+            console.log('Modal element found:', !!modal);
+            if (!modal) {
+                console.error('Player details modal not found in DOM');
+                return;
+            }
+
+            // Force close any existing modal state
+            modal.classList.remove('show');
+            
             // Populate modal with player data
             document.getElementById('playerModalName').textContent = player.name;
             document.getElementById('playerModalPosition').textContent = player.position;
@@ -8991,14 +9007,21 @@ app.get('/', (req, res) => {
             statusBadge.textContent = player.status.charAt(0).toUpperCase() + player.status.slice(1);
             statusBadge.className = 'status-badge status-' + player.status;
 
-            // Show modal
-            const modal = document.getElementById('playerDetailsModal');
-            modal.classList.add('show');
+            // Show modal with slight delay to ensure DOM updates
+            setTimeout(() => {
+                console.log('Adding show class to modal');
+                modal.classList.add('show');
+                console.log('Modal classes:', modal.classList.toString());
+            }, 10);
         }
 
         function closePlayerModal() {
+            console.log('Closing player modal');
             const modal = document.getElementById('playerDetailsModal');
-            modal.classList.remove('show');
+            if (modal) {
+                modal.classList.remove('show');
+                console.log('Modal classes after close:', modal.classList.toString());
+            }
             currentPlayerId = null;
         }
 
