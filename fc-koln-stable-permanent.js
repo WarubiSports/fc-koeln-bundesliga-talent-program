@@ -10120,12 +10120,23 @@ app.get('/', (req, res) => {
         }
         
         function showEventDetails(eventId) {
+            console.log('showEventDetails called with eventId:', eventId);
             const event = calendarEvents.find(e => e.id === eventId);
-            if (!event) return;
+            console.log('Found event:', event);
+            if (!event) {
+                console.log('Event not found!');
+                return;
+            }
             
             const modal = document.getElementById('eventDetailsModal');
             const titleElement = document.getElementById('eventDetailsTitle');
             const bodyElement = document.getElementById('eventDetailsBody');
+            
+            console.log('Modal element:', modal);
+            if (!modal) {
+                console.error('Event details modal not found!');
+                return;
+            }
             
             titleElement.textContent = event.title;
             
@@ -10151,7 +10162,9 @@ app.get('/', (req, res) => {
             (event.location ? '<div class="event-detail-item"><strong>Location:</strong> ' + event.location + '</div>' : '') +
             (event.description ? '<div class="event-detail-item"><strong>Description:</strong> ' + event.description + '</div>' : '');
             
-            modal.classList.add('show');
+            console.log('Adding active class to modal');
+            modal.classList.add('active');
+            console.log('Modal classes:', modal.classList.toString());
         }
         
         async function loadCalendarEvents() {
