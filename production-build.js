@@ -27,7 +27,10 @@ const productionPackage = {
     engines: {
         node: ">=18.0.0"
     },
-    dependencies: {}
+    dependencies: {
+        "express": "^4.21.2",
+        "@sendgrid/mail": "^8.1.5"
+    }
 };
 
 fs.writeFileSync('dist/package.json', JSON.stringify(productionPackage, null, 2));
