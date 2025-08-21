@@ -1440,6 +1440,18 @@ app.get('/', (req, res) => {
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.15);
         }
         
+        .card-click-hint {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-style: italic;
+            text-align: center;
+            display: block;
+        }
+        
+        .player-card:hover .card-click-hint {
+            color: #dc143c;
+        }
+        
         .player-card-header {
             display: flex;
             justify-content: space-between;
@@ -6688,7 +6700,7 @@ app.get('/', (req, res) => {
                 const statusText = player.status.charAt(0).toUpperCase() + player.status.slice(1);
                 const joinDate = new Date(player.joinDate).toLocaleDateString();
                 
-                html += '<div class="player-card">' +
+                html += '<div class="player-card" data-action="view-player" data-id="' + player.id + '" style="cursor: pointer;">' +
                     '<div class="player-card-header">' +
                         '<div>' +
                             '<div class="player-card-name">' + player.name + '</div>' +
@@ -6703,7 +6715,7 @@ app.get('/', (req, res) => {
                         '<div class="player-card-detail"><strong>Joined:</strong> ' + joinDate + '</div>' +
                     '</div>' +
                     '<div class="player-card-actions">' +
-                        '<button class="btn btn-small btn-secondary" data-action="view-player" data-id="' + player.id + '">View Details</button>' +
+                        '<span class="card-click-hint">Click anywhere to view details</span>' +
                     '</div>' +
                 '</div>';
             });
