@@ -7723,9 +7723,87 @@ app.get('/', (req, res) => {
         // Communications System Functions
         function initializeCommunications() {
             conversations = JSON.parse(localStorage.getItem('fckoln_conversations') || '[]');
+            
+            // Create default conversations if none exist
+            if (conversations.length === 0) {
+                createDefaultConversations();
+            }
+            
             scheduleDailyCleanup();
             loadChatList();
             initializeCommunicationEvents();
+        }
+
+        function createDefaultConversations() {
+            const now = new Date().toISOString();
+            
+            // Create house group chats
+            const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
+            
+            houses.forEach((house, index) => {
+                const housePlayersIds = players.filter(p => p.house === house).map(p => p.id);
+                
+                if (housePlayersIds.length > 0) {
+                    const houseConvo = {
+                        id: 'house_' + (index + 1),
+                        type: 'group',
+                        name: house + ' House Chat',
+                        participants: [currentUser.id, ...housePlayersIds],
+                        messages: [
+                            {
+                                id: 'welcome_' + (index + 1),
+                                senderId: 'system',
+                                senderName: 'FC Köln Staff',
+                                text: 'Welcome to the ' + house + ' house chat! Use this space to coordinate with your housemates about chores, meals, and daily activities.',
+                                timestamp: now
+                            }
+                        ],
+                        lastActivity: now
+                    };
+                    conversations.push(houseConvo);
+                }
+            });
+
+            // Create general team chat
+            const allPlayerIds = players.map(p => p.id);
+            const teamConvo = {
+                id: 'team_general',
+                type: 'group',
+                name: 'FC Köln Team Chat',
+                participants: [currentUser.id, ...allPlayerIds],
+                messages: [
+                    {
+                        id: 'team_welcome',
+                        senderId: 'system',
+                        senderName: 'FC Köln Staff',
+                        text: 'Welcome to the official FC Köln Bundesliga Talent Program team chat! This is for important announcements, team updates, and general communication.',
+                        timestamp: now
+                    }
+                ],
+                lastActivity: now
+            };
+            conversations.push(teamConvo);
+
+            // Create staff announcements channel
+            const staffConvo = {
+                id: 'staff_announcements',
+                type: 'group',
+                name: 'Staff Announcements',
+                participants: [currentUser.id],
+                messages: [
+                    {
+                        id: 'staff_welcome',
+                        senderId: 'system',
+                        senderName: 'FC Köln Management',
+                        text: 'This channel is for official staff announcements, policy updates, and important program information.',
+                        timestamp: now
+                    }
+                ],
+                lastActivity: now
+            };
+            conversations.push(staffConvo);
+            
+            saveConversations();
         }
 
         function cleanupOldMessages() {
