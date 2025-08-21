@@ -6206,7 +6206,6 @@ app.get('/', (req, res) => {
             <div class="page" id="calendar">
                 <div class="page-header">
                     <h1 class="page-title">Calendar</h1>
-                    <p class="page-subtitle">Training sessions, matches, and facility bookings</p>
                 </div>
                 
                 <div class="calendar-container">
