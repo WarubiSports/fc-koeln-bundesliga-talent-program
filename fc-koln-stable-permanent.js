@@ -10048,7 +10048,7 @@ app.get('/', (req, res) => {
                 if (shouldAddEvent) {
                     events.push({
                         id: Date.now() + '_' + eventCount,
-                        title: title + (eventCount > 0 ? ' (' + (eventCount + 1) + ')' : ''),
+                        title: title,
                         date: currentDate.toISOString().split('T')[0],
                         time: time,
                         type: type,
