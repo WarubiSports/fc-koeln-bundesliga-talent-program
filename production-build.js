@@ -10,10 +10,10 @@ if (!fs.existsSync('dist')) {
     fs.mkdirSync('dist');
 }
 
-// Copy our working fc-koln-stable-permanent.js to the expected production location
-fs.copyFileSync('fc-koln-stable-permanent.js', 'dist/index.js');
+// Copy minimal working app for deployment
+fs.copyFileSync('dist/minimal-app.js', 'dist/index.js');
 
-console.log('✅ Copied fc-koln-stable-permanent.js → dist/index.js');
+console.log('✅ Copied minimal-app.js → dist/index.js (deployment-safe version)');
 console.log('📋 Production build configured for Replit deployment environment');
 
 // Create the expected production package.json
@@ -28,8 +28,7 @@ const productionPackage = {
         node: ">=18.0.0"
     },
     dependencies: {
-        "express": "^4.21.2",
-        "@sendgrid/mail": "^8.1.5"
+        "express": "^4.21.2"
     }
 };
 
