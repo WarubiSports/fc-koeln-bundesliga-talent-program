@@ -6009,11 +6009,7 @@ app.get('/', (req, res) => {
                         <div class="analytics-label">On-Time Rate</div>
                         <div class="analytics-trend">+5% from last week</div>
                     </div>
-                    <div class="analytics-card">
-                        <div class="analytics-icon">⏱️</div>
-                        <div class="analytics-number">45min</div>
-                        <div class="analytics-label">Average Time per Chore</div>
-                    </div>
+
                     <div class="analytics-card">
                         <div class="analytics-icon">🏆</div>
                         <div class="analytics-number">342</div>
