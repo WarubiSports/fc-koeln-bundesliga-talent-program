@@ -1,20 +1,18 @@
-// Development server redirect to working implementation
-const { spawn } = require('child_process');
+import express from "express";
 
-console.log('🔄 Starting STABLE PERMANENT FC Köln Management System...');
+const app = express();
+const port = process.env.PORT || 3000;
 
-// Start the stable permanent system with all features and no recurring errors
-const serverProcess = spawn('node', ['fc-koln-stable-permanent.js'], {
-    stdio: 'inherit',
-    env: { ...process.env, PORT: '5000' }
+// Example route
+app.get("/", (_req, res) => {
+  res.send("Server is up ✅");
 });
 
-serverProcess.on('error', (err) => {
-    console.error('❌ Server error:', err);
+// Health check route (optional, good for monitoring)
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
 });
 
-process.on('SIGINT', () => {
-    console.log('\n🛑 Shutting down server...');
-    serverProcess.kill('SIGTERM');
-    process.exit(0);
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
 });
