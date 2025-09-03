@@ -49,6 +49,7 @@
     "react-dom": "^18.3.1",
     "tailwind-variants": "^0.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.20.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
     "zod-validation-error": "^3.4.0"
