@@ -6,6 +6,8 @@
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "types": ["node"],
     "skipLibCheck": true
   },
   "include": ["server/**/*.ts"]

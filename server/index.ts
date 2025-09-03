@@ -1,21 +1,23 @@
-import express from 'express'
-import path from 'path'
+import express, { Request, Response } from 'express';
+import path from 'path';
 
-const app = express()
-const port = process.env.PORT || 5000
+const app = express();
+const port = process.env.PORT || 3000;
 
-// health check
-app.get('/health', (_req, res) => res.json({ status: 'ok' }))
+// health
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'ok' });
+});
 
-// Serve the built client (note the path from dist/ to client/client-dist/)
-const clientDist = path.resolve(__dirname, '../client/client-dist')
-app.use(express.static(clientDist))
+// serve built client (from dist/ to client-dist/)
+const clientDist = path.resolve(__dirname, '../client-dist');
+app.use(express.static(clientDist));
 
-// SPA fallback: send index.html for any unknown route
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(clientDist, 'index.html'))
-})
+// SPA fallback
+app.get('*', (_req: Request, res: Response) => {
+  res.sendFile(path.join(clientDist, 'index.html'));
+});
 
 app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`)
-})
+  console.log(`🚀 Server running on port ${port}`);
+});
