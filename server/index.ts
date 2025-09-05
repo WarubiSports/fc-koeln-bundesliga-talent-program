@@ -1,39 +1,26 @@
-import express, { Request, Response, NextFunction } from "express";
-import path from "path";
-import fs from "fs";
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Health check
-app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok" });
-});
+// health check
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Serve the built client (static files)
-const clientDist = path.resolve(__dirname, "../client-dist");
-console.log("[startup] Serving client from:", clientDist);
+// serve built client
+const clientDist = path.resolve(__dirname, '../client-dist');
 app.use(express.static(clientDist));
 
-// SPA fallback (Express 5 safe)
-app.get(/.*/, (_req: Request, res: Response, next: NextFunction) => {
-  const indexFile = path.join(clientDist, "index.html");
-  if (fs.existsSync(indexFile)) {
-    return res.sendFile(indexFile);
-  }
-  next(new Error(`index.html not found at ${indexFile}`));
+// SPA fallback
+app.get('/*', (_req, res) => {
+  res.sendFile(path.join(clientDist, 'index.html'));
 });
 
-// Global error handler
-app.use(
-  (err: any, _req: Request, res: Response, _next: NextFunction) => {
-    console.error("🔥 SERVER ERROR:", err?.stack || err);
-    res
-      .status(500)
-      .send("Internal Server Error: " + (err.message || "Unknown error"));
-  }
-);
-
 app.listen(port, () => {
+  console.log(`[startup] Serving client from: ${clientDist}`);
   console.log(`🚀 Server running on port ${port}`);
 });
