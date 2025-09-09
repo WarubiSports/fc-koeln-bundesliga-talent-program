@@ -298,6 +298,51 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         
+        // Serve FC Köln logo - CRITICAL for branding
+        if (pathname === '/api/logo') {
+            try {
+                console.log("Logo request received");
+                
+                // Check if attached_assets directory exists (deployment safety)
+                if (!fs.existsSync("attached_assets/")) {
+                    console.log("attached_assets directory not found (deployment environment)");
+                    sendResponse(res, 404, "Logo not available in deployment");
+                    return;
+                }
+
+                // Search for the FC Köln file using directory listing
+                const files = fs.readdirSync("attached_assets/");
+                const fcKolnFile = files.find(
+                    (file) =>
+                        file.includes("1.FC") &&
+                        file.includes("Football School") &&
+                        file.endsWith(".png"),
+                );
+
+                if (fcKolnFile) {
+                    console.log("Found FC Köln file:", fcKolnFile);
+                    const fullPath = path.join("attached_assets", fcKolnFile);
+                    console.log("Reading file from:", fullPath);
+
+                    const logoData = fs.readFileSync(fullPath);
+                    console.log("Successfully read file, size:", logoData.length);
+
+                    res.setHeader("Content-Type", "image/png");
+                    res.setHeader("Cache-Control", "public, max-age=86400");
+                    res.end(logoData);
+                    return;
+                }
+
+                console.log("No FC Köln file found");
+                sendResponse(res, 404, "Logo not found");
+            } catch (error) {
+                console.error("Logo error:", error);
+                // Don't crash the app - just return 404 instead of 500
+                sendResponse(res, 404, "Logo not available");
+            }
+            return;
+        }
+
         // Serve attached assets
         if (pathname.startsWith('/attached_assets/')) {
             const filePath = path.join('.', pathname);
@@ -364,6 +409,44 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         
+        // Password reset endpoints - MISSING functionality
+        if (pathname === '/auth/forgot-password' && method === 'POST') {
+            const { email } = body;
+            const user = users.find((u) => u.email === email);
+
+            if (!user) {
+                sendResponse(res, 404, { success: false, message: "Email not found" });
+                return;
+            }
+
+            // In deployment, we'll just simulate the reset for now
+            console.log(`Password reset requested for: ${email}`);
+            sendResponse(res, 200, {
+                success: true,
+                message: "Password reset instructions sent to your email (simulated in deployment)"
+            });
+            return;
+        }
+        
+        if (pathname === '/auth/reset-password' && method === 'POST') {
+            const { email, newPassword } = body;
+            const user = users.find((u) => u.email === email);
+
+            if (!user) {
+                sendResponse(res, 404, { success: false, message: "User not found" });
+                return;
+            }
+
+            // Update password
+            user.password = newPassword;
+            console.log(`Password successfully reset for: ${user.email}`);
+            sendResponse(res, 200, {
+                success: true,
+                message: "Password has been reset successfully"
+            });
+            return;
+        }
+        
         // Player management endpoints
         if (pathname === '/api/players' && method === 'GET') {
             sendResponse(res, 200, players);
@@ -409,6 +492,79 @@ const server = http.createServer(async (req, res) => {
         // Application management endpoints
         if (pathname === '/api/applications' && method === 'GET') {
             sendResponse(res, 200, pendingApplications);
+            return;
+        }
+        
+        if (pathname.startsWith('/api/applications/') && pathname.endsWith('/approve') && method === 'POST') {
+            const id = pathname.split('/')[3];
+            const application = pendingApplications.find((app) => app.id === id);
+
+            if (!application) {
+                sendResponse(res, 404, { success: false, message: "Application not found" });
+                return;
+            }
+
+            if (application.status !== "pending") {
+                sendResponse(res, 400, { success: false, message: "Application already processed" });
+                return;
+            }
+
+            // Approve the application
+            application.status = "approved";
+            application.approvedAt = new Date().toISOString();
+
+            // Create user account based on application type
+            if (application.type === "player") {
+                // Add as player
+                const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
+                const assignedHouse = houses[Math.floor(Math.random() * houses.length)];
+                const newPlayer = {
+                    id: "p" + Date.now(),
+                    name: application.name,
+                    age: application.age,
+                    position: application.position,
+                    nationality: application.nationality,
+                    house: assignedHouse,
+                    status: "active",
+                    joinDate: new Date().toISOString(),
+                };
+                players.push(newPlayer);
+            } else if (application.type === "staff") {
+                // Add as staff user
+                const newUser = {
+                    id: "staff" + Date.now(),
+                    name: application.name,
+                    email: application.email,
+                    role: "staff",
+                    department: application.department,
+                    password: "TempPass123",
+                };
+                users.push(newUser);
+            }
+
+            sendResponse(res, 200, { success: true, message: "Application approved successfully", application });
+            return;
+        }
+        
+        if (pathname.startsWith('/api/applications/') && pathname.endsWith('/reject') && method === 'POST') {
+            const id = pathname.split('/')[3];
+            const application = pendingApplications.find((app) => app.id === id);
+
+            if (!application) {
+                sendResponse(res, 404, { success: false, message: "Application not found" });
+                return;
+            }
+
+            if (application.status !== "pending") {
+                sendResponse(res, 400, { success: false, message: "Application already processed" });
+                return;
+            }
+
+            // Reject the application
+            application.status = "rejected";
+            application.rejectedAt = new Date().toISOString();
+
+            sendResponse(res, 200, { success: true, message: "Application rejected successfully", application });
             return;
         }
         
