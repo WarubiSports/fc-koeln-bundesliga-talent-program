@@ -971,13 +971,19 @@ app.post("/api/messages", (req, res) => {
     res.json({ success: true, message });
 });
 
-// Serve the FC Köln logo
+// Serve the FC Köln logo (deployment-safe)
 app.get("/api/logo", (req, res) => {
     const fs = require("fs");
     const path = require("path");
 
     try {
         console.log("Logo request received");
+
+        // Check if attached_assets directory exists (deployment safety)
+        if (!fs.existsSync("attached_assets/")) {
+            console.log("attached_assets directory not found (deployment environment)");
+            return res.status(404).send("Logo not available in deployment");
+        }
 
         // Search for the FC Köln file using directory listing
         const files = fs.readdirSync("attached_assets/");
@@ -1006,7 +1012,8 @@ app.get("/api/logo", (req, res) => {
         res.status(404).send("Logo not found");
     } catch (error) {
         console.error("Logo error:", error);
-        res.status(500).send("Error loading logo: " + error.message);
+        // Don't crash the app - just return 404 instead of 500
+        res.status(404).send("Logo not available");
     }
 });
 
