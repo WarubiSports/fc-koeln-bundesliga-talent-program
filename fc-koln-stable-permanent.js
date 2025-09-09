@@ -11,6 +11,7 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 // Middleware
+app.use(express.json()); // Parse JSON request bodies
 app.use("/attached_assets", express.static("attached_assets"));
 
 // In-memory storage (replace with database in production)
