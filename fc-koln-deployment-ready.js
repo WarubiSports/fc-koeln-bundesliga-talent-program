@@ -594,13 +594,64 @@ const server = http.createServer(async (req, res) => {
         
         // User management endpoints
         if (pathname === '/api/users' && method === 'GET') {
-            const safeUsers = users.map(u => ({
-                id: u.id,
-                email: u.email,
-                name: u.name,
-                role: u.role
-            }));
-            sendResponse(res, 200, safeUsers);
+            // Combine actual users with players as user objects
+            const allUsers = [
+                ...users.map((user) => ({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                })),
+                ...players.map((player) => ({
+                    id: player.id,
+                    name: player.name,
+                    email: player.email || player.name.toLowerCase().replace(" ", ".") + "@player.com",
+                    role: "player",
+                })),
+            ];
+            sendResponse(res, 200, { success: true, users: allUsers });
+            return;
+        }
+        
+        // User update endpoint - MISSING from deployment
+        if (pathname.startsWith('/api/users/') && method === 'PATCH') {
+            const userId = pathname.split('/')[3];
+            const updates = body;
+            
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                // Update user fields
+                Object.keys(updates).forEach(key => {
+                    if (key !== 'id' && updates[key] !== undefined) {
+                        user[key] = updates[key];
+                    }
+                });
+                
+                const userResponse = {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role
+                };
+                
+                sendResponse(res, 200, { success: true, message: 'User updated successfully', user: userResponse });
+                return;
+            }
+            
+            // Also check players
+            const player = players.find(p => p.id === userId);
+            if (player) {
+                Object.keys(updates).forEach(key => {
+                    if (key !== 'id' && updates[key] !== undefined) {
+                        player[key] = updates[key];
+                    }
+                });
+                
+                sendResponse(res, 200, { success: true, message: 'Player updated successfully', user: player });
+                return;
+            }
+            
+            sendResponse(res, 404, { success: false, message: 'User not found' });
             return;
         }
         
@@ -632,6 +683,63 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         
+        // Chore management endpoints - MISSING from deployment
+        if (pathname.startsWith('/api/chores/') && pathname.endsWith('/complete') && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (!chore) {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+                return;
+            }
+            
+            if (chore.completed) {
+                sendResponse(res, 400, { success: false, message: 'Chore already completed' });
+                return;
+            }
+            
+            chore.completed = true;
+            chore.completedAt = new Date().toISOString();
+            chore.completedBy = body.completedBy || 'Unknown';
+            chore.status = 'completed';
+            
+            sendResponse(res, 200, { success: true, message: 'Chore marked as completed', chore });
+            return;
+        }
+        
+        if (pathname.startsWith('/api/chores/') && pathname.endsWith('/assign') && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const { assignedTo } = body;
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (!chore) {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+                return;
+            }
+            
+            chore.assignedTo = assignedTo;
+            chore.status = 'assigned';
+            
+            sendResponse(res, 200, { success: true, message: 'Chore assigned successfully', chore });
+            return;
+        }
+        
+        if (pathname.startsWith('/api/chores/') && pathname.endsWith('/archive') && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (!chore) {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+                return;
+            }
+            
+            chore.archived = true;
+            chore.archivedAt = new Date().toISOString();
+            
+            sendResponse(res, 200, { success: true, message: 'Chore archived successfully', chore });
+            return;
+        }
+        
         // Calendar endpoints
         if (pathname === '/api/calendar' && method === 'GET') {
             sendResponse(res, 200, calendarEvents);
@@ -646,6 +754,42 @@ const server = http.createServer(async (req, res) => {
             };
             calendarEvents.push(newEvent);
             sendResponse(res, 201, newEvent);
+            return;
+        }
+        
+        // Calendar event management - MISSING from deployment
+        if (pathname.startsWith('/api/calendar/') && method === 'PUT') {
+            const eventId = pathname.split('/')[3];
+            const event = calendarEvents.find(e => e.id === eventId);
+            
+            if (!event) {
+                sendResponse(res, 404, { success: false, message: 'Event not found' });
+                return;
+            }
+            
+            // Update event fields
+            Object.keys(body).forEach(key => {
+                if (key !== 'id' && body[key] !== undefined) {
+                    event[key] = body[key];
+                }
+            });
+            event.updatedAt = new Date().toISOString();
+            
+            sendResponse(res, 200, { success: true, message: 'Event updated successfully', event });
+            return;
+        }
+        
+        if (pathname.startsWith('/api/calendar/') && method === 'DELETE') {
+            const eventId = pathname.split('/')[3];
+            const index = calendarEvents.findIndex(e => e.id === eventId);
+            
+            if (index === -1) {
+                sendResponse(res, 404, { success: false, message: 'Event not found' });
+                return;
+            }
+            
+            calendarEvents.splice(index, 1);
+            sendResponse(res, 200, { success: true, message: 'Event deleted successfully' });
             return;
         }
         
