@@ -1,9 +1,9 @@
-const express = require('express');
-const path = require('path');
-const sgMail = require('@sendgrid/mail');
-const crypto = require('crypto');
+const express = require("express");
+const path = require("path");
+const sgMail = require("@sendgrid/mail");
+const crypto = require("crypto");
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 // Configure SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -11,27 +11,24 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('.'));
-app.use('/attached_assets', express.static('attached_assets'));
+app.use("/attached_assets", express.static("attached_assets"));
 
 // In-memory storage (replace with database in production)
 const users = [
     {
-        id: 'admin1',
-        email: 'max.bisinger@warubi-sports.com',
-        password: 'ITP2024',
-        name: 'Max Bisinger',
-        role: 'admin'
+        id: "admin1",
+        email: "max.bisinger@warubi-sports.com",
+        password: "ITP2024",
+        name: "Max Bisinger",
+        role: "admin",
     },
     {
-        id: 'staff1', 
-        email: 'thomas.ellinger@warubi-sports.com',
-        password: 'ITP2024',
-        name: 'Thomas Ellinger',
-        role: 'staff'
-    }
+        id: "staff1",
+        email: "thomas.ellinger@warubi-sports.com",
+        password: "ITP2024",
+        name: "Thomas Ellinger",
+        role: "staff",
+    },
 ];
 
 // Password reset tokens storage
@@ -39,123 +36,160 @@ const passwordResetTokens = new Map();
 
 // Data storage
 let players = [
-    { id: 'p1', name: 'Max Finkgräfe', age: 19, position: 'STRIKER', house: 'Widdersdorf 1', status: 'active', joinDate: new Date().toISOString() },
-    { id: 'p2', name: 'Tim Lemperle', age: 20, position: 'WINGER', house: 'Widdersdorf 3', status: 'active', joinDate: new Date().toISOString() },
-    { id: 'p3', name: 'Linton Maina', age: 21, position: 'WINGER', house: 'Widdersdorf 2', status: 'training', joinDate: new Date().toISOString() },
-    { id: 'p4', name: 'Florian Kainz', age: 22, position: 'MIDFIELDER', house: 'Widdersdorf 1', status: 'rest', joinDate: new Date().toISOString() }
+    {
+        id: "p1",
+        name: "Max Finkgräfe",
+        age: 19,
+        position: "STRIKER",
+        house: "Widdersdorf 1",
+        status: "active",
+        joinDate: new Date().toISOString(),
+    },
+    {
+        id: "p2",
+        name: "Tim Lemperle",
+        age: 20,
+        position: "WINGER",
+        house: "Widdersdorf 3",
+        status: "active",
+        joinDate: new Date().toISOString(),
+    },
+    {
+        id: "p3",
+        name: "Linton Maina",
+        age: 21,
+        position: "WINGER",
+        house: "Widdersdorf 2",
+        status: "training",
+        joinDate: new Date().toISOString(),
+    },
+    {
+        id: "p4",
+        name: "Florian Kainz",
+        age: 22,
+        position: "MIDFIELDER",
+        house: "Widdersdorf 1",
+        status: "rest",
+        joinDate: new Date().toISOString(),
+    },
 ];
 
 // Pending applications storage
 let pendingApplications = [
     {
-        id: 'app1',
-        name: 'Dennis Huseinbasic',
-        email: 'dennis.huseinbasic@example.com',
+        id: "app1",
+        name: "Dennis Huseinbasic",
+        email: "dennis.huseinbasic@example.com",
         age: 20,
-        position: 'MIDFIELDER',
-        nationality: 'Germany',
-        type: 'player',
-        applicationDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-        status: 'pending',
-        notes: 'Strong technical skills, previous experience with youth teams',
-        documents: ['medical_clearance.pdf', 'performance_stats.pdf']
+        position: "MIDFIELDER",
+        nationality: "Germany",
+        type: "player",
+        applicationDate: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000,
+        ).toISOString(), // 2 days ago
+        status: "pending",
+        notes: "Strong technical skills, previous experience with youth teams",
+        documents: ["medical_clearance.pdf", "performance_stats.pdf"],
     },
     {
-        id: 'app2',
-        name: 'Sarah Mueller',
-        email: 'sarah.mueller@warubi-sports.com',
+        id: "app2",
+        name: "Sarah Mueller",
+        email: "sarah.mueller@warubi-sports.com",
         age: 28,
-        department: 'Coaching',
-        type: 'staff',
-        applicationDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-        status: 'pending',
-        notes: 'UEFA B License, 5 years youth coaching experience',
-        documents: ['coaching_certificate.pdf', 'references.pdf']
+        department: "Coaching",
+        type: "staff",
+        applicationDate: new Date(
+            Date.now() - 1 * 24 * 60 * 60 * 1000,
+        ).toISOString(), // 1 day ago
+        status: "pending",
+        notes: "UEFA B License, 5 years youth coaching experience",
+        documents: ["coaching_certificate.pdf", "references.pdf"],
     },
     {
-        id: 'app3',
-        name: 'Marco Reus Jr.',
-        email: 'marco.reus.jr@example.com',
+        id: "app3",
+        name: "Marco Reus Jr.",
+        email: "marco.reus.jr@example.com",
         age: 18,
-        position: 'WINGER',
-        nationality: 'Germany',
-        type: 'player',
+        position: "WINGER",
+        nationality: "Germany",
+        type: "player",
         applicationDate: new Date().toISOString(),
-        status: 'pending',
-        notes: 'Promising young talent from local academy',
-        documents: ['medical_clearance.pdf']
-    }
+        status: "pending",
+        notes: "Promising young talent from local academy",
+        documents: ["medical_clearance.pdf"],
+    },
 ];
 
 let choreStorage = [
     {
-        id: 'ch1',
-        title: 'Kitchen Deep Clean',
-        priority: 'high',
-        house: 'Widdersdorf 1',
-        type: 'cleaning',
-        deadline: '2025-08-08T14:00:00',
+        id: "ch1",
+        title: "Kitchen Deep Clean",
+        priority: "high",
+        house: "Widdersdorf 1",
+        type: "cleaning",
+        deadline: "2025-08-08T14:00:00",
         points: 25,
-        description: 'Deep clean kitchen including appliances, counters, and floors',
-        assignedTo: 'p1', // Max Finkgräfe
+        description:
+            "Deep clean kitchen including appliances, counters, and floors",
+        assignedTo: "p1", // Max Finkgräfe
         completed: false,
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending',
-        archived: false
+        status: "pending",
+        archived: false,
     },
     {
-        id: 'ch2',
-        title: 'Garden Maintenance',
-        priority: 'medium',
-        house: 'Widdersdorf 2',
-        type: 'maintenance',
-        deadline: '2025-08-09T16:00:00',
+        id: "ch2",
+        title: "Garden Maintenance",
+        priority: "medium",
+        house: "Widdersdorf 2",
+        type: "maintenance",
+        deadline: "2025-08-09T16:00:00",
         points: 15,
-        description: 'Trim hedges and water plants in front garden',
-        assignedTo: 'p3', // Linton Maina
+        description: "Trim hedges and water plants in front garden",
+        assignedTo: "p3", // Linton Maina
         completed: false,
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending',
-        archived: false
+        status: "pending",
+        archived: false,
     },
     {
-        id: 'ch3',
-        title: 'Common Room Organization',
-        priority: 'low',
-        house: 'Widdersdorf 3',
-        type: 'organization',
-        deadline: '2025-08-10T18:00:00',
+        id: "ch3",
+        title: "Common Room Organization",
+        priority: "low",
+        house: "Widdersdorf 3",
+        type: "organization",
+        deadline: "2025-08-10T18:00:00",
         points: 10,
-        description: 'Organize books, games, and furniture in the common room',
-        assignedTo: 'p2', // Tim Lemperle
+        description: "Organize books, games, and furniture in the common room",
+        assignedTo: "p2", // Tim Lemperle
         completed: false,
         completedBy: null,
         completedAt: null,
         createdDate: new Date().toISOString(),
-        status: 'pending',
-        archived: false
+        status: "pending",
+        archived: false,
     },
     {
-        id: 'ch4',
-        title: 'Laundry Room Clean',
-        priority: 'medium',
-        house: 'Widdersdorf 1',
-        type: 'cleaning',
-        deadline: '2025-08-11T12:00:00',
+        id: "ch4",
+        title: "Laundry Room Clean",
+        priority: "medium",
+        house: "Widdersdorf 1",
+        type: "cleaning",
+        deadline: "2025-08-11T12:00:00",
         points: 20,
-        description: 'Clean washing machines, dryers, and organize supplies',
-        assignedTo: 'p4', // Florian Kainz
+        description: "Clean washing machines, dryers, and organize supplies",
+        assignedTo: "p4", // Florian Kainz
         completed: true,
-        completedBy: 'p4',
-        completedAt: '2025-08-07T10:30:00',
+        completedBy: "p4",
+        completedAt: "2025-08-07T10:30:00",
         createdDate: new Date().toISOString(),
-        status: 'completed',
-        archived: false
-    }
+        status: "completed",
+        archived: false,
+    },
 ];
 
 let archivedChores = [];
@@ -164,79 +198,88 @@ let foodOrders = [];
 let messages = [];
 
 // Authentication endpoints
-app.post('/auth/login', (req, res) => {
+app.post("/auth/login", (req, res) => {
     const { email, password } = req.body;
-    const user = users.find(u => u.email === email && u.password === password);
-    
+    const user = users.find(
+        (u) => u.email === email && u.password === password,
+    );
+
     if (user) {
         const userResponse = {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role
+            role: user.role,
         };
         res.json({ success: true, user: userResponse });
     } else {
-        res.status(401).json({ success: false, message: 'Invalid credentials' });
+        res.status(401).json({
+            success: false,
+            message: "Invalid credentials",
+        });
     }
 });
 
-app.post('/auth/register', (req, res) => {
+app.post("/auth/register", (req, res) => {
     const { email, password, name, role } = req.body;
-    
-    if (users.find(u => u.email === email)) {
-        return res.status(400).json({ success: false, message: 'User already exists' });
+
+    if (users.find((u) => u.email === email)) {
+        return res
+            .status(400)
+            .json({ success: false, message: "User already exists" });
     }
-    
+
     const newUser = {
         id: `user_${Date.now()}`,
         email,
         password,
         name,
-        role: role || 'player'
+        role: role || "player",
     };
-    
+
     users.push(newUser);
-    
+
     const userResponse = {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
-        role: newUser.role
+        role: newUser.role,
     };
-    
+
     res.json({ success: true, user: userResponse });
 });
 
-app.post('/auth/forgot-password', async (req, res) => {
+app.post("/auth/forgot-password", async (req, res) => {
     const { email } = req.body;
-    const user = users.find(u => u.email === email);
-    
+    const user = users.find((u) => u.email === email);
+
     if (!user) {
-        return res.status(404).json({ success: false, message: 'Email not found' });
+        return res
+            .status(404)
+            .json({ success: false, message: "Email not found" });
     }
-    
+
     // Generate secure reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const tokenExpiry = Date.now() + 3600000; // 1 hour from now
-    
+
     // Store token
     passwordResetTokens.set(resetToken, {
         userId: user.id,
         email: user.email,
-        expires: tokenExpiry
+        expires: tokenExpiry,
     });
-    
+
     // Create reset link
-    const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`;
-    
+    const resetLink = `${req.protocol}://${req.get("host")}/reset-password?token=${resetToken}`;
+
     // Send email if SendGrid is configured
     if (process.env.SENDGRID_API_KEY) {
         try {
             const msg = {
                 to: email,
-                from: 'noreply@fc-koln-talent.com', // Sender email
-                subject: '1.FC Köln - Password Reset Request',
+                from: "noreply@fc-koln-talent.com", // Sender email
+                subject: "1.FC Köln - Password Reset Request",
                 html: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                         <div style="background: #dc143c; color: white; padding: 20px; text-align: center;">
@@ -258,73 +301,96 @@ app.post('/auth/forgot-password', async (req, res) => {
                             <p style="color: #666; font-size: 12px;">1.FC Köln Bundesliga Talent Program Management System</p>
                         </div>
                     </div>
-                `
+                `,
             };
-            
+
             await sgMail.send(msg);
             console.log(`Password reset email sent to: ${email}`);
-            res.json({ success: true, message: 'Password reset instructions sent to your email' });
+            res.json({
+                success: true,
+                message: "Password reset instructions sent to your email",
+            });
         } catch (error) {
-            console.error('Email sending failed:', error);
-            res.status(500).json({ success: false, message: 'Failed to send reset email. Please try again later.' });
+            console.error("Email sending failed:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to send reset email. Please try again later.",
+            });
         }
     } else {
         // Fallback when SendGrid is not configured
         console.log(`Password reset requested for: ${email}`);
         console.log(`Reset link: ${resetLink}`);
-        res.json({ success: true, message: 'Password reset instructions sent to your email (check console for link)' });
+        res.json({
+            success: true,
+            message:
+                "Password reset instructions sent to your email (check console for link)",
+        });
     }
 });
 
 // Password reset endpoint
-app.post('/auth/reset-password', (req, res) => {
+app.post("/auth/reset-password", (req, res) => {
     const { token, newPassword } = req.body;
-    
+
     if (!token || !newPassword) {
-        return res.status(400).json({ success: false, message: 'Token and new password are required' });
+        return res.status(400).json({
+            success: false,
+            message: "Token and new password are required",
+        });
     }
-    
+
     const tokenData = passwordResetTokens.get(token);
-    
+
     if (!tokenData) {
-        return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+        return res.status(400).json({
+            success: false,
+            message: "Invalid or expired reset token",
+        });
     }
-    
+
     if (Date.now() > tokenData.expires) {
         passwordResetTokens.delete(token);
-        return res.status(400).json({ success: false, message: 'Reset token has expired' });
+        return res
+            .status(400)
+            .json({ success: false, message: "Reset token has expired" });
     }
-    
+
     // Find user and update password
-    const user = users.find(u => u.id === tokenData.userId);
+    const user = users.find((u) => u.id === tokenData.userId);
     if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
+        return res
+            .status(404)
+            .json({ success: false, message: "User not found" });
     }
-    
+
     // Update password
     user.password = newPassword;
-    
+
     // Remove used token
     passwordResetTokens.delete(token);
-    
+
     console.log(`Password successfully reset for: ${user.email}`);
-    res.json({ success: true, message: 'Password has been reset successfully' });
+    res.json({
+        success: true,
+        message: "Password has been reset successfully",
+    });
 });
 
 // Password reset page route
-app.get('/reset-password', (req, res) => {
+app.get("/reset-password", (req, res) => {
     const { token } = req.query;
-    
+
     if (!token) {
-        return res.status(400).send('Invalid reset link');
+        return res.status(400).send("Invalid reset link");
     }
-    
+
     const tokenData = passwordResetTokens.get(token);
-    
+
     if (!tokenData || Date.now() > tokenData.expires) {
-        return res.status(400).send('Invalid or expired reset link');
+        return res.status(400).send("Invalid or expired reset link");
     }
-    
+
     // Serve password reset page
     res.send(`
         <!DOCTYPE html>
@@ -459,459 +525,493 @@ app.get('/reset-password', (req, res) => {
 });
 
 // API endpoints
-app.get('/api/players', (req, res) => {
+app.get("/api/players", (req, res) => {
     res.json({ success: true, players });
 });
 
 // Update player status endpoint
-app.put('/api/players/:playerId/status', (req, res) => {
+app.put("/api/players/:playerId/status", (req, res) => {
     const { playerId } = req.params;
     const { status } = req.body;
 
     // Validate status
-    const validStatuses = ['active', 'training', 'injured', 'rest'];
+    const validStatuses = ["active", "training", "injured", "rest"];
     if (!validStatuses.includes(status)) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Invalid status. Must be one of: ' + validStatuses.join(', ') 
+        return res.status(400).json({
+            success: false,
+            message:
+                "Invalid status. Must be one of: " + validStatuses.join(", "),
         });
     }
 
     // Find player
-    const player = players.find(p => p.id === playerId);
+    const player = players.find((p) => p.id === playerId);
     if (!player) {
-        return res.status(404).json({ 
-            success: false, 
-            message: 'Player not found' 
+        return res.status(404).json({
+            success: false,
+            message: "Player not found",
         });
     }
 
     // Update status
     player.status = status;
-    
-    res.json({ 
-        success: true, 
-        message: 'Player status updated successfully',
-        player: player
+
+    res.json({
+        success: true,
+        message: "Player status updated successfully",
+        player: player,
     });
 });
 
 // User Management API endpoints
-app.get('/api/applications', (req, res) => {
+app.get("/api/applications", (req, res) => {
     // Only allow admin access
-    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ 
-            success: false, 
-            message: 'Admin access required' 
+    if (
+        !req.session ||
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Admin access required",
         });
     }
 
-    const pendingApps = pendingApplications.filter(app => app.status === 'pending');
+    const pendingApps = pendingApplications.filter(
+        (app) => app.status === "pending",
+    );
     res.json({ success: true, applications: pendingApps });
 });
 
-app.get('/api/users', (req, res) => {
+app.get("/api/users", (req, res) => {
     // Only allow admin access
-    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ 
-            success: false, 
-            message: 'Admin access required' 
+    if (
+        !req.session ||
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Admin access required",
         });
     }
 
     // Combine actual users with players as user objects
     const allUsers = [
-        ...users.map(user => ({
+        ...users.map((user) => ({
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
         })),
-        ...players.map(player => ({
+        ...players.map((player) => ({
             id: player.id,
             name: player.name,
-            email: player.email || player.name.toLowerCase().replace(' ', '.') + '@player.com',
-            role: 'player'
-        }))
+            email:
+                player.email ||
+                player.name.toLowerCase().replace(" ", ".") + "@player.com",
+            role: "player",
+        })),
     ];
 
     res.json({ success: true, users: allUsers });
 });
 
-app.post('/api/applications/:id/approve', (req, res) => {
+app.post("/api/applications/:id/approve", (req, res) => {
     // Only allow admin access
-    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ 
-            success: false, 
-            message: 'Admin access required' 
+    if (
+        !req.session ||
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Admin access required",
         });
     }
 
     const { id } = req.params;
-    const application = pendingApplications.find(app => app.id === id);
-    
+    const application = pendingApplications.find((app) => app.id === id);
+
     if (!application) {
-        return res.status(404).json({ 
-            success: false, 
-            message: 'Application not found' 
+        return res.status(404).json({
+            success: false,
+            message: "Application not found",
         });
     }
 
-    if (application.status !== 'pending') {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Application already processed' 
+    if (application.status !== "pending") {
+        return res.status(400).json({
+            success: false,
+            message: "Application already processed",
         });
     }
 
     // Approve the application
-    application.status = 'approved';
+    application.status = "approved";
     application.approvedAt = new Date().toISOString();
     application.approvedBy = req.session.user.id;
 
     // Create user account based on application type
-    if (application.type === 'player') {
+    if (application.type === "player") {
         // Add as player
         const newPlayer = {
-            id: 'p' + Date.now(),
+            id: "p" + Date.now(),
             name: application.name,
             age: application.age,
             position: application.position,
             nationality: application.nationality,
             house: assignPlayerToHouse(), // Helper function to assign house
-            status: 'active',
-            joinDate: new Date().toISOString()
+            status: "active",
+            joinDate: new Date().toISOString(),
         };
         players.push(newPlayer);
-    } else if (application.type === 'staff') {
+    } else if (application.type === "staff") {
         // Add as staff user
         const newUser = {
-            id: 'staff' + Date.now(),
+            id: "staff" + Date.now(),
             name: application.name,
             email: application.email,
-            role: 'staff',
+            role: "staff",
             department: application.department,
-            password: 'TempPass123' // Should generate secure password and send via email
+            password: "TempPass123", // Should generate secure password and send via email
         };
         users.push(newUser);
     }
 
-    res.json({ 
-        success: true, 
-        message: 'Application approved successfully',
-        application: application
+    res.json({
+        success: true,
+        message: "Application approved successfully",
+        application: application,
     });
 });
 
-app.post('/api/applications/:id/reject', (req, res) => {
+app.post("/api/applications/:id/reject", (req, res) => {
     // Only allow admin access
-    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ 
-            success: false, 
-            message: 'Admin access required' 
+    if (
+        !req.session ||
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Admin access required",
         });
     }
 
     const { id } = req.params;
-    const application = pendingApplications.find(app => app.id === id);
-    
+    const application = pendingApplications.find((app) => app.id === id);
+
     if (!application) {
-        return res.status(404).json({ 
-            success: false, 
-            message: 'Application not found' 
+        return res.status(404).json({
+            success: false,
+            message: "Application not found",
         });
     }
 
-    if (application.status !== 'pending') {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Application already processed' 
+    if (application.status !== "pending") {
+        return res.status(400).json({
+            success: false,
+            message: "Application already processed",
         });
     }
 
     // Reject the application
-    application.status = 'rejected';
+    application.status = "rejected";
     application.rejectedAt = new Date().toISOString();
     application.rejectedBy = req.session.user.id;
 
-    res.json({ 
-        success: true, 
-        message: 'Application rejected',
-        application: application
+    res.json({
+        success: true,
+        message: "Application rejected",
+        application: application,
     });
 });
 
 // Update user endpoint
-app.patch('/api/users/:id', (req, res) => {
+app.patch("/api/users/:id", (req, res) => {
     // Only allow admin access
-    if (!req.session || !req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ 
-            success: false, 
-            message: 'Admin access required' 
+    if (
+        !req.session ||
+        !req.session.user ||
+        req.session.user.role !== "admin"
+    ) {
+        return res.status(403).json({
+            success: false,
+            message: "Admin access required",
         });
     }
 
     const { id } = req.params;
     const updatedData = req.body;
-    
+
     // Find user in appropriate array
     let userFound = false;
     let userArray = null;
     let userIndex = -1;
-    
+
     // Check in players array
-    userIndex = players.findIndex(p => p.id === id);
+    userIndex = players.findIndex((p) => p.id === id);
     if (userIndex !== -1) {
         userArray = players;
         userFound = true;
     }
-    
+
     // Check in users array (staff/admin)
     if (!userFound) {
-        userIndex = users.findIndex(u => u.id === id);
+        userIndex = users.findIndex((u) => u.id === id);
         if (userIndex !== -1) {
             userArray = users;
             userFound = true;
         }
     }
-    
+
     if (!userFound) {
-        return res.status(404).json({ 
-            success: false, 
-            message: 'User not found' 
+        return res.status(404).json({
+            success: false,
+            message: "User not found",
         });
     }
-    
+
     // Update user data
     const user = userArray[userIndex];
     user.name = updatedData.name || user.name;
     user.email = updatedData.email || user.email;
     user.role = updatedData.role || user.role;
-    
+
     // Update player-specific fields if applicable
-    if (updatedData.role === 'player' && userArray === players) {
+    if (updatedData.role === "player" && userArray === players) {
         user.house = updatedData.house || user.house;
         user.age = updatedData.age || user.age;
         user.position = updatedData.position || user.position;
     }
-    
-    res.json({ 
-        success: true, 
-        message: 'User updated successfully',
-        user: user
+
+    res.json({
+        success: true,
+        message: "User updated successfully",
+        user: user,
     });
 });
 
 // Helper function to assign player to house with least members
 function assignPlayerToHouse() {
-    const houses = ['Widdersdorf 1', 'Widdersdorf 2', 'Widdersdorf 3'];
-    const houseCounts = houses.map(house => ({
+    const houses = ["Widdersdorf 1", "Widdersdorf 2", "Widdersdorf 3"];
+    const houseCounts = houses.map((house) => ({
         house,
-        count: players.filter(p => p.house === house).length
+        count: players.filter((p) => p.house === house).length,
     }));
-    
+
     // Sort by count and return house with least members
     houseCounts.sort((a, b) => a.count - b.count);
     return houseCounts[0].house;
 }
 
-app.post('/api/players', (req, res) => {
+app.post("/api/players", (req, res) => {
     const player = {
         id: `player_${Date.now()}`,
         ...req.body,
         joinDate: new Date().toISOString(),
-        status: 'active'
+        status: "active",
     };
     players.push(player);
     res.json({ success: true, player });
 });
 
-app.get('/api/chores', (req, res) => {
-    const activeChores = choreStorage.filter(chore => !chore.archived);
+app.get("/api/chores", (req, res) => {
+    const activeChores = choreStorage.filter((chore) => !chore.archived);
     res.json({ success: true, chores: activeChores });
 });
 
-app.get('/api/chores/archived', (req, res) => {
+app.get("/api/chores/archived", (req, res) => {
     res.json({ success: true, chores: archivedChores });
 });
 
 // Archive chore endpoint (admin only)
-app.patch('/api/chores/:id/archive', (req, res) => {
+app.patch("/api/chores/:id/archive", (req, res) => {
     const choreId = req.params.id;
     const { userRole } = req.body;
-    
+
     // Only allow admin to archive chores
-    if (userRole !== 'admin') {
-        return res.json({ success: false, message: 'Only admin can archive chores' });
+    if (userRole !== "admin") {
+        return res.json({
+            success: false,
+            message: "Only admin can archive chores",
+        });
     }
-    
-    const choreIndex = choreStorage.findIndex(c => c.id === choreId);
+
+    const choreIndex = choreStorage.findIndex((c) => c.id === choreId);
     if (choreIndex === -1) {
-        return res.json({ success: false, message: 'Chore not found' });
+        return res.json({ success: false, message: "Chore not found" });
     }
-    
+
     const chore = choreStorage[choreIndex];
     chore.archived = true;
     chore.archivedAt = new Date().toISOString();
-    
+
     // Move to archived storage
     archivedChores.push(chore);
     choreStorage.splice(choreIndex, 1);
-    
-    res.json({ success: true, message: 'Chore archived successfully' });
+
+    res.json({ success: true, message: "Chore archived successfully" });
 });
 
-app.post('/api/chores', (req, res) => {
+app.post("/api/chores", (req, res) => {
     const chore = {
         id: `chore_${Date.now()}`,
         ...req.body,
         createdDate: new Date().toISOString(),
-        status: 'pending',
+        status: "pending",
         completed: false,
         completedBy: null,
         completedAt: null,
         assignedTo: null,
-        archived: false
+        archived: false,
     };
     choreStorage.push(chore);
     res.json({ success: true, chore });
 });
 
 // Complete chore endpoint (staff/admin only)
-app.patch('/api/chores/:id/complete', (req, res) => {
+app.patch("/api/chores/:id/complete", (req, res) => {
     const choreId = req.params.id;
     const { playerId, userRole } = req.body;
-    
+
     // Only allow staff and admin to mark chores as completed
-    if (userRole !== 'admin' && userRole !== 'staff') {
-        return res.json({ success: false, message: 'Only staff and admin can mark chores as completed' });
+    if (userRole !== "admin" && userRole !== "staff") {
+        return res.json({
+            success: false,
+            message: "Only staff and admin can mark chores as completed",
+        });
     }
-    
-    const chore = choreStorage.find(c => c.id === choreId);
+
+    const chore = choreStorage.find((c) => c.id === choreId);
     if (!chore) {
-        return res.json({ success: false, message: 'Chore not found' });
+        return res.json({ success: false, message: "Chore not found" });
     }
-    
+
     if (chore.completed) {
-        return res.json({ success: false, message: 'Chore already completed' });
+        return res.json({ success: false, message: "Chore already completed" });
     }
-    
+
     chore.completed = true;
     chore.completedBy = playerId;
     chore.completedAt = new Date().toISOString();
-    chore.status = 'completed';
-    
+    chore.status = "completed";
+
     res.json({ success: true, chore });
 });
 
 // Assign chore to player endpoint
-app.patch('/api/chores/:id/assign', (req, res) => {
+app.patch("/api/chores/:id/assign", (req, res) => {
     const choreId = req.params.id;
     const { playerId } = req.body;
-    
-    const chore = choreStorage.find(c => c.id === choreId);
+
+    const chore = choreStorage.find((c) => c.id === choreId);
     if (!chore) {
-        return res.json({ success: false, message: 'Chore not found' });
+        return res.json({ success: false, message: "Chore not found" });
     }
-    
+
     chore.assignedTo = playerId;
     res.json({ success: true, chore });
 });
 
-app.get('/api/calendar', (req, res) => {
+app.get("/api/calendar", (req, res) => {
     res.json({ success: true, events: calendarEvents });
 });
 
-app.post('/api/calendar', (req, res) => {
+app.post("/api/calendar", (req, res) => {
     const event = {
         id: `event_${Date.now()}`,
         ...req.body,
-        createdDate: new Date().toISOString()
+        createdDate: new Date().toISOString(),
     };
     calendarEvents.push(event);
     res.json({ success: true, event });
 });
 
-app.get('/api/food-orders', (req, res) => {
+app.get("/api/food-orders", (req, res) => {
     res.json({ success: true, orders: foodOrders });
 });
 
-app.post('/api/food-orders', (req, res) => {
+app.post("/api/food-orders", (req, res) => {
     const order = {
         id: `order_${Date.now()}`,
         ...req.body,
         orderDate: new Date().toISOString(),
-        status: 'pending'
+        status: "pending",
     };
     foodOrders.push(order);
     res.json({ success: true, order });
 });
 
 // Delete player endpoint
-app.delete('/api/players/:id', (req, res) => {
+app.delete("/api/players/:id", (req, res) => {
     const playerId = req.params.id;
-    const playerIndex = players.findIndex(p => p.id === playerId);
-    
+    const playerIndex = players.findIndex((p) => p.id === playerId);
+
     if (playerIndex === -1) {
-        return res.json({ success: false, message: 'Player not found' });
+        return res.json({ success: false, message: "Player not found" });
     }
-    
+
     players.splice(playerIndex, 1);
-    res.json({ success: true, message: 'Player removed successfully' });
+    res.json({ success: true, message: "Player removed successfully" });
 });
 
-app.get('/api/messages', (req, res) => {
+app.get("/api/messages", (req, res) => {
     res.json({ success: true, messages });
 });
 
-app.post('/api/messages', (req, res) => {
+app.post("/api/messages", (req, res) => {
     const message = {
         id: `msg_${Date.now()}`,
         ...req.body,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     };
     messages.push(message);
     res.json({ success: true, message });
 });
 
 // Serve the FC Köln logo
-app.get('/api/logo', (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
-    
+app.get("/api/logo", (req, res) => {
+    const fs = require("fs");
+    const path = require("path");
+
     try {
-        console.log('Logo request received');
-        
+        console.log("Logo request received");
+
         // Search for the FC Köln file using directory listing
-        const files = fs.readdirSync('attached_assets/');
-        const fcKolnFile = files.find(file => 
-            file.includes('1.FC') && file.includes('Football School') && file.endsWith('.png')
+        const files = fs.readdirSync("attached_assets/");
+        const fcKolnFile = files.find(
+            (file) =>
+                file.includes("1.FC") &&
+                file.includes("Football School") &&
+                file.endsWith(".png"),
         );
-        
+
         if (fcKolnFile) {
-            console.log('Found FC Köln file:', fcKolnFile);
-            const fullPath = path.join('attached_assets', fcKolnFile);
-            console.log('Reading file from:', fullPath);
-            
+            console.log("Found FC Köln file:", fcKolnFile);
+            const fullPath = path.join("attached_assets", fcKolnFile);
+            console.log("Reading file from:", fullPath);
+
             const logoData = fs.readFileSync(fullPath);
-            console.log('Successfully read file, size:', logoData.length);
-            
-            res.setHeader('Content-Type', 'image/png');
-            res.setHeader('Cache-Control', 'public, max-age=86400');
+            console.log("Successfully read file, size:", logoData.length);
+
+            res.setHeader("Content-Type", "image/png");
+            res.setHeader("Cache-Control", "public, max-age=86400");
             res.send(logoData);
             return;
         }
-        
-        console.log('No FC Köln file found');
-        res.status(404).send('Logo not found');
+
+        console.log("No FC Köln file found");
+        res.status(404).send("Logo not found");
     } catch (error) {
-        console.error('Logo error:', error);
-        res.status(500).send('Error loading logo: ' + error.message);
+        console.error("Logo error:", error);
+        res.status(500).send("Error loading logo: " + error.message);
     }
 });
 
 // Serve the main HTML file
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send(`
 <!DOCTYPE html>
 <html lang="en">
@@ -10621,92 +10721,99 @@ app.get('/', (req, res) => {
 });
 
 // Dashboard-specific endpoints
-app.get('/api/dashboard/stats', (req, res) => {
+app.get("/api/dashboard/stats", (req, res) => {
     const stats = {
         totalPlayers: players.length,
-        trainingToday: players.filter(p => p.status === 'training').length,
+        trainingToday: players.filter((p) => p.status === "training").length,
         houses: 3, // Widdersdorf 1, 2, 3
-        activitiesToday: calendarEvents.filter(e => {
+        activitiesToday: calendarEvents.filter((e) => {
             const today = new Date().toDateString();
             const eventDate = new Date(e.date).toDateString();
             return eventDate === today;
-        }).length
+        }).length,
     };
     res.json({ success: true, stats });
 });
 
-app.get('/api/dashboard/recent-activity', (req, res) => {
+app.get("/api/dashboard/recent-activity", (req, res) => {
     const activities = [
         {
-            time: '10:30 AM',
-            title: 'Training Session Completed',
-            description: 'Morning fitness training - 18 players attended',
-            type: 'training'
+            time: "10:30 AM",
+            title: "Training Session Completed",
+            description: "Morning fitness training - 18 players attended",
+            type: "training",
         },
         {
-            time: '9:15 AM',
-            title: 'New Player Registration',
-            description: 'Dennis Huseinbasic completed profile setup',
-            type: 'registration'
+            time: "9:15 AM",
+            title: "New Player Registration",
+            description: "Dennis Huseinbasic completed profile setup",
+            type: "registration",
         },
         {
-            time: '8:45 AM',
-            title: 'Meal Orders Submitted',
+            time: "8:45 AM",
+            title: "Meal Orders Submitted",
             description: `${foodOrders.length} players submitted lunch preferences`,
-            type: 'food'
+            type: "food",
         },
         {
-            time: '8:00 AM',
-            title: 'House Chore Completed',
-            description: 'Widdersdorf 2 completed weekly cleaning tasks',
-            type: 'chores'
-        }
+            time: "8:00 AM",
+            title: "House Chore Completed",
+            description: "Widdersdorf 2 completed weekly cleaning tasks",
+            type: "chores",
+        },
     ];
     res.json({ success: true, activities });
 });
 
-app.get('/api/dashboard/house-competition', (req, res) => {
+app.get("/api/dashboard/house-competition", (req, res) => {
     const houses = [
         {
             rank: 1,
-            name: 'Widdersdorf 2',
-            players: players.filter(p => p.house === 'Widdersdorf 2').length,
-            stats: 'Clean record',
+            name: "Widdersdorf 2",
+            players: players.filter((p) => p.house === "Widdersdorf 2").length,
+            stats: "Clean record",
             points: 945,
-            trophy: '🥇'
+            trophy: "🥇",
         },
         {
             rank: 2,
-            name: 'Widdersdorf 1',
-            players: players.filter(p => p.house === 'Widdersdorf 1').length,
-            stats: '2 pending tasks',
+            name: "Widdersdorf 1",
+            players: players.filter((p) => p.house === "Widdersdorf 1").length,
+            stats: "2 pending tasks",
             points: 920,
-            trophy: '🥈'
+            trophy: "🥈",
         },
         {
             rank: 3,
-            name: 'Widdersdorf 3',
-            players: players.filter(p => p.house === 'Widdersdorf 3').length,
-            stats: '1 pending task',
+            name: "Widdersdorf 3",
+            players: players.filter((p) => p.house === "Widdersdorf 3").length,
+            stats: "1 pending task",
             points: 885,
-            trophy: '🥉'
-        }
+            trophy: "🥉",
+        },
     ];
-    
-    const weekChallenges = 'Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)';
-    
+
+    const weekChallenges =
+        "Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)";
+
     res.json({ success: true, houses, weekChallenges });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log('🚀 1.FC Köln Bundesliga Talent Program - STABLE PERMANENT SYSTEM');
-    console.log('📍 Server running on port ' + PORT);
-    console.log('👤 Admin credentials: max.bisinger@warubi-sports.com / ITP2024');
-    console.log('👥 Staff credentials: thomas.ellinger@warubi-sports.com / ITP2024');
-    console.log('✅ PERMANENT STABLE VERSION:');
-    console.log('  - No more JavaScript syntax errors');
-    console.log('  - Robust event handling with data attributes');
-    console.log('  - Comprehensive error prevention');
-    console.log('  - All features working reliably');
-    console.log('🏆 This version will NOT have recurring errors!');
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(
+        "🚀 1.FC Köln Bundesliga Talent Program - STABLE PERMANENT SYSTEM",
+    );
+    console.log("📍 Server running on port " + PORT);
+    console.log(
+        "👤 Admin credentials: max.bisinger@warubi-sports.com / ITP2024",
+    );
+    console.log(
+        "👥 Staff credentials: thomas.ellinger@warubi-sports.com / ITP2024",
+    );
+    console.log("✅ PERMANENT STABLE VERSION:");
+    console.log("  - No more JavaScript syntax errors");
+    console.log("  - Robust event handling with data attributes");
+    console.log("  - Comprehensive error prevention");
+    console.log("  - All features working reliably");
+    console.log("🏆 This version will NOT have recurring errors!");
 });

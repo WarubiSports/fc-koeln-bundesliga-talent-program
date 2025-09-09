@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.FC Köln Bundesliga Talent Program</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="/NewCologneLogo_1753281112388.png" alt="1. FC Köln" class="login-logo">
+            </div>
+            <h1>1.FC Köln Bundesliga Talent Program</h1>
+            <div class="login-subtitle">Management System</div>
+            
+            <!-- Login/Registration Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginTab" class="auth-tab-content" style="display: block;">
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" value="max.bisinger@warubi-sports.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" value="ITP2024" required>
+                    </div>
+                    <button type="submit" class="btn">Sign In</button>
+                    <button type="button" class="forgot-password-btn" onclick="showForgotPassword()">Forgot Password?</button>
+                </form>
+                <div id="loginMessage"></div>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordTab" class="auth-tab-content" style="display: none;">
+                <form id="forgotPasswordForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="forgotEmail">Email Address</label>
+                        <input type="email" id="forgotEmail" required>
+                    </div>
+                    <button type="submit" class="btn">Send Reset Instructions</button>
+                </form>
+                <div class="back-to-login">
+                    <button type="button" class="back-btn" onclick="showAuthTab('login')">← Back to Sign In</button>
+                </div>
+                <div id="forgotPasswordMessage"></div>
+            </div>
+
+            <!-- Public Registration Tab -->
+            <div id="registerTab" class="auth-tab-content" style="display: none;">
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="regFullName">Full Name</label>
+                        <input type="text" id="regFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regAge">Age</label>
+                        <input type="number" id="regAge" min="16" max="25" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPosition">Playing Position</label>
+                        <select id="regPosition" required>
+                            <option value="">Select Position</option>
+                            <option value="goalkeeper">Goalkeeper</option>
+                            <option value="defender">Defender</option>
+                            <option
