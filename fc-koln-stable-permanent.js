@@ -3,7 +3,7 @@ const path = require("path");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // Configure SendGrid
 if (process.env.SENDGRID_API_KEY) {
