@@ -1,6 +1,6 @@
 // Production server entry point for FC Köln Management System
-// Uses the exact same application as preview to ensure perfect match
+// Uses zero-dependency version with complete application content
 console.log('🚀 Starting FC Köln Management System - Production...');
-console.log('📍 Loading EXACT same application as preview...');
-console.log('✅ Using fc-koln-stable-permanent.js for deployment consistency');
-require('./fc-koln-stable-permanent.js');
+console.log('📍 Loading complete application with zero dependencies...');
+console.log('✅ Using fc-koln-deployment-ready.js with full app content');
+require('./fc-koln-deployment-ready.js');

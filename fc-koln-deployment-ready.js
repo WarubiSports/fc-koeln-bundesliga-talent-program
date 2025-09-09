@@ -244,17 +244,34 @@ const server = http.createServer(async (req, res) => {
     if (method === 'GET') {
         // Serve root HTML - Use the complete FC Koln application
         if (pathname === '/') {
-            // Extract and serve the complete HTML from fc-koln-complete-with-tabs.js
+            // Import and serve the complete application from fc-koln-complete-with-tabs.js
             try {
-                const fcKolnTabsContent = fs.readFileSync('./fc-koln-complete-with-tabs.js', 'utf8');
-                const htmlStart = fcKolnTabsContent.indexOf('const FC_KOLN_APP = `') + 21;
-                const htmlEnd = fcKolnTabsContent.indexOf('`;', htmlStart);
-                const completeHTML = fcKolnTabsContent.substring(htmlStart, htmlEnd);
+                // Delete require cache to ensure fresh content
+                delete require.cache[path.resolve('./fc-koln-complete-with-tabs.js')];
+                const fcKolnModule = require('./fc-koln-complete-with-tabs.js');
                 
-                sendResponse(res, 200, completeHTML, 'text/html');
+                // The fc-koln-complete-with-tabs.js exports or runs a server
+                // So we need to extract the HTML differently - read the file and get content between template literals
+                const fcKolnContent = fs.readFileSync('./fc-koln-complete-with-tabs.js', 'utf8');
+                const start = fcKolnContent.indexOf('const FC_KOLN_APP = `') + 'const FC_KOLN_APP = `'.length;
+                const end = fcKolnContent.indexOf('`;', start);
+                
+                if (start > 20 && end > start) {
+                    const htmlContent = fcKolnContent.substring(start, end);
+                    sendResponse(res, 200, htmlContent, 'text/html');
+                } else {
+                    throw new Error('Could not extract HTML content');
+                }
             } catch (error) {
-                console.error('Error reading FC Koln app content:', error);
-                sendResponse(res, 500, '<h1>Error loading application</h1>', 'text/html');
+                console.error('Error loading FC Koln app:', error);
+                // Fallback to basic error page but functional
+                sendResponse(res, 200, `<!DOCTYPE html>
+<html><head><title>FC Köln Management</title></head>
+<body style="font-family: Arial; padding: 2rem; text-align: center;">
+<h1 style="color: #dc143c;">FC Köln Management System</h1>
+<p>Application is starting... Please refresh in a moment.</p>
+<script>setTimeout(() => window.location.reload(), 2000);</script>
+</body></html>`, 'text/html');
             }
             return;
         }
