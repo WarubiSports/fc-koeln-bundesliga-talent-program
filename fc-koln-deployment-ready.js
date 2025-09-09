@@ -526,6 +526,86 @@ const server = http.createServer(async (req, res) => {
             sendResponse(res, 201, newMessage);
             return;
         }
+
+        // Dashboard endpoints - CRITICAL for deployment functionality
+        if (pathname === '/api/dashboard/stats' && method === 'GET') {
+            const stats = {
+                totalPlayers: players.length,
+                trainingToday: players.filter((p) => p.status === "training").length,
+                houses: 3, // Widdersdorf 1, 2, 3
+                activitiesToday: calendarEvents.filter((e) => {
+                    const today = new Date().toDateString();
+                    const eventDate = new Date(e.date).toDateString();
+                    return eventDate === today;
+                }).length,
+            };
+            sendResponse(res, 200, { success: true, stats });
+            return;
+        }
+
+        if (pathname === '/api/dashboard/recent-activity' && method === 'GET') {
+            const activities = [
+                {
+                    time: "10:30 AM",
+                    title: "Training Session Completed",
+                    description: "Morning fitness training - 18 players attended",
+                    type: "training",
+                },
+                {
+                    time: "9:15 AM",
+                    title: "New Player Registration",
+                    description: "Dennis Huseinbasic completed profile setup",
+                    type: "registration",
+                },
+                {
+                    time: "8:45 AM",
+                    title: "Meal Orders Submitted",
+                    description: `${foodOrders.length} players submitted lunch preferences`,
+                    type: "food",
+                },
+                {
+                    time: "8:00 AM",
+                    title: "House Chore Completed",
+                    description: "Widdersdorf 2 completed weekly cleaning tasks",
+                    type: "chores",
+                },
+            ];
+            sendResponse(res, 200, { success: true, activities });
+            return;
+        }
+
+        if (pathname === '/api/dashboard/house-competition' && method === 'GET') {
+            const houses = [
+                {
+                    rank: 1,
+                    name: "Widdersdorf 2",
+                    players: players.filter((p) => p.house === "Widdersdorf 2").length,
+                    stats: "Clean record",
+                    points: 945,
+                    trophy: "🥇",
+                },
+                {
+                    rank: 2,
+                    name: "Widdersdorf 1",
+                    players: players.filter((p) => p.house === "Widdersdorf 1").length,
+                    stats: "2 pending tasks",
+                    points: 920,
+                    trophy: "🥈",
+                },
+                {
+                    rank: 3,
+                    name: "Widdersdorf 3",
+                    players: players.filter((p) => p.house === "Widdersdorf 3").length,
+                    stats: "1 pending task",
+                    points: 885,
+                    trophy: "🥉",
+                },
+            ];
+
+            const weekChallenges = "Fitness Challenge (20 pts), Chore Completion (15 pts), Team Spirit (10 pts)";
+            sendResponse(res, 200, { success: true, houses, weekChallenges });
+            return;
+        }
         
         // 404 for unmatched routes
         sendResponse(res, 404, { error: 'Not found' });
