@@ -247,14 +247,42 @@ const server = http.createServer(async (req, res) => {
             // Extract complete HTML from fc-koln-stable-permanent.js
             try {
                 const mainAppContent = fs.readFileSync('./fc-koln-stable-permanent.js', 'utf8');
-                const htmlStart = mainAppContent.indexOf('res.send(`') + 'res.send(`'.length;
-                const htmlEnd = mainAppContent.indexOf('`);', htmlStart);
                 
-                if (htmlStart > 10 && htmlEnd > htmlStart) {
+                // Find the LARGE HTML template (complete application), not the small one
+                let htmlStart = -1;
+                let htmlEnd = -1;
+                let searchPos = 0;
+                
+                // Look for the res.send with the large HTML content (> 100,000 chars)
+                while (searchPos < mainAppContent.length) {
+                    const currentStart = mainAppContent.indexOf('res.send(`', searchPos);
+                    if (currentStart === -1) break;
+                    
+                    const currentHtmlStart = currentStart + 'res.send(`'.length;
+                    const currentHtmlEnd = mainAppContent.indexOf('`);', currentHtmlStart);
+                    
+                    if (currentHtmlEnd > currentHtmlStart) {
+                        const currentLength = currentHtmlEnd - currentHtmlStart;
+                        console.log('Found res.send with HTML length:', currentLength);
+                        
+                        // We want the LARGE template (complete app), not the small one
+                        if (currentLength > 100000) {
+                            htmlStart = currentHtmlStart;
+                            htmlEnd = currentHtmlEnd;
+                            console.log('Selected LARGE HTML template for deployment');
+                            break;
+                        }
+                    }
+                    
+                    searchPos = currentStart + 1;
+                }
+                
+                if (htmlStart > 0 && htmlEnd > htmlStart) {
                     const completeHtml = mainAppContent.substring(htmlStart, htmlEnd);
+                    console.log('Serving complete FC Köln app, HTML size:', completeHtml.length);
                     sendResponse(res, 200, completeHtml, 'text/html');
                 } else {
-                    throw new Error('Could not extract HTML content from main app');
+                    throw new Error('Could not find large HTML template from main app');
                 }
             } catch (error) {
                 console.error('Error loading complete FC Köln app:', error);
