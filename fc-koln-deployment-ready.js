@@ -242,9 +242,21 @@ const server = http.createServer(async (req, res) => {
     
     // Serve static files
     if (method === 'GET') {
-        // Serve root HTML
+        // Serve root HTML - Use the complete FC Koln application
         if (pathname === '/') {
-            if (serveStaticFile('./index.html', res)) return;
+            // Extract and serve the complete HTML from fc-koln-complete-with-tabs.js
+            try {
+                const fcKolnTabsContent = fs.readFileSync('./fc-koln-complete-with-tabs.js', 'utf8');
+                const htmlStart = fcKolnTabsContent.indexOf('const FC_KOLN_APP = `') + 21;
+                const htmlEnd = fcKolnTabsContent.indexOf('`;', htmlStart);
+                const completeHTML = fcKolnTabsContent.substring(htmlStart, htmlEnd);
+                
+                sendResponse(res, 200, completeHTML, 'text/html');
+            } catch (error) {
+                console.error('Error reading FC Koln app content:', error);
+                sendResponse(res, 500, '<h1>Error loading application</h1>', 'text/html');
+            }
+            return;
         }
         
         // Serve attached assets
