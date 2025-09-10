@@ -5245,11 +5245,11 @@ app.get("/", (req, res) => {
             <form class="auth-form active" id="loginForm" data-form="login">
                 <div class="form-group">
                     <label for="loginEmail">Email Address</label>
-                    <input type="email" id="loginEmail" value="max.bisinger@warubi-sports.com" required>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" value="ITP2024" required>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
                 <button type="submit" class="btn">Sign In</button>
                 <div class="forgot-link">
