@@ -664,7 +664,7 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         
-        // Complete chore endpoint - SAFE deployment version
+        // Complete chore endpoint
         if (pathname.match(/^\/api\/chores\/[^\/]+\/complete$/) && method === 'PATCH') {
             const choreId = pathname.split('/')[3];
             const chore = choreStorage.find(c => c.id === choreId);
@@ -675,6 +675,37 @@ const server = http.createServer(async (req, res) => {
                 chore.completedBy = body.completedBy || 'Unknown';
                 chore.status = 'completed';
                 sendResponse(res, 200, { success: true, message: 'Chore completed', chore });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+            }
+            return;
+        }
+        
+        // Assign chore endpoint - MISSING from deployment
+        if (pathname.match(/^\/api\/chores\/[^\/]+\/assign$/) && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const { assignedTo } = body;
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (chore) {
+                chore.assignedTo = assignedTo;
+                chore.status = 'assigned';
+                sendResponse(res, 200, { success: true, message: 'Chore assigned successfully', chore });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+            }
+            return;
+        }
+        
+        // Archive chore endpoint - MISSING from deployment
+        if (pathname.match(/^\/api\/chores\/[^\/]+\/archive$/) && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (chore) {
+                chore.archived = true;
+                chore.archivedAt = new Date().toISOString();
+                sendResponse(res, 200, { success: true, message: 'Chore archived successfully', chore });
             } else {
                 sendResponse(res, 404, { success: false, message: 'Chore not found' });
             }
@@ -696,6 +727,41 @@ const server = http.createServer(async (req, res) => {
             };
             calendarEvents.push(newEvent);
             sendResponse(res, 201, newEvent);
+            return;
+        }
+        
+        // Calendar event editing - MISSING from deployment
+        if (pathname.match(/^\/api\/calendar\/[^\/]+$/) && method === 'PUT') {
+            const eventId = pathname.split('/')[3];
+            const event = calendarEvents.find(e => e.id === eventId);
+            
+            if (event) {
+                // Update event fields
+                Object.keys(body).forEach(key => {
+                    if (key !== 'id' && body[key] !== undefined) {
+                        event[key] = body[key];
+                    }
+                });
+                event.updatedAt = new Date().toISOString();
+                
+                sendResponse(res, 200, { success: true, message: 'Event updated successfully', event });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'Event not found' });
+            }
+            return;
+        }
+        
+        // Calendar event deletion - MISSING from deployment
+        if (pathname.match(/^\/api\/calendar\/[^\/]+$/) && method === 'DELETE') {
+            const eventId = pathname.split('/')[3];
+            const index = calendarEvents.findIndex(e => e.id === eventId);
+            
+            if (index !== -1) {
+                calendarEvents.splice(index, 1);
+                sendResponse(res, 200, { success: true, message: 'Event deleted successfully' });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'Event not found' });
+            }
             return;
         }
         
