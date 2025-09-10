@@ -613,6 +613,28 @@ const server = http.createServer(async (req, res) => {
             return;
         }
         
+        // Update user endpoint - SAFE deployment version
+        if (pathname.match(/^\/api\/users\/[^\/]+$/) && method === 'PATCH') {
+            const userId = pathname.split('/')[3];
+            const user = users.find(u => u.id === userId);
+            
+            if (user) {
+                // Simple safe updates only
+                if (body.name) user.name = body.name;
+                if (body.email) user.email = body.email;
+                if (body.role) user.role = body.role;
+                
+                sendResponse(res, 200, { 
+                    success: true, 
+                    message: 'User updated successfully', 
+                    user: { id: user.id, email: user.email, name: user.name, role: user.role }
+                });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'User not found' });
+            }
+            return;
+        }
+        
         
         // Chore management endpoints
         if (pathname === '/api/chores' && method === 'GET') {
@@ -639,6 +661,23 @@ const server = http.createServer(async (req, res) => {
             };
             choreStorage.push(newChore);
             sendResponse(res, 201, newChore);
+            return;
+        }
+        
+        // Complete chore endpoint - SAFE deployment version
+        if (pathname.match(/^\/api\/chores\/[^\/]+\/complete$/) && method === 'PATCH') {
+            const choreId = pathname.split('/')[3];
+            const chore = choreStorage.find(c => c.id === choreId);
+            
+            if (chore) {
+                chore.completed = true;
+                chore.completedAt = new Date().toISOString();
+                chore.completedBy = body.completedBy || 'Unknown';
+                chore.status = 'completed';
+                sendResponse(res, 200, { success: true, message: 'Chore completed', chore });
+            } else {
+                sendResponse(res, 404, { success: false, message: 'Chore not found' });
+            }
             return;
         }
         
