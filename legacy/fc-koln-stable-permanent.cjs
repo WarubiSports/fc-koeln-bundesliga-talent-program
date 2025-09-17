@@ -4,8 +4,6 @@ const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const fs = require("node:fs"); // <- const, not aconst
 const app = express();
-aconst fs = require('node:fs');
-    const path = require('node:path');
 
     // Auto-detect a UI build and serve it at "/"
     const UI_CANDIDATES = [
