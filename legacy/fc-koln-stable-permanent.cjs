@@ -3,6 +3,24 @@ const path = require("path");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const app = express();
+app.get('/healthz', (_req, res) => {
+  res.json({ ok: true, ts: new Date().toISOString(), mode: 'legacy' });
+});
+
+app.get('/healthz/ready', (_req, res) => {
+  res.send('OK');
+});
+
+app.get('/', (_req, res) => {
+  res.type('html').send(`
+    <pre>
+🚀 1.FC Köln Bundesliga Talent Program — LEGACY
+Links:
+- <a href="/healthz">/healthz</a>
+- <a href="/healthz/ready">/healthz/ready</a>
+    </pre>
+  `);
+});
 const PORT = process.env.PORT || 5000;
 
 // Configure SendGrid
