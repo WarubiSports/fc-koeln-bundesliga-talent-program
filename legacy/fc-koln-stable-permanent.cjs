@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
+const fs = require("node:fs"); // <- const, not aconst
 const app = express();
 aconst fs = require('node:fs');
     const path = require('node:path');
@@ -13,7 +14,6 @@ aconst fs = require('node:fs');
       'public',           // static site
       'attached_assets'   // some earlier versions stored index.html here
     ];
-
     let uiDir = null;
     let uiIndex = null;
 
