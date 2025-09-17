@@ -3,23 +3,40 @@ const path = require("path");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const app = express();
-app.get('/healthz', (_req, res) => {
-  res.json({ ok: true, ts: new Date().toISOString(), mode: 'legacy' });
-});
+aconst fs = require('node:fs');
+    const path = require('node:path');
 
+    // Auto-detect a UI build and serve it at "/"
+    const UI_CANDIDATES = [
+      'client-dist',      // e.g. Vite/React build output
+      'client',           // raw SPA folder
+      'public',           // static site
+      'attached_assets'   // some earlier versions stored index.html here
+    ];
+
+    let uiDir = null;
+    let uiIndex = null;
+
+    for (const dir of UI_CANDIDATES) {
+      const candidate = path.join(process.cwd(), dir, 'index.html');
+      if (fs.existsSync(candidate)) {
+        uiDir = path.dirname(candidate);
+        uiIndex = candidate;
+        break;
+      }
+    }
+
+    if (uiDir && uiIndex) {
+      app.use(express.static(uiDir));
+      app.get('/', (_req, res) => res.sendFile(uiIndex));
+      console.log('[startup] Serving UI from:', uiDir);
+    } else {
+      console.log('[startup] No UI index.html found in', UI_CANDIDATES.join(', '));
+      // Fallback: redirect root to login if your SPA doesn't exist yet
+      app.get('/', (_req, res) => res.redirect('/login'));
+    }
 app.get('/healthz/ready', (_req, res) => {
   res.send('OK');
-});
-
-app.get('/', (_req, res) => {
-  res.type('html').send(`
-    <pre>
-🚀 1.FC Köln Bundesliga Talent Program — LEGACY
-Links:
-- <a href="/healthz">/healthz</a>
-- <a href="/healthz/ready">/healthz/ready</a>
-    </pre>
-  `);
 });
 const PORT = process.env.PORT || 5000;
 
@@ -27,7 +44,6 @@ const PORT = process.env.PORT || 5000;
 if (process.env.SENDGRID_API_KEY) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
-
 // Middleware
 app.use(express.json()); // Parse JSON request bodies
 app.use("/attached_assets", express.static("attached_assets"));
@@ -697,14 +713,12 @@ app.post("/api/applications/:id/approve", (req, res) => {
         };
         users.push(newUser);
     }
-
     res.json({
         success: true,
         message: "Application approved successfully",
         application: application,
     });
 });
-
 app.post("/api/applications/:id/reject", (req, res) => {
     // Only allow admin access
     if (
