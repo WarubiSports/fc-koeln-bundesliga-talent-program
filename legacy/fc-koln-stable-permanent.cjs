@@ -6,12 +6,14 @@ const fs = require("node:fs"); // <- const, not aconst
 const app = express();
 
     // Auto-detect a UI build and serve it at "/"
-    const UI_CANDIDATES = [
-      'client-dist',      // e.g. Vite/React build output
-      'client',           // raw SPA folder
-      'public',           // static site
-      'attached_assets'   // some earlier versions stored index.html here
-    ];
+// Auto-detect a UI build and serve it at "/"
+const UI_CANDIDATES = [
+  'client/client-dist', // ✅ prefer the newer build here
+  'client-dist',
+  'client',
+  'public',
+  'attached_assets'
+];
     let uiDir = null;
     let uiIndex = null;
 
