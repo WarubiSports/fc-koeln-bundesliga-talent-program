@@ -2,7 +2,7 @@
   "name": "workspace",
   "version": "1.0.0",
   "type": "module",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
     "@sentry/integrations": "^7.114.0",
@@ -128,9 +128,15 @@
     "build": "tsc -p tsconfig.server.json",
     "dev": "tsx watch server/index.ts",
     "start": "node dist/index.js",
-    "lint": "eslint .",
+    "lint": "eslint server --ext .ts",
     "fmt": "prettier -w .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,json,md}": [
+      "prettier -w"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -156,7 +162,7 @@
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.0",
     "vitest": "^3.2.4"
   }
 }
-
