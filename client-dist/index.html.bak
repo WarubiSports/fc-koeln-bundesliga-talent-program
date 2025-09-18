@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.FC Köln Bundesliga Talent Program</title>
+  <script type="module" crossorigin src="/assets/index-D8xFQDMH.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Dq2bliGv.css">
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="/NewCologneLogo_1753281112388.png" alt="1. FC Köln" class="login-logo">
+            </div>
+            <h1>1.FC Köln Bundesliga Talent Program</h1>
+            <div class="login-subtitle">Management System</div>
+            
+            <!-- Login/Registration Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="showAuthTab('login')">Sign In</button>
+                <button class="auth-tab-btn" onclick="showAuthTab('register')">Join Program</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginTab" class="auth-tab-content" style="display: block;">
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" value="max.bisinger@warubi-sports.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" value="ITP2024" required>
+                    </div>
+                    <button type="submit" class="btn">Sign In</button>
+                    <button type="button" class="forgot-password-btn" onclick="showForgotPassword()">Forgot Password?</button>
+                </form>
+                <div id="loginMessage"></div>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordTab" class="auth-tab-content" style="display: none;">
+                <form id="forgotPasswordForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="forgotEmail">Email Address</label>
+                        <input type="email" id="forgotEmail" required>
+                    </div>
+                    <button type="submit" class="btn">Send Reset Instructions</button>
+                </form>
+                <div class="back-to-login">
+                    <button type="button" class="back-btn" onclick="showAuthTab('login')">← Back to Sign In</button>
+                </div>
+                <div id="forgotPasswordMessage"></div>
+            </div>
+
+            <!-- Public Registration Tab -->
+            <div id="registerTab" class="auth-tab-content" style="display: none;">
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="regFullName">Full Name</label>
+                        <input type="text" id="regFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regAge">Age</label>
+                        <input type="number" id="regAge" min="16" max="25" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPosition">Playing Position</label>
+                        <select id="regPosition" required>
+                            <option value="">Select Position</option>
+                            <option value="goalkeeper">Goalkeeper</option>
+                            <option value="defender">Defender</option>
+                            <option value="midfielder">Midfielder</option>
+                            <option value="forward">Forward</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="regExperience">Football Experience</label>
+                        <textarea id="regExperience" rows="3" placeholder="Brief description of your football background..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Apply to Program</button>
+                </form>
+                <div id="registerMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="./NewCologneLogo_1753281112388.png" alt="1. FC Köln" class="header-logo">
+                    <span>1.FC Köln Bundesliga Talent Program</span>
+                </div>
+                <div class="user-info">
+                    <span id="userWelcome">Welcome, User</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="nav-content">
+                <a class="nav-item active" onclick="showPage('dashboard')">Dashboard</a>
+                <a class="nav-item" onclick="showPage('players')">Players</a>
+                <a class="nav-item" onclick="showPage('house-management')">Housing</a>
+                <a class="nav-item" onclick="showPage('food-orders')">Food Orders</a>
+                <a class="nav-item" onclick="showPage('communications')">Communications</a>
+                <a class="nav-item" onclick="showPage('calendar')">Calendar</a>
+                <a class="nav-item admin-only" onclick="showPage('admin')" style="display: none;">Admin</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <div class="header-actions">
+                        <div class="quick-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">24</span>
+                                <span class="stat-label">Active Players</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">3</span>
+                                <span class="stat-label">Houses</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">8</span>
+                                <span class="stat-label">Pending Tasks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Player Overview Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>🏠 House Overview</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="house-overview">
+                                <div class="house-item">
+                                    <div class="house-info">
+                                        <strong>W1 House</strong>
+                                        <span>8 players</span>
+                                    </div>
+                                    <div class="house-stats">
+                                        <span class="completion-rate">92% completion</span>
+                                    </div>
+                                </div>
+                                <div class="house-item">
+                                    <div class="house-info">
+                                        <strong>W2 House</strong>
+                                        <span>8 players</span>
+                                    </div>
+                                    <div class="house-stats">
+                                        <span class="completion-rate">88% completion</span>
+                                    </div>
+                                </div>
+                                <div class="house-item">
+                                    <div class="house-info">
+                                        <strong>W3 House</strong>
+                                        <span>8 players</span>
+                                    </div>
+                                    <div class="house-stats">
+                                        <span class="completion-rate">85% completion</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Timeline -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>📋 Recent Activity</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="activity-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-time">2h ago</div>
+                                    <div class="timeline-content">
+                                        <strong>Max Müller</strong> completed kitchen cleaning task
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">4h ago</div>
+                                    <div class="timeline-content">
+                                        <strong>Thomas Ellinger</strong> assigned new cleaning schedules
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">1d ago</div>
+                                    <div class="timeline-content">
+                                        <strong>Food Order</strong> delivered to W2 House
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">2d ago</div>
+                                    <div class="timeline-content">
+                                        <strong>Leon Schmidt</strong> joined the program
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- House Competition Leaderboard -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>🏆 House Competition</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="leaderboard">
+                                <div class="leaderboard-item first-place">
+                                    <div class="rank">🥇</div>
+                                    <div class="house-name">W1 House</div>
+                                    <div class="points">2,450 pts</div>
+                                </div>
+                                <div class="leaderboard-item second-place">
+                                    <div class="rank">🥈</div>
+                                    <div class="house-name">W2 House</div>
+                                    <div class="points">2,380 pts</div>
+                                </div>
+                                <div class="leaderboard-item third-place">
+                                    <div class="rank">🥉</div>
+                                    <div class="house-name">W3 House</div>
+                                    <div class="points">2,290 pts</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Players Page -->
+            <div id="players" class="page">
+                <div class="page-header">
+                    <h1>Player Management</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showAddPlayerForm()">Add New Player</button>
+                    </div>
+                </div>
+
+                <div class="players-grid">
+                    <!-- Player cards will be dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Housing Page -->
+            <div id="house-management" class="page">
+                <div class="page-header">
+                    <h1>House Management</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary staff-only" onclick="showCreateChoreForm()" style="display: none;">Create New Chore</button>
+                    </div>
+                </div>
+
+                <div class="chores-content">
+                    <!-- Chores will be populated here -->
+                </div>
+            </div>
+
+            <!-- Food Orders Page -->
+            <div id="food-orders" class="page">
+                <div class="page-header">
+                    <h1>Individual Food Orders</h1>
+                    <div class="header-actions">
+                        <div class="budget-info">
+                            <span class="budget-label">Your Budget:</span>
+                            <span class="budget-amount">€35.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-orders-content">
+                    <!-- Food orders content will be populated here -->
+                </div>
+            </div>
+
+            <!-- Communications Page -->
+            <div id="communications" class="page">
+                <div class="page-header">
+                    <h1>Communications</h1>
+                </div>
+
+                <div class="communications-content">
+                    <div class="whatsapp-style-chat">
+                        <div class="chat-header">
+                            <h3>FC Köln Team Chat</h3>
+                            <div class="online-indicator">24 members online</div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages will be populated here -->
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" id="messageInput" placeholder="Type a message..." class="chat-input">
+                            <button onclick="sendMessage()" class="send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Page -->
+            <div id="calendar" class="page">
+                <div class="page-header">
+                    <h1>Calendar</h1>
+                    <div class="header-actions">
+                        <div class="calendar-controls">
+                            <button class="btn btn-secondary" onclick="changeCalendarView('day')">Day</button>
+                            <button class="btn btn-secondary active" onclick="changeCalendarView('week')">Week</button>
+                            <button class="btn btn-secondary" onclick="changeCalendarView('month')">Month</button>
+                        </div>
+                        <button class="btn btn-primary staff-only" onclick="showAddEventForm()" style="display: none;">Add Event</button>
+                    </div>
+                </div>
+
+                <div class="calendar-content">
+                    <!-- Calendar will be populated here -->
+                </div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="admin" class="page admin-only" style="display: none;">
+                <div class="page-header">
+                    <h1>Administration</h1>
+                </div>
+
+                <div class="admin-content">
+                    <div class="admin-tabs">
+                        <button class="admin-tab-btn active" onclick="showAdminTab('users')">User Management</button>
+                        <button class="admin-tab-btn" onclick="showAdminTab('settings')">Settings</button>
+                    </div>
+
+                    <!-- User Management Tab -->
+                    <div id="adminUsersTab" class="admin-tab-content" style="display: block;">
+                        <div class="admin-section">
+                            <h3>User Management</h3>
+                            <div class="user-management">
+                                <!-- User management content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div id="adminSettingsTab" class="admin-tab-content" style="display: none;">
+                        <div class="admin-section">
+                            <h3>System Settings</h3>
+                            <div class="settings-content">
+                                <!-- Settings content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals and Overlays -->
+    <div id="modalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
