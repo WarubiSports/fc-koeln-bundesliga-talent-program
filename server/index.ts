@@ -17,6 +17,17 @@ app.get('/healthz/ready', (_req, res) => {
   res.send('OK');
 });
 
+// Version endpoint
+const COMMIT = process.env.RAILWAY_GIT_COMMIT_SHA || process.env.COMMIT_SHA || 'unknown';
+app.get('/version', (_req, res) => {
+  res.json({
+    name: 'fc-koeln-itp',
+    commit: COMMIT,
+    node: process.version,
+    ts: new Date().toISOString(),
+  });
+});
+
 // Middlewares
 app.use(helmet());
 app.use(cors());
