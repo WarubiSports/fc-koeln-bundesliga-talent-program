@@ -1,0 +1,9 @@
+{
+  "server/**/*.{ts,tsx}": [
+    "eslint --fix",
+    "prettier -w"
+  ],
+  "client/**/*.{ts,tsx,js,jsx,css,html,json,md}": [
+    "prettier -w"
+  ]
+}

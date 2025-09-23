@@ -4,42 +4,46 @@ const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
 const fs = require("node:fs"); // <- const, not aconst
 const app = express();
-
-    // Auto-detect a UI build and serve it at "/"
-// Auto-detect a UI build and serve it at "/"
 const UI_CANDIDATES = [
-  'client/client-dist', // ✅ prefer the newer build here
-  'client-dist',
-  'client',
-  'public',
-  'attached_assets'
+  'client/client-dist',  // ✅ first: Vite build inside client/
+  'client-dist',         // fallback: root-level build
+  'public',              // fallback
+  'attached_assets'      // last resort
 ];
-    let uiDir = null;
-    let uiIndex = null;
 
-    for (const dir of UI_CANDIDATES) {
-      const candidate = path.join(process.cwd(), dir, 'index.html');
-      if (fs.existsSync(candidate)) {
-        uiDir = path.dirname(candidate);
-        uiIndex = candidate;
-        break;
-      }
-    }
+let uiDir = null;
+let uiIndex = null;
+for (const dir of UI_CANDIDATES) {
+  const candidate = path.join(process.cwd(), dir, 'index.html');
+  if (fs.existsSync(candidate)) {
+    uiDir = path.dirname(candidate);
+    uiIndex = candidate;
+    break;
+  }
+}
 
-    if (uiDir && uiIndex) {
-      app.use(express.static(uiDir));
-      app.get('/', (_req, res) => res.sendFile(uiIndex));
-      console.log('[startup] Serving UI from:', uiDir);
-    } else {
-      console.log('[startup] No UI index.html found in', UI_CANDIDATES.join(', '));
-      // Fallback: redirect root to login if your SPA doesn't exist yet
-      app.get('/', (_req, res) => res.redirect('/login'));
-    }
+if (uiDir && uiIndex) {
+  app.use(express.static(uiDir));
+  app.get('/', (_req, res) => res.sendFile(uiIndex));
+  console.log('[startup] Serving UI from:', uiDir);
+} else {
+  console.log('[startup] No UI index.html found in', UI_CANDIDATES.join(', '));
+  app.get('/', (_req, res) => res.status(503).send('UI not built'));
+const nonApiFallback = /^\/(?!api|attached_assets|healthz).*/;
+  app.get(nonApiFallback, (_req, res) => res.sendFile(uiIndex));
+
+} else {
+  console.log('[startup] No UI index.html found in', UI_CANDIDATES.join(', '));
+  app.get('/', (_req, res) => res.status(503).send('UI not built'));
+}
+
+app.get('/healthz/ready', (_req, res) => {
+  res.send('OK');
+});
 app.get('/healthz/ready', (_req, res) => {
   res.send('OK');
 });
 const PORT = process.env.PORT || 5000;
-
 // Configure SendGrid
 if (process.env.SENDGRID_API_KEY) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -10838,7 +10842,48 @@ app.get("/api/dashboard/house-competition", (req, res) => {
 
     res.json({ success: true, houses, weekChallenges });
 });
+app.get("/api/dashboard/house-competition", (req, res) => {
+    const houses = [ /* … */ ];
+    res.json({ success: true, houses });
+});
 
+// ---------- SPA UI serving (AFTER your API routes) ----------
+const UI_CANDIDATES = [
+  'client/client-dist',
+  'client-dist',
+  'client',
+  'public',
+  'attached_assets'
+];
+
+let uiDir = null;
+let uiIndex = null;
+
+for (const dir of UI_CANDIDATES) {
+  const candidate = path.join(process.cwd(), dir, 'index.html');
+  if (fs.existsSync(candidate)) {
+    uiDir = path.dirname(candidate);
+    uiIndex = candidate;
+    break;
+  }
+}
+
+if (uiDir && uiIndex) {
+  app.use(express.static(uiDir, {
+    index: false,
+    maxAge: '1h',
+    etag: true
+  }));
+
+  app.get(/^\/(?!api|healthz\/ready|attached_assets|robots\.txt|favicon\.ico).*/, (_req, res) => {
+    res.sendFile(uiIndex);
+  });
+
+  console.log('[startup] Serving SPA from:', uiDir);
+} else {
+console.log('[startup] No UI index.html found in:', UI_CANDIDATES.join(', '));
+  app.get('/', (_req, res) => res.status(503).send('UI not built'));
+}
 app.listen(PORT, "0.0.0.0", () => {
     console.log(
         "🚀 1.FC Köln Bundesliga Talent Program - STABLE PERMANENT SYSTEM",

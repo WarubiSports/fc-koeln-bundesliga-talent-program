@@ -126,16 +126,16 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.server.json --noEmit",
     "build": "tsc -p tsconfig.server.json",
-    "dev": "(pkill -f 'tsx watch server/index.ts' || true) && (fuser -k 3000/tcp 2>/dev/null || true) && tsx watch server/index.ts"  ,
-    "start": "node --enable-source-maps --loader tsx server/index.ts",  
-    "ui:install": "npm --prefix client ci",       
-    "ui:build": "npm --prefix client run build",  
-    "postinstall": "npm run ui:install && npm run ui:build",
+    "dev": "tsx watch server/index.ts",                    // Replit dev (same entry as prod)
+    "start": "node --enable-source-maps --loader tsx server/index.ts",  // Railway + local prod
+    "ui:install": "npm --prefix client ci",               // install client deps
+    "ui:build": "npm --prefix client run build",          // build Vite app -> client/client-dist
+    "postinstall": "npm run ui:install && npm run ui:build", // Railway auto-builds UI
     "lint": "eslint \"server/**/*.ts\" --ignore-pattern \"server/**/__tests__/**\"",
     "fmt": "prettier -w .",
     "test": "vitest run",
     "prepare": "husky"
-  },
+  }
   "keywords": [],
   "author": "",
   "license": "ISC",
