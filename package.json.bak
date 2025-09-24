@@ -125,42 +125,33 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.server.json --noEmit",
-    "build": "tsc -p tsconfig.server.json",
-    "dev": "tsx watch server/index.ts",                    // Replit dev (same entry as prod)
-    "start": "node --enable-source-maps --loader tsx server/index.ts",  // Railway + local prod
-    "ui:install": "npm --prefix client ci",               // install client deps
-    "ui:build": "npm --prefix client run build",          // build Vite app -> client/client-dist
-    "postinstall": "npm run ui:install && npm run ui:build", // Railway auto-builds UI
-    "lint": "eslint \"server/**/*.ts\" --ignore-pattern \"server/**/__tests__/**\"",
-    "fmt": "prettier -w .",
+    "build:server": "tsc -p tsconfig.server.json",
+    "copy-ui": "mkdir -p client-dist && cp -R client/client-dist/* client-dist/ 2>/dev/null || true",
+    "build": "npm run build:server && npm run ui:build && npm run copy-ui",
+    "prestart": "npm run build",
+    "dev": "tsx watch server/index.ts",
+    "start": "node dist/index.js",
+    "ui:install": "npm --prefix client ci",
+    "ui:build": "npm --prefix client run build",
+    "postinstall": "npm run ui:install && npm run ui:build",
+    "lint": "eslint \"{server,client}/**/*.{ts,tsx}\" --ignore-pattern \"**/__tests__/**\"",
+    "fmt": "prettier -w \"**/*.{js,ts,tsx,json,md}\" --ignore-path .gitignore",
+    "clean": "rimraf dist client-dist",
+    "check": "npm run typecheck && npm run lint && npm test",
     "test": "vitest run",
+    "test:watch": "vitest",
     "prepare": "husky"
-  }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "engines": {
-    "node": ">=18.20.4"
+    "node": "20.x"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/helmet": "^0.0.48",
     "@types/node": "^24.3.1",
-    "@types/supertest": "^6.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
-    "eslint": "^9.35.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
-    "prettier": "^3.6.2",
-    "supertest": "^7.1.4",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.5",
-    "turbo": "^2.5.6",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.0",
-    "vitest": "^3.2.4"
-  }
-}
+    "@

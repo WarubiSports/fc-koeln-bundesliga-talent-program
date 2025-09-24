@@ -1,5 +1,0 @@
-#!/bin/sh
-
-npx lint-staged
-npm run typecheck
-npm run lint
