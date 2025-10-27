@@ -4,6 +4,7 @@ import { apps } from '../app-registry.schema';
 import { eq } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { logger } from '../utils/logger';
+import { getAllMetrics } from '../middleware/metrics';
 
 const router = express.Router();
 const sha256 = (s: string) => crypto.createHash("sha256").update(s, "utf8").digest("hex");
@@ -207,6 +208,27 @@ router.post('/apps/:id/regenerate-key', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to regenerate API key'
+    });
+  }
+});
+
+/**
+ * GET /admin/metrics - Get platform-wide metrics for all apps
+ */
+router.get('/metrics', (_req, res) => {
+  try {
+    const metrics = getAllMetrics();
+    
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      metrics,
+    });
+  } catch (error) {
+    logger.error('Failed to get metrics', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve metrics',
     });
   }
 });

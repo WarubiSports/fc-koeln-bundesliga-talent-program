@@ -59,6 +59,10 @@ app.use('/api/*', attachAppContext);
 app.use('/api/*', corsPerApp);
 app.use('/api/*', rateLimitPerApp);
 
+// Metrics collection (after auth, before routes)
+import { metricsCollector, getAllMetrics } from './middleware/metrics.js';
+app.use('/api/*', metricsCollector);
+
 // Ping endpoint (authenticated)
 app.get('/api/ping', (req, res) => {
   res.status(200).json({ 
@@ -84,6 +88,24 @@ app.get('/api/info', (req, res) => {
   });
 });
 
+// Metrics endpoint (for monitoring)
+app.get('/api/metrics', (req, res) => {
+  const appId = req.appCtx?.id;
+  
+  if (!appId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const { getAppMetrics } = require('./middleware/metrics.js');
+  const metrics = getAppMetrics(appId);
+
+  res.status(200).json({
+    success: true,
+    appId,
+    metrics,
+  });
+});
+
 // App-specific routes (mounted under /api) - ES Module version
 import fckolnRoutes from './routes/fckoln.mjs';
 app.use('/api', fckolnRoutes);
@@ -91,7 +113,8 @@ app.use('/api', fckolnRoutes);
 // Admin routes (for managing apps) - PROTECTED by admin authentication
 import adminRoutes from './routes/admin.js';
 import { requireAdminAuth } from './middleware/adminAuth.js';
-app.use('/admin', requireAdminAuth, adminRoutes);
+import { adminRateLimit } from './middleware/adminRateLimit.js';
+app.use('/admin', adminRateLimit, requireAdminAuth, adminRoutes);
 
 // Error logging middleware (before error handler)
 app.use(errorLogger);
