@@ -2,7 +2,9 @@ const express = require("express");
 const path = require("path");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const fs = require("node:fs"); // <- const, not aconst
+const { db, pool } = require("./server/db.cjs");
 const app = express();
 
     // Auto-detect a UI build and serve it at "/"
@@ -226,24 +228,43 @@ let foodOrders = [];
 let messages = [];
 
 // Authentication endpoints
-app.post("/auth/login", (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find(
-        (u) => u.email === email && u.password === password,
-    );
+app.post("/auth/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Query database for user
+        const result = await db.execute(`SELECT * FROM users WHERE email = $1 LIMIT 1`, [email]);
+        const user = result.rows[0];
 
-    if (user) {
-        const userResponse = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-        };
-        res.json({ success: true, user: userResponse });
-    } else {
-        res.status(401).json({
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials",
+            });
+        }
+
+        // Verify password with bcrypt
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (passwordMatch) {
+            const userResponse = {
+                id: user.id,
+                email: user.email,
+                name: user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.username || user.email,
+                role: user.role,
+            };
+            res.json({ success: true, user: userResponse });
+        } else {
+            res.status(401).json({
+                success: false,
+                message: "Invalid credentials",
+            });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
             success: false,
-            message: "Invalid credentials",
+            message: "An error occurred during login",
         });
     }
 });
