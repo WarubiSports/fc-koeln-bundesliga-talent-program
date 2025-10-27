@@ -82,10 +82,10 @@ app.get('/api/info', (req, res) => {
 
 // TODO: Add app-specific routes here (will be added when migrating FC Köln)
 
-// Admin routes (for managing apps)
-// WARNING: In production, these should be behind authentication
+// Admin routes (for managing apps) - PROTECTED by admin authentication
 import adminRoutes from './routes/admin';
-app.use('/admin', adminRoutes);
+import { requireAdminAuth } from './middleware/adminAuth';
+app.use('/admin', requireAdminAuth, adminRoutes);
 
 // Global error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
