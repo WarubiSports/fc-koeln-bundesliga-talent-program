@@ -8,7 +8,17 @@ This is a full-stack web application, rebranded as "1.FC Köln Bundesliga Talent
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (August 2025)
+## Recent Changes (October 2025)
+- **FC Köln Successfully Migrated to Warubi Multi-App Platform (October 27, 2025)**: Hybrid approach successfully integrated FC Köln with platform authentication
+  - Platform infrastructure: API key authentication (SHA256), per-app rate limiting (600 req/min), CORS management, admin API
+  - Database multi-tenancy: Added app_id columns to all 8 tables, updated 894 FC Köln records with app_id = 'fckoln'
+  - Hybrid migration approach: Created JavaScript wrapper (fckoln.mjs) preserving 11,000-line working codebase while integrating platform authentication
+  - Development-friendly middleware: Localhost requests auto-default to 'fckoln' app without X-App-Key header requirement
+  - Architect approval: Multi-tenancy isolation verified, app_id filtering working correctly, security requirements met
+  - API testing confirmed: /api/players endpoint returns 16 FC Köln players with proper tenant isolation
+  - Next steps: Add automated tests for tenant isolation, extend validation to remaining routes, document provisioning guidelines
+
+## Previous Changes (August 2025)
 - **Deployment Breakthrough (August 21, 2025)**: Successfully resolved deployment "Internal Server Error" issue
   - Root cause identified: Missing Express dependency in deployment environment
   - Solution implemented: Replaced Express with Node.js built-in HTTP module to eliminate external dependencies
