@@ -195,3 +195,28 @@ export const apps = pgTable("apps", {
 });
 
 export type App = typeof apps.$inferSelect;
+
+// Legacy FC Köln tables - to be migrated
+export const sessions = pgTable("sessions", {
+  sid: varchar("sid").primaryKey(),
+  sess: jsonb("sess").notNull(),
+  expire: timestamp("expire").notNull(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant
+  userId: varchar("user_id"),
+  title: varchar("title"),
+  message: text("message"),
+  type: varchar("type"),
+  isRead: boolean("is_read").default(false),
+  actionUrl: varchar("action_url"),
+  relatedEventId: integer("related_event_id"),
+  scheduledFor: timestamp("scheduled_for"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Session = typeof sessions.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;

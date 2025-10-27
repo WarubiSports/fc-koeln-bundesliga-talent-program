@@ -1,0 +1,39 @@
+# FC Köln ITP - API Key
+
+**CRITICAL: Keep this key secure and confidential**
+
+App ID: fckoln
+App Name: 1.FC Köln ITP
+API Key: fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505
+
+## Usage
+
+All API requests to the Warubi Platform must include this key in the header:
+
+```
+X-App-Key: fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505
+```
+
+## Settings
+
+- Rate Limit: 600 requests/minute
+- Allowed Origins: http://localhost:5173, http://localhost:5000
+- Status: Active
+
+## Example Request
+
+```bash
+curl -H "X-App-Key: fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505" \
+     http://localhost:3000/api/ping
+```
+
+## Security Notes
+
+- Do NOT commit this file to version control
+- Rotate this key if compromised
+- Store in environment variables for production (APPKEY_FCKOLN)
+- Backend will hash and validate against: 62aee4f6352ae53e7eba8e1ce97d18b12f41b9bb3d074b15108f1bb83f2d2a9d
+
+---
+Generated: January 2025
+Platform Version: 1.0.0
