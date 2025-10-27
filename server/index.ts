@@ -80,10 +80,9 @@ app.get('/api/info', (req, res) => {
   });
 });
 
-// App-specific routes (mounted under /api)
-// import fckolnRoutes from './routes/fckoln.js';
-// app.use('/api', fckolnRoutes);
-// TODO: Re-enable after fixing drizzle-orm type conflicts
+// App-specific routes (mounted under /api) - JavaScript version to avoid TypeScript conflicts
+const fckolnRoutes = require('./routes/fckoln.js');
+app.use('/api', fckolnRoutes);
 
 // Admin routes (for managing apps) - PROTECTED by admin authentication
 import adminRoutes from './routes/admin.js';
