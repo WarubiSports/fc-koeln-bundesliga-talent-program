@@ -1,11 +1,11 @@
-import "./config/validateEnv";
+import "./config/validateEnv.js";
 import 'dotenv/config';
 import express from 'express';
-import { attachAppContext } from './middleware/appContext';
-import { corsPerApp } from './middleware/corsPerApp';
-import { rateLimitPerApp } from './middleware/rateLimit';
-import { logger } from './utils/logger';
-import { pool } from './db';
+import { attachAppContext } from './middleware/appContext.js';
+import { corsPerApp } from './middleware/corsPerApp.js';
+import { rateLimitPerApp } from './middleware/rateLimit.js';
+import { logger } from './utils/logger.js';
+import { pool } from './db.js';
 
 const app = express();
 
@@ -83,8 +83,8 @@ app.get('/api/info', (req, res) => {
 // TODO: Add app-specific routes here (will be added when migrating FC Köln)
 
 // Admin routes (for managing apps) - PROTECTED by admin authentication
-import adminRoutes from './routes/admin';
-import { requireAdminAuth } from './middleware/adminAuth';
+import adminRoutes from './routes/admin.js';
+import { requireAdminAuth } from './middleware/adminAuth.js';
 app.use('/admin', requireAdminAuth, adminRoutes);
 
 // Global error handler
