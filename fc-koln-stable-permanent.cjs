@@ -61,8 +61,7 @@ const users = [
     },
 ];
 
-// Password reset tokens storage
-const passwordResetTokens = new Map();
+// Password reset tokens storage - REMOVED (now using database)
 
 // Data storage
 let players = [
@@ -269,58 +268,79 @@ app.post("/auth/login", async (req, res) => {
     }
 });
 
-app.post("/auth/register", (req, res) => {
-    const { email, password, name, role } = req.body;
+app.post("/auth/register", async (req, res) => {
+    try {
+        const { email, password, name, role } = req.body;
 
-    if (users.find((u) => u.email === email)) {
-        return res
-            .status(400)
-            .json({ success: false, message: "User already exists" });
+        // Check if user already exists
+        const existingUser = await db.execute(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
+        if (existingUser.rows.length > 0) {
+            return res
+                .status(400)
+                .json({ success: false, message: "User already exists" });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Parse name into first and last name
+        const nameParts = (name || email).split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        // Insert new user into database
+        const result = await db.execute(
+            `INSERT INTO users (id, email, password, first_name, last_name, role, username, status, approved, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+             RETURNING id, email, first_name, last_name, role`,
+            [email, email, hashedPassword, firstName, lastName, role || 'player', email, 'pending', 'false']
+        );
+
+        const newUser = result.rows[0];
+
+        const userResponse = {
+            id: newUser.id,
+            email: newUser.email,
+            name: `${newUser.first_name} ${newUser.last_name}`.trim(),
+            role: newUser.role,
+        };
+
+        res.json({ success: true, user: userResponse });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred during registration",
+        });
     }
-
-    const newUser = {
-        id: `user_${Date.now()}`,
-        email,
-        password,
-        name,
-        role: role || "player",
-    };
-
-    users.push(newUser);
-
-    const userResponse = {
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-        role: newUser.role,
-    };
-
-    res.json({ success: true, user: userResponse });
 });
 
 app.post("/auth/forgot-password", async (req, res) => {
-    const { email } = req.body;
-    const user = users.find((u) => u.email === email);
+    try {
+        const { email } = req.body;
+        
+        // Query database for user
+        const result = await db.execute(`SELECT * FROM users WHERE email = $1 LIMIT 1`, [email]);
+        const user = result.rows[0];
 
-    if (!user) {
-        return res
-            .status(404)
-            .json({ success: false, message: "Email not found" });
-    }
+        if (!user) {
+            return res
+                .status(404)
+                .json({ success: false, message: "Email not found" });
+        }
 
-    // Generate secure reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const tokenExpiry = Date.now() + 3600000; // 1 hour from now
+        // Generate secure reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const tokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
-    // Store token
-    passwordResetTokens.set(resetToken, {
-        userId: user.id,
-        email: user.email,
-        expires: tokenExpiry,
-    });
+        // Store token in database (using users table password_reset fields)
+        await db.execute(
+            `UPDATE users SET password_reset_token = $1, password_reset_expiry = $2 WHERE id = $3`,
+            [resetToken, tokenExpiry, user.id]
+        );
 
-    // Create reset link
-    const resetLink = `${req.protocol}://${req.get("host")}/reset-password?token=${resetToken}`;
+        // Create reset link
+        const resetLink = `${req.protocol}://${req.get("host")}/reset-password?token=${resetToken}`;
 
     // Send email if SendGrid is configured
     if (process.env.SENDGRID_API_KEY) {
@@ -336,7 +356,7 @@ app.post("/auth/forgot-password", async (req, res) => {
                         </div>
                         <div style="padding: 20px; background: #f9f9f9;">
                             <h2>Password Reset Request</h2>
-                            <p>Hello ${user.name},</p>
+                            <p>Hello ${user.first_name || 'there'},</p>
                             <p>We received a request to reset your password for your FC Köln Talent Program account.</p>
                             <p>Click the button below to reset your password:</p>
                             <div style="text-align: center; margin: 30px 0;">
@@ -376,68 +396,98 @@ app.post("/auth/forgot-password", async (req, res) => {
                 "Password reset instructions sent to your email (check console for link)",
         });
     }
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred processing your request",
+        });
+    }
 });
 
 // Password reset endpoint
-app.post("/auth/reset-password", (req, res) => {
-    const { token, newPassword } = req.body;
+app.post("/auth/reset-password", async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
 
-    if (!token || !newPassword) {
-        return res.status(400).json({
+        if (!token || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Token and new password are required",
+            });
+        }
+
+        // Query user by reset token
+        const result = await db.execute(
+            `SELECT * FROM users WHERE password_reset_token = $1 LIMIT 1`,
+            [token]
+        );
+        const user = result.rows[0];
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired reset token",
+            });
+        }
+
+        // Check if token has expired
+        if (user.password_reset_expiry && new Date() > new Date(user.password_reset_expiry)) {
+            // Clear expired token
+            await db.execute(
+                `UPDATE users SET password_reset_token = NULL, password_reset_expiry = NULL WHERE id = $1`,
+                [user.id]
+            );
+            return res
+                .status(400)
+                .json({ success: false, message: "Reset token has expired" });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password and clear reset token
+        await db.execute(
+            `UPDATE users SET password = $1, password_reset_token = NULL, password_reset_expiry = NULL WHERE id = $2`,
+            [hashedPassword, user.id]
+        );
+
+        console.log(`Password successfully reset for: ${user.email}`);
+        res.json({
+            success: true,
+            message: "Password has been reset successfully",
+        });
+    } catch (error) {
+        console.error('Password reset error:', error);
+        res.status(500).json({
             success: false,
-            message: "Token and new password are required",
+            message: "An error occurred resetting your password",
         });
     }
-
-    const tokenData = passwordResetTokens.get(token);
-
-    if (!tokenData) {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid or expired reset token",
-        });
-    }
-
-    if (Date.now() > tokenData.expires) {
-        passwordResetTokens.delete(token);
-        return res
-            .status(400)
-            .json({ success: false, message: "Reset token has expired" });
-    }
-
-    // Find user and update password
-    const user = users.find((u) => u.id === tokenData.userId);
-    if (!user) {
-        return res
-            .status(404)
-            .json({ success: false, message: "User not found" });
-    }
-
-    // Update password
-    user.password = newPassword;
-
-    // Remove used token
-    passwordResetTokens.delete(token);
-
-    console.log(`Password successfully reset for: ${user.email}`);
-    res.json({
-        success: true,
-        message: "Password has been reset successfully",
-    });
 });
 
 // Password reset page route
-app.get("/reset-password", (req, res) => {
-    const { token } = req.query;
+app.get("/reset-password", async (req, res) => {
+    try {
+        const { token } = req.query;
 
-    if (!token) {
-        return res.status(400).send("Invalid reset link");
-    }
+        if (!token) {
+            return res.status(400).send("Invalid reset link");
+        }
 
-    const tokenData = passwordResetTokens.get(token);
+        // Query database for token
+        const result = await db.execute(
+            `SELECT * FROM users WHERE password_reset_token = $1 LIMIT 1`,
+            [token]
+        );
+        const user = result.rows[0];
 
-    if (!tokenData || Date.now() > tokenData.expires) {
-        return res.status(400).send("Invalid or expired reset link");
+        if (!user || !user.password_reset_expiry || new Date() > new Date(user.password_reset_expiry)) {
+            return res.status(400).send("Invalid or expired reset link");
+        }
+    } catch (error) {
+        console.error('Reset password page error:', error);
+        return res.status(500).send("An error occurred");
     }
 
     // Serve password reset page
