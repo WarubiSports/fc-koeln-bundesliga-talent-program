@@ -716,7 +716,8 @@ app.get("/api/users", (req, res) => {
     res.json({ success: true, users: allUsers });
 });
 
-app.post("/api/applications/:id/approve", (req, res) => {
+app.post("/api/applications/:id/approve", async (req, res) => {
+    try {
     // Only allow admin access
     if (
         !req.session ||
@@ -753,35 +754,80 @@ app.post("/api/applications/:id/approve", (req, res) => {
 
     // Create user account based on application type
     if (application.type === "player") {
-        // Add as player
-        const newPlayer = {
-            id: "p" + Date.now(),
+        // Add as player to database
+        const newPlayerId = Date.now();
+        const nameParts = application.name.split(' ');
+        const assignedHouse = assignPlayerToHouse(); // Call once and reuse
+        
+        await db.execute(
+            `INSERT INTO players (first_name, last_name, email, date_of_birth, nationality, position, status, house, age)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [
+                nameParts[0] || '',
+                nameParts.slice(1).join(' ') || '',
+                application.email,
+                application.age ? new Date().toISOString() : null, // placeholder
+                application.nationality,
+                application.position,
+                'active',
+                assignedHouse,
+                application.age
+            ]
+        );
+        
+        // Also add to players array for in-memory operations (temporary until full migration)
+        players.push({
+            id: "p" + newPlayerId,
             name: application.name,
             age: application.age,
             position: application.position,
             nationality: application.nationality,
-            house: assignPlayerToHouse(), // Helper function to assign house
+            house: assignedHouse, // Use same house assignment
             status: "active",
             joinDate: new Date().toISOString(),
-        };
-        players.push(newPlayer);
+        });
     } else if (application.type === "staff") {
-        // Add as staff user
-        const newUser = {
-            id: "staff" + Date.now(),
-            name: application.name,
-            email: application.email,
-            role: "staff",
-            department: application.department,
-            password: "TempPass123", // Should generate secure password and send via email
-        };
-        users.push(newUser);
+        // Generate secure temporary password
+        const tempPassword = crypto.randomBytes(8).toString('hex');
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        
+        // Add staff user to database
+        const nameParts = application.name.split(' ');
+        await db.execute(
+            `INSERT INTO users (id, email, password, first_name, last_name, role, department, username, status, approved, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
+            [
+                application.email,
+                application.email,
+                hashedPassword,
+                nameParts[0] || '',
+                nameParts.slice(1).join(' ') || '',
+                'staff',
+                application.department,
+                application.email,
+                'active',
+                'true'
+            ]
+        );
+        
+        // TODO: Send email with temporary password to staff member
+        // SECURITY: Remove this log in production - temporary password should only be emailed
+        if (process.env.NODE_ENV !== 'production') {
+            console.log(`Staff account created for ${application.email} with temp password: ${tempPassword}`);
+        }
     }
     res.json({
         success: true,
         message: "Application approved successfully",
         application: application,
     });
+    } catch (error) {
+        console.error('Application approval error:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred approving the application",
+        });
+    }
 });
 app.post("/api/applications/:id/reject", (req, res) => {
     // Only allow admin access
