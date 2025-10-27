@@ -80,7 +80,10 @@ app.get('/api/info', (req, res) => {
   });
 });
 
-// TODO: Add app-specific routes here (will be added when migrating FC Köln)
+// App-specific routes (mounted under /api)
+// import fckolnRoutes from './routes/fckoln.js';
+// app.use('/api', fckolnRoutes);
+// TODO: Re-enable after fixing drizzle-orm type conflicts
 
 // Admin routes (for managing apps) - PROTECTED by admin authentication
 import adminRoutes from './routes/admin.js';
