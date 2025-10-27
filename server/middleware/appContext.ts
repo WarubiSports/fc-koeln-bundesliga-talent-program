@@ -21,7 +21,24 @@ const sha256 = (s: string) => crypto.createHash("sha256").update(s, "utf8").dige
 export async function attachAppContext(req: Request, res: Response, next: NextFunction) {
   try {
     // Extract API key from header
-    const apiKey = req.headers['x-app-key'] as string | undefined;
+    let apiKey = req.headers['x-app-key'] as string | undefined;
+    
+    // DEVELOPMENT MODE: Allow same-origin requests without API key, default to fckoln
+    if (!apiKey && process.env.NODE_ENV !== 'production') {
+      const origin = req.headers.origin || req.headers.referer;
+      const isLocalhost = !origin || origin.includes('localhost') || origin.includes('127.0.0.1');
+      
+      if (isLocalhost) {
+        // Default to FC Köln app for development
+        req.appCtx = {
+          id: 'fckoln',
+          name: '1.FC Köln ITP',
+          origins: ['http://localhost:5173', 'http://localhost:5000'],
+          rps: 600
+        };
+        return next();
+      }
+    }
     
     if (!apiKey) {
       return res.status(401).json({ 

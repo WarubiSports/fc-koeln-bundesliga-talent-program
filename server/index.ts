@@ -80,8 +80,8 @@ app.get('/api/info', (req, res) => {
   });
 });
 
-// App-specific routes (mounted under /api) - JavaScript version to avoid TypeScript conflicts
-const fckolnRoutes = require('./routes/fckoln.js');
+// App-specific routes (mounted under /api) - ES Module version
+import fckolnRoutes from './routes/fckoln.mjs';
 app.use('/api', fckolnRoutes);
 
 // Admin routes (for managing apps) - PROTECTED by admin authentication
@@ -99,9 +99,17 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 // Start server
-const PORT = Number(process.env.PORT || 3000);
-const server = app.listen(PORT, () => {
-  logger.info('Server started', { port: PORT, env: process.env.NODE_ENV });
+const PORT = Number(process.env.PORT || 5000);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  logger.info('Warubi Platform started', { 
+    port: PORT, 
+    env: process.env.NODE_ENV || 'development',
+    defaultApp: 'fckoln' 
+  });
+  console.log(`🚀 Warubi Multi-App Platform`);
+  console.log(`📍 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`🔑 Apps registered: core, fckoln`);
+  console.log(`✅ FC Köln auto-enabled for localhost requests`);
 });
 
 // Graceful shutdown handler
