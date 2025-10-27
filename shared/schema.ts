@@ -5,6 +5,7 @@ import { sql } from "drizzle-orm";
 // Users table - comprehensive user management (admins, staff, players)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this user belongs to
   email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -43,6 +44,7 @@ export type User = typeof users.$inferSelect;
 // Players table - separate player management
 export const players = pgTable("players", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this player belongs to
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").notNull(),
@@ -71,6 +73,7 @@ export type Player = typeof players.$inferSelect;
 // Events table - calendar and scheduling
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this event belongs to
   title: text("title").notNull(),
   eventType: text("event_type").notNull(),
   date: text("date").notNull(),
@@ -94,6 +97,7 @@ export type Event = typeof events.$inferSelect;
 // Messages table
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this message belongs to
   fromUserId: varchar("from_user_id"),
   toUserId: varchar("to_user_id"),
   subject: varchar("subject"),
@@ -110,6 +114,7 @@ export type Message = typeof messages.$inferSelect;
 // Chores table
 export const chores = pgTable("chores", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this chore belongs to
   title: text("title"),
   description: text("description"),
   category: text("category"),
@@ -133,6 +138,7 @@ export type Chore = typeof chores.$inferSelect;
 // Grocery orders table
 export const groceryOrders = pgTable("grocery_orders", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this order belongs to
   playerName: varchar("player_name"),
   weekStartDate: varchar("week_start_date"),
   deliveryDay: varchar("delivery_day"),
@@ -157,6 +163,7 @@ export type GroceryOrder = typeof groceryOrders.$inferSelect;
 // Applications table - for pending staff/player applications
 export const applications = pgTable("applications", {
   id: serial("id").primaryKey(),
+  appId: varchar("app_id"), // Multi-tenant: which app this application belongs to
   name: text("name").notNull(),
   email: text("email").notNull(),
   age: integer("age"),
