@@ -4,6 +4,7 @@ import express from 'express';
 import { attachAppContext } from './middleware/appContext.js';
 import { corsPerApp } from './middleware/corsPerApp.js';
 import { rateLimitPerApp } from './middleware/rateLimit.js';
+import { requestLogger, errorLogger } from './middleware/requestLogger.js';
 import { logger } from './utils/logger.js';
 import { pool } from './db.js';
 
@@ -11,6 +12,9 @@ const app = express();
 
 // Parse JSON
 app.use(express.json());
+
+// Request logging (before all routes)
+app.use(requestLogger);
 
 // Public health endpoints (no auth required)
 app.get('/healthz', (_req, res) => {
@@ -89,12 +93,15 @@ import adminRoutes from './routes/admin.js';
 import { requireAdminAuth } from './middleware/adminAuth.js';
 app.use('/admin', requireAdminAuth, adminRoutes);
 
+// Error logging middleware (before error handler)
+app.use(errorLogger);
+
 // Global error handler
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  logger.error('Unhandled error', err);
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   res.status(500).json({
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
+    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
+    correlationId: req.correlationId, // Include correlation ID for debugging
   });
 });
 
