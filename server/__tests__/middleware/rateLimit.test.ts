@@ -62,17 +62,19 @@ describe('Rate Limiting Middleware', () => {
 
   it('should respect per-app rate limits', () => {
     mockReq.appCtx!.rps = 2; // Very low limit
+    const mockNext1 = vi.fn();
+    const mockNext2 = vi.fn();
+    const mockNext3 = vi.fn();
 
     // First request - should pass
-    rateLimitPerApp(mockReq as Request, mockRes as Response, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    rateLimitPerApp(mockReq as Request, mockRes as Response, mockNext1);
+    expect(mockNext1).toHaveBeenCalled();
 
     // Second request - should pass
-    rateLimitPerApp(mockReq as Request, mockRes as Response, mockNext);
-    expect(mockNext).toHaveBeenCalled();
+    rateLimitPerApp(mockReq as Request, mockRes as Response, mockNext2);
+    expect(mockNext2).toHaveBeenCalled();
 
     // Third request - should be rate limited
-    const mockNext3 = vi.fn();
     rateLimitPerApp(mockReq as Request, mockRes as Response, mockNext3);
     
     expect(mockRes.status).toHaveBeenCalledWith(429);
@@ -80,5 +82,6 @@ describe('Rate Limiting Middleware', () => {
       error: 'Rate limit exceeded',
       message: expect.stringContaining('Too many requests'),
     });
+    expect(mockNext3).not.toHaveBeenCalled();
   });
 });
