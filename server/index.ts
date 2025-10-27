@@ -1,3 +1,4 @@
+import "./config/validateEnv";
 import 'dotenv/config';
 import express from 'express';
 
