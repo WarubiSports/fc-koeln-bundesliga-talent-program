@@ -1,10 +1,14 @@
 // server/index.ts
 import express from 'express';
 import type { Request, Response } from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import path from 'node:path';
 import fs from 'node:fs';
+
+// ⬇️ NEW: multi-app bits
+import { attachAppContext } from './middleware/appContext';
+import { corsPerApp } from './middleware/corsPerApp';
+import { verifyUserJwt } from './auth/jwt';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -28,10 +32,37 @@ app.get('/version', (_req, res) => {
   });
 });
 
-// Middlewares
+// Middlewares (global)
 app.use(helmet());
-app.use(cors());
 app.use(express.json());
+
+// ⬇️ NEW: /v1 API with multi-app middleware
+const v1 = express.Router();
+
+// attach per-app context (single-app mode works if MULTIAPP_STRICT=false)
+v1.use(attachAppContext);
+
+// apply dynamic CORS based on the current app’s allowed origins
+v1.use(corsPerApp);
+
+// example public endpoint
+v1.get('/ping', (req, res) => {
+  res.json({ ok: true, app: req.appCtx?.id });
+});
+
+// example protected endpoint (requires Bearer token; enforces audience if strict)
+v1.get('/secure-example', (req, res) => {
+  const token = req.header('authorization')?.replace(/^bearer\s+/i, '');
+  if (!token || !req.appCtx) return res.status(401).json({ error: 'Missing token' });
+  try {
+    verifyUserJwt(token, req.appCtx.id);
+  } catch {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+  res.json({ secret: '42', app: req.appCtx.id });
+});
+
+app.use('/v1', v1);
 
 // Serve React build (ONLY from client/client-dist)
 const CLIENT_DIR = path.join(process.cwd(), 'client', 'client-dist');
@@ -55,9 +86,15 @@ if (hasIndex) {
     }),
   );
 
-  // SPA fallback (don’t intercept API/health)
+  // SPA fallback (don’t intercept API/health/version)
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) return next();
+    if (
+      req.path.startsWith('/v1') ||
+      req.path.startsWith('/healthz') ||
+      req.path.startsWith('/version')
+    ) {
+      return next();
+    }
     res.sendFile(path.join(CLIENT_DIR, 'index.html'));
   });
 } else {
@@ -66,6 +103,8 @@ if (hasIndex) {
 }
 
 // 404 for API requests
+app.use('/v1', (_req, res) => res.status(404).json({ error: 'Not found' }));
+// (optional legacy) keep /api 404 if anything still points there
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Not found' }));
 
 // Error handler
@@ -73,6 +112,7 @@ app.use((err: unknown, _req: Request, res: Response) => {
   console.error('[error]', err);
   res.status(500).json({ error: 'Internal error' });
 });
+
 // Start server (SAVE the server handle for graceful shutdown)
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
