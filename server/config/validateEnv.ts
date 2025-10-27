@@ -1,9 +1,10 @@
 import "dotenv/config";
 
-const required = ["DATABASE_URL", "SESSION_SECRET", "JWT_SECRET"];
-const missing = required.filter((k) => !process.env[k]); 
-if (missing.length) {
-  // Don’t print actual secret values, only keys
-  console.error("❌ Missing environment variables:", missing.join(", "));
-  process.exit(1);
+const requiredInProd = ["DATABASE_URL", "SESSION_SECRET", "JWT_SECRET"];
+if (process.env.NODE_ENV === "production") {
+  const missing = requiredInProd.filter((k) => !process.env[k]);
+  if (missing.length) {
+    console.error("❌ Missing environment variables (production):", missing.join(", "));
+    process.exit(1);
+  }
 }

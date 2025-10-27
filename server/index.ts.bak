@@ -1,73 +1,32 @@
+import "./config/validateEnv";
+import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import path from 'node:path';
-import fs from 'node:fs';
 
 const app = express();
 
-// 🟢 Step 1: Health endpoints FIRST
-app.get('/healthz', (_req, res) => {
-  res.json({ ok: true, ts: new Date().toISOString() });
-});
-
-app.get('/healthz/ready', (_req, res) => {
-  res.send('OK');
-});
-
-// Middlewares (security, JSON parser, etc.)
-app.use(helmet());
-app.use(cors());
+// Parse JSON just in case
 app.use(express.json());
 
-  // 🟢 Step 2: Serve client build (prefer client/client-dist)
-  const CANDIDATES = [
-    // when running from /server with tsx
-    path.resolve(__dirname, '..', 'client', 'client-dist'),
-    // when running from project root
-    path.join(process.cwd(), 'client', 'client-dist'),
-    // fallbacks (older layouts)
-    path.join(process.cwd(), 'client-dist'),
-    path.join(process.cwd(), 'public'),
-  ];
+// Health endpoints
+app.get('/healthz', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+app.get('/healthz/ready', (_req, res) => {
+  res.status(200).json({ status: 'ready' });
+});
 
-  console.log('[startup] UI candidates:');
-  for (const c of CANDIDATES) {
-    const ok = fs.existsSync(path.join(c, 'index.html'));
-    console.log('  ->', c, ok ? '(index.html found)' : '(missing)');
-  }
+// Ping
+app.get('/v1/ping', (_req, res) => {
+  res.status(200).json({ pong: true, ts: new Date().toISOString() });
+});
 
-  const UI_DIR = CANDIDATES.find(c => fs.existsSync(path.join(c, 'index.html')));
+// Root (optional)
+app.get('/', (_req, res) => {
+  res.status(200).json({ name: 'workspace', status: 'running' });
+});
 
-  if (UI_DIR) {
-    console.log('[startup] Serving client from:', UI_DIR);
-    app.use(express.static(UI_DIR));
-
-    // Serve "/" explicitly (so "Cannot GET /" never happens)
-    app.get('/', (_req, res) => res.sendFile(path.join(UI_DIR, 'index.html')));
-
-    // SPA fallback (don’t intercept API/health)
-    app.get('*', (req, res, next) => {
-      if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) return next();
-      res.sendFile(path.join(UI_DIR, 'index.html'));
-    });
-  } else {
-    console.log('[startup] client build not found — skipping static hosting');
-    app.get('/', (_req, res) => res.status(503).send('UI not built'));
-  }
-  // Catch-all: send index.html for non-API, non-health routes
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) {
-      return next();
-    }
-    res.sendFile(path.join(CLIENT_DIR, 'index.html'));
-  });
-} else {
-  console.log('[startup] client-dist not found — skipping static hosting');
-}
-
-// Start server
-const PORT = process.env.PORT || 3000;
+// Bind port
+const PORT = Number(process.env.PORT || 3000);
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`[server] listening on http://localhost:${PORT}`);
 });

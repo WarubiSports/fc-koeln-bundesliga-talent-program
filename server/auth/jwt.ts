@@ -1,15 +1,30 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
+const SECRET = process.env.JWT_SECRET || "dev_secret";
 
-export function signUserJwt(userId: string, roles: string[], appId?: string) {
-  const payload: any = { sub: userId, roles };
-  if (appId) payload.aud = appId; // optional in single-app mode
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '12h' });
+export type JwtPayload = { sub: string; email: string; app?: string };
+
+export function signToken(payload: JwtPayload, expiresIn = "7d") {
+  return jwt.sign(payload, SECRET, { expiresIn });
 }
 
-export function verifyUserJwt(token: string, expectedAppId?: string) {
-  const STRICT = (process.env.MULTIAPP_STRICT ?? 'false') === 'true';
-  // In strict mode, enforce audience (appId). Otherwise, verify without audience requirement.
-  return jwt.verify(token, JWT_SECRET, STRICT && expectedAppId ? { audience: expectedAppId } : {});
+export function verifyToken(token: string): JwtPayload | null {
+  try {
+    return jwt.verify(token, SECRET) as JwtPayload;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Optional stricter verification used by multi-app routes.
+ * Throws on invalid token or audience mismatch.
+ */
+export function verifyUserJwt(token: string, expectedAppId?: string): JwtPayload {
+  const payload = verifyToken(token);
+  if (!payload) throw new Error("invalid_token");
+  if (expectedAppId && payload.app && payload.app !== expectedAppId) {
+    throw new Error("audience_mismatch");
+  }
+  return payload;
 }
