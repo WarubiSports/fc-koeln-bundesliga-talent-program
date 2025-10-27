@@ -154,6 +154,28 @@ export const groceryOrders = pgTable("grocery_orders", {
 
 export type GroceryOrder = typeof groceryOrders.$inferSelect;
 
+// Applications table - for pending staff/player applications
+export const applications = pgTable("applications", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  age: integer("age"),
+  position: text("position"),
+  nationality: text("nationality"),
+  type: text("type").notNull(), // 'player' or 'staff'
+  department: text("department"),
+  applicationDate: timestamp("application_date").defaultNow(),
+  status: text("status").notNull().default('pending'), // 'pending', 'approved', 'rejected'
+  notes: text("notes"),
+  documents: text("documents"), // JSON array as text
+  approvedAt: timestamp("approved_at"),
+  approvedBy: text("approved_by"),
+  rejectedAt: timestamp("rejected_at"),
+  rejectedBy: text("rejected_by"),
+});
+
+export type Application = typeof applications.$inferSelect;
+
 // Apps table (existing from template)
 export const apps = pgTable("apps", {
   id: varchar("id", { length: 40 }).primaryKey(),

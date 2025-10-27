@@ -43,25 +43,8 @@ if (process.env.SENDGRID_API_KEY) {
 app.use(express.json()); // Parse JSON request bodies
 app.use("/attached_assets", express.static("attached_assets"));
 
-// In-memory storage (replace with database in production)
-const users = [
-    {
-        id: "admin1",
-        email: "max.bisinger@warubi-sports.com",
-        password: "ITP2024",
-        name: "Max Bisinger",
-        role: "admin",
-    },
-    {
-        id: "staff1",
-        email: "thomas.ellinger@warubi-sports.com",
-        password: "ITP2024",
-        name: "Thomas Ellinger",
-        role: "staff",
-    },
-];
-
-// Password reset tokens storage - REMOVED (now using database)
+// ✅ SECURITY: Hardcoded users removed - all user data now stored in PostgreSQL database with bcrypt hashed passwords
+// ✅ SECURITY: Password reset tokens now stored in database (users.password_reset_token field)
 
 // Data storage
 let players = [
@@ -624,8 +607,38 @@ app.get("/reset-password", async (req, res) => {
 });
 
 // API endpoints
-app.get("/api/players", (req, res) => {
-    res.json({ success: true, players });
+app.get("/api/players", async (req, res) => {
+    try {
+        // Query players from database
+        const result = await db.execute(
+            `SELECT id, first_name, last_name, email, age, position, nationality, status, house, created_at 
+             FROM players ORDER BY created_at DESC`
+        );
+        
+        // Format database players
+        const dbPlayers = result.rows.map(row => ({
+            id: row.id.toString(),
+            name: `${row.first_name} ${row.last_name}`.trim(),
+            email: row.email,
+            age: row.age,
+            position: row.position,
+            nationality: row.nationality,
+            status: row.status,
+            house: row.house,
+            joinDate: row.created_at,
+        }));
+        
+        // Combine with in-memory players temporarily
+        const allPlayers = [...dbPlayers, ...players];
+        
+        res.json({ success: true, players: allPlayers });
+    } catch (error) {
+        console.error('Error fetching players:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred fetching players",
+        });
+    }
 });
 
 // Update player status endpoint
@@ -663,57 +676,112 @@ app.put("/api/players/:playerId/status", (req, res) => {
 });
 
 // User Management API endpoints
-app.get("/api/applications", (req, res) => {
-    // Only allow admin access
-    if (
-        !req.session ||
-        !req.session.user ||
-        req.session.user.role !== "admin"
-    ) {
-        return res.status(403).json({
+app.get("/api/applications", async (req, res) => {
+    try {
+        // Only allow admin access
+        if (
+            !req.session ||
+            !req.session.user ||
+            req.session.user.role !== "admin"
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Admin access required",
+            });
+        }
+
+        // Query pending applications from database
+        const result = await db.execute(
+            `SELECT * FROM applications WHERE status = 'pending' ORDER BY application_date DESC`
+        );
+        
+        // Also include in-memory applications temporarily
+        const inMemoryPending = pendingApplications.filter(app => app.status === "pending");
+        
+        // Combine database and in-memory applications
+        const allApplications = [
+            ...result.rows.map(row => ({
+                id: row.id.toString(),
+                name: row.name,
+                email: row.email,
+                age: row.age,
+                position: row.position,
+                nationality: row.nationality,
+                type: row.type,
+                department: row.department,
+                applicationDate: row.application_date,
+                status: row.status,
+                notes: row.notes,
+                documents: row.documents ? JSON.parse(row.documents) : [],
+            })),
+            ...inMemoryPending
+        ];
+
+        res.json({ success: true, applications: allApplications });
+    } catch (error) {
+        console.error('Error fetching applications:', error);
+        res.status(500).json({
             success: false,
-            message: "Admin access required",
+            message: "An error occurred fetching applications",
         });
     }
-
-    const pendingApps = pendingApplications.filter(
-        (app) => app.status === "pending",
-    );
-    res.json({ success: true, applications: pendingApps });
 });
 
-app.get("/api/users", (req, res) => {
-    // Only allow admin access
-    if (
-        !req.session ||
-        !req.session.user ||
-        req.session.user.role !== "admin"
-    ) {
-        return res.status(403).json({
+app.get("/api/users", async (req, res) => {
+    try {
+        // Only allow admin access
+        if (
+            !req.session ||
+            !req.session.user ||
+            req.session.user.role !== "admin"
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Admin access required",
+            });
+        }
+
+        // Query users from database (staff and admin users)
+        const usersResult = await db.execute(
+            `SELECT id, email, first_name, last_name, role FROM users WHERE role IN ('admin', 'staff')`
+        );
+        
+        // Query players from database
+        const playersResult = await db.execute(
+            `SELECT id, first_name, last_name, email FROM players`
+        );
+
+        // Combine database users with players
+        const allUsers = [
+            ...usersResult.rows.map((user) => ({
+                id: user.id,
+                name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+                email: user.email,
+                role: user.role,
+            })),
+            ...playersResult.rows.map((player) => ({
+                id: player.id.toString(),
+                name: `${player.first_name || ''} ${player.last_name || ''}`.trim(),
+                email: player.email || `${player.first_name}.${player.last_name}@player.com`.toLowerCase(),
+                role: "player",
+            })),
+            // Also include in-memory players temporarily until full migration
+            ...players.map((player) => ({
+                id: player.id,
+                name: player.name,
+                email: player.email || player.name.toLowerCase().replace(" ", ".") + "@player.com",
+                role: "player",
+            })),
+        ];
+
+        res.json({ success: true, users: allUsers });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({
             success: false,
-            message: "Admin access required",
+            message: "An error occurred fetching users",
         });
     }
-
-    // Combine actual users with players as user objects
-    const allUsers = [
-        ...users.map((user) => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        })),
-        ...players.map((player) => ({
-            id: player.id,
-            name: player.name,
-            email:
-                player.email ||
-                player.name.toLowerCase().replace(" ", ".") + "@player.com",
-            role: "player",
-        })),
-    ];
-
-    res.json({ success: true, users: allUsers });
 });
 
 app.post("/api/applications/:id/approve", async (req, res) => {
@@ -731,7 +799,23 @@ app.post("/api/applications/:id/approve", async (req, res) => {
     }
 
     const { id } = req.params;
-    const application = pendingApplications.find((app) => app.id === id);
+    
+    // Try to find application in database first
+    const dbResult = await db.execute(
+        `SELECT * FROM applications WHERE id = $1 LIMIT 1`,
+        [id]
+    );
+    
+    let application = null;
+    let isFromDatabase = false;
+    
+    if (dbResult.rows.length > 0) {
+        application = dbResult.rows[0];
+        isFromDatabase = true;
+    } else {
+        // Fallback to in-memory applications
+        application = pendingApplications.find((app) => app.id === id);
+    }
 
     if (!application) {
         return res.status(404).json({
@@ -747,10 +831,22 @@ app.post("/api/applications/:id/approve", async (req, res) => {
         });
     }
 
-    // Approve the application
-    application.status = "approved";
-    application.approvedAt = new Date().toISOString();
-    application.approvedBy = req.session.user.id;
+    // Update application status in database if it exists there
+    if (isFromDatabase) {
+        await db.execute(
+            `UPDATE applications 
+             SET status = 'approved', 
+                 approved_at = NOW(), 
+                 approved_by = $1 
+             WHERE id = $2`,
+            [req.session.user.id, id]
+        );
+    } else {
+        // Update in-memory application
+        application.status = "approved";
+        application.approvedAt = new Date().toISOString();
+        application.approvedBy = req.session.user.id;
+    }
 
     // Create user account based on application type
     if (application.type === "player") {
@@ -829,111 +925,218 @@ app.post("/api/applications/:id/approve", async (req, res) => {
         });
     }
 });
-app.post("/api/applications/:id/reject", (req, res) => {
-    // Only allow admin access
-    if (
-        !req.session ||
-        !req.session.user ||
-        req.session.user.role !== "admin"
-    ) {
-        return res.status(403).json({
+app.post("/api/applications/:id/reject", async (req, res) => {
+    try {
+        // Only allow admin access
+        if (
+            !req.session ||
+            !req.session.user ||
+            req.session.user.role !== "admin"
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Admin access required",
+            });
+        }
+
+        const { id } = req.params;
+        
+        // Try to find application in database first
+        const dbResult = await db.execute(
+            `SELECT * FROM applications WHERE id = $1 LIMIT 1`,
+            [id]
+        );
+        
+        let application = null;
+        let isFromDatabase = false;
+        
+        if (dbResult.rows.length > 0) {
+            application = dbResult.rows[0];
+            isFromDatabase = true;
+        } else {
+            // Fallback to in-memory applications
+            application = pendingApplications.find((app) => app.id === id);
+        }
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
+        }
+
+        if (application.status !== "pending") {
+            return res.status(400).json({
+                success: false,
+                message: "Application already processed",
+            });
+        }
+
+        // Update application status in database if it exists there
+        if (isFromDatabase) {
+            await db.execute(
+                `UPDATE applications 
+                 SET status = 'rejected', 
+                     rejected_at = NOW(), 
+                     rejected_by = $1 
+                 WHERE id = $2`,
+                [req.session.user.id, id]
+            );
+        } else {
+            // Update in-memory application
+            application.status = "rejected";
+            application.rejectedAt = new Date().toISOString();
+            application.rejectedBy = req.session.user.id;
+        }
+
+        res.json({
+            success: true,
+            message: "Application rejected",
+            application: {
+                id: application.id,
+                name: application.name,
+                status: "rejected",
+            },
+        });
+    } catch (error) {
+        console.error('Error rejecting application:', error);
+        res.status(500).json({
             success: false,
-            message: "Admin access required",
+            message: "An error occurred rejecting the application",
         });
     }
-
-    const { id } = req.params;
-    const application = pendingApplications.find((app) => app.id === id);
-
-    if (!application) {
-        return res.status(404).json({
-            success: false,
-            message: "Application not found",
-        });
-    }
-
-    if (application.status !== "pending") {
-        return res.status(400).json({
-            success: false,
-            message: "Application already processed",
-        });
-    }
-
-    // Reject the application
-    application.status = "rejected";
-    application.rejectedAt = new Date().toISOString();
-    application.rejectedBy = req.session.user.id;
-
-    res.json({
-        success: true,
-        message: "Application rejected",
-        application: application,
-    });
 });
 
 // Update user endpoint
-app.patch("/api/users/:id", (req, res) => {
-    // Only allow admin access
-    if (
-        !req.session ||
-        !req.session.user ||
-        req.session.user.role !== "admin"
-    ) {
-        return res.status(403).json({
-            success: false,
-            message: "Admin access required",
-        });
-    }
-
-    const { id } = req.params;
-    const updatedData = req.body;
-
-    // Find user in appropriate array
-    let userFound = false;
-    let userArray = null;
-    let userIndex = -1;
-
-    // Check in players array
-    userIndex = players.findIndex((p) => p.id === id);
-    if (userIndex !== -1) {
-        userArray = players;
-        userFound = true;
-    }
-
-    // Check in users array (staff/admin)
-    if (!userFound) {
-        userIndex = users.findIndex((u) => u.id === id);
-        if (userIndex !== -1) {
-            userArray = users;
-            userFound = true;
+app.patch("/api/users/:id", async (req, res) => {
+    try {
+        // Only allow admin access
+        if (
+            !req.session ||
+            !req.session.user ||
+            req.session.user.role !== "admin"
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Admin access required",
+            });
         }
-    }
 
-    if (!userFound) {
+        const { id } = req.params;
+        const updatedData = req.body;
+
+        // Try to find user in database users table (staff/admin)
+        const userResult = await db.execute(
+            `SELECT * FROM users WHERE id = $1 LIMIT 1`,
+            [id]
+        );
+
+        if (userResult.rows.length > 0) {
+            // Update user in database
+            const nameParts = updatedData.name ? updatedData.name.split(' ') : [];
+            await db.execute(
+                `UPDATE users 
+                 SET email = COALESCE($1, email),
+                     first_name = COALESCE($2, first_name),
+                     last_name = COALESCE($3, last_name),
+                     role = COALESCE($4, role),
+                     updated_at = NOW()
+                 WHERE id = $5`,
+                [
+                    updatedData.email || null,
+                    nameParts[0] || null,
+                    nameParts.slice(1).join(' ') || null,
+                    updatedData.role || null,
+                    id
+                ]
+            );
+
+            return res.json({
+                success: true,
+                message: "User updated successfully",
+                user: {
+                    id: id,
+                    name: updatedData.name || `${userResult.rows[0].first_name} ${userResult.rows[0].last_name}`,
+                    email: updatedData.email || userResult.rows[0].email,
+                    role: updatedData.role || userResult.rows[0].role,
+                },
+            });
+        }
+
+        // Try to find in database players table
+        const playerResult = await db.execute(
+            `SELECT * FROM players WHERE id = $1 LIMIT 1`,
+            [id]
+        );
+
+        if (playerResult.rows.length > 0) {
+            // Update player in database
+            const nameParts = updatedData.name ? updatedData.name.split(' ') : [];
+            await db.execute(
+                `UPDATE players 
+                 SET email = COALESCE($1, email),
+                     first_name = COALESCE($2, first_name),
+                     last_name = COALESCE($3, last_name),
+                     house = COALESCE($4, house),
+                     age = COALESCE($5, age),
+                     position = COALESCE($6, position)
+                 WHERE id = $7`,
+                [
+                    updatedData.email || null,
+                    nameParts[0] || null,
+                    nameParts.slice(1).join(' ') || null,
+                    updatedData.house || null,
+                    updatedData.age || null,
+                    updatedData.position || null,
+                    id
+                ]
+            );
+
+            return res.json({
+                success: true,
+                message: "Player updated successfully",
+                user: {
+                    id: id,
+                    name: updatedData.name || `${playerResult.rows[0].first_name} ${playerResult.rows[0].last_name}`,
+                    email: updatedData.email || playerResult.rows[0].email,
+                    role: "player",
+                },
+            });
+        }
+
+        // Also check in-memory players array temporarily
+        const playerIndex = players.findIndex((p) => p.id === id);
+        if (playerIndex !== -1) {
+            const player = players[playerIndex];
+            player.name = updatedData.name || player.name;
+            player.email = updatedData.email || player.email;
+            player.house = updatedData.house || player.house;
+            player.age = updatedData.age || player.age;
+            player.position = updatedData.position || player.position;
+
+            return res.json({
+                success: true,
+                message: "Player updated successfully (in-memory)",
+                user: {
+                    id: player.id,
+                    name: player.name,
+                    email: player.email,
+                    role: "player",
+                },
+            });
+        }
+
         return res.status(404).json({
             success: false,
             message: "User not found",
         });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred updating the user",
+        });
     }
-
-    // Update user data
-    const user = userArray[userIndex];
-    user.name = updatedData.name || user.name;
-    user.email = updatedData.email || user.email;
-    user.role = updatedData.role || user.role;
-
-    // Update player-specific fields if applicable
-    if (updatedData.role === "player" && userArray === players) {
-        user.house = updatedData.house || user.house;
-        user.age = updatedData.age || user.age;
-        user.position = updatedData.position || user.position;
-    }
-
-    res.json({
-        success: true,
-        message: "User updated successfully",
-        user: user,
-    });
 });
 
 // Helper function to assign player to house with least members
@@ -949,15 +1152,65 @@ function assignPlayerToHouse() {
     return houseCounts[0].house;
 }
 
-app.post("/api/players", (req, res) => {
-    const player = {
-        id: `player_${Date.now()}`,
-        ...req.body,
-        joinDate: new Date().toISOString(),
-        status: "active",
-    };
-    players.push(player);
-    res.json({ success: true, player });
+app.post("/api/players", async (req, res) => {
+    try {
+        const { name, age, position, nationality, house, email } = req.body;
+        const nameParts = name ? name.split(' ') : ['', ''];
+        
+        // Insert player into database
+        const result = await db.execute(
+            `INSERT INTO players (first_name, last_name, email, age, position, nationality, status, house, date_of_birth)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+             RETURNING id, first_name, last_name, email, age, position, nationality, status, house, created_at`,
+            [
+                nameParts[0] || '',
+                nameParts.slice(1).join(' ') || '',
+                email || `${name.toLowerCase().replace(/\s+/g, '.')}@player.com`,
+                age || null,
+                position || 'MIDFIELDER',
+                nationality || 'Germany',
+                'active',
+                house || assignPlayerToHouse()
+            ]
+        );
+        
+        const newPlayer = result.rows[0];
+        
+        // Also add to in-memory array temporarily
+        const player = {
+            id: `player_${Date.now()}`,
+            name: name,
+            age: age,
+            position: position,
+            nationality: nationality,
+            house: house || assignPlayerToHouse(),
+            email: email,
+            joinDate: new Date().toISOString(),
+            status: "active",
+        };
+        players.push(player);
+        
+        res.json({ 
+            success: true, 
+            player: {
+                id: newPlayer.id.toString(),
+                name: `${newPlayer.first_name} ${newPlayer.last_name}`.trim(),
+                age: newPlayer.age,
+                position: newPlayer.position,
+                nationality: newPlayer.nationality,
+                house: newPlayer.house,
+                email: newPlayer.email,
+                status: newPlayer.status,
+                joinDate: newPlayer.created_at,
+            }
+        });
+    } catch (error) {
+        console.error('Error creating player:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred creating the player",
+        });
+    }
 });
 
 app.get("/api/chores", (req, res) => {
@@ -1058,18 +1311,95 @@ app.patch("/api/chores/:id/assign", (req, res) => {
     res.json({ success: true, chore });
 });
 
-app.get("/api/calendar", (req, res) => {
-    res.json({ success: true, events: calendarEvents });
+app.get("/api/calendar", async (req, res) => {
+    try {
+        // Query events from database
+        const result = await db.execute(
+            `SELECT * FROM events ORDER BY date DESC, start_time ASC`
+        );
+        
+        // Format database events
+        const dbEvents = result.rows.map(row => ({
+            id: row.id.toString(),
+            title: row.title,
+            eventType: row.event_type,
+            date: row.date,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            location: row.location,
+            notes: row.notes,
+            createdBy: row.created_by,
+            createdDate: row.created_at,
+            participants: row.participants,
+        }));
+        
+        // Combine with in-memory events temporarily
+        const allEvents = [...dbEvents, ...calendarEvents];
+        
+        res.json({ success: true, events: allEvents });
+    } catch (error) {
+        console.error('Error fetching calendar events:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred fetching calendar events",
+        });
+    }
 });
 
-app.post("/api/calendar", (req, res) => {
-    const event = {
-        id: `event_${Date.now()}`,
-        ...req.body,
-        createdDate: new Date().toISOString(),
-    };
-    calendarEvents.push(event);
-    res.json({ success: true, event });
+app.post("/api/calendar", async (req, res) => {
+    try {
+        const { title, eventType, date, startTime, endTime, location, notes, createdBy, participants } = req.body;
+        
+        // Insert event into database
+        const result = await db.execute(
+            `INSERT INTO events (title, event_type, date, start_time, end_time, location, notes, created_by, participants)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+             RETURNING *`,
+            [
+                title,
+                eventType || 'meeting',
+                date,
+                startTime || '09:00',
+                endTime || '10:00',
+                location || '',
+                notes || '',
+                createdBy || 'admin',
+                participants || ''
+            ]
+        );
+        
+        const newEvent = result.rows[0];
+        
+        // Also add to in-memory array temporarily
+        const event = {
+            id: `event_${Date.now()}`,
+            ...req.body,
+            createdDate: new Date().toISOString(),
+        };
+        calendarEvents.push(event);
+        
+        res.json({ 
+            success: true, 
+            event: {
+                id: newEvent.id.toString(),
+                title: newEvent.title,
+                eventType: newEvent.event_type,
+                date: newEvent.date,
+                startTime: newEvent.start_time,
+                endTime: newEvent.end_time,
+                location: newEvent.location,
+                notes: newEvent.notes,
+                createdBy: newEvent.created_by,
+                createdDate: newEvent.created_at,
+            }
+        });
+    } catch (error) {
+        console.error('Error creating calendar event:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred creating the calendar event",
+        });
+    }
 });
 
 app.get("/api/food-orders", (req, res) => {
@@ -1088,30 +1418,121 @@ app.post("/api/food-orders", (req, res) => {
 });
 
 // Delete player endpoint
-app.delete("/api/players/:id", (req, res) => {
-    const playerId = req.params.id;
-    const playerIndex = players.findIndex((p) => p.id === playerId);
+app.delete("/api/players/:id", async (req, res) => {
+    try {
+        const playerId = req.params.id;
+        
+        // Try to delete from database first
+        const dbResult = await db.execute(
+            `DELETE FROM players WHERE id = $1 RETURNING id`,
+            [playerId]
+        );
+        
+        if (dbResult.rows.length > 0) {
+            return res.json({ success: true, message: "Player removed successfully from database" });
+        }
+        
+        // Fallback to in-memory array
+        const playerIndex = players.findIndex((p) => p.id === playerId);
 
-    if (playerIndex === -1) {
-        return res.json({ success: false, message: "Player not found" });
+        if (playerIndex === -1) {
+            return res.json({ success: false, message: "Player not found" });
+        }
+
+        players.splice(playerIndex, 1);
+        res.json({ success: true, message: "Player removed successfully" });
+    } catch (error) {
+        console.error('Error deleting player:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred deleting the player",
+        });
     }
-
-    players.splice(playerIndex, 1);
-    res.json({ success: true, message: "Player removed successfully" });
 });
 
-app.get("/api/messages", (req, res) => {
-    res.json({ success: true, messages });
+app.get("/api/messages", async (req, res) => {
+    try {
+        // Query messages from database (with 30-day retention)
+        const result = await db.execute(
+            `SELECT * FROM messages 
+             WHERE created_at >= NOW() - INTERVAL '30 days'
+             ORDER BY created_at DESC`
+        );
+        
+        // Format database messages
+        const dbMessages = result.rows.map(row => ({
+            id: row.id.toString(),
+            fromUserId: row.from_user_id,
+            toUserId: row.to_user_id,
+            subject: row.subject,
+            content: row.content,
+            isRead: row.is_read,
+            priority: row.priority,
+            messageType: row.message_type,
+            timestamp: row.created_at,
+        }));
+        
+        // Combine with in-memory messages temporarily
+        const allMessages = [...dbMessages, ...messages];
+        
+        res.json({ success: true, messages: allMessages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred fetching messages",
+        });
+    }
 });
 
-app.post("/api/messages", (req, res) => {
-    const message = {
-        id: `msg_${Date.now()}`,
-        ...req.body,
-        timestamp: new Date().toISOString(),
-    };
-    messages.push(message);
-    res.json({ success: true, message });
+app.post("/api/messages", async (req, res) => {
+    try {
+        const { fromUserId, toUserId, subject, content, priority, messageType } = req.body;
+        
+        // Insert message into database
+        const result = await db.execute(
+            `INSERT INTO messages (from_user_id, to_user_id, subject, content, is_read, priority, message_type)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING *`,
+            [
+                fromUserId,
+                toUserId,
+                subject || '',
+                content || '',
+                false,
+                priority || 'normal',
+                messageType || 'direct'
+            ]
+        );
+        
+        const newMessage = result.rows[0];
+        
+        // Also add to in-memory array temporarily
+        const message = {
+            id: `msg_${Date.now()}`,
+            ...req.body,
+            timestamp: new Date().toISOString(),
+        };
+        messages.push(message);
+        
+        res.json({ 
+            success: true, 
+            message: {
+                id: newMessage.id.toString(),
+                fromUserId: newMessage.from_user_id,
+                toUserId: newMessage.to_user_id,
+                subject: newMessage.subject,
+                content: newMessage.content,
+                timestamp: newMessage.created_at,
+            }
+        });
+    } catch (error) {
+        console.error('Error creating message:', error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred creating the message",
+        });
+    }
 });
 
 // Serve the FC Köln logo (deployment-safe)
