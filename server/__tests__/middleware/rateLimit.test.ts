@@ -1,6 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Request, Response, NextFunction } from 'express';
-import { rateLimitPerApp } from '../../middleware/rateLimit';
+
+// Import the middleware module to access and clear the store
+let rateLimitPerApp: any;
+let rateLimitStore: any;
+
+beforeEach(async () => {
+  // Re-import to get fresh module state
+  const module = await import('../../middleware/rateLimit');
+  rateLimitPerApp = module.rateLimitPerApp;
+  
+  // Clear the internal store by re-importing
+  vi.resetModules();
+});
 
 describe('Rate Limiting Middleware', () => {
   let mockReq: Partial<Request>;
@@ -11,7 +23,7 @@ describe('Rate Limiting Middleware', () => {
     mockReq = {
       ip: '127.0.0.1',
       appCtx: {
-        id: 'test-app',
+        id: `test-app-${Date.now()}`, // Unique app ID per test
         name: 'Test App',
         origins: [],
         rps: 10, // 10 requests per minute for testing
@@ -24,7 +36,6 @@ describe('Rate Limiting Middleware', () => {
     };
     mockNext = vi.fn();
 
-    // Clear rate limit store between tests
     vi.clearAllMocks();
   });
 
@@ -60,8 +71,19 @@ describe('Rate Limiting Middleware', () => {
     expect(mockNext).toHaveBeenCalledTimes(2);
   });
 
-  it('should respect per-app rate limits', () => {
-    mockReq.appCtx!.rps = 2; // Very low limit
+  it('should respect per-app rate limits', async () => {
+    // Get fresh module to avoid state pollution
+    const { rateLimitPerApp } = await import('../../middleware/rateLimit');
+    
+    // Use unique app ID to avoid conflicts
+    const uniqueAppId = `rate-limit-test-${Date.now()}`;
+    mockReq.appCtx = {
+      id: uniqueAppId,
+      name: 'Test App',
+      origins: [],
+      rps: 2, // Very low limit
+    };
+
     const mockNext1 = vi.fn();
     const mockNext2 = vi.fn();
     const mockNext3 = vi.fn();
@@ -80,7 +102,8 @@ describe('Rate Limiting Middleware', () => {
     expect(mockRes.status).toHaveBeenCalledWith(429);
     expect(mockRes.json).toHaveBeenCalledWith({
       error: 'Rate limit exceeded',
-      message: expect.stringContaining('Too many requests'),
+      message: 'Too many requests. Limit: 2 requests per minute',
+      retryAfter: expect.any(Number),
     });
     expect(mockNext3).not.toHaveBeenCalled();
   });
