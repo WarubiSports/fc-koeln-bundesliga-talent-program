@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { pool } from '../db.cjs';
-import { sendPasswordResetEmail } from '../utils/sendgrid.ts';
+import { sendPasswordResetEmail } from '../utils/sendgrid.mjs';
 
 const router = express.Router();
 
@@ -111,7 +111,7 @@ router.post('/auth/request-reset', async (req, res) => {
     );
 
     // Send email
-    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password`;
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html`;
     await sendPasswordResetEmail(user.email, resetToken, resetUrl);
 
     res.json({ 

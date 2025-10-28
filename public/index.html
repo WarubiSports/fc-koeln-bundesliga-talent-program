@@ -497,7 +497,7 @@
         // Forgot password handler
         document.querySelector('[data-testid="link-forgot-password"]').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Password reset functionality coming soon. Please contact your administrator.');
+            window.location.href = '/forgot-password.html';
         });
 
         // Request access handler

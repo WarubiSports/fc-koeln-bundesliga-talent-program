@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail';
 
-let connectionSettings: any;
+let connectionSettings;
 
 async function getCredentials() {
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME
@@ -39,7 +39,7 @@ export async function getUncachableSendGridClient() {
   };
 }
 
-export async function sendPasswordResetEmail(toEmail: string, resetToken: string, resetUrl: string) {
+export async function sendPasswordResetEmail(toEmail, resetToken, resetUrl) {
   const { client, fromEmail } = await getUncachableSendGridClient();
   
   const msg = {
