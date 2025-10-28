@@ -1,6 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { pool } from '../db.cjs';
+import { sendPasswordResetEmail } from '../utils/sendgrid.ts';
 
 const router = express.Router();
 
@@ -66,6 +68,123 @@ router.post('/auth/login', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Login failed' 
+    });
+  }
+});
+
+// Password Reset Request
+router.post('/auth/request-reset', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email is required' 
+      });
+    }
+
+    // Check if user exists
+    const result = await pool.query(
+      `SELECT id, email, first_name FROM users WHERE email = $1 AND app_id = $2 LIMIT 1`,
+      [email, req.appCtx.id]
+    );
+
+    // Always return success even if user doesn't exist (security best practice)
+    if (result.rows.length === 0) {
+      return res.json({ 
+        success: true, 
+        message: 'If an account exists with that email, a password reset link has been sent.' 
+      });
+    }
+
+    const user = result.rows[0];
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    // Save token to database
+    await pool.query(
+      `UPDATE users SET password_reset_token = $1, password_reset_expiry = $2 WHERE id = $3`,
+      [resetToken, resetExpiry, user.id]
+    );
+
+    // Send email
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password`;
+    await sendPasswordResetEmail(user.email, resetToken, resetUrl);
+
+    res.json({ 
+      success: true, 
+      message: 'If an account exists with that email, a password reset link has been sent.' 
+    });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to process password reset request' 
+    });
+  }
+});
+
+// Reset Password
+router.post('/auth/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Token and new password are required' 
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Password must be at least 8 characters long' 
+      });
+    }
+
+    // Find user with valid token
+    const result = await pool.query(
+      `SELECT id, email FROM users 
+       WHERE password_reset_token = $1 
+       AND password_reset_expiry > NOW() 
+       AND app_id = $2 
+       LIMIT 1`,
+      [token, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid or expired reset token' 
+      });
+    }
+
+    const user = result.rows[0];
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear reset token
+    await pool.query(
+      `UPDATE users 
+       SET password = $1, password_reset_token = NULL, password_reset_expiry = NULL 
+       WHERE id = $2`,
+      [hashedPassword, user.id]
+    );
+
+    res.json({ 
+      success: true, 
+      message: 'Password has been reset successfully' 
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to reset password' 
     });
   }
 });
