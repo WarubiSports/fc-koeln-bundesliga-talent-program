@@ -3,183 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1.FC Köln Bundesliga Talent Program</title>
+    <title>Login - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container { 
-            background: white; 
-            padding: 3rem; 
-            border-radius: 20px; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2); 
-            text-align: center; 
-            max-width: 700px; 
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .login-container {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            min-height: 100vh;
+        }
+
+        /* Left Panel - Login Form */
+        .form-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .form-content {
             width: 100%;
-            animation: fadeIn 1s ease-in;
+            max-width: 28rem;
+            background: white;
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* Header */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        .logo { 
-            color: #dc143c; 
-            font-size: 3rem; 
-            font-weight: bold; 
-            margin-bottom: 0.5rem; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+
+        .club-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
         }
-        .subtitle { 
-            color: #666; 
-            font-size: 1.2rem; 
-            margin-bottom: 2rem; 
+
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
         }
-        .status { 
-            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%); 
-            color: #155724; 
-            padding: 1.5rem; 
-            border-radius: 12px; 
-            margin: 2rem 0; 
-            border-left: 5px solid #28a745;
+
+        .page-subtitle {
+            font-size: 1.125rem;
+            color: #666;
         }
-        .info { 
-            text-align: left; 
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
-            padding: 2rem; 
-            border-radius: 12px; 
+
+        /* Form */
+        .login-form {
             margin-top: 2rem;
         }
-        .credentials { 
-            font-family: 'Courier New', monospace; 
-            background: #f1f3f4; 
-            padding: 1rem; 
-            border-radius: 8px; 
-            margin: 1rem 0;
-            border-left: 4px solid #dc143c;
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
         }
-        .feature-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #dc143c;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+        .form-input {
+            width: 100%;
+            height: 3rem;
+            padding: 0 1rem;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
         }
-        .btn {
+
+        .form-input:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .form-input:hover {
+            border-color: #d1d5db;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 1.125rem;
+            height: 1.125rem;
+            cursor: pointer;
+            accent-color: #dc143c;
+        }
+
+        .forgot-link {
+            color: #dc143c;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #b91c3c;
+        }
+
+        .submit-btn {
+            width: 100%;
+            height: 3rem;
             background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
             color: white;
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 50px;
             font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 1rem 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
         }
-        .btn:hover {
+
+        .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
         }
-        .timestamp {
-            color: #888;
-            font-size: 0.9rem;
-            margin-top: 1rem;
+
+        .submit-btn:active {
+            transform: translateY(0);
         }
-        h3 { color: #dc143c; margin-bottom: 0.5rem; }
-        h4 { color: #333; margin-top: 1rem; }
-        ul { margin-left: 1.5rem; }
-        li { margin: 0.3rem 0; }
+
+        .need-access {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .need-access a {
+            color: #dc143c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .need-access a:hover {
+            text-decoration: underline;
+        }
+
+        /* Trust Indicators */
+        .trust-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .security-icon {
+            width: 1rem;
+            height: 1rem;
+            fill: #10b981;
+        }
+
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .partner-logo {
+            font-size: 0.75rem;
+            color: #999;
+            font-weight: 600;
+        }
+
+        /* Right Panel - Hero */
+        .hero-panel {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, transparent 20%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.95;
+            max-width: 32rem;
+        }
+
+        .hero-features {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .feature-text {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1023px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-panel {
+                min-height: 30vh;
+                order: -1;
+            }
+
+            .hero-content {
+                padding: 2rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .hero-features {
+                display: none;
+            }
+
+            .form-content {
+                padding: 2rem;
+                border-radius: 1.5rem 1.5rem 0 0;
+                margin-top: -2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .form-panel {
+                padding: 1rem;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .hero-content > * {
+            animation: fadeInUp 0.8s ease-out;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">1.FC Köln</div>
-        <h1>Bundesliga Talent Program</h1>
-        <p class="subtitle">Management System</p>
-        
-        <div class="status">
-            <strong>✅ SYSTEM OPERATIONAL</strong><br>
-            Professional FC Köln Management System<br>
-            <span id="currentTime"></span>
+    <div class="login-container">
+        <!-- Left Panel - Login Form -->
+        <div class="form-panel">
+            <div class="form-content">
+                <div class="logo-section">
+                    <div class="club-logo">FC</div>
+                    <h1 class="page-title">Talent Program</h1>
+                    <p class="page-subtitle">Access your training dashboard</p>
+                </div>
+
+                <form class="login-form" id="loginForm" data-testid="form-login">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="form-input" 
+                            placeholder="your.name@fckoeln.de"
+                            required
+                            data-testid="input-email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="Enter your password"
+                            required
+                            data-testid="input-password"
+                        >
+                    </div>
+
+                    <div class="remember-forgot">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember" data-testid="checkbox-remember">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-link" data-testid="link-forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn" data-testid="button-signin">Sign In</button>
+                </form>
+
+                <div class="need-access">
+                    Need access? <a href="#" data-testid="link-request-access">Request account</a>
+                </div>
+
+                <div class="trust-section">
+                    <div class="security-badge">
+                        <svg class="security-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Secure Login</span>
+                    </div>
+                    <div class="partner-logos">
+                        <div class="partner-logo">BUNDESLIGA</div>
+                        <div class="partner-logo">DFB</div>
+                        <div class="partner-logo">UEFA</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="info">
-            <h3>Welcome to Your Management System</h3>
-            <p>The comprehensive FC Köln Management System is ready for production use with all features fully developed and tested.</p>
-            
-            <h4>Admin Access Credentials</h4>
-            <div class="credentials">
-                <strong>Email:</strong> max.bisinger@warubi-sports.com<br>
-                <strong>Password:</strong> ITP2024
-            </div>
-            
-            <h4>Complete System Features</h4>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <strong>Player Management</strong><br>
-                    House assignments (W1, W2, W3) and status tracking
+
+        <!-- Right Panel - Hero -->
+        <div class="hero-panel">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h2 class="hero-title">Welcome to<br>1.FC Köln</h2>
+                <p class="hero-subtitle">Bundesliga Talent Program - Your gateway to professional football development</p>
+                
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-text">Track your training progress</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📅</div>
+                        <div class="feature-text">Manage schedules and events</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💬</div>
+                        <div class="feature-text">Connect with coaches and staff</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-text">Achieve your goals</div>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <strong>Chore Management</strong><br>
-                    Priority levels, deadlines, and role-based access
-                </div>
-                <div class="feature-card">
-                    <strong>Calendar System</strong><br>
-                    iCalendar with daily/weekly/monthly views
-                </div>
-                <div class="feature-card">
-                    <strong>Food Ordering</strong><br>
-                    €35 budget limits and delivery management
-                </div>
-                <div class="feature-card">
-                    <strong>Communications</strong><br>
-                    WhatsApp-style messaging with 30-day retention
-                </div>
-                <div class="feature-card">
-                    <strong>User Management</strong><br>
-                    Admin-only applicant approval system
-                </div>
-            </div>
-            
-            <h4>Technical Status</h4>
-            <p><strong>Development:</strong> ✅ All 7 sections fully functional with comprehensive features</p>
-            <p><strong>Authentication:</strong> ✅ Working with max.bisinger@warubi-sports.com / ITP2024</p>
-            <p><strong>Database:</strong> ✅ PostgreSQL with complete data management</p>
-            <p><strong>Branding:</strong> ✅ Official FC Köln Football School styling</p>
-            
-            <div class="timestamp">
-                System deployed: <span id="deployTime"></span>
             </div>
         </div>
-        
-        <a href="/health" class="btn">System Health</a>
-        <a href="javascript:void(0)" onclick="alert('Full management system available in development environment')" class="btn">Access System</a>
     </div>
 
     <script>
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleString();
-            document.getElementById('deployTime').textContent = now.toLocaleString();
-        }
-        updateTime();
-        setInterval(updateTime, 1000);
+        // Form submission handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            // Show loading state
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Signing In...';
+            submitBtn.disabled = true;
+
+            try {
+                // Call the FC Köln login endpoint
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, remember })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store auth token
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                    }
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(data.error || 'Login failed. Please check your credentials.');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Forgot password handler
+        document.querySelector('[data-testid="link-forgot-password"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Password reset functionality coming soon. Please contact your administrator.');
+        });
+
+        // Request access handler
+        document.querySelector('[data-testid="link-request-access"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('To request access, please contact FC Köln administration at talent@fckoeln.de');
+        });
     </script>
 </body>
 </html>
