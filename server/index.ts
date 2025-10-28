@@ -1,6 +1,8 @@
 import "./config/validateEnv.js";
 import 'dotenv/config';
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { attachAppContext } from './middleware/appContext.js';
 import { corsPerApp } from './middleware/corsPerApp.js';
 import { rateLimitPerApp } from './middleware/rateLimit.js';
@@ -8,7 +10,14 @@ import { requestLogger, errorLogger } from './middleware/requestLogger.js';
 import { logger } from './utils/logger.js';
 import { pool } from './db.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
+
+// Serve static files from public folder (for FC Köln frontend)
+app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../client/client-dist')));
 
 // Parse JSON
 app.use(express.json());
@@ -40,15 +49,8 @@ app.get('/healthz/ready', async (_req, res) => {
   }
 });
 
-// Root endpoint
-app.get('/', (_req, res) => {
-  res.status(200).json({ 
-    name: 'Warubi Platform',
-    version: '1.0.0',
-    status: 'running',
-    documentation: '/api/docs'
-  });
-});
+// Root endpoint - serve FC Köln frontend (static files handle this via express.static above)
+// Platform info available at /api/info instead
 
 // ============================================
 // Protected Routes (require app authentication)
