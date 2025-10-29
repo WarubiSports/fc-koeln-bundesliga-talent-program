@@ -617,6 +617,42 @@ router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req
 });
 
 // ==========================================
+// PLAYERS ROUTES
+// ==========================================
+
+// Get all players (for staff to assign chores, orders, etc.)
+router.get('/players', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT id, first_name, last_name, email, house, role
+       FROM users 
+       WHERE app_id = $1 AND role = 'player'
+       ORDER BY house, last_name, first_name`,
+      [req.appCtx.id]
+    );
+
+    res.json({ 
+      success: true, 
+      players: result.rows 
+    });
+  } catch (error) {
+    console.error('Failed to fetch players:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch players' 
+    });
+  }
+});
+
+// ==========================================
 // CHORES ROUTES
 // ==========================================
 
