@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .back-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #333;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        /* Message */
+        .message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .profile-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .edit-toggle-btn {
+            padding: 0.625rem 1.25rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-toggle-btn:hover {
+            background: #b81033;
+            transform: translateY(-1px);
+        }
+
+        .edit-toggle-btn.cancel {
+            background: #6b7280;
+        }
+
+        .edit-toggle-btn.cancel:hover {
+            background: #4b5563;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-field label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .form-field input:disabled,
+        .form-field textarea:disabled,
+        .form-field select:disabled {
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .read-only-value {
+            padding: 0.75rem;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        /* Save Button */
+        .save-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+            display: none;
+        }
+
+        .save-section.show {
+            display: block;
+        }
+
+        .save-btn {
+            padding: 0.875rem 2rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 140px;
+        }
+
+        .save-btn:hover {
+            background: #b81033;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+        }
+
+        .save-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #dc143c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/16/1._FC_K%C3%B6ln_logo.svg/1200px-1._FC_K%C3%B6ln_logo.svg.png" 
+                     alt="1.FC Köln" 
+                     class="club-logo">
+                <div>
+                    <h1 class="page-title">My Profile</h1>
+                </div>
+            </div>
+            <a href="/dashboard.html" class="back-btn" data-testid="button-back-dashboard">← Back to Dashboard</a>
+        </div>
+
+        <!-- Message -->
+        <div id="message" class="message"></div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading your profile...</p>
+        </div>
+
+        <!-- Profile Form -->
+        <div id="profile-form" class="profile-container" style="display: none;">
+            <div class="profile-header">
+                <h2>Player Information</h2>
+                <button id="edit-toggle-btn" class="edit-toggle-btn" data-testid="button-edit-profile">Edit Profile</button>
+            </div>
+
+            <form id="profile-data">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Email (Read-only)</label>
+                            <div class="read-only-value" id="view-email">-</div>
+                        </div>
+                        <div class="form-field">
+                            <label>House (Read-only)</label>
+                            <div class="read-only-value" id="view-house">-</div>
+                        </div>
+                        <div class="form-field">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" disabled data-testid="input-first-name">
+                        </div>
+                        <div class="form-field">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" disabled data-testid="input-last-name">
+                        </div>
+                        <div class="form-field">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" disabled data-testid="input-date-of-birth">
+                        </div>
+                        <div class="form-field">
+                            <label for="nationality">Nationality</label>
+                            <input type="text" id="nationality" name="nationality" disabled data-testid="input-nationality">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Stats -->
+                <div class="form-section">
+                    <h3>Player Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="position">Position</label>
+                            <input type="text" id="position" name="position" disabled data-testid="input-position">
+                        </div>
+                        <div class="form-field">
+                            <label for="jerseyNumber">Jersey Number</label>
+                            <input type="number" id="jerseyNumber" name="jerseyNumber" disabled data-testid="input-jersey-number">
+                        </div>
+                        <div class="form-field">
+                            <label for="preferredFoot">Preferred Foot</label>
+                            <select id="preferredFoot" name="preferredFoot" disabled data-testid="select-preferred-foot">
+                                <option value="">Select...</option>
+                                <option value="Left">Left</option>
+                                <option value="Right">Right</option>
+                                <option value="Both">Both</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" id="height" name="height" disabled data-testid="input-height">
+                        </div>
+                        <div class="form-field">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" disabled data-testid="input-weight">
+                        </div>
+                        <div class="form-field">
+                            <label for="previousClub">Previous Club</label>
+                            <input type="text" id="previousClub" name="previousClub" disabled data-testid="input-previous-club">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" disabled data-testid="input-phone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contacts -->
+                <div class="form-section">
+                    <h3>Emergency Contact</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="emergencyContactName">Emergency Contact Name</label>
+                            <input type="text" id="emergencyContactName" name="emergencyContactName" disabled data-testid="input-emergency-name">
+                        </div>
+                        <div class="form-field">
+                            <label for="emergencyContactPhone">Emergency Contact Phone</label>
+                            <input type="tel" id="emergencyContactPhone" name="emergencyContactPhone" disabled data-testid="input-emergency-phone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Information -->
+                <div class="form-section">
+                    <h3>Medical Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="medicalConditions">Medical Conditions</label>
+                            <textarea id="medicalConditions" name="medicalConditions" disabled placeholder="Any medical conditions we should know about..." data-testid="input-medical-conditions"></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label for="allergies">Allergies</label>
+                            <textarea id="allergies" name="allergies" disabled placeholder="Any allergies..." data-testid="input-allergies"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="save-section" id="save-section">
+                    <button type="submit" class="save-btn" data-testid="button-save-profile">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const token = sessionStorage.getItem('fckoln_token');
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        let isEditMode = false;
+        let profileData = null;
+
+        // DOM Elements
+        const loadingEl = document.getElementById('loading');
+        const profileFormEl = document.getElementById('profile-form');
+        const messageEl = document.getElementById('message');
+        const editToggleBtn = document.getElementById('edit-toggle-btn');
+        const saveSection = document.getElementById('save-section');
+        const form = document.getElementById('profile-data');
+
+        // Editable fields
+        const editableFields = [
+            'firstName', 'lastName', 'dateOfBirth', 'nationality',
+            'position', 'jerseyNumber', 'preferredFoot', 'height', 'weight', 'previousClub',
+            'phone', 'emergencyContactName', 'emergencyContactPhone',
+            'medicalConditions', 'allergies'
+        ];
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/fckoln/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to load profile');
+                }
+
+                profileData = data.profile;
+                displayProfile(profileData);
+
+                loadingEl.style.display = 'none';
+                profileFormEl.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showMessage('Failed to load profile. Please try again.', 'error');
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        // Display profile data
+        function displayProfile(profile) {
+            // Read-only fields
+            document.getElementById('view-email').textContent = profile.email || '-';
+            document.getElementById('view-house').textContent = profile.house || 'Not assigned';
+
+            // Editable fields
+            document.getElementById('firstName').value = profile.firstName || '';
+            document.getElementById('lastName').value = profile.lastName || '';
+            document.getElementById('dateOfBirth').value = profile.dateOfBirth || '';
+            document.getElementById('nationality').value = profile.nationality || '';
+            document.getElementById('position').value = profile.position || '';
+            document.getElementById('jerseyNumber').value = profile.jerseyNumber || '';
+            document.getElementById('preferredFoot').value = profile.preferredFoot || '';
+            document.getElementById('height').value = profile.height || '';
+            document.getElementById('weight').value = profile.weight || '';
+            document.getElementById('previousClub').value = profile.previousClub || '';
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('emergencyContactName').value = profile.emergencyContactName || '';
+            document.getElementById('emergencyContactPhone').value = profile.emergencyContactPhone || '';
+            document.getElementById('medicalConditions').value = profile.medicalConditions || '';
+            document.getElementById('allergies').value = profile.allergies || '';
+        }
+
+        // Toggle edit mode
+        editToggleBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+
+            if (isEditMode) {
+                // Enable editing
+                editableFields.forEach(field => {
+                    document.getElementById(field).disabled = false;
+                });
+                editToggleBtn.textContent = 'Cancel';
+                editToggleBtn.classList.add('cancel');
+                saveSection.classList.add('show');
+            } else {
+                // Disable editing and reset
+                editableFields.forEach(field => {
+                    document.getElementById(field).disabled = true;
+                });
+                editToggleBtn.textContent = 'Edit Profile';
+                editToggleBtn.classList.remove('cancel');
+                saveSection.classList.remove('show');
+                
+                // Reset form to original data
+                displayProfile(profileData);
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value,
+                nationality: document.getElementById('nationality').value,
+                position: document.getElementById('position').value,
+                jerseyNumber: document.getElementById('jerseyNumber').value ? parseInt(document.getElementById('jerseyNumber').value) : null,
+                preferredFoot: document.getElementById('preferredFoot').value,
+                height: document.getElementById('height').value ? parseInt(document.getElementById('height').value) : null,
+                weight: document.getElementById('weight').value ? parseInt(document.getElementById('weight').value) : null,
+                previousClub: document.getElementById('previousClub').value,
+                phone: document.getElementById('phone').value,
+                emergencyContactName: document.getElementById('emergencyContactName').value,
+                emergencyContactPhone: document.getElementById('emergencyContactPhone').value,
+                medicalConditions: document.getElementById('medicalConditions').value,
+                allergies: document.getElementById('allergies').value
+            };
+
+            try {
+                const response = await fetch('/api/fckoln/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to update profile');
+                }
+
+                profileData = data.profile;
+                showMessage('Profile updated successfully!', 'success');
+
+                // Exit edit mode
+                isEditMode = false;
+                editableFields.forEach(field => {
+                    document.getElementById(field).disabled = true;
+                });
+                editToggleBtn.textContent = 'Edit Profile';
+                editToggleBtn.classList.remove('cancel');
+                saveSection.classList.remove('show');
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showMessage(error.message || 'Failed to update profile. Please try again.', 'error');
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type} show`;
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 5000);
+        }
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+</body>
+</html>

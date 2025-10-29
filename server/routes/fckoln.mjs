@@ -1103,4 +1103,260 @@ router.delete('/admin/grocery/items/:id', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
+// PLAYER PROFILE ROUTES
+// ==========================================
+
+// Get current user's profile
+router.get('/profile', requireAuth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+        id, email, first_name, last_name, date_of_birth, nationality, nationality_code,
+        position, preferred_foot, height, weight, jersey_number, previous_club,
+        phone, phone_number, house, role, status, approved,
+        emergency_contact, emergency_phone, emergency_contact_name, emergency_contact_phone,
+        medical_conditions, allergies, profile_image_url
+       FROM users 
+       WHERE id = $1 AND app_id = $2 
+       LIMIT 1`,
+      [req.userId, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Profile not found' 
+      });
+    }
+
+    const user = result.rows[0];
+    
+    // Convert snake_case to camelCase for frontend
+    const profile = {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      dateOfBirth: user.date_of_birth,
+      nationality: user.nationality,
+      nationalityCode: user.nationality_code,
+      position: user.position,
+      preferredFoot: user.preferred_foot,
+      height: user.height,
+      weight: user.weight,
+      jerseyNumber: user.jersey_number,
+      previousClub: user.previous_club,
+      phone: user.phone,
+      phoneNumber: user.phone_number,
+      house: user.house,
+      role: user.role,
+      status: user.status,
+      approved: user.approved,
+      emergencyContact: user.emergency_contact,
+      emergencyPhone: user.emergency_phone,
+      emergencyContactName: user.emergency_contact_name,
+      emergencyContactPhone: user.emergency_contact_phone,
+      medicalConditions: user.medical_conditions,
+      allergies: user.allergies,
+      profileImageUrl: user.profile_image_url
+    };
+
+    res.json({ success: true, profile });
+  } catch (error) {
+    console.error('Failed to fetch profile:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch profile' 
+    });
+  }
+});
+
+// Update current user's profile
+router.put('/profile', requireAuth, async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      dateOfBirth,
+      nationality,
+      nationalityCode,
+      position,
+      preferredFoot,
+      height,
+      weight,
+      jerseyNumber,
+      previousClub,
+      phone,
+      phoneNumber,
+      emergencyContact,
+      emergencyPhone,
+      emergencyContactName,
+      emergencyContactPhone,
+      medicalConditions,
+      allergies
+    } = req.body;
+
+    // Players can update their own info, but not email, role, house, or admin fields
+    // Build dynamic UPDATE query only for provided fields
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (firstName !== undefined) {
+      updates.push(`first_name = $${paramCount++}`);
+      values.push(firstName);
+    }
+    if (lastName !== undefined) {
+      updates.push(`last_name = $${paramCount++}`);
+      values.push(lastName);
+    }
+    if (dateOfBirth !== undefined) {
+      updates.push(`date_of_birth = $${paramCount++}`);
+      values.push(dateOfBirth);
+    }
+    if (nationality !== undefined) {
+      updates.push(`nationality = $${paramCount++}`);
+      values.push(nationality);
+    }
+    if (nationalityCode !== undefined) {
+      updates.push(`nationality_code = $${paramCount++}`);
+      values.push(nationalityCode);
+    }
+    if (position !== undefined) {
+      updates.push(`position = $${paramCount++}`);
+      values.push(position);
+    }
+    if (preferredFoot !== undefined) {
+      updates.push(`preferred_foot = $${paramCount++}`);
+      values.push(preferredFoot);
+    }
+    if (height !== undefined) {
+      updates.push(`height = $${paramCount++}`);
+      values.push(height);
+    }
+    if (weight !== undefined) {
+      updates.push(`weight = $${paramCount++}`);
+      values.push(weight);
+    }
+    if (jerseyNumber !== undefined) {
+      updates.push(`jersey_number = $${paramCount++}`);
+      values.push(jerseyNumber);
+    }
+    if (previousClub !== undefined) {
+      updates.push(`previous_club = $${paramCount++}`);
+      values.push(previousClub);
+    }
+    if (phone !== undefined) {
+      updates.push(`phone = $${paramCount++}`);
+      values.push(phone);
+    }
+    if (phoneNumber !== undefined) {
+      updates.push(`phone_number = $${paramCount++}`);
+      values.push(phoneNumber);
+    }
+    if (emergencyContact !== undefined) {
+      updates.push(`emergency_contact = $${paramCount++}`);
+      values.push(emergencyContact);
+    }
+    if (emergencyPhone !== undefined) {
+      updates.push(`emergency_phone = $${paramCount++}`);
+      values.push(emergencyPhone);
+    }
+    if (emergencyContactName !== undefined) {
+      updates.push(`emergency_contact_name = $${paramCount++}`);
+      values.push(emergencyContactName);
+    }
+    if (emergencyContactPhone !== undefined) {
+      updates.push(`emergency_contact_phone = $${paramCount++}`);
+      values.push(emergencyContactPhone);
+    }
+    if (medicalConditions !== undefined) {
+      updates.push(`medical_conditions = $${paramCount++}`);
+      values.push(medicalConditions);
+    }
+    if (allergies !== undefined) {
+      updates.push(`allergies = $${paramCount++}`);
+      values.push(allergies);
+    }
+
+    // Always update updatedAt
+    updates.push(`updated_at = NOW()`);
+
+    if (updates.length === 1) { // Only updatedAt
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No fields to update' 
+      });
+    }
+
+    // Add userId and appId as final parameters
+    values.push(req.userId);
+    values.push(req.appCtx.id);
+
+    const query = `
+      UPDATE users 
+      SET ${updates.join(', ')} 
+      WHERE id = $${paramCount++} AND app_id = $${paramCount++}
+      RETURNING 
+        id, email, first_name, last_name, date_of_birth, nationality, nationality_code,
+        position, preferred_foot, height, weight, jersey_number, previous_club,
+        phone, phone_number, house, role, status,
+        emergency_contact, emergency_phone, emergency_contact_name, emergency_contact_phone,
+        medical_conditions, allergies
+    `;
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Profile not found' 
+      });
+    }
+
+    const user = result.rows[0];
+    
+    // Convert to camelCase
+    const profile = {
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      dateOfBirth: user.date_of_birth,
+      nationality: user.nationality,
+      nationalityCode: user.nationality_code,
+      position: user.position,
+      preferredFoot: user.preferred_foot,
+      height: user.height,
+      weight: user.weight,
+      jerseyNumber: user.jersey_number,
+      previousClub: user.previous_club,
+      phone: user.phone,
+      phoneNumber: user.phone_number,
+      house: user.house,
+      role: user.role,
+      status: user.status,
+      emergencyContact: user.emergency_contact,
+      emergencyPhone: user.emergency_phone,
+      emergencyContactName: user.emergency_contact_name,
+      emergencyContactPhone: user.emergency_contact_phone,
+      medicalConditions: user.medical_conditions,
+      allergies: user.allergies
+    };
+
+    res.json({ 
+      success: true, 
+      message: 'Profile updated successfully',
+      profile 
+    });
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update profile' 
+    });
+  }
+});
+
 export default router;
