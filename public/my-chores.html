@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Chores - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .week-info {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .back-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #333;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        /* Message */
+        .message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Chores Grid */
+        .chores-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .chores-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .chores-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .chores-header p {
+            color: #666;
+        }
+
+        .chores-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .chore-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .chore-card:hover {
+            border-color: #dc143c;
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.1);
+        }
+
+        .chore-card.completed {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        .chore-card.verified {
+            background: #ecfdf5;
+            border-color: #10b981;
+        }
+
+        .chore-card.rejected {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .chore-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .chore-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .chore-description {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.verified {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.rejected {
+            background: #ef4444;
+            color: white;
+        }
+
+        .chore-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .complete-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .complete-btn:hover {
+            background: #b91c3c;
+        }
+
+        .complete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .verified-info {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Logo_FC_K%C3%B6ln.svg/1200px-Logo_FC_K%C3%B6ln.svg.png" alt="1.FC Köln" class="club-logo">
+                <div>
+                    <h1 class="page-title">My Chores</h1>
+                    <p class="week-info" id="weekInfo">Loading...</p>
+                </div>
+            </div>
+            <a href="/dashboard.html" class="back-btn" data-testid="link-back-dashboard">← Back to Dashboard</a>
+        </div>
+
+        <!-- Message Area -->
+        <div id="messageArea"></div>
+
+        <!-- Chores Container -->
+        <div class="chores-container">
+            <div class="chores-header">
+                <h2>This Week's Chores</h2>
+                <p>Complete your assigned house chores and wait for staff verification</p>
+            </div>
+            
+            <div class="chores-grid" id="choresGrid">
+                <div class="empty-state">
+                    <h3>Loading your chores...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/fckoln';
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('fckoln_token');
+            return {
+                'Content-Type': 'application/json',
+                'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // Check auth
+        function checkAuth() {
+            const token = sessionStorage.getItem('fckoln_token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+
+        // Load chores
+        async function loadChores() {
+            try {
+                const response = await fetch(`${API_BASE}/chores`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    renderChores(data.chores, data.weekStartDate);
+                } else {
+                    showMessage(data.message || 'Failed to load chores', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to load chores:', error);
+                showMessage('Failed to load chores', 'error');
+            }
+        }
+
+        // Render chores
+        function renderChores(chores, weekStartDate) {
+            const grid = document.getElementById('choresGrid');
+            
+            // Update week info
+            const weekEnd = new Date(weekStartDate);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            document.getElementById('weekInfo').textContent = `Week of ${formatDate(weekStartDate)} - ${formatDate(weekEnd.toISOString().split('T')[0])}`;
+
+            if (chores.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No chores assigned yet</h3>
+                        <p>Check back later or contact staff if you think this is an error</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = chores.map(chore => `
+                <div class="chore-card ${chore.status}" data-testid="card-chore-${chore.id}">
+                    <div class="chore-top">
+                        <div>
+                            <div class="chore-title">${chore.title}</div>
+                            ${chore.description ? `<div class="chore-description">${chore.description}</div>` : ''}
+                        </div>
+                        <span class="status-badge ${chore.status}" data-testid="badge-status-${chore.id}">
+                            ${chore.status}
+                        </span>
+                    </div>
+                    
+                    ${chore.status === 'pending' ? `
+                        <div class="chore-actions">
+                            <button class="complete-btn" onclick="markComplete(${chore.id})" data-testid="button-complete-${chore.id}">
+                                Mark as Complete
+                            </button>
+                        </div>
+                    ` : ''}
+                    
+                    ${chore.status === 'completed' ? `
+                        <div class="verified-info" data-testid="info-completed">
+                            ✓ Completed on ${formatDateTime(chore.completed_at)}<br>
+                            Waiting for staff verification
+                        </div>
+                    ` : ''}
+                    
+                    ${chore.status === 'verified' ? `
+                        <div class="verified-info" data-testid="info-verified">
+                            ✓ Verified by ${chore.verified_by_first_name} ${chore.verified_by_last_name}<br>
+                            ${formatDateTime(chore.verified_at)}
+                        </div>
+                    ` : ''}
+                    
+                    ${chore.status === 'rejected' ? `
+                        <div class="verified-info" style="color: #991b1b;" data-testid="info-rejected">
+                            ✗ Rejected - Please redo this chore<br>
+                            Rejected by ${chore.verified_by_first_name} ${chore.verified_by_last_name}
+                        </div>
+                        <div class="chore-actions">
+                            <button class="complete-btn" onclick="markComplete(${chore.id})" data-testid="button-redo-${chore.id}">
+                                Mark as Complete Again
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Mark chore as complete
+        async function markComplete(choreId) {
+            try {
+                const response = await fetch(`${API_BASE}/chores/${choreId}/complete`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showMessage('Chore marked as complete! Waiting for staff verification.', 'success');
+                    await loadChores();
+                } else {
+                    showMessage(data.message || 'Failed to complete chore', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to complete chore:', error);
+                showMessage('Failed to complete chore', 'error');
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Format date time
+        function formatDateTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadChores();
+        }
+    </script>
+</body>
+</html>

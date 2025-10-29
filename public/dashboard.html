@@ -291,15 +291,25 @@
                 </div>
             </a>
 
-            <!-- Chores - Coming Soon -->
-            <div class="category-card disabled" data-testid="card-category-chores">
+            <!-- Chores - Active -->
+            <a href="/my-chores.html" class="category-card active" data-testid="card-category-chores">
                 <div class="category-icon">✓</div>
                 <div class="category-content">
                     <h3>Chores & Tasks</h3>
-                    <p>View and manage your assigned house responsibilities and daily tasks.</p>
-                    <span class="category-badge">Coming Soon</span>
+                    <p>View and complete your assigned house responsibilities and weekly tasks.</p>
+                    <span class="category-badge">Available Now</span>
                 </div>
-            </div>
+            </a>
+
+            <!-- Staff Chores - Staff/Admin Only -->
+            <a href="/staff-chores.html" class="category-card active staff-only" style="display: none;" data-testid="card-category-staff-chores">
+                <div class="category-icon">📝</div>
+                <div class="category-content">
+                    <h3>Chores Management</h3>
+                    <p>Review, verify, and manage house chore assignments for all players.</p>
+                    <span class="category-badge">Staff Only</span>
+                </div>
+            </a>
 
             <!-- Messages - Coming Soon -->
             <div class="category-card disabled" data-testid="card-category-messages">
