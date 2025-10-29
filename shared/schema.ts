@@ -111,26 +111,29 @@ export const messages = pgTable("messages", {
 
 export type Message = typeof messages.$inferSelect;
 
-// Chores table
+// Chores table - player house chores and tasks
 export const chores = pgTable("chores", {
   id: serial("id").primaryKey(),
-  appId: varchar("app_id"), // Multi-tenant: which app this chore belongs to
-  title: text("title"),
-  description: text("description"),
-  category: text("category"),
-  frequency: text("frequency"),
-  house: text("house"),
-  assignedTo: text("assigned_to"),
-  dueDate: text("due_date"),
-  status: text("status"),
-  priority: text("priority"),
+  appId: varchar("app_id").notNull(), // Multi-tenant: which app this chore belongs to
+  title: text("title").notNull(), // Chore type: "Blue Trash", "Kitchen", "Bathroom 1", etc.
+  description: text("description"), // Optional details or instructions
+  category: text("category"), // Optional grouping
+  frequency: text("frequency"), // "weekly", "daily", "one-time"
+  house: text("house").notNull(), // "1", "2", "3", "4"
+  assignedTo: text("assigned_to").notNull(), // user_id of assigned player
+  dueDate: text("due_date"), // When chore is due
+  weekStartDate: text("week_start_date"), // Which week this chore is for (for rotation tracking)
+  status: text("status").notNull().default('pending'), // "pending", "completed", "verified", "rejected"
+  priority: text("priority"), // Optional priority level
   createdAt: timestamp("created_at").defaultNow(),
-  completedAt: timestamp("completed_at"),
+  completedAt: timestamp("completed_at"), // When player marked as done
+  verifiedAt: timestamp("verified_at"), // When staff verified
+  verifiedBy: text("verified_by"), // user_id of staff who verified
   startTime: text("start_time"),
   endTime: text("end_time"),
-  isRecurring: boolean("is_recurring"),
-  recurringPattern: text("recurring_pattern"),
-  createdBy: text("created_by"),
+  isRecurring: boolean("is_recurring").default(true), // true for weekly rotation, false for one-off
+  recurringPattern: text("recurring_pattern"), // "weekly"
+  createdBy: text("created_by").notNull(), // user_id of staff who created
 });
 
 export type Chore = typeof chores.$inferSelect;
