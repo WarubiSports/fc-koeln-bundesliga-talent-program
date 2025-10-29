@@ -110,7 +110,7 @@ app.get('/api/metrics', (req, res) => {
 
 // App-specific routes (mounted under /api) - ES Module version
 import fckolnRoutes from './routes/fckoln.mjs';
-app.use('/api', fckolnRoutes);
+app.use('/api/fckoln', fckolnRoutes);
 
 // Admin routes (for managing apps) - PROTECTED by admin authentication
 import adminRoutes from './routes/admin.js';
