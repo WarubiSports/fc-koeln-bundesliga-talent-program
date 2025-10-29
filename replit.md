@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 - **Backend**: Node.js with Express.js for a REST API.
 - **Database**: PostgreSQL (configured for Neon serverless) managed by Drizzle ORM and Drizzle Kit.
 - **Authentication**: Token-based with role-based access control (admin, staff, player), isolated functions (`auth-core.js`), and continuous monitoring (`system-monitor.js`). Multi-tenancy implemented with `app_id` columns and isolation verification.
-- **Key Features**: Player management, administrative dashboard, event scheduling, facility booking, notification system, individual grocery ordering with budget limits, internal messaging, chore management, and security controls.
+- **Key Features**: Player management, administrative dashboard, event scheduling, facility booking, notification system, individual grocery ordering with budget limits, internal messaging, chore management, player profile management (view/edit personal info, emergency contacts, medical conditions), and security controls.
 - **Monorepo Structure**: Clear separation between client, server, and shared type definitions.
 - **Event Handling**: Uses data attributes with event delegation to prevent JavaScript string escaping issues.
 - **Production Build**: Fixed to ensure consistent deployment using `fc-koln-stable-permanent.js`.
