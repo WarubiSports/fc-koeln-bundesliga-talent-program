@@ -1,6 +1,10 @@
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET || "dev_secret";
+// Require JWT secret - fail fast if not configured
+const SECRET = process.env.JWT_SECRET;
+if (!SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable must be set for secure authentication');
+}
 
 export type JwtPayload = { sub: string; email: string; app?: string };
 

@@ -1,8 +1,15 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { pool } from '../db.cjs';
 import { sendPasswordResetEmail } from '../utils/sendgrid.mjs';
+
+// Require JWT secret - fail fast if not configured
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable must be set for secure authentication');
+}
 
 const router = express.Router();
 
@@ -52,9 +59,17 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Return user info
+    // Generate JWT token
+    const token = jwt.sign(
+      { sub: user.id, email: user.email, app: req.appCtx.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Return user info and token
     res.json({
       success: true,
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -250,6 +265,355 @@ router.get('/events', async (req, res) => {
   }
 });
 
-// Add other routes as needed...
+// ==========================================
+// GROCERY ORDERING ROUTES
+// ==========================================
+
+// Get all grocery items (optionally filtered by category)
+router.get('/grocery/items', requireAuth, async (req, res) => {
+  try {
+    const { category } = req.query;
+    
+    let query = `SELECT id, name, category, price FROM grocery_items WHERE app_id = $1`;
+    let params = [req.appCtx.id];
+    
+    if (category) {
+      query += ` AND category = $2`;
+      params.push(category);
+    }
+    
+    query += ` ORDER BY category, name`;
+    
+    const result = await pool.query(query, params);
+    res.json({ success: true, items: result.rows });
+  } catch (error) {
+    console.error('Failed to fetch grocery items:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch grocery items' 
+    });
+  }
+});
+
+// Middleware to require JWT authentication
+function requireAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  
+  if (!token) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authentication required - missing token' 
+    });
+  }
+  
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    // Verify app matches
+    if (payload.app !== req.appCtx.id) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - wrong app' 
+      });
+    }
+    
+    req.user = payload;
+    req.userId = payload.sub;
+    next();
+  } catch (error) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Invalid or expired token' 
+    });
+  }
+}
+
+// Create a new grocery order
+router.post('/grocery/orders', requireAuth, async (req, res) => {
+  try {
+    const { deliveryDate, items } = req.body;
+    const userId = req.userId;
+    
+    if (!deliveryDate || !items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Delivery date and items are required' 
+      });
+    }
+    
+    // Fetch actual prices from database to prevent price forgery
+    const itemIds = items.map(item => item.itemId);
+    const priceResult = await pool.query(
+      `SELECT id, price FROM grocery_items WHERE id = ANY($1) AND app_id = $2`,
+      [itemIds, req.appCtx.id]
+    );
+    
+    if (priceResult.rows.length !== itemIds.length) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Some items are invalid or unavailable' 
+      });
+    }
+    
+    // Create price lookup map
+    const priceMap = {};
+    priceResult.rows.forEach(row => {
+      priceMap[row.id] = parseFloat(row.price);
+    });
+    
+    // Calculate total amount using server-side prices
+    let totalAmount = 0;
+    for (const item of items) {
+      const serverPrice = priceMap[item.itemId];
+      if (!serverPrice || item.quantity <= 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid item or quantity' 
+        });
+      }
+      totalAmount += serverPrice * item.quantity;
+    }
+    
+    // Check budget limit (€35)
+    if (totalAmount > 35) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Order total (€${totalAmount.toFixed(2)}) exceeds budget limit of €35` 
+      });
+    }
+    
+    // Verify user exists and belongs to this app
+    const userResult = await pool.query(
+      `SELECT id FROM users WHERE id = $1 AND app_id = $2 LIMIT 1`,
+      [userId, req.appCtx.id]
+    );
+    
+    if (userResult.rows.length === 0) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'User not found or access denied' 
+      });
+    }
+    
+    // Create order
+    const orderResult = await pool.query(
+      `INSERT INTO grocery_player_orders (app_id, user_id, delivery_date, total_amount, status, submitted_at)
+       VALUES ($1, $2, $3, $4, 'approved', NOW())
+       RETURNING id`,
+      [req.appCtx.id, userId, deliveryDate, totalAmount.toFixed(2)]
+    );
+    
+    const orderId = orderResult.rows[0].id;
+    
+    // Insert order items with server-verified prices
+    for (const item of items) {
+      const serverPrice = priceMap[item.itemId];
+      await pool.query(
+        `INSERT INTO grocery_order_items (order_id, item_id, quantity, price_at_order)
+         VALUES ($1, $2, $3, $4)`,
+        [orderId, item.itemId, item.quantity, serverPrice.toFixed(2)]
+      );
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Order created successfully',
+      orderId,
+      totalAmount: totalAmount.toFixed(2)
+    });
+  } catch (error) {
+    console.error('Failed to create grocery order:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create order' 
+    });
+  }
+});
+
+// Get orders for a specific user
+router.get('/grocery/orders', requireAuth, async (req, res) => {
+  try {
+    const userId = req.userId;
+    
+    // Verify user belongs to this app
+    const userResult = await pool.query(
+      `SELECT id FROM users WHERE id = $1 AND app_id = $2 LIMIT 1`,
+      [userId, req.appCtx.id]
+    );
+    
+    if (userResult.rows.length === 0) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied' 
+      });
+    }
+    
+    const result = await pool.query(
+      `SELECT id, delivery_date, total_amount, status, created_at, submitted_at
+       FROM grocery_player_orders
+       WHERE app_id = $1 AND user_id = $2
+       ORDER BY created_at DESC`,
+      [req.appCtx.id, userId]
+    );
+    
+    res.json({ success: true, orders: result.rows });
+  } catch (error) {
+    console.error('Failed to fetch orders:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch orders' 
+    });
+  }
+});
+
+// Get a specific order with items
+router.get('/grocery/orders/:id', requireAuth, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    
+    // Get order details
+    const orderResult = await pool.query(
+      `SELECT o.id, o.user_id, o.delivery_date, o.total_amount, o.status, o.created_at, o.submitted_at,
+              u.first_name, u.last_name, u.house
+       FROM grocery_player_orders o
+       JOIN users u ON o.user_id = u.id
+       WHERE o.id = $1 AND o.app_id = $2`,
+      [orderId, req.appCtx.id]
+    );
+    
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Order not found' 
+      });
+    }
+    
+    const order = orderResult.rows[0];
+    
+    // Authorization: User can only view their own orders unless they're staff/admin
+    const isStaff = req.user.role === 'admin' || req.user.role === 'staff';
+    if (order.user_id !== req.userId && !isStaff) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - not your order' 
+      });
+    }
+    
+    // Get order items
+    const itemsResult = await pool.query(
+      `SELECT oi.id, oi.quantity, oi.price_at_order,
+              gi.name, gi.category
+       FROM grocery_order_items oi
+       JOIN grocery_items gi ON oi.item_id = gi.id
+       WHERE oi.order_id = $1
+       ORDER BY gi.category, gi.name`,
+      [orderId]
+    );
+    
+    res.json({ 
+      success: true, 
+      order: {
+        ...order,
+        items: itemsResult.rows
+      }
+    });
+  } catch (error) {
+    console.error('Failed to fetch order details:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch order details' 
+    });
+  }
+});
+
+// Get consolidated orders by house (for staff)
+router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin can access consolidated view
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff only' 
+      });
+    }
+    
+    const { deliveryDate } = req.params;
+    
+    // Get all orders for the delivery date
+    const ordersResult = await pool.query(
+      `SELECT o.id, o.user_id, o.total_amount, u.first_name, u.last_name, u.house
+       FROM grocery_player_orders o
+       JOIN users u ON o.user_id = u.id
+       WHERE o.app_id = $1 AND o.delivery_date = $2 AND o.status = 'approved'
+       ORDER BY u.house, u.last_name`,
+      [req.appCtx.id, deliveryDate]
+    );
+    
+    // Get all order items for these orders
+    const orderIds = ordersResult.rows.map(o => o.id);
+    
+    if (orderIds.length === 0) {
+      return res.json({ success: true, consolidated: { byHouse: {}, byItem: [] } });
+    }
+    
+    const itemsResult = await pool.query(
+      `SELECT oi.order_id, oi.quantity, oi.price_at_order,
+              gi.id as item_id, gi.name, gi.category
+       FROM grocery_order_items oi
+       JOIN grocery_items gi ON oi.item_id = gi.id
+       WHERE oi.order_id = ANY($1)
+       ORDER BY gi.category, gi.name`,
+      [orderIds]
+    );
+    
+    // Consolidate by house
+    const byHouse = {};
+    ordersResult.rows.forEach(order => {
+      const house = order.house || 'Unassigned';
+      if (!byHouse[house]) {
+        byHouse[house] = {
+          orders: [],
+          totalAmount: 0
+        };
+      }
+      byHouse[house].orders.push(order);
+      byHouse[house].totalAmount += parseFloat(order.total_amount);
+    });
+    
+    // Consolidate by item
+    const itemMap = {};
+    itemsResult.rows.forEach(item => {
+      if (!itemMap[item.item_id]) {
+        itemMap[item.item_id] = {
+          itemId: item.item_id,
+          name: item.name,
+          category: item.category,
+          totalQuantity: 0,
+          price: item.price_at_order
+        };
+      }
+      itemMap[item.item_id].totalQuantity += item.quantity;
+    });
+    
+    const byItem = Object.values(itemMap);
+    
+    res.json({ 
+      success: true, 
+      consolidated: {
+        byHouse,
+        byItem,
+        deliveryDate,
+        totalOrders: ordersResult.rows.length
+      }
+    });
+  } catch (error) {
+    console.error('Failed to fetch consolidated orders:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch consolidated orders' 
+    });
+  }
+});
 
 export default router;

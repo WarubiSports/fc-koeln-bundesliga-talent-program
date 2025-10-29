@@ -135,7 +135,45 @@ export const chores = pgTable("chores", {
 
 export type Chore = typeof chores.$inferSelect;
 
-// Grocery orders table
+// Grocery Items Catalog - all available items from spreadsheet
+export const groceryItems = pgTable("grocery_items", {
+  id: serial("id").primaryKey(),
+  appId: varchar("app_id").notNull(), // Multi-tenant
+  name: text("name").notNull(),
+  category: text("category").notNull(), // 'household', 'produce', 'meat', 'dairy', 'carbs', 'drinks', 'spices', 'frozen'
+  price: text("price").notNull(), // Note: Using text for compatibility with existing data, will convert to numeric later
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GroceryItem = typeof groceryItems.$inferSelect;
+
+// Player Grocery Orders - individual orders by players
+export const groceryPlayerOrders = pgTable("grocery_player_orders", {
+  id: serial("id").primaryKey(),
+  appId: varchar("app_id").notNull(), // Multi-tenant
+  userId: varchar("user_id").notNull(), // References users.id
+  deliveryDate: text("delivery_date").notNull(), // Tuesday or Friday delivery
+  totalAmount: text("total_amount").notNull(), // Note: Using text for compatibility with existing data
+  status: text("status").notNull().default('pending'), // 'pending', 'approved', 'rejected', 'delivered'
+  createdAt: timestamp("created_at").defaultNow(),
+  submittedAt: timestamp("submitted_at"),
+});
+
+export type GroceryPlayerOrder = typeof groceryPlayerOrders.$inferSelect;
+
+// Grocery Order Items - line items in each order
+export const groceryOrderItems = pgTable("grocery_order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").notNull(), // References grocery_player_orders.id
+  itemId: integer("item_id").notNull(), // References grocery_items.id
+  quantity: integer("quantity").notNull(),
+  priceAtOrder: text("price_at_order").notNull(), // Note: Using text for compatibility
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GroceryOrderItem = typeof groceryOrderItems.$inferSelect;
+
+// Legacy Grocery orders table (kept for backward compatibility)
 export const groceryOrders = pgTable("grocery_orders", {
   id: serial("id").primaryKey(),
   appId: varchar("app_id"), // Multi-tenant: which app this order belongs to

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Order - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .user-house {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .logout-btn {
+            padding: 0.625rem 1.25rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #b91c3c;
+            transform: translateY(-2px);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Category Filter */
+        .category-filter {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+        }
+
+        .category-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .category-btn.active {
+            background: #fef2f2;
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        /* Items Grid */
+        .items-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-bar {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .item-card {
+            background: #fafafa;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            border-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .item-card.in-cart {
+            border-color: #dc143c;
+            background: #fef2f2;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .item-category {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+
+        .item-price {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #dc143c;
+            margin-bottom: 0.75rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #b91c3c;
+        }
+
+        .qty-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .qty-display {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Cart Panel */
+        .cart-panel {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .cart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .cart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .cart-count {
+            background: #dc143c;
+            color: white;
+            padding: 0.25rem 0.625rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .delivery-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .delivery-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .delivery-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delivery-select:focus {
+            outline: none;
+            border-color: #dc143c;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 0.75rem;
+            background: #fafafa;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .cart-item-price {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .cart-item-right {
+            text-align: right;
+        }
+
+        .cart-item-qty {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .cart-item-total {
+            font-weight: 700;
+            color: #dc143c;
+            font-size: 0.875rem;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #999;
+        }
+
+        .budget-info {
+            background: #fef2f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .budget-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .budget-label {
+            color: #666;
+        }
+
+        .budget-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .budget-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 0.75rem;
+            border-top: 2px solid #fca5a5;
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .budget-total-label {
+            color: #1a1a1a;
+        }
+
+        .budget-total-value {
+            color: #dc143c;
+        }
+
+        .budget-total-value.over-budget {
+            color: #dc2626;
+        }
+
+        .budget-remaining {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #666;
+        }
+
+        .budget-remaining.warning {
+            color: #ea580c;
+            font-weight: 600;
+        }
+
+        .submit-order-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .submit-order-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .submit-order-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .clear-cart-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: white;
+            color: #666;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .clear-cart-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="/logo.png" alt="1.FC Köln Football School" class="club-logo">
+                <h1 class="page-title">Grocery Order</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-house" id="userHouse"></div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Category Filter -->
+        <div class="category-filter">
+            <div class="filter-title">Filter by Category</div>
+            <div class="category-buttons">
+                <button class="category-btn active" data-category="all">All Items</button>
+                <button class="category-btn" data-category="household">Household</button>
+                <button class="category-btn" data-category="produce">Produce</button>
+                <button class="category-btn" data-category="meat">Meat</button>
+                <button class="category-btn" data-category="dairy">Dairy</button>
+                <button class="category-btn" data-category="carbs">Carbs</button>
+                <button class="category-btn" data-category="drinks">Drinks</button>
+                <button class="category-btn" data-category="spices">Spices & Sauces</button>
+                <button class="category-btn" data-category="frozen">Frozen</button>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Items Section -->
+            <div class="items-section">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search for items...">
+                </div>
+                <div class="items-grid" id="itemsGrid">
+                    <div class="loading">Loading grocery items...</div>
+                </div>
+            </div>
+
+            <!-- Cart Panel -->
+            <div class="cart-panel">
+                <div class="cart-container">
+                    <div class="cart-header">
+                        <h2 class="cart-title">Your Cart</h2>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+
+                    <div class="delivery-selector">
+                        <label class="delivery-label">Delivery Date</label>
+                        <select class="delivery-select" id="deliveryDate">
+                            <option value="">Select delivery date</option>
+                        </select>
+                    </div>
+
+                    <div class="cart-items" id="cartItems">
+                        <div class="cart-empty">Your cart is empty</div>
+                    </div>
+
+                    <div class="budget-info">
+                        <div class="budget-row">
+                            <span class="budget-label">Budget Limit:</span>
+                            <span class="budget-value">€35.00</span>
+                        </div>
+                        <div class="budget-total">
+                            <span class="budget-total-label">Total:</span>
+                            <span class="budget-total-value" id="cartTotal">€0.00</span>
+                        </div>
+                        <div class="budget-remaining" id="budgetRemaining">
+                            €35.00 remaining
+                        </div>
+                    </div>
+
+                    <button class="submit-order-btn" id="submitOrderBtn" disabled onclick="submitOrder()">
+                        Submit Order
+                    </button>
+                    <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505';
+        const API_BASE = '/api/fckoln';
+        
+        let currentUser = null;
+        let allItems = [];
+        let cart = [];
+        let selectedCategory = 'all';
+
+        // Initialize
+        async function init() {
+            // Load user from session storage
+            const userStr = sessionStorage.getItem('fckoln_user');
+            if (!userStr) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('userHouse').textContent = currentUser.house || '';
+
+            // Load cart from localStorage
+            const savedCart = localStorage.getItem('fckoln_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+
+            // Setup delivery dates
+            setupDeliveryDates();
+
+            // Load items
+            await loadItems();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            // Update cart display
+            updateCartDisplay();
+        }
+
+        function setupDeliveryDates() {
+            const select = document.getElementById('deliveryDate');
+            const today = new Date();
+            const dates = [];
+
+            // Generate next 4 Tuesday and Friday dates
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const day = date.getDay();
+
+                if (day === 2 || day === 5) { // Tuesday = 2, Friday = 5
+                    const dayName = day === 2 ? 'Tuesday' : 'Friday';
+                    const dateStr = date.toISOString().split('T')[0];
+                    dates.push({ date: dateStr, label: `${dayName}, ${date.toLocaleDateString()}` });
+                }
+
+                if (dates.length >= 4) break;
+            }
+
+            dates.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d.date;
+                option.textContent = d.label;
+                select.appendChild(option);
+            });
+
+            // Restore saved delivery date
+            const savedDate = localStorage.getItem('fckoln_delivery_date');
+            if (savedDate) {
+                select.value = savedDate;
+            }
+        }
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('fckoln_token');
+            return {
+                'X-App-Key': API_KEY,
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function loadItems() {
+            try {
+                const response = await fetch(`${API_BASE}/grocery/items`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    allItems = data.items;
+                    renderItems();
+                }
+            } catch (error) {
+                console.error('Failed to load items:', error);
+                showMessage('Failed to load grocery items', 'error');
+            }
+        }
+
+        function setupEventListeners() {
+            // Category buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedCategory = btn.dataset.category;
+                    renderItems();
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                renderItems(e.target.value);
+            });
+
+            // Delivery date change
+            document.getElementById('deliveryDate').addEventListener('change', (e) => {
+                localStorage.setItem('fckoln_delivery_date', e.target.value);
+                updateSubmitButton();
+            });
+        }
+
+        function renderItems(searchTerm = '') {
+            const grid = document.getElementById('itemsGrid');
+            const filtered = allItems.filter(item => {
+                const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+                const matchesSearch = !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">No items found</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => {
+                const cartItem = cart.find(c => c.itemId === item.id);
+                const quantity = cartItem ? cartItem.quantity : 0;
+                const inCart = quantity > 0;
+
+                return `
+                    <div class="item-card ${inCart ? 'in-cart' : ''}" data-item-id="${item.id}">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-category">${item.category}</div>
+                        <div class="item-price">€${parseFloat(item.price).toFixed(2)}</div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="decreaseQuantity(${item.id})" ${quantity === 0 ? 'disabled' : ''}>−</button>
+                            <div class="qty-display">${quantity}</div>
+                            <button class="qty-btn" onclick="increaseQuantity(${item.id}, '${item.name}', '${item.price}', '${item.category}')">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function increaseQuantity(itemId, name, price, category) {
+            const existingItem = cart.find(c => c.itemId === itemId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ itemId, name, price, category, quantity: 1 });
+            }
+            saveCart();
+            updateCartDisplay();
+            renderItems(document.getElementById('searchInput').value);
+        }
+
+        function decreaseQuantity(itemId) {
+            const existingItem = cart.find(c => c.itemId === itemId);
+            if (existingItem) {
+                existingItem.quantity--;
+                if (existingItem.quantity === 0) {
+                    cart = cart.filter(c => c.itemId !== itemId);
+                }
+            }
+            saveCart();
+            updateCartDisplay();
+            renderItems(document.getElementById('searchInput').value);
+        }
+
+        function updateCartDisplay() {
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartCountEl = document.getElementById('cartCount');
+            const cartTotalEl = document.getElementById('cartTotal');
+            const budgetRemainingEl = document.getElementById('budgetRemaining');
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+                cartCountEl.textContent = '0';
+                cartTotalEl.textContent = '€0.00';
+                budgetRemainingEl.textContent = '€35.00 remaining';
+                budgetRemainingEl.className = 'budget-remaining';
+                cartTotalEl.classList.remove('over-budget');
+            } else {
+                const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+                const remaining = 35 - total;
+
+                cartItemsEl.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">€${parseFloat(item.price).toFixed(2)} each</div>
+                        </div>
+                        <div class="cart-item-right">
+                            <div class="cart-item-qty">Qty: ${item.quantity}</div>
+                            <div class="cart-item-total">€${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                cartCountEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartTotalEl.textContent = `€${total.toFixed(2)}`;
+                
+                if (total > 35) {
+                    cartTotalEl.classList.add('over-budget');
+                    budgetRemainingEl.textContent = `€${Math.abs(remaining).toFixed(2)} over budget!`;
+                    budgetRemainingEl.className = 'budget-remaining warning';
+                } else {
+                    cartTotalEl.classList.remove('over-budget');
+                    budgetRemainingEl.textContent = `€${remaining.toFixed(2)} remaining`;
+                    budgetRemainingEl.className = 'budget-remaining';
+                }
+            }
+
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitOrderBtn');
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+
+            btn.disabled = cart.length === 0 || !deliveryDate || total > 35;
+        }
+
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                cart = [];
+                saveCart();
+                updateCartDisplay();
+                renderItems(document.getElementById('searchInput').value);
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('fckoln_cart', JSON.stringify(cart));
+        }
+
+        async function submitOrder() {
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+
+            if (!deliveryDate) {
+                showMessage('Please select a delivery date', 'error');
+                return;
+            }
+
+            if (total > 35) {
+                showMessage('Order total exceeds budget limit of €35', 'error');
+                return;
+            }
+
+            const orderData = {
+                userId: currentUser.id,
+                deliveryDate,
+                items: cart.map(item => ({
+                    itemId: item.itemId,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+            };
+
+            try {
+                document.getElementById('submitOrderBtn').disabled = true;
+                document.getElementById('submitOrderBtn').textContent = 'Submitting...';
+
+                const response = await fetch(`${API_BASE}/grocery/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(`Order submitted successfully! Total: €${data.totalAmount}`, 'success');
+                    cart = [];
+                    saveCart();
+                    localStorage.removeItem('fckoln_delivery_date');
+                    document.getElementById('deliveryDate').value = '';
+                    updateCartDisplay();
+                    renderItems(document.getElementById('searchInput').value);
+                } else {
+                    showMessage(data.message || 'Failed to submit order', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to submit order:', error);
+                showMessage('Failed to submit order', 'error');
+            } finally {
+                document.getElementById('submitOrderBtn').disabled = false;
+                document.getElementById('submitOrderBtn').textContent = 'Submit Order';
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function logout() {
+            sessionStorage.removeItem('fckoln_user');
+            sessionStorage.removeItem('fckoln_token');
+            localStorage.removeItem('fckoln_cart');
+            localStorage.removeItem('fckoln_delivery_date');
+            window.location.href = '/index.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

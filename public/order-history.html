@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn, .new-order-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            color: #dc143c;
+            border: 2px solid #dc143c;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover, .new-order-btn:hover {
+            background: #dc143c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .new-order-btn {
+            background: #dc143c;
+            color: white;
+        }
+
+        /* Orders List */
+        .orders-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .orders-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .orders-count {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .orders-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .order-card {
+            background: #fafafa;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .order-card:hover {
+            border-color: #dc143c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.15);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-date {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .delivery-date {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .order-status.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .order-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .order-status.delivered {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .order-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc143c;
+            text-align: right;
+        }
+
+        .order-details {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .order-card.expanded .order-details {
+            display: block;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .item-name-qty {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-qty {
+            color: #666;
+            font-size: 0.75rem;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: #dc143c;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reorder-btn {
+            background: linear-gradient(135deg, #dc143c 0%, #b91c3c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .reorder-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .view-details-btn {
+            background: white;
+            color: #666;
+            border: 2px solid #e5e7eb;
+        }
+
+        .view-details-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="/logo.png" alt="1.FC Köln Football School" class="club-logo">
+                <h1 class="page-title">Order History</h1>
+            </div>
+            <div class="header-right">
+                <a href="/dashboard.html" class="back-btn">← Dashboard</a>
+                <a href="/grocery-order.html" class="new-order-btn">+ New Order</a>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Orders List -->
+        <div class="orders-section">
+            <div class="orders-header">
+                <h2 class="orders-title">Your Orders</h2>
+                <span class="orders-count" id="ordersCount">Loading...</span>
+            </div>
+
+            <div class="orders-list" id="ordersList">
+                <div class="loading">Loading your orders...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505';
+        const API_BASE = '/api/fckoln';
+        
+        let currentUser = null;
+        let orders = [];
+
+        async function init() {
+            // Load user from session storage
+            const userStr = sessionStorage.getItem('fckoln_user');
+            if (!userStr) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            await loadOrders();
+        }
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('fckoln_token');
+            return {
+                'X-App-Key': API_KEY,
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch(`${API_BASE}/grocery/orders?userId=${currentUser.id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    orders = data.orders;
+                    renderOrders();
+                }
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+                showMessage('Failed to load orders', 'error');
+                document.getElementById('ordersList').innerHTML = '<div class="empty-state"><div class="empty-title">Failed to load orders</div></div>';
+            }
+        }
+
+        function renderOrders() {
+            const listEl = document.getElementById('ordersList');
+            const countEl = document.getElementById('ordersCount');
+
+            if (orders.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        <div class="empty-title">No Orders Yet</div>
+                        <div class="empty-text">You haven't placed any grocery orders yet. Start your first order!</div>
+                        <a href="/grocery-order.html" class="new-order-btn">Place Your First Order</a>
+                    </div>
+                `;
+                countEl.textContent = '0 orders';
+                return;
+            }
+
+            countEl.textContent = `${orders.length} ${orders.length === 1 ? 'order' : 'orders'}`;
+
+            listEl.innerHTML = orders.map(order => `
+                <div class="order-card" data-order-id="${order.id}">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <div class="order-date">Ordered: ${new Date(order.created_at).toLocaleDateString()}</div>
+                            <div class="delivery-date">Delivery: ${new Date(order.delivery_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                            <span class="order-status ${order.status}">${order.status}</span>
+                        </div>
+                        <div class="order-total">€${parseFloat(order.total_amount).toFixed(2)}</div>
+                    </div>
+                    
+                    <div class="order-details" id="details-${order.id}">
+                        <div class="loading">Loading order details...</div>
+                    </div>
+
+                    <div class="order-actions">
+                        <button class="action-btn view-details-btn" onclick="toggleDetails(${order.id})">
+                            View Details
+                        </button>
+                        <button class="action-btn reorder-btn" onclick="reorderItems(${order.id})">
+                            Reorder This
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleDetails(orderId) {
+            const card = document.querySelector(`[data-order-id="${orderId}"]`);
+            const detailsEl = document.getElementById(`details-${orderId}`);
+            
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                return;
+            }
+
+            // Load order details if not already loaded
+            if (!detailsEl.dataset.loaded) {
+                try {
+                    const response = await fetch(`${API_BASE}/grocery/orders/${orderId}`, {
+                        headers: getAuthHeaders()
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        renderOrderDetails(orderId, data.order.items);
+                        detailsEl.dataset.loaded = 'true';
+                    }
+                } catch (error) {
+                    console.error('Failed to load order details:', error);
+                    detailsEl.innerHTML = '<div class="empty-title">Failed to load details</div>';
+                }
+            }
+
+            card.classList.add('expanded');
+        }
+
+        function renderOrderDetails(orderId, items) {
+            const detailsEl = document.getElementById(`details-${orderId}`);
+            
+            detailsEl.innerHTML = `
+                <div class="items-grid">
+                    ${items.map(item => `
+                        <div class="order-item">
+                            <div class="item-name-qty">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-qty">Quantity: ${item.quantity}</div>
+                            </div>
+                            <div class="item-price">€${(parseFloat(item.price_at_order) * item.quantity).toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function reorderItems(orderId) {
+            try {
+                // Fetch order details
+                const response = await fetch(`${API_BASE}/grocery/orders/${orderId}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (!data.success) {
+                    showMessage('Failed to load order details', 'error');
+                    return;
+                }
+
+                // Get all grocery items to map item IDs
+                const itemsResponse = await fetch(`${API_BASE}/grocery/items`, {
+                    headers: { 'X-App-Key': API_KEY }
+                });
+
+                const itemsData = await itemsResponse.json();
+                if (!itemsData.success) {
+                    showMessage('Failed to load grocery items', 'error');
+                    return;
+                }
+
+                // Create cart from order items
+                const cart = data.order.items.map(orderItem => {
+                    const currentItem = itemsData.items.find(item => item.name === orderItem.name);
+                    if (currentItem) {
+                        return {
+                            itemId: currentItem.id,
+                            name: currentItem.name,
+                            price: currentItem.price, // Use current price, not historical price
+                            category: currentItem.category,
+                            quantity: orderItem.quantity
+                        };
+                    }
+                    return null;
+                }).filter(item => item !== null);
+
+                // Save to localStorage
+                localStorage.setItem('fckoln_cart', JSON.stringify(cart));
+                
+                // Show success message
+                showMessage('Order items added to cart! Redirecting...', 'success');
+                
+                // Redirect to grocery order page
+                setTimeout(() => {
+                    window.location.href = '/grocery-order.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Failed to reorder:', error);
+                showMessage('Failed to reorder items', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

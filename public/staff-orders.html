@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consolidated Orders - 1.FC Köln Talent Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            color: #dc143c;
+            border: 2px solid #dc143c;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #dc143c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .print-btn {
+            padding: 0.625rem 1.25rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .print-btn:hover {
+            background: #b91c3c;
+            transform: translateY(-2px);
+        }
+
+        /* Date Selector */
+        .date-selector {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .selector-label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .delivery-select {
+            flex: 1;
+            max-width: 400px;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delivery-select:focus {
+            outline: none;
+            border-color: #dc143c;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #dc143c;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+        }
+
+        .tab-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        .tab-btn.active {
+            background: #dc143c;
+            color: white;
+            border-color: #dc143c;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Houses View */
+        .houses-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .house-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .house-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .house-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .house-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #dc143c;
+        }
+
+        .house-orders {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-order {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: #fafafa;
+            border-radius: 0.5rem;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .order-amount {
+            font-weight: 700;
+            color: #666;
+        }
+
+        /* Shopping List */
+        .shopping-list {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .category-section {
+            margin-bottom: 2rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #fef2f2;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-transform: capitalize;
+        }
+
+        .category-count {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: #fafafa;
+            font-weight: 600;
+            color: #666;
+            font-size: 0.875rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .items-table td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .item-name-cell {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .quantity-cell {
+            font-weight: 700;
+            color: #dc143c;
+            text-align: center;
+        }
+
+        .price-cell {
+            font-weight: 600;
+            color: #666;
+            text-align: right;
+        }
+
+        .total-cell {
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .header, .date-selector, .tabs, .back-btn, .print-btn {
+                display: none;
+            }
+
+            .summary-cards {
+                page-break-after: avoid;
+            }
+
+            .house-card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #e5e7eb;
+            }
+
+            .category-section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="/logo.png" alt="1.FC Köln Football School" class="club-logo">
+                <h1 class="page-title">Consolidated Orders</h1>
+            </div>
+            <div class="header-right">
+                <a href="/dashboard.html" class="back-btn">← Dashboard</a>
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+            </div>
+        </div>
+
+        <!-- Date Selector -->
+        <div class="date-selector">
+            <label class="selector-label">Select Delivery Date:</label>
+            <select class="delivery-select" id="deliveryDateSelect">
+                <option value="">Choose a date...</option>
+            </select>
+        </div>
+
+        <div id="contentArea">
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <div class="empty-title">Select a Delivery Date</div>
+                <div class="empty-text">Choose a delivery date above to view consolidated orders</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505';
+        const API_BASE = '/api/fckoln';
+        
+        let currentUser = null;
+
+        async function init() {
+            // Check if user is staff/admin
+            const userStr = sessionStorage.getItem('fckoln_user');
+            if (!userStr) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== 'admin' && currentUser.role !== 'staff') {
+                alert('Access denied. This page is for staff only.');
+                window.location.href = '/dashboard.html';
+                return;
+            }
+
+            setupDeliveryDates();
+        }
+
+        function setupDeliveryDates() {
+            const select = document.getElementById('deliveryDateSelect');
+            const today = new Date();
+            const dates = [];
+
+            // Generate next 8 Tuesday and Friday dates
+            for (let i = 0; i < 60; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const day = date.getDay();
+
+                if (day === 2 || day === 5) {
+                    const dayName = day === 2 ? 'Tuesday' : 'Friday';
+                    const dateStr = date.toISOString().split('T')[0];
+                    dates.push({ date: dateStr, label: `${dayName}, ${date.toLocaleDateString()}` });
+                }
+
+                if (dates.length >= 8) break;
+            }
+
+            dates.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d.date;
+                option.textContent = d.label;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    loadConsolidatedOrders(e.target.value);
+                }
+            });
+        }
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('fckoln_token');
+            return {
+                'X-App-Key': API_KEY,
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function loadConsolidatedOrders(deliveryDate) {
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = '<div class="loading">Loading consolidated orders...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/grocery/orders/consolidated/${deliveryDate}?userId=${currentUser.id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    renderConsolidatedView(data.consolidated, deliveryDate);
+                }
+            } catch (error) {
+                console.error('Failed to load consolidated orders:', error);
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">Failed to Load Orders</div>
+                        <div class="empty-text">There was an error loading the consolidated orders</div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderConsolidatedView(consolidated, deliveryDate) {
+            const contentArea = document.getElementById('contentArea');
+
+            if (consolidated.totalOrders === 0) {
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-title">No Orders Yet</div>
+                        <div class="empty-text">No orders have been placed for ${new Date(deliveryDate).toLocaleDateString()}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalAmount = Object.values(consolidated.byHouse).reduce((sum, house) => sum + house.totalAmount, 0);
+            const totalItems = consolidated.byItem.reduce((sum, item) => sum + item.totalQuantity, 0);
+
+            contentArea.innerHTML = `
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Orders</div>
+                        <div class="summary-value">${consolidated.totalOrders}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Amount</div>
+                        <div class="summary-value">€${totalAmount.toFixed(2)}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Items</div>
+                        <div class="summary-value">${totalItems}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Houses</div>
+                        <div class="summary-value">${Object.keys(consolidated.byHouse).length}</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('houses')">By House</button>
+                    <button class="tab-btn" onclick="switchTab('shopping')">Shopping List</button>
+                </div>
+
+                <!-- By House Tab -->
+                <div class="tab-content active" id="housesTab">
+                    <div class="houses-grid">
+                        ${Object.entries(consolidated.byHouse).map(([house, data]) => `
+                            <div class="house-card">
+                                <div class="house-header">
+                                    <h3 class="house-name">${house}</h3>
+                                    <div class="house-total">€${data.totalAmount.toFixed(2)}</div>
+                                </div>
+                                <div class="house-orders">
+                                    ${data.orders.map(order => `
+                                        <div class="player-order">
+                                            <span class="player-name">${order.first_name} ${order.last_name}</span>
+                                            <span class="order-amount">€${parseFloat(order.total_amount).toFixed(2)}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Shopping List Tab -->
+                <div class="tab-content" id="shoppingTab">
+                    <div class="shopping-list">
+                        ${renderShoppingList(consolidated.byItem)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderShoppingList(items) {
+            // Group by category
+            const byCategory = {};
+            items.forEach(item => {
+                if (!byCategory[item.category]) {
+                    byCategory[item.category] = [];
+                }
+                byCategory[item.category].push(item);
+            });
+
+            return Object.entries(byCategory).map(([category, categoryItems]) => {
+                const categoryTotal = categoryItems.reduce((sum, item) => 
+                    sum + (parseFloat(item.price) * item.totalQuantity), 0
+                );
+
+                return `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <h3 class="category-name">${category}</h3>
+                            <span class="category-count">${categoryItems.length} items - €${categoryTotal.toFixed(2)}</span>
+                        </div>
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th style="text-align: center;">Quantity</th>
+                                    <th style="text-align: right;">Unit Price</th>
+                                    <th style="text-align: right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${categoryItems.map(item => `
+                                    <tr>
+                                        <td class="item-name-cell">${item.name}</td>
+                                        <td class="quantity-cell">${item.totalQuantity}</td>
+                                        <td class="price-cell">€${parseFloat(item.price).toFixed(2)}</td>
+                                        <td class="total-cell">€${(parseFloat(item.price) * item.totalQuantity).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function switchTab(tab) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            if (tab === 'houses') {
+                document.getElementById('housesTab').classList.add('active');
+            } else {
+                document.getElementById('shoppingTab').classList.add('active');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
