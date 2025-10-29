@@ -632,8 +632,34 @@
 
         // Load players for assignment
         async function loadPlayers() {
-            // This would load all players, but for now we'll use a simplified approach
-            // You can enhance this to filter by house later
+            try {
+                const response = await fetch(`${API_BASE}/players`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    allPlayers = data.players;
+                    populatePlayerDropdown();
+                } else {
+                    console.error('Failed to load players:', data.message);
+                }
+            } catch (error) {
+                console.error('Failed to load players:', error);
+            }
+        }
+
+        // Populate player dropdown
+        function populatePlayerDropdown() {
+            const select = document.getElementById('taskAssignedTo');
+            select.innerHTML = '<option value="">Select Player</option>';
+            
+            allPlayers.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.id;
+                option.textContent = `${player.first_name} ${player.last_name} (House ${player.house})`;
+                select.appendChild(option);
+            });
         }
 
         // Modal functions
