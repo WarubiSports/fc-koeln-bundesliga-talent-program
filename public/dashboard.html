@@ -260,7 +260,7 @@
             <p>Access all features of the Bundesliga Talent Program</p>
         </div>
 
-        <div class="categories-grid">
+        <div class="categories-grid" id="categoriesGrid">
             <!-- Food Orders - Active -->
             <a href="/grocery-order.html" class="category-card active" data-testid="card-category-food">
                 <div class="category-icon">🛒</div>
@@ -268,6 +268,26 @@
                     <h3>Food Orders</h3>
                     <p>Order groceries for delivery to your house. €35 budget, twice weekly.</p>
                     <span class="category-badge">Available Now</span>
+                </div>
+            </a>
+
+            <!-- Staff Orders - Staff/Admin Only -->
+            <a href="/staff-orders.html" class="category-card active staff-only" style="display: none;" data-testid="card-category-staff-orders">
+                <div class="category-icon">📋</div>
+                <div class="category-content">
+                    <h3>Staff Orders View</h3>
+                    <p>View consolidated grocery orders by house and delivery date.</p>
+                    <span class="category-badge">Staff Only</span>
+                </div>
+            </a>
+
+            <!-- Inventory Management - Admin Only -->
+            <a href="/admin-inventory.html" class="category-card active admin-only" style="display: none;" data-testid="card-category-inventory">
+                <div class="category-icon">📦</div>
+                <div class="category-content">
+                    <h3>Inventory Management</h3>
+                    <p>Add, edit, and manage grocery items available for ordering.</p>
+                    <span class="category-badge">Admin Only</span>
                 </div>
             </a>
 
@@ -348,6 +368,21 @@
                     document.getElementById('userHouse').textContent = `House ${userData.house} • ${userData.role}`;
                 } else {
                     document.getElementById('userHouse').textContent = userData.role;
+                }
+
+                // Show role-based tiles
+                const userRole = userData.role.toLowerCase();
+                
+                // Staff and admin can see staff orders
+                if (userRole === 'staff' || userRole === 'admin') {
+                    const staffTiles = document.querySelectorAll('.staff-only');
+                    staffTiles.forEach(tile => tile.style.display = 'block');
+                }
+                
+                // Only admin can see inventory management
+                if (userRole === 'admin') {
+                    const adminTiles = document.querySelectorAll('.admin-only');
+                    adminTiles.forEach(tile => tile.style.display = 'block');
                 }
             } catch (error) {
                 console.error('Failed to parse user data:', error);
