@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management - 1.FC Köln Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .club-logo {
+            height: 48px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .back-btn {
+            padding: 0.625rem 1.25rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #333;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            border-color: #dc143c;
+            color: #dc143c;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .add-btn {
+            padding: 0.875rem 1.5rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .add-btn:hover {
+            background: #b91c3c;
+            transform: translateY(-2px);
+        }
+
+        /* Items Table */
+        .items-table-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .items-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .items-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #333;
+        }
+
+        .items-table tbody tr:hover {
+            background: #fafbfc;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            background: #f3f4f6;
+            color: #666;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            text-transform: uppercase;
+        }
+
+        .price-cell {
+            font-weight: 600;
+            color: #dc143c;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2563eb;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #333;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+        }
+
+        .btn-submit {
+            padding: 0.75rem 1.5rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #b91c3c;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .items-table-container {
+                overflow-x: auto;
+            }
+
+            .actions-cell {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Logo_FC_K%C3%B6ln.svg/1200px-Logo_FC_K%C3%B6ln.svg.png" alt="1.FC Köln" class="club-logo">
+                <h1 class="page-title">Inventory Management</h1>
+            </div>
+            <a href="/dashboard.html" class="back-btn" data-testid="link-back-dashboard">← Back to Dashboard</a>
+        </div>
+
+        <!-- Message Area -->
+        <div id="messageArea"></div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search items..." data-testid="input-search">
+            </div>
+            <button class="add-btn" onclick="openAddModal()" data-testid="button-add-item">+ Add New Item</button>
+        </div>
+
+        <!-- Items Table -->
+        <div class="items-table-container">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <h3>Loading items...</h3>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Item</h2>
+                <button class="close-btn" onclick="closeModal()" data-testid="button-close-modal">×</button>
+            </div>
+            <form id="itemForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="itemId">
+                
+                <div class="form-group">
+                    <label class="form-label" for="itemName">Item Name</label>
+                    <input type="text" id="itemName" class="form-input" required data-testid="input-item-name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="itemCategory">Category</label>
+                    <select id="itemCategory" class="form-select" required data-testid="select-category">
+                        <option value="">Select a category</option>
+                        <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                        <option value="Dairy & Eggs">Dairy & Eggs</option>
+                        <option value="Meat & Fish">Meat & Fish</option>
+                        <option value="Bakery">Bakery</option>
+                        <option value="Pantry">Pantry</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Frozen">Frozen</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="itemPrice">Price (€)</label>
+                    <input type="number" id="itemPrice" class="form-input" step="0.01" min="0" required data-testid="input-price">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()" data-testid="button-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit" id="submitBtn" data-testid="button-submit">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/fckoln';
+        let allItems = [];
+        let isEditing = false;
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('fckoln_token');
+            return {
+                'Content-Type': 'application/json',
+                'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // Check auth and admin role
+        function checkAuth() {
+            const token = sessionStorage.getItem('fckoln_token');
+            const user = sessionStorage.getItem('fckoln_user');
+
+            if (!token || !user) {
+                window.location.href = '/';
+                return false;
+            }
+
+            try {
+                const userData = JSON.parse(user);
+                if (userData.role.toLowerCase() !== 'admin') {
+                    alert('Access denied. Admin only.');
+                    window.location.href = '/dashboard.html';
+                    return false;
+                }
+            } catch (error) {
+                console.error('Failed to parse user data:', error);
+                window.location.href = '/';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Load items
+        async function loadItems() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/grocery/items`, {
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    allItems = data.items;
+                    renderItems(allItems);
+                } else {
+                    showMessage(data.message || 'Failed to load items', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to load items:', error);
+                showMessage('Failed to load items', 'error');
+            }
+        }
+
+        // Render items
+        function renderItems(items) {
+            const tbody = document.getElementById('itemsTableBody');
+            
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <h3>No items found</h3>
+                            <p>Add your first grocery item to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = items.map(item => `
+                <tr data-testid="row-item-${item.id}">
+                    <td><strong>${item.name}</strong></td>
+                    <td><span class="category-badge">${item.category}</span></td>
+                    <td class="price-cell">€${item.price.toFixed(2)}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="edit-btn" onclick="openEditModal(${item.id})" data-testid="button-edit-${item.id}">Edit</button>
+                            <button class="delete-btn" onclick="deleteItem(${item.id})" data-testid="button-delete-${item.id}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allItems.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+            );
+            renderItems(filtered);
+        });
+
+        // Modal functions
+        function openAddModal() {
+            isEditing = false;
+            document.getElementById('modalTitle').textContent = 'Add New Item';
+            document.getElementById('itemForm').reset();
+            document.getElementById('itemId').value = '';
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function openEditModal(id) {
+            isEditing = true;
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Item';
+            document.getElementById('itemId').value = item.id;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemCategory').value = item.category;
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        // Handle form submission
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            const itemData = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                price: parseFloat(document.getElementById('itemPrice').value)
+            };
+
+            try {
+                const itemId = document.getElementById('itemId').value;
+                const url = isEditing 
+                    ? `${API_BASE}/admin/grocery/items/${itemId}`
+                    : `${API_BASE}/admin/grocery/items`;
+                const method = isEditing ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(itemData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message || 'Item saved successfully', 'success');
+                    closeModal();
+                    await loadItems();
+                } else {
+                    showMessage(data.message || 'Failed to save item', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to save item:', error);
+                showMessage('Failed to save item', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Item';
+            }
+        }
+
+        // Delete item
+        async function deleteItem(id) {
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+
+            if (!confirm(`Are you sure you want to delete "${item.name}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/grocery/items/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message || 'Item deleted successfully', 'success');
+                    await loadItems();
+                } else {
+                    showMessage(data.message || 'Failed to delete item', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to delete item:', error);
+                showMessage('Failed to delete item', 'error');
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('itemModal').addEventListener('click', (e) => {
+            if (e.target.id === 'itemModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        if (checkAuth()) {
+            loadItems();
+        }
+    </script>
+</body>
+</html>
