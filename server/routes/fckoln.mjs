@@ -617,6 +617,290 @@ router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req
 });
 
 // ==========================================
+// CHORES ROUTES
+// ==========================================
+
+// Get chores for current player (this week)
+router.get('/chores', requireAuth, async (req, res) => {
+  try {
+    // Get current week start date (Monday)
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + daysToMonday);
+    const weekStartDate = monday.toISOString().split('T')[0];
+
+    const result = await pool.query(
+      `SELECT c.*, 
+              u.first_name, u.last_name,
+              v.first_name as verified_by_first_name, v.last_name as verified_by_last_name
+       FROM chores c
+       LEFT JOIN users u ON c.assigned_to = u.id
+       LEFT JOIN users v ON c.verified_by = v.id
+       WHERE c.app_id = $1 
+         AND c.assigned_to = $2 
+         AND c.week_start_date = $3
+       ORDER BY c.status ASC, c.created_at DESC`,
+      [req.appCtx.id, req.userId, weekStartDate]
+    );
+
+    res.json({ 
+      success: true, 
+      chores: result.rows,
+      weekStartDate
+    });
+  } catch (error) {
+    console.error('Failed to fetch chores:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch chores' 
+    });
+  }
+});
+
+// Mark chore as completed
+router.post('/chores/:id/complete', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verify the chore belongs to this player
+    const checkResult = await pool.query(
+      `SELECT * FROM chores 
+       WHERE id = $1 AND app_id = $2 AND assigned_to = $3`,
+      [id, req.appCtx.id, req.userId]
+    );
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Chore not found or not assigned to you' 
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE chores 
+       SET status = 'completed', completed_at = NOW() 
+       WHERE id = $1 
+       RETURNING *`,
+      [id]
+    );
+
+    res.json({ 
+      success: true, 
+      message: 'Chore marked as completed',
+      chore: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Failed to complete chore:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to complete chore' 
+    });
+  }
+});
+
+// ==========================================
+// ADMIN CHORES ROUTES
+// ==========================================
+
+// Get all chores for staff view (with filters)
+router.get('/admin/chores', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const { house, weekStartDate, status } = req.query;
+
+    let query = `
+      SELECT c.*, 
+             u.first_name, u.last_name, u.house as player_house,
+             v.first_name as verified_by_first_name, v.last_name as verified_by_last_name
+      FROM chores c
+      LEFT JOIN users u ON c.assigned_to = u.id
+      LEFT JOIN users v ON c.verified_by = v.id
+      WHERE c.app_id = $1
+    `;
+    const params = [req.appCtx.id];
+
+    if (house) {
+      params.push(house);
+      query += ` AND c.house = $${params.length}`;
+    }
+
+    if (weekStartDate) {
+      params.push(weekStartDate);
+      query += ` AND c.week_start_date = $${params.length}`;
+    }
+
+    if (status) {
+      params.push(status);
+      query += ` AND c.status = $${params.length}`;
+    }
+
+    query += ` ORDER BY c.house, c.status ASC, c.created_at DESC`;
+
+    const result = await pool.query(query, params);
+
+    res.json({ 
+      success: true, 
+      chores: result.rows 
+    });
+  } catch (error) {
+    console.error('Failed to fetch chores:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch chores' 
+    });
+  }
+});
+
+// Create chore assignment (for one-off tasks or weekly assignments)
+router.post('/admin/chores', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const { title, description, house, assignedTo, weekStartDate, dueDate, isRecurring } = req.body;
+
+    if (!title || !house || !assignedTo || !weekStartDate) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Title, house, assignedTo, and weekStartDate are required' 
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO chores (
+        app_id, title, description, house, assigned_to, week_start_date, 
+        due_date, is_recurring, frequency, status, created_by
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING *`,
+      [
+        req.appCtx.id, 
+        title, 
+        description || null, 
+        house, 
+        assignedTo, 
+        weekStartDate,
+        dueDate || null,
+        isRecurring !== false, // Default to true
+        isRecurring !== false ? 'weekly' : 'one-time',
+        'pending',
+        req.userId
+      ]
+    );
+
+    res.json({ 
+      success: true, 
+      message: 'Chore assigned successfully',
+      chore: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Failed to create chore:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create chore' 
+    });
+  }
+});
+
+// Verify completed chore
+router.put('/admin/chores/:id/verify', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const { id } = req.params;
+    const { approved } = req.body; // true = verified, false = rejected
+
+    const newStatus = approved ? 'verified' : 'rejected';
+
+    const result = await pool.query(
+      `UPDATE chores 
+       SET status = $1, verified_at = NOW(), verified_by = $2
+       WHERE id = $3 AND app_id = $4
+       RETURNING *`,
+      [newStatus, req.userId, id, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Chore not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: approved ? 'Chore verified' : 'Chore rejected',
+      chore: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Failed to verify chore:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to verify chore' 
+    });
+  }
+});
+
+// Delete chore assignment
+router.delete('/admin/chores/:id', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff/admin
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `DELETE FROM chores 
+       WHERE id = $1 AND app_id = $2
+       RETURNING id`,
+      [id, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Chore not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Chore deleted successfully'
+    });
+  } catch (error) {
+    console.error('Failed to delete chore:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete chore' 
+    });
+  }
+});
+
+// ==========================================
 // ADMIN INVENTORY ROUTES
 // ==========================================
 
