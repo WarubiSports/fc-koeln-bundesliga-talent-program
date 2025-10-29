@@ -616,4 +616,171 @@ router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req
   }
 });
 
+// ==========================================
+// ADMIN INVENTORY ROUTES
+// ==========================================
+
+// Get all grocery items (admin view - includes all items)
+router.get('/admin/grocery/items', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only admin can access
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - admin only' 
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT id, name, category, price 
+       FROM grocery_items 
+       WHERE app_id = $1 
+       ORDER BY category, name`,
+      [req.appCtx.id]
+    );
+
+    res.json({ 
+      success: true, 
+      items: result.rows 
+    });
+  } catch (error) {
+    console.error('Failed to fetch items:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch items' 
+    });
+  }
+});
+
+// Add new grocery item
+router.post('/admin/grocery/items', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only admin can add items
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - admin only' 
+      });
+    }
+
+    const { name, category, price } = req.body;
+
+    if (!name || !category || price === undefined) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Name, category, and price are required' 
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO grocery_items (name, category, price, app_id) 
+       VALUES ($1, $2, $3, $4) 
+       RETURNING id, name, category, price`,
+      [name, category, parseFloat(price), req.appCtx.id]
+    );
+
+    res.json({ 
+      success: true, 
+      message: 'Item added successfully',
+      item: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Failed to add item:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to add item' 
+    });
+  }
+});
+
+// Update grocery item
+router.put('/admin/grocery/items/:id', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only admin can update items
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - admin only' 
+      });
+    }
+
+    const { id } = req.params;
+    const { name, category, price } = req.body;
+
+    if (!name || !category || price === undefined) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Name, category, and price are required' 
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE grocery_items 
+       SET name = $1, category = $2, price = $3 
+       WHERE id = $4 AND app_id = $5 
+       RETURNING id, name, category, price`,
+      [name, category, parseFloat(price), id, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Item not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Item updated successfully',
+      item: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Failed to update item:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update item' 
+    });
+  }
+});
+
+// Delete grocery item
+router.delete('/admin/grocery/items/:id', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only admin can delete items
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - admin only' 
+      });
+    }
+
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `DELETE FROM grocery_items 
+       WHERE id = $1 AND app_id = $2 
+       RETURNING id`,
+      [id, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Item not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Item deleted successfully'
+    });
+  } catch (error) {
+    console.error('Failed to delete item:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete item' 
+    });
+  }
+});
+
 export default router;
