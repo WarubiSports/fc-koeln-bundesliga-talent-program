@@ -480,8 +480,8 @@
                     sessionStorage.setItem('fckoln_token', data.token);
                     sessionStorage.setItem('fckoln_user', JSON.stringify(data.user));
                     
-                    // Redirect to grocery order page
-                    window.location.href = '/grocery-order.html';
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard.html';
                 } else {
                     alert(data.message || 'Login failed. Please check your credentials.');
                     submitBtn.textContent = originalText;
