@@ -111,23 +111,6 @@ export const eventAttendance = pgTable("event_attendance", {
 
 export type EventAttendance = typeof eventAttendance.$inferSelect;
 
-// Messages table
-export const messages = pgTable("messages", {
-  id: serial("id").primaryKey(),
-  appId: varchar("app_id"), // Multi-tenant: which app this message belongs to
-  fromUserId: varchar("from_user_id"),
-  toUserId: varchar("to_user_id"),
-  subject: varchar("subject"),
-  content: text("content"),
-  isRead: boolean("is_read"),
-  priority: varchar("priority"),
-  messageType: varchar("message_type"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export type Message = typeof messages.$inferSelect;
-
 // Chores table - player house chores and tasks
 export const chores = pgTable("chores", {
   id: serial("id").primaryKey(),
