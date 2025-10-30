@@ -1157,20 +1157,38 @@ router.delete('/admin/grocery/items/:id', requireAuth, async (req, res) => {
 // PLAYER PROFILE ROUTES
 // ==========================================
 
-// Get current user's profile
+// Get current user's profile or specific player profile by ID (staff/admin only)
 router.get('/profile', requireAuth, async (req, res) => {
   try {
+    const { id } = req.query;
+    
+    // Determine which user to fetch
+    let targetUserId = req.userId;
+    
+    // If id parameter is provided, check authorization
+    if (id) {
+      // Only staff and admin can view other players' profiles
+      if (req.user.role !== 'staff' && req.user.role !== 'admin') {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'Access denied - you can only view your own profile' 
+        });
+      }
+      targetUserId = id;
+    }
+    
     const result = await pool.query(
       `SELECT 
         id, email, first_name, last_name, date_of_birth, nationality, nationality_code,
         position, preferred_foot, height, weight, jersey_number, previous_club,
         phone, phone_number, house, role, status, approved,
         emergency_contact, emergency_phone, emergency_contact_name, emergency_contact_phone,
-        medical_conditions, allergies, profile_image_url
+        medical_conditions, allergies, profile_image_url,
+        health_status, injury_type, injury_end_date
        FROM users 
        WHERE id = $1 AND app_id = $2 
        LIMIT 1`,
-      [req.userId, req.appCtx.id]
+      [targetUserId, req.appCtx.id]
     );
 
     if (result.rows.length === 0) {
@@ -1209,10 +1227,13 @@ router.get('/profile', requireAuth, async (req, res) => {
       emergencyContactPhone: user.emergency_contact_phone,
       medicalConditions: user.medical_conditions,
       allergies: user.allergies,
-      profileImageUrl: user.profile_image_url
+      profileImageUrl: user.profile_image_url,
+      healthStatus: user.health_status,
+      injuryType: user.injury_type,
+      injuryEndDate: user.injury_end_date
     };
 
-    res.json({ success: true, profile });
+    res.json({ success: true, profile, isViewingOther: !!id });
   } catch (error) {
     console.error('Failed to fetch profile:', error);
     res.status(500).json({ 
