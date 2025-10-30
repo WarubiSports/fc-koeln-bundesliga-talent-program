@@ -516,6 +516,10 @@
                     <label class="filter-label">Position</label>
                     <select class="filter-select" id="positionFilter" data-testid="select-position-filter">
                         <option value="all">All Positions</option>
+                        <option value="Goalkeeper">Goalkeeper</option>
+                        <option value="Defender">Defender</option>
+                        <option value="Midfielder">Midfielder</option>
+                        <option value="Forward">Forward</option>
                     </select>
                 </div>
             </div>
@@ -650,7 +654,6 @@
                 allPlayers = data.players || [];
                 filteredPlayers = [...allPlayers];
 
-                populatePositionFilter();
                 updateStats();
                 applyFilters();
 
@@ -677,17 +680,6 @@
             document.getElementById('statInjured').textContent = injured;
             document.getElementById('statHealthy').textContent = healthy;
             document.getElementById('statHouses').textContent = houses;
-        }
-
-        // Populate position filter with unique positions
-        function populatePositionFilter() {
-            const positions = [...new Set(allPlayers.map(p => p.position).filter(p => p))].sort();
-            positions.forEach(position => {
-                const option = document.createElement('option');
-                option.value = position;
-                option.textContent = position;
-                positionFilter.appendChild(option);
-            });
         }
 
         // Calculate days until recovery
@@ -729,8 +721,9 @@
                 // Health filter
                 const matchesHealth = healthValue === 'all' || player.healthStatus === healthValue;
 
-                // Position filter
-                const matchesPosition = positionValue === 'all' || player.position === positionValue;
+                // Position filter - check if player's position contains the selected position
+                const matchesPosition = positionValue === 'all' || 
+                    (player.position && player.position.toLowerCase().includes(positionValue.toLowerCase()));
 
                 return matchesSearch && matchesHealth && matchesPosition;
             });
