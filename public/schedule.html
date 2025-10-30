@@ -582,7 +582,7 @@
                         <div class="day-number">${day}</div>
                         <div class="day-events">
                             ${dayEvents.map(event => `
-                                <div class="event-item ${event.event_type}" 
+                                <div class="event-item ${event.event_type.toLowerCase()}" 
                                      data-event-id="${event.id}"
                                      data-testid="event-${event.id}"
                                      title="${event.title} - ${event.start_time}">
@@ -635,7 +635,7 @@
                     <div class="event-detail-content">
                         <div class="event-detail-label">Type</div>
                         <div class="event-detail-value">
-                            <span class="event-type-badge ${event.event_type}">${event.event_type}</span>
+                            <span class="event-type-badge ${event.event_type.toLowerCase()}">${event.event_type}</span>
                         </div>
                     </div>
                 </div>
