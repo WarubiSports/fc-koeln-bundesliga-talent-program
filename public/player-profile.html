@@ -451,13 +451,25 @@
         // Load profile data
         async function loadProfile() {
             try {
+                console.log('Loading profile with token:', token ? 'Token exists' : 'No token');
                 const response = await fetch('/api/fckoln/profile', {
                     headers: {
+                        'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+
                 const data = await response.json();
+                console.log('Profile data received:', data);
 
                 if (!data.success) {
                     throw new Error(data.message || 'Failed to load profile');
@@ -470,6 +482,8 @@
                 profileFormEl.style.display = 'block';
             } catch (error) {
                 console.error('Error loading profile:', error);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
                 showMessage('Failed to load profile. Please try again.', 'error');
                 loadingEl.style.display = 'none';
             }
@@ -551,6 +565,7 @@
                 const response = await fetch('/api/fckoln/profile', {
                     method: 'PUT',
                     headers: {
+                        'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
