@@ -331,15 +331,25 @@
                 </div>
             </div>
 
-            <!-- Schedule - Coming Soon -->
-            <div class="category-card disabled" data-testid="card-category-schedule">
+            <!-- Schedule - Active -->
+            <a href="/schedule.html" class="category-card active" data-testid="card-category-schedule">
                 <div class="category-icon">📅</div>
                 <div class="category-content">
                     <h3>Training Schedule</h3>
                     <p>View your training sessions, matches, and upcoming events.</p>
-                    <span class="category-badge">Coming Soon</span>
+                    <span class="category-badge">Available Now</span>
                 </div>
-            </div>
+            </a>
+
+            <!-- Staff Schedule - Staff/Admin Only -->
+            <a href="/staff-schedule.html" class="category-card active staff-only" style="display: none;" data-testid="card-category-staff-schedule">
+                <div class="category-icon">📆</div>
+                <div class="category-content">
+                    <h3>Schedule Management</h3>
+                    <p>Create and manage training sessions, matches, and events for all players.</p>
+                    <span class="category-badge">Staff Only</span>
+                </div>
+            </a>
 
             <!-- Profile - Active -->
             <a href="/player-profile.html" class="category-card active" data-testid="card-category-profile">
