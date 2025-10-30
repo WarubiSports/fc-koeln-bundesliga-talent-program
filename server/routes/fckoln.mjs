@@ -372,22 +372,261 @@ router.put('/players/:id/injury', requireAuth, async (req, res) => {
 // EVENTS/CALENDAR ROUTES
 // ==========================================
 
-router.get('/events', async (req, res) => {
+// Get all events (with optional filters)
+router.get('/events', requireAuth, async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT id, title, type, location, description, start_time, end_time, created_at
-       FROM events 
-       WHERE app_id = $1 
-       ORDER BY start_time DESC`,
-      [req.appCtx.id]
-    );
-
+    const { startDate, endDate, eventType } = req.query;
+    
+    let query = `
+      SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at
+      FROM events 
+      WHERE app_id = $1
+    `;
+    const params = [req.appCtx.id];
+    let paramIndex = 2;
+    
+    if (startDate) {
+      query += ` AND date >= $${paramIndex}`;
+      params.push(startDate);
+      paramIndex++;
+    }
+    
+    if (endDate) {
+      query += ` AND date <= $${paramIndex}`;
+      params.push(endDate);
+      paramIndex++;
+    }
+    
+    if (eventType) {
+      query += ` AND event_type = $${paramIndex}`;
+      params.push(eventType);
+      paramIndex++;
+    }
+    
+    query += ` ORDER BY date, start_time`;
+    
+    const result = await pool.query(query, params);
     res.json({ success: true, events: result.rows });
   } catch (error) {
     console.error('Failed to fetch events:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to fetch events' 
+    });
+  }
+});
+
+// Create a new event (staff/admin only)
+router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const { title, eventType, date, startTime, endTime, location, notes } = req.body;
+    
+    if (!title || !eventType || !date || !startTime || !endTime) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Title, event type, date, start time, and end time are required' 
+      });
+    }
+    
+    const result = await pool.query(
+      `INSERT INTO events (app_id, title, event_type, date, start_time, end_time, location, notes, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at`,
+      [req.appCtx.id, title, eventType, date, startTime, endTime, location, notes, req.userId]
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'Event created successfully',
+      event: result.rows[0] 
+    });
+  } catch (error) {
+    console.error('Failed to create event:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create event' 
+    });
+  }
+});
+
+// Update an event (staff/admin only)
+router.put('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { title, eventType, date, startTime, endTime, location, notes } = req.body;
+    
+    if (!title || !eventType || !date || !startTime || !endTime) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Title, event type, date, start time, and end time are required' 
+      });
+    }
+    
+    const result = await pool.query(
+      `UPDATE events 
+       SET title = $1, event_type = $2, date = $3, start_time = $4, end_time = $5, 
+           location = $6, notes = $7, updated_at = NOW()
+       WHERE id = $8 AND app_id = $9
+       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at, updated_at`,
+      [title, eventType, date, startTime, endTime, location, notes, eventId, req.appCtx.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Event not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Event updated successfully',
+      event: result.rows[0] 
+    });
+  } catch (error) {
+    console.error('Failed to update event:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update event' 
+    });
+  }
+});
+
+// Delete an event (staff/admin only)
+router.delete('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    
+    const result = await pool.query(
+      `DELETE FROM events WHERE id = $1 AND app_id = $2 RETURNING id`,
+      [eventId, req.appCtx.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Event not found' 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Event deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Failed to delete event:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete event' 
+    });
+  }
+});
+
+// Get attendance for a specific event
+router.get('/events/:id/attendance', requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    
+    // Verify event exists and belongs to this app
+    const eventCheck = await pool.query(
+      `SELECT id FROM events WHERE id = $1 AND app_id = $2`,
+      [eventId, req.appCtx.id]
+    );
+    
+    if (eventCheck.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Event not found' 
+      });
+    }
+    
+    // Get all attendance records with user details
+    const result = await pool.query(
+      `SELECT 
+        ea.id, ea.event_id, ea.user_id, ea.status, ea.marked_by, ea.created_at, ea.updated_at,
+        u.first_name, u.last_name, u.email, u.role
+       FROM event_attendance ea
+       LEFT JOIN users u ON ea.user_id = u.id
+       WHERE ea.event_id = $1 AND ea.app_id = $2
+       ORDER BY u.last_name, u.first_name`,
+      [eventId, req.appCtx.id]
+    );
+    
+    res.json({ 
+      success: true, 
+      attendance: result.rows 
+    });
+  } catch (error) {
+    console.error('Failed to fetch attendance:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch attendance' 
+    });
+  }
+});
+
+// RSVP or mark attendance for an event
+router.post('/events/:id/attendance', requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { userId, status } = req.body;
+    
+    // Determine which user's attendance we're updating
+    const targetUserId = userId || req.userId;
+    
+    // Players can only update their own attendance
+    if (req.user.role === 'player' && targetUserId !== req.userId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Players can only update their own attendance' 
+      });
+    }
+    
+    // Staff/admin can update any user's attendance
+    const isStaffOrAdmin = req.user.role === 'staff' || req.user.role === 'admin';
+    
+    // Verify event exists and belongs to this app
+    const eventCheck = await pool.query(
+      `SELECT id FROM events WHERE id = $1 AND app_id = $2`,
+      [eventId, req.appCtx.id]
+    );
+    
+    if (eventCheck.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Event not found' 
+      });
+    }
+    
+    // Valid statuses
+    const validStatuses = ['pending', 'attending', 'not_attending', 'attended', 'absent'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid status. Must be one of: ' + validStatuses.join(', ')
+      });
+    }
+    
+    // Insert or update attendance record
+    const result = await pool.query(
+      `INSERT INTO event_attendance (event_id, user_id, app_id, status, marked_by, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (event_id, user_id, app_id) 
+       DO UPDATE SET status = $4, marked_by = $5, updated_at = NOW()
+       RETURNING id, event_id, user_id, status, marked_by, created_at, updated_at`,
+      [eventId, targetUserId, req.appCtx.id, status, isStaffOrAdmin ? req.userId : null]
+    );
+    
+    res.json({ 
+      success: true, 
+      message: 'Attendance updated successfully',
+      attendance: result.rows[0] 
+    });
+  } catch (error) {
+    console.error('Failed to update attendance:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update attendance' 
     });
   }
 });
