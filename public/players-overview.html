@@ -54,12 +54,6 @@
             color: #1a1a1a;
         }
 
-        .player-count {
-            font-size: 0.875rem;
-            color: #666;
-            margin-top: 0.25rem;
-        }
-
         .back-btn {
             padding: 0.625rem 1.25rem;
             background: white;
@@ -77,8 +71,43 @@
             color: #dc143c;
         }
 
-        /* Search */
-        .search-container {
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .stat-card.injured .stat-value {
+            color: #dc143c;
+        }
+
+        .stat-card.healthy .stat-value {
+            color: #10b981;
+        }
+
+        /* Filters */
+        .filters-container {
             background: white;
             border-radius: 1rem;
             padding: 1.5rem 2rem;
@@ -86,9 +115,26 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .search-input {
-            width: 100%;
-            padding: 0.875rem 1.25rem;
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-input, .filter-select {
+            padding: 0.625rem 1rem;
             border: 2px solid #e5e7eb;
             border-radius: 0.5rem;
             font-size: 1rem;
@@ -96,7 +142,7 @@
             transition: all 0.2s;
         }
 
-        .search-input:focus {
+        .filter-input:focus, .filter-select:focus {
             outline: none;
             border-color: #dc143c;
             box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
@@ -126,6 +172,30 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .players-table thead th:hover {
+            background: #f9fafb;
+        }
+
+        .players-table thead th.sortable::after {
+            content: '↕';
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.3;
+        }
+
+        .players-table thead th.sorted-asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        .players-table thead th.sorted-desc::after {
+            content: '↓';
+            opacity: 1;
         }
 
         .players-table tbody tr {
@@ -192,6 +262,136 @@
             margin-top: 0.25rem;
         }
 
+        .days-until-recovery {
+            font-size: 0.75rem;
+            color: #dc143c;
+            font-weight: 600;
+        }
+
+        /* Action Buttons in Table */
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            background: #dc143c;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #b91232;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #dc143c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #b91232;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
         /* Loading */
         .loading {
             text-align: center;
@@ -238,6 +438,10 @@
                 align-items: flex-start;
             }
 
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
             .table-container {
                 padding: 1rem;
             }
@@ -263,20 +467,58 @@
                      class="club-logo">
                 <div>
                     <h1 class="page-title">Players Overview</h1>
-                    <p class="player-count" id="playerCount">Loading...</p>
                 </div>
             </div>
             <a href="/dashboard.html" class="back-btn" data-testid="button-back-dashboard">← Back to Dashboard</a>
         </div>
 
-        <!-- Search -->
-        <div class="search-container">
-            <input 
-                type="text" 
-                class="search-input" 
-                id="searchInput" 
-                placeholder="Search by name or house..." 
-                data-testid="input-search-players">
+        <!-- Stats Cards -->
+        <div id="statsGrid" class="stats-grid" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-label">Total Players</div>
+                <div class="stat-value" id="statTotalPlayers">0</div>
+            </div>
+            <div class="stat-card injured">
+                <div class="stat-label">Currently Injured</div>
+                <div class="stat-value" id="statInjured">0</div>
+            </div>
+            <div class="stat-card healthy">
+                <div class="stat-label">Healthy</div>
+                <div class="stat-value" id="statHealthy">0</div>
+            </div>
+            <div class="stat-card" id="houseStatsContainer">
+                <div class="stat-label">Houses</div>
+                <div class="stat-value" id="statHouses">0</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-container" style="display: none;" id="filtersContainer">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input 
+                        type="text" 
+                        class="filter-input" 
+                        id="searchInput" 
+                        placeholder="Search by name or house..." 
+                        data-testid="input-search-players">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Health Status</label>
+                    <select class="filter-select" id="healthFilter" data-testid="select-health-filter">
+                        <option value="all">All Players</option>
+                        <option value="healthy">Healthy Only</option>
+                        <option value="injured">Injured Only</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Position</label>
+                    <select class="filter-select" id="positionFilter" data-testid="select-position-filter">
+                        <option value="all">All Positions</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <!-- Loading State -->
@@ -290,10 +532,11 @@
             <table class="players-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>House</th>
-                        <th>Position</th>
-                        <th>Health Status</th>
+                        <th class="sortable" data-sort="name">Name</th>
+                        <th class="sortable" data-sort="house">House</th>
+                        <th class="sortable" data-sort="position">Position</th>
+                        <th class="sortable" data-sort="health">Health Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="playersTableBody">
@@ -305,7 +548,38 @@
         <div id="emptyState" class="empty-state" style="display: none;">
             <div class="empty-state-icon">👥</div>
             <h2>No players found</h2>
-            <p>Try adjusting your search or check back later.</p>
+            <p>Try adjusting your filters or check back later.</p>
+        </div>
+    </div>
+
+    <!-- Injury Update Modal -->
+    <div class="modal-overlay" id="injuryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Update Injury Status</h2>
+                <p class="modal-subtitle" id="modalPlayerName"></p>
+            </div>
+            <form id="injuryForm">
+                <div class="form-group">
+                    <label class="form-label">Health Status</label>
+                    <select class="form-select" id="modalHealthStatus" required data-testid="select-modal-health-status">
+                        <option value="healthy">Healthy</option>
+                        <option value="injured">Injured</option>
+                    </select>
+                </div>
+                <div class="form-group" id="injuryTypeGroup">
+                    <label class="form-label">Injury Type</label>
+                    <input type="text" class="form-input" id="modalInjuryType" placeholder="E.g., Hamstring strain" data-testid="input-modal-injury-type">
+                </div>
+                <div class="form-group" id="injuryDateGroup">
+                    <label class="form-label">Expected Recovery Date</label>
+                    <input type="date" class="form-input" id="modalInjuryDate" data-testid="input-modal-injury-date">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn" data-testid="button-cancel-injury">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-testid="button-save-injury">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -332,14 +606,26 @@
 
         let allPlayers = [];
         let filteredPlayers = [];
+        let currentSort = { column: null, direction: 'asc' };
+        let selectedPlayer = null;
 
         // DOM Elements
         const loadingEl = document.getElementById('loading');
+        const statsGridEl = document.getElementById('statsGrid');
+        const filtersContainerEl = document.getElementById('filtersContainer');
         const tableContainerEl = document.getElementById('tableContainer');
         const emptyStateEl = document.getElementById('emptyState');
         const playersTableBody = document.getElementById('playersTableBody');
-        const playerCountEl = document.getElementById('playerCount');
         const searchInput = document.getElementById('searchInput');
+        const healthFilter = document.getElementById('healthFilter');
+        const positionFilter = document.getElementById('positionFilter');
+        const injuryModal = document.getElementById('injuryModal');
+        const injuryForm = document.getElementById('injuryForm');
+        const modalHealthStatus = document.getElementById('modalHealthStatus');
+        const modalInjuryType = document.getElementById('modalInjuryType');
+        const modalInjuryDate = document.getElementById('modalInjuryDate');
+        const modalPlayerName = document.getElementById('modalPlayerName');
+        const cancelBtn = document.getElementById('cancelBtn');
 
         // Load players
         async function loadPlayers() {
@@ -364,18 +650,154 @@
                 allPlayers = data.players || [];
                 filteredPlayers = [...allPlayers];
 
-                displayPlayers();
-                loadingEl.style.display = 'none';
-                tableContainerEl.style.display = 'block';
+                populatePositionFilter();
+                updateStats();
+                applyFilters();
 
-                // Update count
-                playerCountEl.textContent = `${allPlayers.length} player${allPlayers.length !== 1 ? 's' : ''}`;
+                loadingEl.style.display = 'none';
+                statsGridEl.style.display = 'grid';
+                filtersContainerEl.style.display = 'block';
+                tableContainerEl.style.display = 'block';
 
             } catch (error) {
                 console.error('Error loading players:', error);
                 loadingEl.style.display = 'none';
                 emptyStateEl.style.display = 'block';
             }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = allPlayers.length;
+            const injured = allPlayers.filter(p => p.healthStatus === 'injured').length;
+            const healthy = total - injured;
+            const houses = [...new Set(allPlayers.map(p => p.house).filter(h => h))].length;
+
+            document.getElementById('statTotalPlayers').textContent = total;
+            document.getElementById('statInjured').textContent = injured;
+            document.getElementById('statHealthy').textContent = healthy;
+            document.getElementById('statHouses').textContent = houses;
+        }
+
+        // Populate position filter with unique positions
+        function populatePositionFilter() {
+            const positions = [...new Set(allPlayers.map(p => p.position).filter(p => p))].sort();
+            positions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position;
+                option.textContent = position;
+                positionFilter.appendChild(option);
+            });
+        }
+
+        // Calculate days until recovery
+        function getDaysUntilRecovery(endDate) {
+            if (!endDate) return null;
+            const today = new Date();
+            const recovery = new Date(endDate);
+            const diff = Math.ceil((recovery - today) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // Apply filters and display
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const healthValue = healthFilter.value;
+            const positionValue = positionFilter.value;
+
+            filteredPlayers = allPlayers.filter(player => {
+                // Search filter
+                const name = player.name.toLowerCase();
+                const house = (player.house || '').toLowerCase();
+                const matchesSearch = !searchTerm || name.includes(searchTerm) || house.includes(searchTerm);
+
+                // Health filter
+                const matchesHealth = healthValue === 'all' || player.healthStatus === healthValue;
+
+                // Position filter
+                const matchesPosition = positionValue === 'all' || player.position === positionValue;
+
+                return matchesSearch && matchesHealth && matchesPosition;
+            });
+
+            // Apply current sort
+            if (currentSort.column) {
+                sortPlayers(currentSort.column, false);
+            }
+
+            displayPlayers();
+        }
+
+        // Sort players
+        function sortPlayers(column, toggleDirection = true) {
+            if (toggleDirection) {
+                if (currentSort.column === column) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = column;
+                    currentSort.direction = 'asc';
+                }
+            }
+
+            filteredPlayers.sort((a, b) => {
+                let aVal, bVal;
+
+                switch (column) {
+                    case 'name':
+                        aVal = a.name.toLowerCase();
+                        bVal = b.name.toLowerCase();
+                        break;
+                    case 'house':
+                        aVal = (a.house || '').toLowerCase();
+                        bVal = (b.house || '').toLowerCase();
+                        break;
+                    case 'position':
+                        aVal = (a.position || '').toLowerCase();
+                        bVal = (b.position || '').toLowerCase();
+                        break;
+                    case 'health':
+                        // Injured first if asc, healthy first if desc
+                        aVal = a.healthStatus === 'injured' ? 0 : 1;
+                        bVal = b.healthStatus === 'injured' ? 0 : 1;
+                        // Secondary sort by recovery date for injured
+                        if (aVal === 0 && bVal === 0 && a.injuryEndDate && b.injuryEndDate) {
+                            return new Date(a.injuryEndDate) - new Date(b.injuryEndDate);
+                        }
+                        break;
+                }
+
+                if (aVal < bVal) return currentSort.direction === 'asc' ? -1 : 1;
+                if (aVal > bVal) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            updateSortIndicators();
+            displayPlayers();
+        }
+
+        // Update sort indicators
+        function updateSortIndicators() {
+            document.querySelectorAll('.players-table thead th').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                if (th.dataset.sort === currentSort.column) {
+                    th.classList.add(`sorted-${currentSort.direction}`);
+                }
+            });
         }
 
         // Display players in table
@@ -396,12 +818,17 @@
                 let healthDisplay = '';
                 if (isInjured && player.injuryType) {
                     const formattedDate = player.injuryEndDate ? formatDate(player.injuryEndDate) : '';
+                    const daysUntil = getDaysUntilRecovery(player.injuryEndDate);
+                    const daysText = daysUntil !== null ? 
+                        `<div class="days-until-recovery">${daysUntil > 0 ? `${daysUntil} days until recovery` : 'Recovery overdue'}</div>` : '';
+                    
                     healthDisplay = `
                         <div class="health-status injured">
                             <span class="status-indicator injured"></span>
                             <div>
                                 <div>Injured</div>
-                                <div class="injury-details">${player.injuryType}${formattedDate ? ` - Until ${formattedDate}` : ''}</div>
+                                <div class="injury-details">${escapeHtml(player.injuryType)}${formattedDate ? ` - Until ${formattedDate}` : ''}</div>
+                                ${daysText}
                             </div>
                         </div>
                     `;
@@ -420,35 +847,129 @@
                         <td><span class="house-badge">${escapeHtml(player.house || 'Not assigned')}</span></td>
                         <td>${escapeHtml(player.position || '-')}</td>
                         <td>${healthDisplay}</td>
+                        <td>
+                            <button class="action-btn" onclick="openInjuryModal('${player.id}'); event.stopPropagation();" data-testid="button-update-injury-${player.id}">
+                                Update Injury
+                            </button>
+                        </td>
                     </tr>
                 `;
             }).join('');
 
-            // Add click handlers to rows
+            // Add click handlers to rows (for viewing profile)
             playersTableBody.querySelectorAll('tr').forEach(row => {
-                row.addEventListener('click', () => {
-                    const playerId = row.dataset.playerId;
-                    // Navigate to player profile
-                    window.location.href = `/player-profile.html?id=${playerId}`;
+                row.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('action-btn')) {
+                        const playerId = row.dataset.playerId;
+                        window.location.href = `/player-profile.html?id=${playerId}`;
+                    }
                 });
             });
         }
 
-        // Search functionality
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
+        // Open injury modal
+        function openInjuryModal(playerId) {
+            selectedPlayer = allPlayers.find(p => p.id === playerId);
+            if (!selectedPlayer) return;
 
-            if (!searchTerm) {
-                filteredPlayers = [...allPlayers];
+            modalPlayerName.textContent = selectedPlayer.name;
+            modalHealthStatus.value = selectedPlayer.healthStatus || 'healthy';
+            modalInjuryType.value = selectedPlayer.injuryType || '';
+            modalInjuryDate.value = selectedPlayer.injuryEndDate || '';
+
+            toggleInjuryFields();
+            injuryModal.classList.add('show');
+        }
+
+        // Close injury modal
+        function closeInjuryModal() {
+            injuryModal.classList.remove('show');
+            selectedPlayer = null;
+            injuryForm.reset();
+        }
+
+        // Toggle injury fields based on health status
+        function toggleInjuryFields() {
+            const isInjured = modalHealthStatus.value === 'injured';
+            document.getElementById('injuryTypeGroup').style.display = isInjured ? 'block' : 'none';
+            document.getElementById('injuryDateGroup').style.display = isInjured ? 'block' : 'none';
+            
+            if (isInjured) {
+                modalInjuryType.required = true;
             } else {
-                filteredPlayers = allPlayers.filter(player => {
-                    const name = player.name.toLowerCase();
-                    const house = (player.house || '').toLowerCase();
-                    return name.includes(searchTerm) || house.includes(searchTerm);
-                });
+                modalInjuryType.required = false;
             }
+        }
 
-            displayPlayers();
+        // Submit injury update
+        async function submitInjuryUpdate(e) {
+            e.preventDefault();
+
+            if (!selectedPlayer) return;
+
+            const healthStatus = modalHealthStatus.value;
+            const injuryType = modalInjuryType.value;
+            const injuryEndDate = modalInjuryDate.value;
+
+            try {
+                const response = await fetch(`/api/fckoln/players/${selectedPlayer.id}/injury`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        healthStatus,
+                        injuryType: healthStatus === 'injured' ? injuryType : null,
+                        injuryEndDate: healthStatus === 'injured' ? injuryEndDate : null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to update injury status');
+                }
+
+                // Update local data
+                const playerIndex = allPlayers.findIndex(p => p.id === selectedPlayer.id);
+                if (playerIndex !== -1) {
+                    allPlayers[playerIndex].healthStatus = healthStatus;
+                    allPlayers[playerIndex].injuryType = data.player.injuryType;
+                    allPlayers[playerIndex].injuryEndDate = data.player.injuryEndDate;
+                }
+
+                updateStats();
+                applyFilters();
+                closeInjuryModal();
+
+            } catch (error) {
+                console.error('Error updating injury:', error);
+                alert('Failed to update injury status. Please try again.');
+            }
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', applyFilters);
+        healthFilter.addEventListener('change', applyFilters);
+        positionFilter.addEventListener('change', applyFilters);
+        cancelBtn.addEventListener('click', closeInjuryModal);
+        injuryForm.addEventListener('submit', submitInjuryUpdate);
+        modalHealthStatus.addEventListener('change', toggleInjuryFields);
+
+        // Sort column clicks
+        document.querySelectorAll('.players-table thead th.sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                sortPlayers(th.dataset.sort);
+            });
+        });
+
+        // Close modal on overlay click
+        injuryModal.addEventListener('click', (e) => {
+            if (e.target === injuryModal) {
+                closeInjuryModal();
+            }
         });
 
         // Helper function to escape HTML
@@ -456,21 +977,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        // Helper function to format date
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                });
-            } catch (error) {
-                return dateString;
-            }
         }
 
         // Load players on page load

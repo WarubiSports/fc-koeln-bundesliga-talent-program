@@ -291,6 +291,83 @@ router.get('/players/overview', requireAuth, async (req, res) => {
   }
 });
 
+// Update player injury status (staff/admin only)
+router.put('/players/:id/injury', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff and admin can update injury status
+    if (req.user.role !== 'staff' && req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const { id } = req.params;
+    const { healthStatus, injuryType, injuryEndDate } = req.body;
+
+    // Validate health status
+    if (!healthStatus || !['healthy', 'injured'].includes(healthStatus)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid health status. Must be "healthy" or "injured"' 
+      });
+    }
+
+    // If marking as injured, injury type is required
+    if (healthStatus === 'injured' && !injuryType) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Injury type is required when marking as injured' 
+      });
+    }
+
+    // Update injury status
+    const result = await pool.query(
+      `UPDATE users 
+       SET health_status = $1, 
+           injury_type = $2, 
+           injury_end_date = $3
+       WHERE id = $4 AND app_id = $5 AND role = 'player'
+       RETURNING id, first_name, last_name, health_status, injury_type, injury_end_date`,
+      [
+        healthStatus,
+        healthStatus === 'injured' ? injuryType : null,
+        healthStatus === 'injured' ? injuryEndDate : null,
+        id,
+        req.appCtx.id
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Player not found' 
+      });
+    }
+
+    const updatedPlayer = result.rows[0];
+
+    res.json({ 
+      success: true, 
+      message: `Player injury status updated to ${healthStatus}`,
+      player: {
+        id: updatedPlayer.id,
+        firstName: updatedPlayer.first_name,
+        lastName: updatedPlayer.last_name,
+        healthStatus: updatedPlayer.health_status,
+        injuryType: updatedPlayer.injury_type,
+        injuryEndDate: updatedPlayer.injury_end_date
+      }
+    });
+  } catch (error) {
+    console.error('Failed to update injury status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update injury status' 
+    });
+  }
+});
+
 // ==========================================
 // EVENTS/CALENDAR ROUTES
 // ==========================================
