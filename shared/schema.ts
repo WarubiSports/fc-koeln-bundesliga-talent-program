@@ -37,6 +37,9 @@ export const users = pgTable("users", {
   jerseyNumber: integer("jersey_number"),
   passwordResetToken: varchar("password_reset_token"),
   passwordResetExpiry: timestamp("password_reset_expiry"),
+  healthStatus: varchar("health_status").default('healthy'), // "healthy" or "injured"
+  injuryType: varchar("injury_type"), // Description of injury
+  injuryEndDate: varchar("injury_end_date"), // Expected recovery date
 });
 
 export type User = typeof users.$inferSelect;

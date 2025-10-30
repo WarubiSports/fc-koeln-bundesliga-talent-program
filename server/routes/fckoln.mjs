@@ -241,6 +241,56 @@ router.get('/players', async (req, res) => {
   }
 });
 
+// Get players overview with health status (staff/admin only)
+router.get('/players/overview', requireAuth, async (req, res) => {
+  try {
+    // Authorization: Only staff and admin can view all players
+    if (req.user.role !== 'staff' && req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Access denied - staff/admin only' 
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT 
+        id, first_name, last_name, email, position, house, jersey_number,
+        phone, phone_number,
+        health_status, injury_type, injury_end_date,
+        created_at
+       FROM users 
+       WHERE app_id = $1 AND role = 'player'
+       ORDER BY house, last_name, first_name`,
+      [req.appCtx.id]
+    );
+
+    // Format players with health status
+    const players = result.rows.map(row => ({
+      id: row.id,
+      firstName: row.first_name,
+      lastName: row.last_name,
+      name: `${row.first_name} ${row.last_name}`.trim(),
+      email: row.email,
+      position: row.position,
+      house: row.house,
+      jerseyNumber: row.jersey_number,
+      phone: row.phone || row.phone_number,
+      healthStatus: row.health_status || 'healthy',
+      injuryType: row.injury_type,
+      injuryEndDate: row.injury_end_date,
+      joinDate: row.created_at
+    }));
+
+    res.json({ success: true, players });
+  } catch (error) {
+    console.error('Failed to fetch players overview:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch players overview' 
+    });
+  }
+});
+
 // ==========================================
 // EVENTS/CALENDAR ROUTES
 // ==========================================
