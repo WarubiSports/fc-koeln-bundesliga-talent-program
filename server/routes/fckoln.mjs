@@ -695,6 +695,17 @@ function requireAuth(req, res, next) {
   }
 }
 
+// Middleware to require staff or admin role
+function requireStaffOrAdmin(req, res, next) {
+  if (!req.user || (req.user.role !== 'staff' && req.user.role !== 'admin')) {
+    return res.status(403).json({ 
+      success: false, 
+      message: 'Access denied - staff or admin role required' 
+    });
+  }
+  next();
+}
+
 // Create a new grocery order
 router.post('/grocery/orders', requireAuth, async (req, res) => {
   try {

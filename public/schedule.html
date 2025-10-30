@@ -378,7 +378,7 @@
         let allEvents = [];
 
         // Auth token
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('fckoln_token');
         if (!token) {
             window.location.href = '/';
         }
