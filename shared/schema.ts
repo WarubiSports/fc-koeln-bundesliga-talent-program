@@ -97,6 +97,20 @@ export const events = pgTable("events", {
 
 export type Event = typeof events.$inferSelect;
 
+// Event Attendance table - tracks RSVP and attendance for events
+export const eventAttendance = pgTable("event_attendance", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(), // References events.id
+  userId: varchar("user_id").notNull(), // References users.id
+  appId: varchar("app_id").notNull(), // Multi-tenant
+  status: varchar("status").notNull().default('pending'), // 'pending', 'attending', 'not_attending', 'attended', 'absent'
+  markedBy: varchar("marked_by"), // user_id of staff who marked attendance
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EventAttendance = typeof eventAttendance.$inferSelect;
+
 // Messages table
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
