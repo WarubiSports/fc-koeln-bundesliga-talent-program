@@ -425,12 +425,23 @@
     <script>
         // Check authentication
         const token = sessionStorage.getItem('fckoln_token');
-        if (!token) {
+        const userStr = sessionStorage.getItem('fckoln_user');
+        
+        if (!token || !userStr) {
+            window.location.href = '/';
+        }
+
+        let currentUser = null;
+        try {
+            currentUser = JSON.parse(userStr);
+        } catch (error) {
+            console.error('Failed to parse user data:', error);
             window.location.href = '/';
         }
 
         let isEditMode = false;
         let profileData = null;
+        let isViewingOther = false;
 
         // DOM Elements
         const loadingEl = document.getElementById('loading');
@@ -448,11 +459,27 @@
             'medicalConditions', 'allergies'
         ];
 
+        // Get player ID from URL parameter
+        function getPlayerIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
         // Load profile data
         async function loadProfile() {
             try {
+                const playerId = getPlayerIdFromUrl();
+                
+                // Build URL with optional id parameter
+                let url = '/api/fckoln/profile';
+                if (playerId) {
+                    url += `?id=${encodeURIComponent(playerId)}`;
+                }
+                
                 console.log('Loading profile with token:', token ? 'Token exists' : 'No token');
-                const response = await fetch('/api/fckoln/profile', {
+                console.log('Loading profile for player ID:', playerId || 'current user');
+                
+                const response = await fetch(url, {
                     headers: {
                         'X-App-Key': 'fckoln_b3aae37289943ee96b595915fe9e425a643fa794cfd7ad81b8ed777a6928a505',
                         'Authorization': `Bearer ${token}`
@@ -476,7 +503,15 @@
                 }
 
                 profileData = data.profile;
+                isViewingOther = data.isViewingOther || false;
+                
                 displayProfile(profileData);
+
+                // Hide edit button if viewing another player
+                if (isViewingOther) {
+                    editToggleBtn.style.display = 'none';
+                    saveSection.style.display = 'none';
+                }
 
                 loadingEl.style.display = 'none';
                 profileFormEl.style.display = 'block';
