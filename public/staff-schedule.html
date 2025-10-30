@@ -360,6 +360,40 @@
             cursor: not-allowed;
         }
 
+        /* Checkbox styles */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
         /* Message */
         .message {
             padding: 1rem;
@@ -530,6 +564,66 @@
                     <textarea id="notes" class="form-textarea" data-testid="textarea-event-notes"></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isRecurring" data-testid="checkbox-is-recurring">
+                        <span>Recurring Event</span>
+                    </label>
+                </div>
+
+                <div id="recurrenceOptions" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label" for="recurringPattern">Repeat Pattern *</label>
+                        <select id="recurringPattern" class="form-select" data-testid="select-recurring-pattern">
+                            <option value="">Select pattern...</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekdays">Weekdays (Mon-Fri)</option>
+                            <option value="sundays">Sundays Only</option>
+                            <option value="custom">Custom Days</option>
+                        </select>
+                    </div>
+
+                    <div id="customDaysOptions" style="display: none;">
+                        <label class="form-label">Select Days</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="0" class="recurring-day" data-testid="checkbox-day-sunday">
+                                <span>Sunday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="1" class="recurring-day" data-testid="checkbox-day-monday">
+                                <span>Monday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="2" class="recurring-day" data-testid="checkbox-day-tuesday">
+                                <span>Tuesday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="3" class="recurring-day" data-testid="checkbox-day-wednesday">
+                                <span>Wednesday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="4" class="recurring-day" data-testid="checkbox-day-thursday">
+                                <span>Thursday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="5" class="recurring-day" data-testid="checkbox-day-friday">
+                                <span>Friday</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="6" class="recurring-day" data-testid="checkbox-day-saturday">
+                                <span>Saturday</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="recurringEndDate">End Date *</label>
+                        <input type="date" id="recurringEndDate" class="form-input" data-testid="input-recurring-end-date">
+                        <small class="form-hint">Last date for this recurring event</small>
+                    </div>
+                </div>
+
                 <button type="submit" class="submit-btn" data-testid="button-submit-event">Save Event</button>
             </form>
         </div>
@@ -602,6 +696,26 @@
 
             // Event form
             document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+
+            // Recurring event toggle
+            document.getElementById('isRecurring').addEventListener('change', (e) => {
+                const recurrenceOptions = document.getElementById('recurrenceOptions');
+                if (e.target.checked) {
+                    recurrenceOptions.style.display = 'block';
+                } else {
+                    recurrenceOptions.style.display = 'none';
+                }
+            });
+
+            // Recurring pattern change
+            document.getElementById('recurringPattern').addEventListener('change', (e) => {
+                const customDaysOptions = document.getElementById('customDaysOptions');
+                if (e.target.value === 'custom') {
+                    customDaysOptions.style.display = 'block';
+                } else {
+                    customDaysOptions.style.display = 'none';
+                }
+            });
         }
 
         function updateMonthDisplay() {
@@ -760,12 +874,16 @@
         function closeEventModal() {
             document.getElementById('eventModal').classList.remove('active');
             document.getElementById('eventForm').reset();
+            document.getElementById('recurrenceOptions').style.display = 'none';
+            document.getElementById('customDaysOptions').style.display = 'none';
             currentEventId = null;
         }
 
         async function handleEventSubmit(e) {
             e.preventDefault();
 
+            const isRecurring = document.getElementById('isRecurring').checked;
+            
             const formData = {
                 title: document.getElementById('title').value,
                 eventType: document.getElementById('eventType').value,
@@ -773,8 +891,39 @@
                 startTime: document.getElementById('startTime').value,
                 endTime: document.getElementById('endTime').value,
                 location: document.getElementById('location').value,
-                notes: document.getElementById('notes').value
+                notes: document.getElementById('notes').value,
+                isRecurring: isRecurring
             };
+
+            if (isRecurring) {
+                const recurringPattern = document.getElementById('recurringPattern').value;
+                
+                if (!recurringPattern) {
+                    showMessage('Please select a recurrence pattern', 'error');
+                    return;
+                }
+                
+                const recurringEndDate = document.getElementById('recurringEndDate').value;
+                if (!recurringEndDate) {
+                    showMessage('Please select an end date for the recurring event', 'error');
+                    return;
+                }
+
+                formData.recurringPattern = recurringPattern;
+                formData.recurringEndDate = recurringEndDate;
+
+                if (recurringPattern === 'custom') {
+                    const selectedDays = Array.from(document.querySelectorAll('.recurring-day:checked'))
+                        .map(cb => cb.value);
+                    
+                    if (selectedDays.length === 0) {
+                        showMessage('Please select at least one day for custom recurrence', 'error');
+                        return;
+                    }
+                    
+                    formData.recurringDays = selectedDays.join(',');
+                }
+            }
 
             const url = currentEventId 
                 ? `${API_BASE}/events/${currentEventId}`

@@ -372,15 +372,78 @@ router.put('/players/:id/injury', requireAuth, async (req, res) => {
 // EVENTS/CALENDAR ROUTES
 // ==========================================
 
+// Helper function to expand recurring events into individual instances
+function expandRecurringEvents(event, startDate, endDate) {
+  if (!event.is_recurring || !event.recurring_pattern) {
+    return [event];
+  }
+
+  // Handle missing date range parameters
+  if (!startDate || !endDate) {
+    return [event];
+  }
+
+  const instances = [];
+  const eventStart = new Date(event.date + 'T00:00:00');
+  const rangeStart = new Date(startDate + 'T00:00:00');
+  const rangeEnd = new Date(endDate + 'T00:00:00');
+  
+  // Validate dates
+  if (isNaN(rangeStart.getTime()) || isNaN(rangeEnd.getTime())) {
+    return [event];
+  }
+  
+  const recurringEnd = event.recurring_end_date ? new Date(event.recurring_end_date + 'T00:00:00') : rangeEnd;
+
+  const pattern = event.recurring_pattern.toLowerCase();
+  const recurringDays = event.recurring_days ? event.recurring_days.split(',').map(d => parseInt(d)) : [];
+
+  let currentDate = new Date(Math.max(eventStart.getTime(), rangeStart.getTime()));
+  
+  while (currentDate <= rangeEnd && currentDate <= recurringEnd) {
+    const dayOfWeek = currentDate.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    let includeDate = false;
+
+    if (pattern === 'daily') {
+      includeDate = true;
+    } else if (pattern === 'weekdays') {
+      includeDate = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
+    } else if (pattern === 'sundays') {
+      includeDate = dayOfWeek === 0;
+    } else if (pattern === 'custom' && recurringDays.length > 0) {
+      includeDate = recurringDays.includes(dayOfWeek);
+    }
+
+    if (includeDate && currentDate >= rangeStart) {
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+
+      instances.push({
+        ...event,
+        date: dateStr,
+        parent_event_id: event.id
+      });
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return instances;
+}
+
 // Get all events (with optional filters)
 router.get('/events', requireAuth, async (req, res) => {
   try {
     const { startDate, endDate, eventType } = req.query;
     
+    // Fetch non-recurring events in the date range
     let query = `
-      SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at
+      SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
+             is_recurring, recurring_pattern, recurring_end_date, recurring_days
       FROM events 
-      WHERE app_id = $1
+      WHERE app_id = $1 AND (is_recurring = false OR is_recurring IS NULL)
     `;
     const params = [req.appCtx.id];
     let paramIndex = 2;
@@ -403,10 +466,56 @@ router.get('/events', requireAuth, async (req, res) => {
       paramIndex++;
     }
     
-    query += ` ORDER BY date, start_time`;
+    const nonRecurringResult = await pool.query(query, params);
     
-    const result = await pool.query(query, params);
-    res.json({ success: true, events: result.rows });
+    // Fetch recurring events that might have instances in the date range
+    let recurringQuery = `
+      SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
+             is_recurring, recurring_pattern, recurring_end_date, recurring_days
+      FROM events 
+      WHERE app_id = $1 AND is_recurring = true
+    `;
+    const recurringParams = [req.appCtx.id];
+    let recurringParamIndex = 2;
+    
+    // Only include recurring events that started before the end of our range
+    if (endDate) {
+      recurringQuery += ` AND date <= $${recurringParamIndex}`;
+      recurringParams.push(endDate);
+      recurringParamIndex++;
+    }
+    
+    // And either have no end date or end after our start date
+    if (startDate) {
+      recurringQuery += ` AND (recurring_end_date IS NULL OR recurring_end_date >= $${recurringParamIndex})`;
+      recurringParams.push(startDate);
+      recurringParamIndex++;
+    }
+    
+    if (eventType) {
+      recurringQuery += ` AND event_type = $${recurringParamIndex}`;
+      recurringParams.push(eventType);
+      recurringParamIndex++;
+    }
+    
+    const recurringResult = await pool.query(recurringQuery, recurringParams);
+    
+    // Expand recurring events into individual instances
+    const allEvents = [...nonRecurringResult.rows];
+    
+    // Always expand recurring events - if no date range provided, just return the base event
+    for (const recurringEvent of recurringResult.rows) {
+      const instances = expandRecurringEvents(recurringEvent, startDate, endDate);
+      allEvents.push(...instances);
+    }
+    
+    // Sort by date and time
+    allEvents.sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.start_time.localeCompare(b.start_time);
+    });
+    
+    res.json({ success: true, events: allEvents });
   } catch (error) {
     console.error('Failed to fetch events:', error);
     res.status(500).json({ 
@@ -419,7 +528,10 @@ router.get('/events', requireAuth, async (req, res) => {
 // Create a new event (staff/admin only)
 router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
-    const { title, eventType, date, startTime, endTime, location, notes } = req.body;
+    const { 
+      title, eventType, date, startTime, endTime, location, notes,
+      isRecurring, recurringPattern, recurringEndDate, recurringDays 
+    } = req.body;
     
     if (!title || !eventType || !date || !startTime || !endTime) {
       return res.status(400).json({ 
@@ -429,10 +541,17 @@ router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
     }
     
     const result = await pool.query(
-      `INSERT INTO events (app_id, title, event_type, date, start_time, end_time, location, notes, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at`,
-      [req.appCtx.id, title, eventType, date, startTime, endTime, location, notes, req.userId]
+      `INSERT INTO events (
+        app_id, title, event_type, date, start_time, end_time, location, notes, created_by,
+        is_recurring, recurring_pattern, recurring_end_date, recurring_days
+      )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
+                 is_recurring, recurring_pattern, recurring_end_date, recurring_days`,
+      [
+        req.appCtx.id, title, eventType, date, startTime, endTime, location, notes, req.userId,
+        isRecurring || false, recurringPattern || null, recurringEndDate || null, recurringDays || null
+      ]
     );
     
     res.json({ 
