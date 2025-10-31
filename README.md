@@ -47,11 +47,10 @@ SENDGRID_API_KEY=your_sendgrid_key
 
 ## 🚂 Deploy to Railway
 
-### Prerequisites
-1. GitHub account
-2. Railway account (sign up at [railway.app](https://railway.app))
+### 🚨 IMPORTANT: See Detailed Deployment Guide
+👉 **[RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md)** - Complete troubleshooting guide
 
-### Deployment Steps
+### Quick Start
 
 1. **Push to GitHub** (see instructions below)
 
@@ -60,30 +59,34 @@ SENDGRID_API_KEY=your_sendgrid_key
    - Click "New Project"
    - Select "Deploy from GitHub repo"
    - Choose your repository
-   - Railway will auto-detect Node.js and start building
 
-3. **Add Environment Variables**
-   - Go to your project → Settings → Variables
-   - Add all required environment variables listed above
-   - Railway provides PostgreSQL database addon if needed
+3. **Add Environment Variables** ⚠️ REQUIRED
+   
+   In Railway Settings → Variables, add:
+   ```env
+   DATABASE_URL=your_neon_postgresql_url_from_replit
+   JWT_SECRET=generate_random_64_character_string
+   SESSION_SECRET=generate_random_64_character_string
+   NODE_ENV=production
+   ```
+   
+   See [.env.example](./.env.example) for all variables.
 
-4. **Generate Public Domain**
-   - Go to Settings → Networking
-   - Click "Generate Domain"
-   - Your app will be live at `https://your-app.up.railway.app`
+4. **Generate Domain**
+   - Settings → Networking → "Generate Domain"
+   - Live at: `https://your-app.up.railway.app`
 
-5. **Set up Database** (if using Railway PostgreSQL)
-   - Add PostgreSQL service to your project
-   - Railway auto-generates DATABASE_URL
-   - Run migrations if needed
+### Railway Configuration Files
 
-### Railway Auto-Configuration
+This repo includes:
+- ✅ `railway.json` - Specifies `tsx server/index.ts` as start command
+- ✅ `Procfile` - Backup start command configuration
+- ✅ `.env.example` - Template for environment variables
 
-Railway automatically detects:
-- ✅ Node.js runtime from `package.json`
-- ✅ Start command: `npm start`
-- ✅ Build command: `npm run build`
-- ✅ Port from `process.env.PORT` (dynamically assigned)
+Railway will:
+- ✅ Auto-detect Node.js and install dependencies
+- ✅ Use `tsx` to run TypeScript directly (no compilation needed)
+- ✅ Auto-deploy on every GitHub push
 
 ## 📝 Push to GitHub
 
