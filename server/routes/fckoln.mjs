@@ -1436,17 +1436,9 @@ router.delete('/admin/chores/:id', requireAuth, async (req, res) => {
 // ADMIN INVENTORY ROUTES
 // ==========================================
 
-// Get all grocery items (admin view - includes all items)
-router.get('/admin/grocery/items', requireAuth, async (req, res) => {
+// Get all grocery items (staff/admin view - includes all items)
+router.get('/admin/grocery/items', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
-    // Authorization: Only admin can access
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Access denied - admin only' 
-      });
-    }
-
     const result = await pool.query(
       `SELECT id, name, category, price 
        FROM grocery_items 
@@ -1469,16 +1461,8 @@ router.get('/admin/grocery/items', requireAuth, async (req, res) => {
 });
 
 // Add new grocery item
-router.post('/admin/grocery/items', requireAuth, async (req, res) => {
+router.post('/admin/grocery/items', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
-    // Authorization: Only admin can add items
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Access denied - admin only' 
-      });
-    }
-
     const { name, category, price } = req.body;
 
     if (!name || !category || price === undefined) {
@@ -1510,16 +1494,8 @@ router.post('/admin/grocery/items', requireAuth, async (req, res) => {
 });
 
 // Update grocery item
-router.put('/admin/grocery/items/:id', requireAuth, async (req, res) => {
+router.put('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
-    // Authorization: Only admin can update items
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Access denied - admin only' 
-      });
-    }
-
     const { id } = req.params;
     const { name, category, price } = req.body;
 
@@ -1560,16 +1536,8 @@ router.put('/admin/grocery/items/:id', requireAuth, async (req, res) => {
 });
 
 // Delete grocery item
-router.delete('/admin/grocery/items/:id', requireAuth, async (req, res) => {
+router.delete('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
-    // Authorization: Only admin can delete items
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Access denied - admin only' 
-      });
-    }
-
     const { id } = req.params;
 
     const result = await pool.query(

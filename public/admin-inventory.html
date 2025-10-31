@@ -513,8 +513,9 @@
 
             try {
                 const userData = JSON.parse(user);
-                if (userData.role.toLowerCase() !== 'admin') {
-                    alert('Access denied. Admin only.');
+                const role = userData.role.toLowerCase();
+                if (role !== 'admin' && role !== 'staff') {
+                    alert('Access denied. Staff or Admin only.');
                     window.location.href = '/dashboard.html';
                     return false;
                 }
