@@ -1844,4 +1844,318 @@ router.put('/profile', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
+// USER MANAGEMENT ROUTES (ADMIN/STAFF)
+// ==========================================
+
+// Get all users (staff/admin only)
+router.get('/admin/users', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+        id, email, first_name, last_name, role, house, position, 
+        jersey_number, health_status, injury_type, injury_end_date,
+        approved, status, created_at
+       FROM users 
+       WHERE app_id = $1 
+       ORDER BY created_at DESC`,
+      [req.appCtx.id]
+    );
+
+    const users = result.rows.map(user => ({
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      role: user.role,
+      house: user.house,
+      position: user.position,
+      jerseyNumber: user.jersey_number,
+      healthStatus: user.health_status,
+      injuryType: user.injury_type,
+      injuryEndDate: user.injury_end_date,
+      approved: user.approved,
+      status: user.status,
+      createdAt: user.created_at
+    }));
+
+    res.json({ 
+      success: true, 
+      users 
+    });
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch users' 
+    });
+  }
+});
+
+// Create new user (staff/admin only)
+router.post('/admin/users', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const { 
+      email, 
+      password, 
+      firstName, 
+      lastName, 
+      role, 
+      house, 
+      position,
+      jerseyNumber,
+      dateOfBirth,
+      nationality
+    } = req.body;
+
+    // Validation
+    if (!email || !password || !firstName || !lastName || !role) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email, password, first name, last name, and role are required' 
+      });
+    }
+
+    // Check if email already exists
+    const existing = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND app_id = $2',
+      [email, req.appCtx.id]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email already exists' 
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate UUID for new user
+    const userId = crypto.randomUUID();
+
+    // Insert user
+    const result = await pool.query(
+      `INSERT INTO users (
+        id, app_id, email, password, first_name, last_name, role, 
+        house, position, jersey_number, date_of_birth, nationality,
+        approved, status, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
+      RETURNING 
+        id, email, first_name, last_name, role, house, position, 
+        jersey_number, approved, status, created_at`,
+      [
+        userId, 
+        req.appCtx.id, 
+        email, 
+        hashedPassword, 
+        firstName, 
+        lastName, 
+        role,
+        house || null,
+        position || null,
+        jerseyNumber || null,
+        dateOfBirth || null,
+        nationality || null,
+        'true', // Auto-approve
+        'active'
+      ]
+    );
+
+    const user = result.rows[0];
+
+    res.json({ 
+      success: true, 
+      message: 'User created successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role,
+        house: user.house,
+        position: user.position,
+        jerseyNumber: user.jersey_number,
+        approved: user.approved,
+        status: user.status,
+        createdAt: user.created_at
+      }
+    });
+  } catch (error) {
+    console.error('Failed to create user:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create user' 
+    });
+  }
+});
+
+// Update user (staff/admin only)
+router.put('/admin/users/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      email, 
+      firstName, 
+      lastName, 
+      role, 
+      house, 
+      position,
+      jerseyNumber,
+      dateOfBirth,
+      nationality,
+      status,
+      password // Optional password reset
+    } = req.body;
+
+    // Build dynamic update query
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+    if (firstName !== undefined) {
+      updates.push(`first_name = $${paramCount++}`);
+      values.push(firstName);
+    }
+    if (lastName !== undefined) {
+      updates.push(`last_name = $${paramCount++}`);
+      values.push(lastName);
+    }
+    if (role !== undefined) {
+      updates.push(`role = $${paramCount++}`);
+      values.push(role);
+    }
+    if (house !== undefined) {
+      updates.push(`house = $${paramCount++}`);
+      values.push(house);
+    }
+    if (position !== undefined) {
+      updates.push(`position = $${paramCount++}`);
+      values.push(position);
+    }
+    if (jerseyNumber !== undefined) {
+      updates.push(`jersey_number = $${paramCount++}`);
+      values.push(jerseyNumber);
+    }
+    if (dateOfBirth !== undefined) {
+      updates.push(`date_of_birth = $${paramCount++}`);
+      values.push(dateOfBirth);
+    }
+    if (nationality !== undefined) {
+      updates.push(`nationality = $${paramCount++}`);
+      values.push(nationality);
+    }
+    if (status !== undefined) {
+      updates.push(`status = $${paramCount++}`);
+      values.push(status);
+    }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updates.push(`password = $${paramCount++}`);
+      values.push(hashedPassword);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No fields to update' 
+      });
+    }
+
+    updates.push(`updated_at = NOW()`);
+
+    // Add id and app_id as final parameters
+    values.push(id);
+    values.push(req.appCtx.id);
+
+    const query = `
+      UPDATE users 
+      SET ${updates.join(', ')} 
+      WHERE id = $${paramCount++} AND app_id = $${paramCount++}
+      RETURNING 
+        id, email, first_name, last_name, role, house, position, 
+        jersey_number, status, updated_at
+    `;
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    const user = result.rows[0];
+
+    res.json({ 
+      success: true, 
+      message: 'User updated successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role,
+        house: user.house,
+        position: user.position,
+        jerseyNumber: user.jersey_number,
+        status: user.status,
+        updatedAt: user.updated_at
+      }
+    });
+  } catch (error) {
+    console.error('Failed to update user:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update user' 
+    });
+  }
+});
+
+// Delete user (staff/admin only)
+router.delete('/admin/users/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Prevent deleting yourself
+    if (id === req.userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Cannot delete your own account' 
+      });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM users 
+       WHERE id = $1 AND app_id = $2 
+       RETURNING id`,
+      [id, req.appCtx.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'User deleted successfully'
+    });
+  } catch (error) {
+    console.error('Failed to delete user:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete user' 
+    });
+  }
+});
+
 export default router;
