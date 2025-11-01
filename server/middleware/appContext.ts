@@ -23,10 +23,21 @@ export async function attachAppContext(req: Request, res: Response, next: NextFu
     // Extract API key from header
     let apiKey = req.headers['x-app-key'] as string | undefined;
     
+    console.log('🔍 Auth Middleware:', {
+      path: req.path,
+      method: req.method,
+      hasApiKey: !!apiKey,
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+      NODE_ENV: process.env.NODE_ENV
+    });
+    
     // DEVELOPMENT MODE: Allow same-origin requests without API key, default to fckoln
     if (!apiKey && process.env.NODE_ENV !== 'production') {
       const origin = req.headers.origin || req.headers.referer;
       const isLocalhost = !origin || origin.includes('localhost') || origin.includes('127.0.0.1');
+      
+      console.log('🔧 Development mode check:', { origin, isLocalhost });
       
       if (isLocalhost) {
         // Default to FC Köln app for development
@@ -36,6 +47,7 @@ export async function attachAppContext(req: Request, res: Response, next: NextFu
           origins: ['http://localhost:5173', 'http://localhost:5000'],
           rps: 600
         };
+        console.log('✅ Auto-authenticated as fckoln (development)');
         return next();
       }
     }
