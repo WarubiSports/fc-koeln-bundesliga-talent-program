@@ -20,6 +20,13 @@ const sha256 = (s: string) => crypto.createHash("sha256").update(s, "utf8").dige
  */
 export async function attachAppContext(req: Request, res: Response, next: NextFunction) {
   try {
+    // Allow OPTIONS preflight requests to pass through without authentication
+    // Preflights don't include custom headers like X-App-Key
+    // CORS middleware will handle origin validation
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
+    
     // Extract API key from header
     let apiKey = req.headers['x-app-key'] as string | undefined;
     
