@@ -11,22 +11,23 @@ export function corsPerApp(req: Request, res: any, next: any) {
     return cors({ origin: true, credentials: true })(req, res, next);
   }
   
-  // Check if origin is from Replit platform (secure hostname matching)
-  let isReplitOrigin = false;
+  // Check if origin is from trusted platforms (secure hostname matching)
+  let isTrustedPlatform = false;
   if (origin) {
     try {
       const hostname = new URL(origin).hostname;
-      isReplitOrigin = hostname.endsWith('.replit.dev') || 
-                      hostname.endsWith('.repl.co') ||
-                      hostname.endsWith('.replit.app');
+      isTrustedPlatform = hostname.endsWith('.replit.dev') || 
+                         hostname.endsWith('.repl.co') ||
+                         hostname.endsWith('.replit.app') ||
+                         hostname.endsWith('.railway.app');
     } catch {
-      // Invalid URL, not a Replit origin
+      // Invalid URL, not a trusted platform
     }
   }
   
-  const allowed = !origin || origins.includes(origin) || isReplitOrigin;
+  const allowed = !origin || origins.includes(origin) || isTrustedPlatform;
   if (!allowed) {
-    console.log('❌ CORS rejected:', { origin, origins, isReplitOrigin });
+    console.log('❌ CORS rejected:', { origin, origins, isTrustedPlatform });
     return res.status(403).json({ error: 'Origin not allowed for this app' });
   }
 
