@@ -475,6 +475,14 @@
 
                 const data = await response.json();
 
+                if (!response.ok) {
+                    console.error('HTTP Error:', response.status, response.statusText);
+                    alert(`Login failed (${response.status}): ${data.message || response.statusText}`);
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+
                 if (data.success && data.token) {
                     // Store auth token and user data
                     sessionStorage.setItem('fckoln_token', data.token);
@@ -489,7 +497,7 @@
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('An error occurred. Please try again.');
+                alert(`Error: ${error.message}\n\nCheck console for details (F12)`);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
