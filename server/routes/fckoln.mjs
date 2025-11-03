@@ -437,11 +437,13 @@ function expandRecurringEvents(event, startDate, endDate) {
 router.get('/events', requireAuth, async (req, res) => {
   try {
     const { startDate, endDate, eventType } = req.query;
+    const isPlayer = req.user.role === 'player';
+    const userId = req.userId;
     
     // Fetch non-recurring events in the date range
     let query = `
       SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
-             is_recurring, recurring_pattern, recurring_end_date, recurring_days
+             is_recurring, recurring_pattern, recurring_end_date, recurring_days, participants
       FROM events 
       WHERE app_id = $1 AND (is_recurring = false OR is_recurring IS NULL)
     `;
@@ -471,7 +473,7 @@ router.get('/events', requireAuth, async (req, res) => {
     // Fetch recurring events that might have instances in the date range
     let recurringQuery = `
       SELECT id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
-             is_recurring, recurring_pattern, recurring_end_date, recurring_days
+             is_recurring, recurring_pattern, recurring_end_date, recurring_days, participants
       FROM events 
       WHERE app_id = $1 AND is_recurring = true
     `;
@@ -501,12 +503,30 @@ router.get('/events', requireAuth, async (req, res) => {
     const recurringResult = await pool.query(recurringQuery, recurringParams);
     
     // Expand recurring events into individual instances
-    const allEvents = [...nonRecurringResult.rows];
+    let allEvents = [...nonRecurringResult.rows];
     
     // Always expand recurring events - if no date range provided, just return the base event
     for (const recurringEvent of recurringResult.rows) {
       const instances = expandRecurringEvents(recurringEvent, startDate, endDate);
       allEvents.push(...instances);
+    }
+    
+    // Filter events for players - they only see team-wide events and events they're assigned to
+    if (isPlayer) {
+      allEvents = allEvents.filter(event => {
+        // Team-wide event (no participants specified)
+        if (!event.participants) return true;
+        
+        // Check if user is in the participants list
+        try {
+          const participants = JSON.parse(event.participants);
+          // Convert both to numbers for comparison to avoid type mismatch
+          return participants.map(id => Number(id)).includes(Number(userId));
+        } catch {
+          // If parsing fails, assume it's a team-wide event
+          return true;
+        }
+      });
     }
     
     // Sort by date and time
@@ -530,7 +550,8 @@ router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
     const { 
       title, eventType, date, startTime, endTime, location, notes,
-      isRecurring, recurringPattern, recurringEndDate, recurringDays 
+      isRecurring, recurringPattern, recurringEndDate, recurringDays,
+      participants 
     } = req.body;
     
     if (!title || !eventType || !date || !startTime || !endTime) {
@@ -540,17 +561,24 @@ router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
       });
     }
     
+    // Handle participants: null/"all" for everyone, or JSON array of user IDs
+    let participantsValue = null;
+    if (participants && participants !== 'all' && Array.isArray(participants) && participants.length > 0) {
+      participantsValue = JSON.stringify(participants);
+    }
+    
     const result = await pool.query(
       `INSERT INTO events (
         app_id, title, event_type, date, start_time, end_time, location, notes, created_by,
-        is_recurring, recurring_pattern, recurring_end_date, recurring_days
+        is_recurring, recurring_pattern, recurring_end_date, recurring_days, participants
       )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at,
-                 is_recurring, recurring_pattern, recurring_end_date, recurring_days`,
+                 is_recurring, recurring_pattern, recurring_end_date, recurring_days, participants`,
       [
         req.appCtx.id, title, eventType, date, startTime, endTime, location, notes, req.userId,
-        isRecurring || false, recurringPattern || null, recurringEndDate || null, recurringDays || null
+        isRecurring || false, recurringPattern || null, recurringEndDate || null, recurringDays || null,
+        participantsValue
       ]
     );
     
@@ -572,7 +600,7 @@ router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
 router.put('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
   try {
     const eventId = req.params.id;
-    const { title, eventType, date, startTime, endTime, location, notes } = req.body;
+    const { title, eventType, date, startTime, endTime, location, notes, participants } = req.body;
     
     if (!title || !eventType || !date || !startTime || !endTime) {
       return res.status(400).json({ 
@@ -581,13 +609,19 @@ router.put('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => 
       });
     }
     
+    // Handle participants: null/"all" for everyone, or JSON array of user IDs
+    let participantsValue = null;
+    if (participants && participants !== 'all' && Array.isArray(participants) && participants.length > 0) {
+      participantsValue = JSON.stringify(participants);
+    }
+    
     const result = await pool.query(
       `UPDATE events 
        SET title = $1, event_type = $2, date = $3, start_time = $4, end_time = $5, 
-           location = $6, notes = $7, updated_at = NOW()
-       WHERE id = $8 AND app_id = $9
-       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at, updated_at`,
-      [title, eventType, date, startTime, endTime, location, notes, eventId, req.appCtx.id]
+           location = $6, notes = $7, participants = $8, updated_at = NOW()
+       WHERE id = $9 AND app_id = $10
+       RETURNING id, title, event_type, date, start_time, end_time, location, notes, created_by, created_at, updated_at, participants`,
+      [title, eventType, date, startTime, endTime, location, notes, participantsValue, eventId, req.appCtx.id]
     );
     
     if (result.rows.length === 0) {

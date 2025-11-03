@@ -565,6 +565,23 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label" for="participantType">Assign To</label>
+                    <select id="participantType" class="form-select" data-testid="select-participant-type">
+                        <option value="all">All Players (Team Event)</option>
+                        <option value="select">Select Specific Players</option>
+                    </select>
+                </div>
+
+                <div id="participantSelectOptions" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Select Players</label>
+                        <div id="playerCheckboxes" class="checkbox-group" style="max-height: 200px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+                            <div class="loading">Loading players...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="isRecurring" data-testid="checkbox-is-recurring">
                         <span>Recurring Event</span>
@@ -716,6 +733,16 @@
                     customDaysOptions.style.display = 'none';
                 }
             });
+
+            // Participant type change
+            document.getElementById('participantType').addEventListener('change', (e) => {
+                const participantSelectOptions = document.getElementById('participantSelectOptions');
+                if (e.target.value === 'select') {
+                    participantSelectOptions.style.display = 'block';
+                } else {
+                    participantSelectOptions.style.display = 'none';
+                }
+            });
         }
 
         function updateMonthDisplay() {
@@ -850,9 +877,45 @@
             });
         }
 
-        function openEventModal(event = null) {
+        async function loadPlayers() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'X-App-Key': API_KEY
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const players = data.users.filter(user => user.role === 'player');
+                    const container = document.getElementById('playerCheckboxes');
+                    
+                    if (players.length === 0) {
+                        container.innerHTML = '<p style="color: #666; padding: 0.5rem;">No players found</p>';
+                        return;
+                    }
+
+                    container.innerHTML = players.map(player => `
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="${player.id}" class="player-checkbox" data-testid="checkbox-player-${player.id}">
+                            <span>${player.name} (${player.email})</span>
+                        </label>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading players:', error);
+                document.getElementById('playerCheckboxes').innerHTML = '<p style="color: #ef4444;">Failed to load players</p>';
+            }
+        }
+
+        async function openEventModal(event = null) {
             currentEventId = event ? event.id : null;
             document.getElementById('modalTitle').textContent = event ? 'Edit Event' : 'Create Event';
+            
+            // Load players for participant selection
+            await loadPlayers();
             
             if (event) {
                 document.getElementById('eventId').value = event.id;
@@ -863,9 +926,31 @@
                 document.getElementById('endTime').value = event.end_time;
                 document.getElementById('location').value = event.location || '';
                 document.getElementById('notes').value = event.notes || '';
+                
+                // Set participant selection
+                if (event.participants) {
+                    try {
+                        const participants = JSON.parse(event.participants);
+                        document.getElementById('participantType').value = 'select';
+                        document.getElementById('participantSelectOptions').style.display = 'block';
+                        
+                        // Check the appropriate player checkboxes
+                        participants.forEach(userId => {
+                            const checkbox = document.querySelector(`.player-checkbox[value="${userId}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    } catch (e) {
+                        console.error('Error parsing participants:', e);
+                    }
+                } else {
+                    document.getElementById('participantType').value = 'all';
+                    document.getElementById('participantSelectOptions').style.display = 'none';
+                }
             } else {
                 document.getElementById('eventForm').reset();
                 document.getElementById('eventId').value = '';
+                document.getElementById('participantType').value = 'all';
+                document.getElementById('participantSelectOptions').style.display = 'none';
             }
             
             document.getElementById('eventModal').classList.add('active');
@@ -883,6 +968,7 @@
             e.preventDefault();
 
             const isRecurring = document.getElementById('isRecurring').checked;
+            const participantType = document.getElementById('participantType').value;
             
             const formData = {
                 title: document.getElementById('title').value,
@@ -894,6 +980,21 @@
                 notes: document.getElementById('notes').value,
                 isRecurring: isRecurring
             };
+
+            // Handle participants
+            if (participantType === 'select') {
+                const selectedPlayers = Array.from(document.querySelectorAll('.player-checkbox:checked'))
+                    .map(cb => parseInt(cb.value));
+                
+                if (selectedPlayers.length === 0) {
+                    showMessage('Please select at least one player or choose "All Players"', 'error');
+                    return;
+                }
+                
+                formData.participants = selectedPlayers;
+            } else {
+                formData.participants = 'all';
+            }
 
             if (isRecurring) {
                 const recurringPattern = document.getElementById('recurringPattern').value;
