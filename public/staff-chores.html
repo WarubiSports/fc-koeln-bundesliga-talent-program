@@ -398,8 +398,8 @@
             </div>
 
             <div class="filter-group">
-                <label class="filter-label">Week Start</label>
-                <input type="date" id="weekFilter" class="filter-input" data-testid="input-week-filter">
+                <label class="filter-label">Deadline</label>
+                <input type="date" id="weekFilter" class="filter-input" data-testid="input-deadline-filter">
             </div>
 
             <button class="add-task-btn" onclick="openAddModal()" data-testid="button-add-task">+ Add Task</button>
@@ -465,8 +465,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskWeek">Week Start Date</label>
-                    <input type="date" id="taskWeek" class="form-input" required data-testid="input-task-week">
+                    <label class="form-label" for="taskWeek">Deadline</label>
+                    <input type="date" id="taskWeek" class="form-input" required data-testid="input-task-deadline">
                 </div>
 
                 <div class="form-actions">
@@ -665,7 +665,7 @@
         // Modal functions
         function openAddModal() {
             document.getElementById('taskModal').classList.add('active');
-            setCurrentWeek();
+            setDefaultDeadline();
         }
 
         function closeModal() {
@@ -673,13 +673,11 @@
             document.getElementById('taskForm').reset();
         }
 
-        function setCurrentWeek() {
+        function setDefaultDeadline() {
             const today = new Date();
-            const dayOfWeek = today.getDay();
-            const daysToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
-            const monday = new Date(today);
-            monday.setDate(today.getDate() + daysToMonday);
-            document.getElementById('taskWeek').value = monday.toISOString().split('T')[0];
+            const deadline = new Date(today);
+            deadline.setDate(today.getDate() + 7); // Default to 7 days from now
+            document.getElementById('taskWeek').value = deadline.toISOString().split('T')[0];
         }
 
         // Handle form submit
@@ -736,10 +734,6 @@
         document.getElementById('houseFilter').addEventListener('change', loadChores);
         document.getElementById('statusFilter').addEventListener('change', loadChores);
         document.getElementById('weekFilter').addEventListener('change', loadChores);
-
-        // Set current week as default filter
-        setCurrentWeek();
-        document.getElementById('weekFilter').value = document.getElementById('taskWeek').value;
 
         // Initialize
         if (checkAuth()) {

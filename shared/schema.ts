@@ -39,6 +39,7 @@ export const users = pgTable("users", {
   passwordResetExpiry: timestamp("password_reset_expiry"),
   healthStatus: varchar("health_status").default('healthy'), // "healthy" or "injured"
   injuryType: varchar("injury_type"), // Description of injury
+  injuryDate: varchar("injury_date"), // Date when injury occurred
   injuryEndDate: varchar("injury_end_date"), // Expected recovery date
 });
 

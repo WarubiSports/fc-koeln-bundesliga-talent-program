@@ -872,10 +872,10 @@ router.post('/grocery/orders', requireAuth, async (req, res) => {
       });
     }
     
-    // Fetch actual prices from database to prevent price forgery
+    // Fetch actual prices and categories from database to prevent price forgery
     const itemIds = items.map(item => item.itemId);
     const priceResult = await pool.query(
-      `SELECT id, price FROM grocery_items WHERE id = ANY($1) AND app_id = $2`,
+      `SELECT id, price, category FROM grocery_items WHERE id = ANY($1) AND app_id = $2`,
       [itemIds, req.appCtx.id]
     );
     
@@ -886,23 +886,29 @@ router.post('/grocery/orders', requireAuth, async (req, res) => {
       });
     }
     
-    // Create price lookup map
-    const priceMap = {};
+    // Create price and category lookup map
+    const itemMap = {};
     priceResult.rows.forEach(row => {
-      priceMap[row.id] = parseFloat(row.price);
+      itemMap[row.id] = {
+        price: parseFloat(row.price),
+        category: row.category
+      };
     });
     
-    // Calculate total amount using server-side prices
+    // Calculate total amount using server-side prices (excluding household items)
     let totalAmount = 0;
     for (const item of items) {
-      const serverPrice = priceMap[item.itemId];
-      if (!serverPrice || item.quantity <= 0) {
+      const itemData = itemMap[item.itemId];
+      if (!itemData || item.quantity <= 0) {
         return res.status(400).json({ 
           success: false, 
           message: 'Invalid item or quantity' 
         });
       }
-      totalAmount += serverPrice * item.quantity;
+      // Household items don't count towards budget
+      if (itemData.category !== 'household') {
+        totalAmount += itemData.price * item.quantity;
+      }
     }
     
     // Check budget limit (€35)
@@ -938,11 +944,11 @@ router.post('/grocery/orders', requireAuth, async (req, res) => {
     
     // Insert order items with server-verified prices
     for (const item of items) {
-      const serverPrice = priceMap[item.itemId];
+      const itemData = itemMap[item.itemId];
       await pool.query(
         `INSERT INTO grocery_order_items (order_id, item_id, quantity, price_at_order)
          VALUES ($1, $2, $3, $4)`,
-        [orderId, item.itemId, item.quantity, serverPrice.toFixed(2)]
+        [orderId, item.itemId, item.quantity, itemData.price.toFixed(2)]
       );
     }
     
@@ -1675,6 +1681,7 @@ router.get('/profile', requireAuth, async (req, res) => {
       emergencyContactPhone: user.emergency_contact_phone,
       medicalConditions: user.medical_conditions,
       allergies: user.allergies,
+      injuryDate: user.injury_date && user.injury_date.trim() ? user.injury_date : null,
       profileImageUrl: user.profile_image_url,
       healthStatus: user.health_status,
       injuryType: user.injury_type,
@@ -1713,7 +1720,8 @@ router.put('/profile', requireAuth, async (req, res) => {
       emergencyContactName,
       emergencyContactPhone,
       medicalConditions,
-      allergies
+      allergies,
+      injuryDate
     } = req.body;
 
     // Players can update their own info, but not email, role, house, or admin fields
@@ -1798,6 +1806,18 @@ router.put('/profile', requireAuth, async (req, res) => {
       updates.push(`allergies = $${paramCount++}`);
       values.push(allergies);
     }
+    if (injuryDate !== undefined) {
+      // Normalize empty strings to null and validate format if provided
+      const normalizedInjuryDate = injuryDate && injuryDate.trim() ? injuryDate.trim() : null;
+      if (normalizedInjuryDate && !/^\d{4}-\d{2}-\d{2}$/.test(normalizedInjuryDate)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid injury date format. Expected YYYY-MM-DD'
+        });
+      }
+      updates.push(`injury_date = $${paramCount++}`);
+      values.push(normalizedInjuryDate);
+    }
 
     // Always update updatedAt
     updates.push(`updated_at = NOW()`);
@@ -1822,7 +1842,7 @@ router.put('/profile', requireAuth, async (req, res) => {
         position, preferred_foot, height, weight, jersey_number, previous_club,
         phone, phone_number, house, role, status,
         emergency_contact, emergency_phone, emergency_contact_name, emergency_contact_phone,
-        medical_conditions, allergies
+        medical_conditions, allergies, injury_date
     `;
 
     const result = await pool.query(query, values);
@@ -1861,7 +1881,8 @@ router.put('/profile', requireAuth, async (req, res) => {
       emergencyContactName: user.emergency_contact_name,
       emergencyContactPhone: user.emergency_contact_phone,
       medicalConditions: user.medical_conditions,
-      allergies: user.allergies
+      allergies: user.allergies,
+      injuryDate: user.injury_date && user.injury_date.trim() ? user.injury_date : null
     };
 
     res.json({ 

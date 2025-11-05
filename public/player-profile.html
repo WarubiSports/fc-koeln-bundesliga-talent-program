@@ -411,6 +411,10 @@
                             <label for="allergies">Allergies</label>
                             <textarea id="allergies" name="allergies" disabled placeholder="Any allergies..." data-testid="input-allergies"></textarea>
                         </div>
+                        <div class="form-field">
+                            <label for="injuryDate">Injury Date (if currently injured)</label>
+                            <input type="date" id="injuryDate" name="injuryDate" disabled data-testid="input-injury-date">
+                        </div>
                     </div>
                 </div>
 
@@ -456,7 +460,7 @@
             'firstName', 'lastName', 'dateOfBirth', 'nationality',
             'position', 'jerseyNumber', 'preferredFoot', 'height', 'weight', 'previousClub',
             'phone', 'emergencyContactName', 'emergencyContactPhone',
-            'medicalConditions', 'allergies'
+            'medicalConditions', 'allergies', 'injuryDate'
         ];
 
         // Get player ID from URL parameter
@@ -546,6 +550,7 @@
             document.getElementById('emergencyContactPhone').value = profile.emergencyContactPhone || '';
             document.getElementById('medicalConditions').value = profile.medicalConditions || '';
             document.getElementById('allergies').value = profile.allergies || '';
+            document.getElementById('injuryDate').value = profile.injuryDate || '';
         }
 
         // Toggle edit mode
@@ -593,7 +598,8 @@
                 emergencyContactName: document.getElementById('emergencyContactName').value,
                 emergencyContactPhone: document.getElementById('emergencyContactPhone').value,
                 medicalConditions: document.getElementById('medicalConditions').value,
-                allergies: document.getElementById('allergies').value
+                allergies: document.getElementById('allergies').value,
+                injuryDate: document.getElementById('injuryDate').value
             };
 
             try {

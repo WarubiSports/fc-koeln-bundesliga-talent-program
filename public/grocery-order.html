@@ -744,12 +744,14 @@
                 const cartItem = cart.find(c => c.itemId === item.id);
                 const quantity = cartItem ? cartItem.quantity : 0;
                 const inCart = quantity > 0;
+                const isHousehold = item.category === 'household';
+                const priceDisplay = isHousehold ? 'Free' : `€${parseFloat(item.price).toFixed(2)}`;
 
                 return `
                     <div class="item-card ${inCart ? 'in-cart' : ''}" data-item-id="${item.id}">
                         <div class="item-name">${item.name}</div>
                         <div class="item-category">${item.category}</div>
-                        <div class="item-price">€${parseFloat(item.price).toFixed(2)}</div>
+                        <div class="item-price">${priceDisplay}</div>
                         <div class="quantity-controls">
                             <button class="qty-btn" onclick="decreaseQuantity(${item.id})" ${quantity === 0 ? 'disabled' : ''}>−</button>
                             <div class="qty-display">${quantity}</div>
@@ -799,21 +801,31 @@
                 budgetRemainingEl.className = 'budget-remaining';
                 cartTotalEl.classList.remove('over-budget');
             } else {
-                const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+                // Calculate total excluding household items
+                const total = cart.reduce((sum, item) => {
+                    if (item.category === 'household') return sum;
+                    return sum + (parseFloat(item.price) * item.quantity);
+                }, 0);
                 const remaining = 35 - total;
 
-                cartItemsEl.innerHTML = cart.map(item => `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">€${parseFloat(item.price).toFixed(2)} each</div>
+                cartItemsEl.innerHTML = cart.map(item => {
+                    const isHousehold = item.category === 'household';
+                    const priceEach = isHousehold ? 'Free' : `€${parseFloat(item.price).toFixed(2)} each`;
+                    const totalPrice = isHousehold ? 'Free' : `€${(parseFloat(item.price) * item.quantity).toFixed(2)}`;
+                    
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${priceEach}</div>
+                            </div>
+                            <div class="cart-item-right">
+                                <div class="cart-item-qty">Qty: ${item.quantity}</div>
+                                <div class="cart-item-total">${totalPrice}</div>
+                            </div>
                         </div>
-                        <div class="cart-item-right">
-                            <div class="cart-item-qty">Qty: ${item.quantity}</div>
-                            <div class="cart-item-total">€${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
 
                 cartCountEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
                 cartTotalEl.textContent = `€${total.toFixed(2)}`;
@@ -835,7 +847,11 @@
         function updateSubmitButton() {
             const btn = document.getElementById('submitOrderBtn');
             const deliveryDate = document.getElementById('deliveryDate').value;
-            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            // Calculate total excluding household items
+            const total = cart.reduce((sum, item) => {
+                if (item.category === 'household') return sum;
+                return sum + (parseFloat(item.price) * item.quantity);
+            }, 0);
 
             btn.disabled = cart.length === 0 || !deliveryDate || total > 35;
         }
@@ -855,7 +871,11 @@
 
         async function submitOrder() {
             const deliveryDate = document.getElementById('deliveryDate').value;
-            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            // Calculate total excluding household items
+            const total = cart.reduce((sum, item) => {
+                if (item.category === 'household') return sum;
+                return sum + (parseFloat(item.price) * item.quantity);
+            }, 0);
 
             if (!deliveryDate) {
                 showMessage('Please select a delivery date', 'error');
