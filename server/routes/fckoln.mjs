@@ -1343,12 +1343,15 @@ router.post('/admin/chores', requireAuth, async (req, res) => {
       });
     }
 
-    const { title, description, house, assignedTo, weekStartDate, dueDate, isRecurring } = req.body;
+    const { title, description, house, assignedTo, weekStartDate, dueDate, deadline, isRecurring } = req.body;
 
-    if (!title || !house || !assignedTo || !weekStartDate) {
+    // Use 'deadline' as primary field, fall back to 'dueDate' or 'weekStartDate' for backward compatibility
+    const finalDeadline = deadline || dueDate || weekStartDate;
+
+    if (!title || !house || !assignedTo || !finalDeadline) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Title, house, assignedTo, and weekStartDate are required' 
+        message: 'Title, house, assignedTo, and deadline are required' 
       });
     }
 
@@ -1364,8 +1367,8 @@ router.post('/admin/chores', requireAuth, async (req, res) => {
         description || null, 
         house, 
         assignedTo, 
-        weekStartDate,
-        dueDate || null,
+        finalDeadline,
+        finalDeadline,
         isRecurring !== false, // Default to true
         isRecurring !== false ? 'weekly' : 'one-time',
         'pending',
