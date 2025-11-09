@@ -575,6 +575,11 @@
                         <select class="delivery-select" id="deliveryDate">
                             <option value="">Select delivery date</option>
                         </select>
+                        <div class="deadline-info">
+                            <small style="color: #666; font-size: 0.8125rem; display: block; margin-top: 0.5rem;">
+                                📅 <strong>Order Deadlines:</strong> Tuesday deliveries must be ordered by Monday 8:00 AM. Friday deliveries must be ordered by Thursday 8:00 AM.
+                            </small>
+                        </div>
                     </div>
 
                     <div class="cart-items" id="cartItems">
@@ -645,6 +650,95 @@
             updateCartDisplay();
         }
 
+        // Calculate deadline date (1 day before delivery) without using local timezone
+        // Returns {year, month, day} calculated purely as numbers
+        function calculateDeadlineDate(deliveryDateStr) {
+            const [year, month, day] = deliveryDateStr.split('-').map(Number);
+            
+            // Subtract 1 day
+            let deadlineDay = day - 1;
+            let deadlineMonth = month;
+            let deadlineYear = year;
+            
+            // Handle month boundary
+            if (deadlineDay < 1) {
+                deadlineMonth--;
+                if (deadlineMonth < 1) {
+                    deadlineMonth = 12;
+                    deadlineYear--;
+                }
+                // Get last day of previous month
+                const daysInMonth = [31, (deadlineYear % 4 === 0 && deadlineYear % 100 !== 0) || deadlineYear % 400 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                deadlineDay = daysInMonth[deadlineMonth - 1];
+            }
+            
+            return { year: deadlineYear, month: deadlineMonth, day: deadlineDay };
+        }
+
+        // Check if the deadline has passed for a delivery date
+        // This works entirely in Berlin timezone to avoid offset calculation issues
+        function isDeadlinePassed(deliveryDateStr) {
+            try {
+                // Get current time in Berlin timezone using formatToParts
+                const now = new Date();
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Europe/Berlin',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                
+                const parts = formatter.formatToParts(now);
+                const currentYear = parseInt(parts.find(p => p.type === 'year').value);
+                const currentMonth = parseInt(parts.find(p => p.type === 'month').value);
+                const currentDay = parseInt(parts.find(p => p.type === 'day').value);
+                const currentHour = parseInt(parts.find(p => p.type === 'hour').value);
+                
+                // Calculate deadline date (1 day before delivery) purely as numbers
+                const deadline = calculateDeadlineDate(deliveryDateStr);
+                const deadlineHour = 8; // 8:00 AM
+                
+                // Compare dates as numbers: YYYYMMDD
+                const currentDateNum = currentYear * 10000 + currentMonth * 100 + currentDay;
+                const deadlineDateNum = deadline.year * 10000 + deadline.month * 100 + deadline.day;
+                
+                // If current date is after deadline date, deadline has passed
+                if (currentDateNum > deadlineDateNum) {
+                    return true;
+                }
+                
+                // If current date is before deadline date, deadline hasn't passed
+                if (currentDateNum < deadlineDateNum) {
+                    return false;
+                }
+                
+                // Same date - check time (current time >= 8:00 AM means deadline passed)
+                return currentHour >= deadlineHour;
+            } catch (e) {
+                console.error('Error checking deadline:', e, deliveryDateStr);
+                // Fail closed: if we can't determine the deadline, treat it as passed to prevent late orders
+                return true;
+            }
+        }
+
+        // Format deadline for display (showing Berlin time)
+        function formatDeadline(deliveryDateStr) {
+            const deadline = calculateDeadlineDate(deliveryDateStr);
+            
+            // Create a date just to get the day name (using UTC to avoid timezone issues)
+            const date = new Date(Date.UTC(deadline.year, deadline.month - 1, deadline.day));
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[date.getUTCDay()];
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthName = months[deadline.month - 1];
+            
+            return `${dayName} ${deadline.day} ${monthName}, 8:00 AM (Berlin Time)`;
+        }
+
         function setupDeliveryDates() {
             const select = document.getElementById('deliveryDate');
             const today = new Date();
@@ -659,23 +753,45 @@
                 if (day === 2 || day === 5) { // Tuesday = 2, Friday = 5
                     const dayName = day === 2 ? 'Tuesday' : 'Friday';
                     const dateStr = date.toISOString().split('T')[0];
-                    dates.push({ date: dateStr, label: `${dayName}, ${date.toLocaleDateString()}` });
+                    const deadlinePassed = isDeadlinePassed(dateStr);
+                    const deadlineText = formatDeadline(dateStr); // Pass delivery date, not deadline
+                    
+                    dates.push({ 
+                        date: dateStr, 
+                        label: `${dayName}, ${date.toLocaleDateString('en-GB')}`,
+                        deadlineText: deadlineText,
+                        expired: deadlinePassed
+                    });
                 }
 
                 if (dates.length >= 4) break;
             }
 
+            let hasValidOption = false;
             dates.forEach(d => {
                 const option = document.createElement('option');
                 option.value = d.date;
-                option.textContent = d.label;
+                option.textContent = d.expired 
+                    ? `${d.label} — Deadline passed` 
+                    : `${d.label} — Order by ${d.deadlineText}`;
+                option.disabled = d.expired;
                 select.appendChild(option);
+                
+                if (!d.expired) hasValidOption = true;
             });
 
-            // Restore saved delivery date
+            // Restore saved delivery date if still valid, otherwise select first valid option
             const savedDate = localStorage.getItem('fckoln_delivery_date');
-            if (savedDate) {
+            if (savedDate && !isDeadlinePassed(savedDate)) {
                 select.value = savedDate;
+            } else if (hasValidOption) {
+                // Clear expired saved date and select first valid option
+                localStorage.removeItem('fckoln_delivery_date');
+                const firstValid = dates.find(d => !d.expired);
+                if (firstValid) {
+                    select.value = firstValid.date;
+                    localStorage.setItem('fckoln_delivery_date', firstValid.date);
+                }
             }
         }
 
@@ -853,7 +969,10 @@
                 return sum + (parseFloat(item.price) * item.quantity);
             }, 0);
 
-            btn.disabled = cart.length === 0 || !deliveryDate || total > 35;
+            // Check if deadline has passed
+            const deadlinePassed = deliveryDate && isDeadlinePassed(deliveryDate);
+
+            btn.disabled = cart.length === 0 || !deliveryDate || total > 35 || deadlinePassed;
         }
 
         function clearCart() {
@@ -879,6 +998,14 @@
 
             if (!deliveryDate) {
                 showMessage('Please select a delivery date', 'error');
+                return;
+            }
+
+            // Check if deadline has passed
+            if (isDeadlinePassed(deliveryDate)) {
+                const deadline = getDeliveryDeadline(deliveryDate);
+                const deadlineText = formatDeadline(deadline);
+                showMessage(`Order deadline has passed. Orders for this delivery must be placed by ${deadlineText}`, 'error');
                 return;
             }
 
