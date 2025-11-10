@@ -1103,6 +1103,12 @@ router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req
       [orderIds]
     );
     
+    // Create order ID to house mapping
+    const orderIdToHouse = {};
+    ordersResult.rows.forEach(order => {
+      orderIdToHouse[order.id] = order.house || 'Unassigned';
+    });
+    
     // Consolidate by house
     const byHouse = {};
     ordersResult.rows.forEach(order => {
@@ -1110,14 +1116,39 @@ router.get('/grocery/orders/consolidated/:deliveryDate', requireAuth, async (req
       if (!byHouse[house]) {
         byHouse[house] = {
           orders: [],
-          totalAmount: 0
+          totalAmount: 0,
+          items: []
         };
       }
       byHouse[house].orders.push(order);
       byHouse[house].totalAmount += parseFloat(order.total_amount);
     });
     
-    // Consolidate by item
+    // Consolidate items by house
+    const itemsByHouse = {};
+    itemsResult.rows.forEach(item => {
+      const house = orderIdToHouse[item.order_id];
+      if (!itemsByHouse[house]) {
+        itemsByHouse[house] = {};
+      }
+      if (!itemsByHouse[house][item.item_id]) {
+        itemsByHouse[house][item.item_id] = {
+          itemId: item.item_id,
+          name: item.name,
+          category: item.category,
+          totalQuantity: 0,
+          price: item.price_at_order
+        };
+      }
+      itemsByHouse[house][item.item_id].totalQuantity += item.quantity;
+    });
+    
+    // Add items array to each house
+    Object.keys(byHouse).forEach(house => {
+      byHouse[house].items = Object.values(itemsByHouse[house] || {});
+    });
+    
+    // Consolidate by item (global)
     const itemMap = {};
     itemsResult.rows.forEach(item => {
       if (!itemMap[item.item_id]) {
@@ -1352,6 +1383,19 @@ router.post('/admin/chores', requireAuth, async (req, res) => {
       return res.status(400).json({ 
         success: false, 
         message: 'Title, house, assignedTo, and deadline are required' 
+      });
+    }
+
+    // Validate that the assigned player exists
+    const playerCheck = await pool.query(
+      'SELECT id FROM users WHERE id = $1 AND app_id = $2 AND role = $3',
+      [assignedTo, req.appCtx.id, 'player']
+    );
+
+    if (playerCheck.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid player ID - player not found'
       });
     }
 

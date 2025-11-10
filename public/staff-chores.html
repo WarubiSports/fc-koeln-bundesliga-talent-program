@@ -568,7 +568,7 @@
                         ${chore.description ? `<br><small style="color: #666;">${chore.description}</small>` : ''}
                     </td>
                     <td>House ${chore.house}</td>
-                    <td>${chore.first_name} ${chore.last_name}</td>
+                    <td>${chore.first_name && chore.last_name ? `${chore.first_name} ${chore.last_name}` : '<em style="color: #999;">Unassigned</em>'}</td>
                     <td><span class="status-badge ${chore.status}">${chore.status}</span></td>
                     <td>
                         <div class="actions-cell">

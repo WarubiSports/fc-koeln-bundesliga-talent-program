@@ -559,7 +559,7 @@
                             <div class="house-card">
                                 <div class="house-header">
                                     <h3 class="house-name">${house}</h3>
-                                    <div class="house-total">€${data.totalAmount.toFixed(2)}</div>
+                                    <div class="house-total">${data.items.reduce((sum, item) => sum + item.totalQuantity, 0)} items - €${data.totalAmount.toFixed(2)}</div>
                                 </div>
                                 <div class="house-orders">
                                     ${data.orders.map(order => `
@@ -569,6 +569,7 @@
                                         </div>
                                     `).join('')}
                                 </div>
+                                ${renderHouseItems(data.items)}
                             </div>
                         `).join('')}
                     </div>
@@ -581,6 +582,57 @@
                     </div>
                 </div>
             `;
+        }
+
+        function renderHouseItems(items) {
+            if (!items || items.length === 0) {
+                return '<div style="color: #666; padding: 1rem; text-align: center;">No items ordered</div>';
+            }
+            
+            // Group by category
+            const byCategory = {};
+            items.forEach(item => {
+                const category = item.category || 'Other';
+                if (!byCategory[category]) {
+                    byCategory[category] = [];
+                }
+                byCategory[category].push(item);
+            });
+
+            return Object.entries(byCategory).map(([category, categoryItems]) => {
+                const categoryTotal = categoryItems.reduce((sum, item) => 
+                    sum + (parseFloat(item.price) * item.totalQuantity), 0
+                );
+
+                return `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <h3 class="category-name">${category}</h3>
+                            <span class="category-count">${categoryItems.length} items - €${categoryTotal.toFixed(2)}</span>
+                        </div>
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th style="text-align: center;">Quantity</th>
+                                    <th style="text-align: right;">Unit Price</th>
+                                    <th style="text-align: right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${categoryItems.map(item => `
+                                    <tr>
+                                        <td class="item-name-cell">${item.name}</td>
+                                        <td class="quantity-cell">${item.totalQuantity}</td>
+                                        <td class="price-cell">€${parseFloat(item.price).toFixed(2)}</td>
+                                        <td class="total-cell">€${(parseFloat(item.price) * item.totalQuantity).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderShoppingList(items) {
