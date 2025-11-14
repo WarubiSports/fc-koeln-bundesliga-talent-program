@@ -208,39 +208,6 @@ router.post('/auth/reset-password', async (req, res) => {
 // PLAYER MANAGEMENT ROUTES
 // ==========================================
 
-router.get('/players', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, first_name, last_name, email, age, position, nationality, status, house, created_at 
-       FROM players 
-       WHERE app_id = $1 
-       ORDER BY created_at DESC`,
-      [req.appCtx.id]
-    );
-
-    // Format players
-    const players = result.rows.map(row => ({
-      id: row.id.toString(),
-      name: `${row.first_name} ${row.last_name}`.trim(),
-      email: row.email,
-      age: row.age,
-      position: row.position,
-      nationality: row.nationality,
-      status: row.status,
-      house: row.house,
-      joinDate: row.created_at
-    }));
-
-    res.json({ success: true, players });
-  } catch (error) {
-    console.error('Failed to fetch players:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch players' 
-    });
-  }
-});
-
 // Get players overview with health status (staff/admin only)
 router.get('/players/overview', requireAuth, async (req, res) => {
   try {
