@@ -175,6 +175,31 @@
             font-size: 1.25rem;
         }
 
+        .pathway-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .pathway-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #f39c12;
+            background: transparent;
+            color: #f39c12;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pathway-btn:hover {
+            background: #f39c12;
+            color: #1a1a1a;
+        }
+
         /* Connection Visual */
         .connection-section {
             padding: 3rem 2rem;
@@ -289,14 +314,17 @@
         <h2 class="section-title">Four Pathways to Success</h2>
         
         <div class="pathways-grid">
-            <a href="/itp.html" class="pathway-card" data-testid="card-pathway-players">
+            <div class="pathway-card" data-testid="card-pathway-players">
                 <div class="pathway-icon">⚽</div>
                 <h3 class="pathway-title">Players Pathway</h3>
                 <div class="pathway-subtitle">Bundesliga Development</div>
                 <p class="pathway-description">Elite training at 1. FC Köln's International Talent Program. Five sessions per week with UEFA-licensed coaches, matches, and performance testing.</p>
                 <div class="pathway-partners">Partner: 1. FC Köln</div>
-                <div class="pathway-arrow">→</div>
-            </a>
+                <div class="pathway-buttons">
+                    <a href="/itp-men.html" class="pathway-btn" data-testid="btn-itp-men">Men</a>
+                    <a href="/itp-women.html" class="pathway-btn" data-testid="btn-itp-women">Women</a>
+                </div>
+            </div>
 
             <a href="#college" class="pathway-card" data-testid="card-pathway-college">
                 <div class="pathway-icon">🎓</div>
