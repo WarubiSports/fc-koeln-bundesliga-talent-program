@@ -1,0 +1,141 @@
+Prompt for Replit – Warubi Ecosystem App (with real partners & connections)
+You are my coding assistant inside a Replit project for Warubi Sports. Before we change any code, I want you to fully understand how the Warubi ecosystem and its key partners fit together.
+1. Warubi Sports – the central hub
+Warubi Sports is a full-service soccer management company that guides players and coaches through youth, college, and professional stages. It describes itself as a global alliance of agencies, coaches, clubs, colleges, and federations and reports having supported 1,000+ players and coaches with scholarships, licenses, and contracts.
+Warubi Sports
+Think of Warubi as the hub that coordinates multiple pathways and partners, not just a single agency.
+2. AthletesUSA – the integrated college pathway branch
+AthletesUSA is not just “a style”; it is a real, integrated branch of this ecosystem.
+Warubi runs a “WARUBI Sports X Athletes USA” college pathway, explicitly marketed as a joint offering. It connects student-athletes with over 20,000 college coaches across NCAA, NAIA, NJCAA, and CCCAA, and it showcases 1,000+ college commitments. 
+Warubi Sports
++2
+Warubi Sports
++2
+Camps and other pages call AthletesUSA Warubi’s “premium partner” for college soccer, with extra benefits for #teamwarubi players. 
+Warubi Sports
+Herbert Biste, a Warubi co-founder, is publicly listed as a Partner at Athletes USA, reinforcing that this is a deep, structural relationship, not a loose affiliation. 
+LinkedIn
+So in the app, AthletesUSA should be treated as Warubi’s dedicated college recruiting engine, not just a third-party tool.
+3. 1. FC Köln ITP – elite Bundesliga pathway with official partnership
+Warubi is an official partner for 1. FC Köln’s International Talent Program (ITP) and Football School:
+FC Köln’s own site lists Warubi Sports and Germany Soccer Academy as core partners that have helped build the long-term Football School program since 2018. 
+fc.de
+Köln’s International Talent Program (ITP) offers five training sessions per week with UEFA-licensed club coaches, matches, performance testing, match visits, and training observation, with partner agencies covering services like accommodation and visas (Warubi being one of those partners). 
+fc.de
++1
+Warubi’s site markets the Bundesliga ITP / FC Cologne academy as a high-prestige residential program that integrates selected international players into 1. FC Köln’s training environment and describes it as a trusted filter for both pro contracts and college scholarships. 
+Warubi Sports
+There is also a Women’s 1. FC Köln ITP pathway promoted by Warubi. 
+Warubi Sports
++1
+So, in the app, 1. FC Köln ITP should be modeled as a flagship elite program branch that connects to:
+Pro trials / representation (for top performers)
+AthletesUSA college pathway (for scholarship opportunities)
+4. Pro representation cluster – PM Sportmanagement & Karl M. Herzog
+On the pro side, Warubi is part of a representation alliance with established German player agencies:
+Karl M. Herzog Sportmanagement is a long-running, licensed player agency in Germany with dozens of clients in top tiers. 
+Transfermarkt
++1
+PM Sportmanagement describes itself on Instagram as a “Full Service Sport Agency in cooperation with: Karl M. Herzog Sportmanagement @warubisports …”, explicitly listing Warubi as a cooperation partner. 
+Instagram
+Transfermarkt entries show PM Sportmanagement managing professional players in Germany and elsewhere, which illustrates the level at which these partners operate. 
+AiScore
++2
+BeSoccer
++2
+So, in the app, Pro Representation should be modeled as:
+A long-term CRM-style pipeline (not a short program)
+Where Warubi, PM Sportmanagement, and Karl M. Herzog collaborate on scouting, trials, contracts, and career management for selected players
+Fed by performance data from ITP, showcases, college, etc.
+5. Coaching pathway – TFV & UEFA B/C courses
+Warubi also runs a coaching education pathway in cooperation with the Thuringia Football Association (TFV), a regional association within the German FA (DFB). 
+Online Campus
++1
+Key pieces:
+Warubi organizes official DFB–UEFA B and C license courses in Germany for non-German/international coaches, taught in English, with limited spots and full board included. 
+Warubi Sports
++2
+Warubi Sports
++2
+Application forms explicitly reference the TFV Associate Degree (online course via the Warubi Online Academy) and require home-FA approval to join. 
+Warubi Sports
++1
+Warubi and TFV are jointly mentioned in posts celebrating new groups of international coaches achieving their UEFA B license. 
+Facebook
++2
+Facebook
++2
+Warubi offers an online “German FA Coaching License – Online Course” that awards a certificate & license from TFV and can give credits toward the in-person DFB/UEFA pathway. 
+Reddit
++3
+Online Campus
++3
+Warubi Sports
++3
+So in the app, the Coaching Pathway should be modeled as:
+Online TFV prep course → in-person DFB/UEFA B & C courses in Germany → alumni network and career opportunities
+Parallel to the player pathways but sharing some events (e.g., ITP for coaches observing training)
+6. Geographic scope – including Lithuania but not limited to it
+Warubi’s pathways are international by design:
+Application flows for Warubi’s Germany Soccer Academy and AthletesUSA allow players from almost any country, including Lithuania, to apply, showing the global intake. 
+germany-socceracademy.com
++1
+While I don’t see a specific public “Warubi x Lithuanian FA” contract, it’s accurate that:
+Coaches from countries like Lithuania can use Warubi’s TFV/UEFA pathway.
+Players and coaches from Lithuania (and many other countries) are part of the broader Warubi + AthletesUSA + ITP ecosystem.
+The app should therefore never be hard-coded to one nationality; it must support a truly global user base.
+7. How everything connects (conceptual model for the app)
+From these sources, the realistic network looks like this:
+Warubi (hub)
+Connects players and coaches to:
+1. FC Köln ITP & Football School (Bundesliga development & scouting) 
+Warubi Sports
++2
+fc.de
++2
+AthletesUSA (college recruiting engine) 
+LinkedIn
++3
+Warubi Sports
++3
+Warubi Sports
++3
+PM Sportmanagement + Karl M. Herzog (pro representation cluster) 
+Instagram
++2
+kmhsport.com
++2
+TFV & DFB/UEFA (coaching license pathway) 
+Facebook
++5
+Online Campus
++5
+Warubi Sports
++5
+Player pathway examples
+Youth → Warubi camps / Futures → ITP at 1. FC Köln →
+→ AthletesUSA for college → later possible Pro Representation with PM/Karl Herzog.
+Or: Standout ITP or college players → trials / agents in the PM / Herzog network.
+Coach pathway example
+Online TFV course → in-person DFB/UEFA B course (Warubi + TFV) →
+→ Observation of Bundesliga environments (e.g., ITP / Cologne) → coaching roles.
+The app’s job is to make these links visible and manageable.
+8. How I want you (Replit AI) to use this understanding
+Going forward in this Replit project:
+Treat Warubi Sports as the central orchestrator of a network that includes:
+AthletesUSA (college pathway branch)
+FC Köln / International Talent Program & Football School (Bundesliga development branch)
+PM Sportmanagement + Karl M. Herzog Sportmanagement (pro representation branch)
+TFV + DFB/UEFA coaching pathway (coach education branch)
+When you design data models, flows, or UI:
+Distinguish time-bound programs (ITP cohorts, coaching courses, camps)
+From continuous pathways (AthletesUSA recruiting, pro representation, coaching careers).
+Always remember the global intake (including countries like Lithuania) and the need for:
+Unified user profiles
+Linked histories across programs and pathways
+Clear “next step” suggestions for each user.
+For now, do not write code.
+Just internalize this ecosystem map so that when I ask you for schemas, APIs, or front-end flows, your suggestions respect:
+The real partner structure (AthletesUSA, TFV, 1. FC Köln, PM, Karl Herzog)
+The difference between programs vs. ongoing representation/recruitment
+The idea that Warubi is a connected global hub, not a single siloed service.
