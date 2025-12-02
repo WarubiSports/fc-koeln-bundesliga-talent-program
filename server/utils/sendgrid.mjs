@@ -64,8 +64,8 @@ export async function sendPasswordResetEmail(toEmail, resetToken, resetUrl) {
     console.warn('[SendGrid] Circuit is open, email will be queued or skipped');
   }
 
-  const { client, fromEmail } = await getCredentials();
-  sgMail.setApiKey(client?.apiKey || (await getCredentials()).apiKey);
+  const { apiKey, email: fromEmail } = await getCredentials();
+  sgMail.setApiKey(apiKey);
   
   const msg = {
     to: toEmail,
