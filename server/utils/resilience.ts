@@ -4,11 +4,32 @@ interface CircuitState {
   state: 'closed' | 'open' | 'half-open';
 }
 
+interface ResilienceEvent {
+  type: 'circuit_open' | 'circuit_half_open' | 'circuit_closed' | 'retry' | 'timeout' | 'rate_limit';
+  service: string;
+  timestamp: string;
+  details?: Record<string, unknown>;
+}
+
 const circuits = new Map<string, CircuitState>();
+const eventListeners: ((event: ResilienceEvent) => void)[] = [];
 
 const FAILURE_THRESHOLD = 5;
 const RECOVERY_TIME = 60000; // 1 minute
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
+
+function emitEvent(event: ResilienceEvent): void {
+  console.log(JSON.stringify({ level: 'info', category: 'resilience', ...event }));
+  eventListeners.forEach(listener => listener(event));
+}
+
+export function onResilienceEvent(listener: (event: ResilienceEvent) => void): () => void {
+  eventListeners.push(listener);
+  return () => {
+    const index = eventListeners.indexOf(listener);
+    if (index > -1) eventListeners.splice(index, 1);
+  };
+}
 
 export class CircuitBreakerError extends Error {
   constructor(service: string) {
@@ -26,8 +47,18 @@ function getCircuit(name: string): CircuitState {
 
 function recordSuccess(name: string): void {
   const circuit = getCircuit(name);
+  const wasOpen = circuit.state !== 'closed';
   circuit.failures = 0;
   circuit.state = 'closed';
+  
+  if (wasOpen) {
+    emitEvent({
+      type: 'circuit_closed',
+      service: name,
+      timestamp: new Date().toISOString(),
+      details: { message: 'Circuit recovered and closed' }
+    });
+  }
 }
 
 function recordFailure(name: string): void {
@@ -35,9 +66,14 @@ function recordFailure(name: string): void {
   circuit.failures++;
   circuit.lastFailure = Date.now();
   
-  if (circuit.failures >= FAILURE_THRESHOLD) {
+  if (circuit.failures >= FAILURE_THRESHOLD && circuit.state !== 'open') {
     circuit.state = 'open';
-    console.warn(`[Circuit Breaker] ${name} circuit OPENED after ${circuit.failures} failures`);
+    emitEvent({
+      type: 'circuit_open',
+      service: name,
+      timestamp: new Date().toISOString(),
+      details: { failures: circuit.failures, threshold: FAILURE_THRESHOLD }
+    });
   }
 }
 
@@ -51,13 +87,18 @@ function canAttempt(name: string): boolean {
   if (circuit.state === 'open') {
     if (Date.now() - circuit.lastFailure > RECOVERY_TIME) {
       circuit.state = 'half-open';
-      console.log(`[Circuit Breaker] ${name} circuit entering HALF-OPEN state`);
+      emitEvent({
+        type: 'circuit_half_open',
+        service: name,
+        timestamp: new Date().toISOString(),
+        details: { message: 'Circuit entering recovery mode' }
+      });
       return true;
     }
     return false;
   }
   
-  return true; // half-open allows one attempt
+  return true;
 }
 
 export interface RetryOptions {
@@ -105,8 +146,21 @@ export async function withRetry<T>(
       if (attempt < maxRetries) {
         const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
         const jitter = delay * 0.2 * Math.random();
-        console.log(`[Retry] Attempt ${attempt + 1}/${maxRetries + 1} failed for ${circuitName || 'operation'}, retrying in ${Math.round(delay + jitter)}ms`);
-        await sleep(delay + jitter);
+        const totalDelay = Math.round(delay + jitter);
+        
+        emitEvent({
+          type: 'retry',
+          service: circuitName || 'unknown',
+          timestamp: new Date().toISOString(),
+          details: { 
+            attempt: attempt + 1, 
+            maxRetries: maxRetries + 1, 
+            delayMs: totalDelay,
+            error: lastError?.message 
+          }
+        });
+        
+        await sleep(totalDelay);
       }
     }
   }
