@@ -17,10 +17,15 @@ export class AppError extends Error {
   }
 }
 
-export class ValidationError extends AppError {
-  public readonly errors: string[];
+export interface FieldError {
+  field: string;
+  message: string;
+}
 
-  constructor(message: string, errors: string[] = []) {
+export class ValidationError extends AppError {
+  public readonly errors: FieldError[];
+
+  constructor(message: string, errors: FieldError[] = []) {
     super(message, 400, 'VALIDATION_ERROR');
     this.errors = errors;
   }

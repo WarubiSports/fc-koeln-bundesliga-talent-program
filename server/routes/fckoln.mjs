@@ -17,20 +17,23 @@ const router = express.Router();
 // This contains: { id: 'fckoln', name: '1.FC Köln ITP', origins: [...], rps: 600 }
 
 // ==========================================
-// BRUTE-FORCE PROTECTION
+// RATE LIMITING & BRUTE-FORCE PROTECTION
 // ==========================================
 
 // In-memory store for failed login attempts (key: appId:email)
 const loginAttempts = new Map();
+const resetAttempts = new Map(); // For password reset rate limiting
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+const RESET_RATE_LIMIT = 3; // Max reset requests per email
+const RESET_WINDOW = 60 * 60 * 1000; // 1 hour window
 
-function getLoginAttemptKey(appId, email) {
+function getAttemptKey(appId, email) {
   return `${appId}:${email.toLowerCase()}`;
 }
 
 function checkLoginAttempts(appId, email) {
-  const key = getLoginAttemptKey(appId, email);
+  const key = getAttemptKey(appId, email);
   const attempts = loginAttempts.get(key);
   
   if (!attempts) return { allowed: true, remainingAttempts: MAX_ATTEMPTS };
@@ -50,7 +53,7 @@ function checkLoginAttempts(appId, email) {
 }
 
 function recordFailedLogin(appId, email) {
-  const key = getLoginAttemptKey(appId, email);
+  const key = getAttemptKey(appId, email);
   const attempts = loginAttempts.get(key) || { count: 0, firstAttempt: Date.now() };
   
   attempts.count += 1;
@@ -64,8 +67,36 @@ function recordFailedLogin(appId, email) {
 }
 
 function clearLoginAttempts(appId, email) {
-  const key = getLoginAttemptKey(appId, email);
+  const key = getAttemptKey(appId, email);
   loginAttempts.delete(key);
+}
+
+// Password reset rate limiting
+function checkResetRateLimit(appId, email) {
+  const key = getAttemptKey(appId, email);
+  const attempts = resetAttempts.get(key);
+  
+  if (!attempts) return { allowed: true, remaining: RESET_RATE_LIMIT };
+  
+  // Check if window has expired
+  if (Date.now() > attempts.windowEnd) {
+    resetAttempts.delete(key);
+    return { allowed: true, remaining: RESET_RATE_LIMIT };
+  }
+  
+  if (attempts.count >= RESET_RATE_LIMIT) {
+    const waitMinutes = Math.ceil((attempts.windowEnd - Date.now()) / 60000);
+    return { allowed: false, waitMinutes };
+  }
+  
+  return { allowed: true, remaining: RESET_RATE_LIMIT - attempts.count };
+}
+
+function recordResetAttempt(appId, email) {
+  const key = getAttemptKey(appId, email);
+  const attempts = resetAttempts.get(key) || { count: 0, windowEnd: Date.now() + RESET_WINDOW };
+  attempts.count += 1;
+  resetAttempts.set(key, attempts);
 }
 
 // ==========================================
@@ -165,7 +196,7 @@ router.post('/auth/login', async (req, res) => {
 // Helper: Hash reset token for secure storage
 const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
-// Password Reset Request
+// Password Reset Request (rate limited to prevent abuse)
 router.post('/auth/request-reset', async (req, res) => {
   try {
     const { email } = req.body;
@@ -176,6 +207,18 @@ router.post('/auth/request-reset', async (req, res) => {
         message: 'Email is required' 
       });
     }
+
+    // Check rate limit before processing
+    const rateCheck = checkResetRateLimit(req.appCtx.id, email);
+    if (!rateCheck.allowed) {
+      return res.status(429).json({ 
+        success: false, 
+        message: `Too many password reset requests. Please try again in ${rateCheck.waitMinutes} minutes.` 
+      });
+    }
+
+    // Record this attempt (even before checking if user exists - prevents enumeration)
+    recordResetAttempt(req.appCtx.id, email);
 
     // Check if user exists
     const result = await pool.query(
