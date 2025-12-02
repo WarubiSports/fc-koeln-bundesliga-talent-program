@@ -935,11 +935,10 @@
         function initCheckboxes() {
             document.querySelectorAll('.checkbox-item').forEach(item => {
                 item.addEventListener('click', function(e) {
-                    if (e.target.tagName !== 'INPUT') {
-                        const checkbox = this.querySelector('input[type="checkbox"]');
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    this.classList.toggle('selected', this.querySelector('input').checked);
+                    e.preventDefault();
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    this.classList.toggle('selected', checkbox.checked);
                 });
             });
         }
@@ -948,10 +947,9 @@
         function initRadios() {
             document.querySelectorAll('.radio-item').forEach(item => {
                 item.addEventListener('click', function(e) {
-                    if (e.target.tagName !== 'INPUT') {
-                        const radio = this.querySelector('input[type="radio"]');
-                        radio.checked = true;
-                    }
+                    e.preventDefault();
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
                     const group = this.closest('.radio-group');
                     group.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
                     this.classList.add('selected');
