@@ -3,878 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1.FC Köln International Talent Pathway - Women | Warubi Sports</title>
-    <meta name="description" content="Join the 1.FC Köln International Talent Pathway for Women. Train at a Bundesliga club, pursue your path to college, professional soccer, or coaching licenses.">
+    <title>1. FC Köln International Talent Pathway - Women | Warubi</title>
+    <meta name="description" content="Join the 1. FC Köln International Talent Pathway for Women. Professional football training in Germany with experienced coaches.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f8f9fa;
-            color: #1a1a1a;
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #111;
+            min-height: 100vh;
         }
-
-        .header {
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            color: white;
-            padding: 1rem 2rem;
-            position: sticky;
+        
+        .nav-bar {
+            position: fixed;
             top: 0;
-            z-index: 100;
+            left: 0;
+            right: 0;
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .header-left {
+        
+        .nav-left {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 16px;
         }
-
+        
         .back-link {
-            color: white;
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
-            opacity: 0.9;
-            transition: opacity 0.2s;
-        }
-
-        .back-link:hover {
-            opacity: 1;
-        }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .gender-toggle {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .gender-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            gap: 6px;
+            color: rgba(255,255,255,0.7);
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
         }
-
-        .gender-btn.active {
-            background: white;
-            color: #c8102e;
+        
+        .back-link:hover {
+            color: #fff;
         }
-
-        .gender-btn:hover:not(.active) {
-            background: rgba(255,255,255,0.1);
+        
+        .nav-toggle {
+            display: flex;
+            gap: 8px;
         }
-
-        .hero {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
+        
+        .toggle-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .badge {
-            display: inline-block;
+        
+        .toggle-btn.active {
             background: #c8102e;
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-top: 1.5rem;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .section {
-            padding: 4rem 0;
-        }
-
-        .section-alt {
-            background: white;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-            color: #1a1a1a;
-        }
-
-        .section-title span {
-            color: #c8102e;
-        }
-
-        .intro-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .intro-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .intro-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #c8102e;
-        }
-
-        .intro-card p {
-            color: #555;
-        }
-
-        .club-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .club-text h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .club-text ul {
-            list-style: none;
-        }
-
-        .club-text li {
-            padding: 0.75rem 0;
-            padding-left: 2rem;
-            position: relative;
-            color: #444;
-        }
-
-        .club-text li::before {
-            content: "⚽";
-            position: absolute;
-            left: 0;
-        }
-
-        .club-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-
-        .stat-box {
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-        }
-
-        .stat-box .number {
-            font-size: 2.5rem;
-            font-weight: 800;
-        }
-
-        .stat-box .label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
-
-        .pathway-visual {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-
-        .pathway-visual h2 {
-            font-size: 1.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .pathway-flow {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .pathway-step {
+        
+        .toggle-btn:not(.active) {
             background: rgba(255,255,255,0.1);
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
+            color: rgba(255,255,255,0.7);
         }
-
-        .pathway-arrow {
-            font-size: 1.5rem;
-            opacity: 0.6;
+        
+        .toggle-btn:not(.active):hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
         }
-
-        .coaches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .coach-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .coach-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-        }
-
-        .coach-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .coach-card .role {
-            color: #c8102e;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .coach-card p {
-            color: #555;
-            font-size: 0.9rem;
-        }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .feature-item h4 {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .feature-item p {
-            font-size: 0.875rem;
-            color: #666;
-        }
-
-        .education-section {
-            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
-            color: white;
-            padding: 4rem 2rem;
-        }
-
-        .education-section h2 {
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .education-section .subtitle {
-            text-align: center;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-
-        .education-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            max-width: 900px;
+        
+        .brochure-container {
+            max-width: 960px;
             margin: 0 auto;
+            padding: 70px 0 120px;
         }
-
-        .education-card {
-            background: rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            text-align: center;
+        
+        .brochure-page {
+            width: 100%;
+            display: block;
         }
-
-        .education-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .education-card h4 {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .education-card p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .pricing-card.featured {
-            border-color: #c8102e;
-            transform: scale(1.05);
-        }
-
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .pricing-card .price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #c8102e;
-            margin: 1rem 0;
-        }
-
-        .pricing-card .price span {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #666;
-        }
-
-        .included-list {
-            text-align: left;
-            margin-top: 2rem;
-        }
-
-        .included-list h4 {
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .included-list ul {
-            list-style: none;
-        }
-
-        .included-list li {
-            padding: 0.5rem 0;
-            padding-left: 1.5rem;
-            position: relative;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .included-list li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #c8102e;
-            font-weight: 700;
-        }
-
-        .city-section {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: white;
-            padding: 4rem 2rem;
-        }
-
-        .city-section h2 {
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .city-facts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .city-fact {
-            text-align: center;
-        }
-
-        .city-fact .icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .city-fact h4 {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .city-fact p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .highlight-box {
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-            max-width: 800px;
-            margin: 2rem auto 0;
-        }
-
-        .highlight-box h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .highlight-box p {
-            opacity: 0.9;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-
-        .cta-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            opacity: 0.9;
-            margin-bottom: 2rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-btn {
-            display: inline-block;
-            background: white;
-            color: #c8102e;
-            padding: 1rem 2.5rem;
-            border-radius: 0.75rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
-
-        .cta-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .footer {
+        
+        .video-section {
             background: #1a1a1a;
-            color: white;
-            padding: 2rem;
+            padding: 40px 20px;
+        }
+        
+        .video-section h2 {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 24px;
             text-align: center;
         }
-
-        .footer a {
-            color: #c8102e;
-            text-decoration: none;
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+        
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .apply-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .apply-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%);
+            color: white;
+            padding: 16px 56px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(200, 16, 46, 0.4);
+        }
+        
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(200, 16, 46, 0.5);
+        }
+        
+        @media (max-width: 600px) {
+            .nav-bar {
+                padding: 10px 16px;
             }
-
-            .hero h1 {
-                font-size: 1.75rem;
+            
+            .toggle-btn {
+                padding: 6px 14px;
+                font-size: 13px;
             }
-
-            .club-info {
+            
+            .brochure-container {
+                padding: 60px 0 100px;
+            }
+            
+            .apply-btn {
+                padding: 14px 40px;
+                font-size: 16px;
+            }
+            
+            .video-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .pathway-flow {
-                flex-direction: column;
-            }
-
-            .pathway-arrow {
-                transform: rotate(90deg);
-            }
-
-            .pricing-card.featured {
-                transform: none;
-            }
-
-            .section {
-                padding: 2rem 0;
-            }
-
-            .container {
-                padding: 0 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-left">
-            <a href="/" class="back-link" data-testid="link-back-home">← Warubi Sports</a>
-            <span class="header-title">1.FC Köln ITP</span>
+    <nav class="nav-bar">
+        <div class="nav-left">
+            <a href="/" class="back-link" data-testid="link-back-ecosystem">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Warubi Ecosystem
+            </a>
         </div>
-        <div class="gender-toggle">
-            <a href="/itp-men.html" class="gender-btn" data-testid="btn-men">Men</a>
-            <a href="/itp-women.html" class="gender-btn active" data-testid="btn-women">Women</a>
+        <div class="nav-toggle">
+            <a href="/itp-men.html" class="toggle-btn" data-testid="link-toggle-men">Men</a>
+            <a href="/itp-women.html" class="toggle-btn active" data-testid="link-toggle-women">Women</a>
         </div>
-    </header>
+    </nav>
 
-    <section class="hero">
-        <h1>International Talent Pathway</h1>
-        <p class="hero-subtitle">Train at the heart of a Bundesliga club. Your pathway to college, professional soccer, or coaching excellence.</p>
-        <span class="badge">Women's Program</span>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Welcome to <span>1.FC Köln</span></h2>
-            <div class="intro-grid">
-                <div class="intro-card">
-                    <h3>Bundesliga Women's Team</h3>
-                    <p>The 1. FC Köln senior women's team competes in the Bundesliga, Germany's top league, and the U20 team plays in the Regionalliga, the third-highest level. In the 2024/25 season, the women's team averaged 6,189 spectators, leading the Bundesliga, with a record attendance of 38,000 against Bayern Munich.</p>
+    <div class="brochure-container">
+        <img src="/brochure-assets/women/page-01.png" alt="FC Köln ITP Women - Cover" class="brochure-page" loading="eager">
+        <img src="/brochure-assets/women/page-02.png" alt="FC Köln ITP Women - Page 2" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-03.png" alt="FC Köln ITP Women - Page 3" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-04.png" alt="FC Köln ITP Women - Page 4" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-05.png" alt="FC Köln ITP Women - Page 5" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-06.png" alt="FC Köln ITP Women - Page 6" class="brochure-page" loading="lazy">
+        
+        <div class="video-section">
+            <h2>Program Videos</h2>
+            <div class="video-grid">
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/DAG3vuzONXw" 
+                        title="FC Köln ITP Women Video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
-                <div class="intro-card">
-                    <h3>At the Heart of the Club</h3>
-                    <p>This isn't a satellite program or branded academy - it's part of the club's daily operations. International talents training alongside Bundesliga players.</p>
-                </div>
-                <div class="intro-card">
-                    <h3>Multiple Pathways</h3>
-                    <p>Pursue college scholarships, professional contracts, or earn your Bachelor's, Master's, or UEFA coaching license - all from Cologne.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-alt">
-        <div class="container">
-            <div class="club-info">
-                <div class="club-text">
-                    <h2>What is FC Köln ITP?</h2>
-                    <ul>
-                        <li>International talents at the heart of a Bundesliga club - part of daily operations</li>
-                        <li>A platform for players aiming to break into the Bundesliga system</li>
-                        <li>Supported by NCAA coaches, FIFA-licensed agents, and Bundesliga clubs</li>
-                        <li>Train and live like a professional in the German and European football environment</li>
-                        <li>Learn German language and culture with optional degree programs</li>
-                    </ul>
-                </div>
-                <div class="club-stats">
-                    <div class="stat-box">
-                        <div class="number">140K+</div>
-                        <div class="label">Club Members</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="number">38K</div>
-                        <div class="label">Record Attendance</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="number">5x</div>
-                        <div class="label">Weekly Training</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="number">#1</div>
-                        <div class="label">Avg. Attendance 24/25</div>
-                    </div>
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/BAFQ4YzaWoI" 
+                        title="FC Köln ITP Highlights"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </div>
         </div>
-    </section>
+        
+        <img src="/brochure-assets/women/page-07.png" alt="FC Köln ITP Women - Page 7" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-08.png" alt="FC Köln ITP Women - Page 8" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-09.png" alt="FC Köln ITP Women - Page 9" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-10.png" alt="FC Köln ITP Women - Page 10" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-11.png" alt="FC Köln ITP Women - Page 11" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-12.png" alt="FC Köln ITP Women - Page 12" class="brochure-page" loading="lazy">
+    </div>
 
-    <section class="pathway-visual">
-        <h2>Your Path to Success</h2>
-        <div class="pathway-flow">
-            <div class="pathway-step">Player</div>
-            <span class="pathway-arrow">→</span>
-            <div class="pathway-step">FC Köln ITP</div>
-            <span class="pathway-arrow">→</span>
-            <div class="pathway-step">NCAA / NAIA / Pro</div>
-            <span class="pathway-arrow">→</span>
-            <div class="pathway-step">Career or Coaching</div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Professional <span>Training</span></h2>
-            <div class="feature-list">
-                <div class="feature-item">
-                    <div class="feature-icon">⚽</div>
-                    <div>
-                        <h4>Daily Training at FC Köln</h4>
-                        <p>Train at the Ostkampfbahn, next to the RheinEnergieStadion</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">👩‍🏫</div>
-                    <div>
-                        <h4>UEFA-Licensed Coaches</h4>
-                        <p>Optimal soccer development with professional coaching staff</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📊</div>
-                    <div>
-                        <h4>Performance Testing</h4>
-                        <p>Each player undergoes performance evaluation and athletic testing</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">👀</div>
-                    <div>
-                        <h4>Scout Exposure</h4>
-                        <p>Scouts, FIFA agents, and college recruiters observe matches and training</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🎮</div>
-                    <div>
-                        <h4>Video Analysis</h4>
-                        <p>Detailed video analysis to enhance your performance</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🏆</div>
-                    <div>
-                        <h4>Competition</h4>
-                        <p>2-4 matches per month against quality opposition</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">Head <span>Coaches</span></h2>
-            <div class="coaches-grid">
-                <div class="coach-card">
-                    <div class="coach-avatar">👩‍🏫</div>
-                    <h3>Karoline Heinze</h3>
-                    <div class="role">Former Bundesliga Player</div>
-                    <p>Former Bundesliga player (Bayer Leverkusen and Carl Zeiss Jena) and U.S. college player at UCF (NCAA D1). U20 World Cup Vice Champion.</p>
-                </div>
-                <div class="coach-card">
-                    <div class="coach-avatar">👨‍🏫</div>
-                    <h3>Jorge Arcila Caceres</h3>
-                    <div class="role">UEFA Pro Licensed</div>
-                    <p>Former youth coach at FC Barcelona and Atlético Madrid. Currently responsible for the technical training of FC Köln's top talents.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="education-section">
-        <h2>Education & Career Options</h2>
-        <p class="subtitle">German language is a cornerstone of success. Once B2 level is reached, apply for German university admission - with no tuition fees!</p>
-        <div class="education-cards">
-            <div class="education-card">
-                <div class="icon">🎓</div>
-                <h4>Bachelor's Degree</h4>
-                <p>Study at the #1 Sport Science University in Germany (#17 globally)</p>
-            </div>
-            <div class="education-card">
-                <div class="icon">📜</div>
-                <h4>Master's Degree</h4>
-                <p>Continue your education while training professionally</p>
-            </div>
-            <div class="education-card">
-                <div class="icon">📋</div>
-                <h4>UEFA Coaching License</h4>
-                <p>Earn your coaching credentials in Germany</p>
-            </div>
-        </div>
-        <div class="highlight-box">
-            <h3>Arizona State University Partnership</h3>
-            <p>Gather college or high school credits through our cooperation with ASU</p>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Accommodation & <span>Boarding</span></h2>
-            <div class="intro-grid" style="max-width: 800px; margin: 0 auto;">
-                <div class="intro-card">
-                    <h3>International Football Houses</h3>
-                    <p>Players live in the international football houses in a safe and secure environment. They will share a room, and the apartments are easily accessible to the training facilities via public transportation.</p>
-                </div>
-                <div class="intro-card">
-                    <h3>Meal Plan</h3>
-                    <p>Meals, including breakfast, lunch, and dinner, will be provided for the players. Players' well-being is our priority.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="city-section">
-        <h2>The City of Cologne</h2>
-        <div class="city-facts">
-            <div class="city-fact">
-                <div class="icon">🏙️</div>
-                <h4>4th Largest City</h4>
-                <p>Over 1 million inhabitants</p>
-            </div>
-            <div class="city-fact">
-                <div class="icon">🎓</div>
-                <h4>100,000 Students</h4>
-                <p>Major university city</p>
-            </div>
-            <div class="city-fact">
-                <div class="icon">⚽</div>
-                <h4>10+ Pro Clubs</h4>
-                <p>Within 1 hour drive</p>
-            </div>
-            <div class="city-fact">
-                <div class="icon">🌍</div>
-                <h4>Central Europe</h4>
-                <p>Near Netherlands & Belgium</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">Tuition & <span>Fees</span></h2>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3>1 Month</h3>
-                    <div class="price">€5,500</div>
-                    <p>Trial experience</p>
-                </div>
-                <div class="pricing-card featured">
-                    <h3>3 Months</h3>
-                    <div class="price">€14,000</div>
-                    <p>Full program experience</p>
-                </div>
-            </div>
-
-            <div class="included-list" style="max-width: 800px; margin: 3rem auto 0; background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                <h4>What's Included</h4>
-                <ul style="columns: 2; column-gap: 2rem;">
-                    <li>Official FC Köln invitation letter</li>
-                    <li>Visa application support</li>
-                    <li>Performance assessment and athletic testing</li>
-                    <li>5 training sessions per week</li>
-                    <li>Video analysis</li>
-                    <li>Full FC Köln training and game day gear</li>
-                    <li>2-4 games per month</li>
-                    <li>Stadium tour</li>
-                    <li>Tickets for Bundesliga home games</li>
-                    <li>Full room and board</li>
-                    <li>Access to public transportation</li>
-                    <li>Gym, swimming, and wellness facilities</li>
-                    <li>Language school (2-3 days/week)</li>
-                    <li>Personal performance report</li>
-                    <li>Health, accident, and liability insurance</li>
-                    <li>Access to FC Köln sports medicine specialist</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-section">
-        <h2>Ready to Start Your Journey?</h2>
-        <p>Join the 1.FC Köln International Talent Pathway and take the next step in your football career.</p>
-        <a href="mailto:itp@warubisports.com" class="cta-btn" data-testid="btn-apply">Contact Us to Apply</a>
-    </section>
-
-    <footer class="footer">
-        <p>&copy; 2025 Warubi Sports. <a href="/">Return to Warubi Ecosystem</a></p>
-    </footer>
+    <div class="apply-section">
+        <a href="mailto:info@warubi.org?subject=FC%20Köln%20ITP%20Women%20-%20Application%20Inquiry" class="apply-btn" data-testid="button-apply-women">
+            Apply Now
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </div>
 </body>
 </html>

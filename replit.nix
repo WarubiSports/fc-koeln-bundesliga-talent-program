@@ -2,6 +2,7 @@
 
 {
   deps = [
+    pkgs.poppler_utils
     pkgs.openssh
     pkgs.nano
     pkgs.nodejs_20
