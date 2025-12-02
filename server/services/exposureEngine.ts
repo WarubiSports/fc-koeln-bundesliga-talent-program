@@ -1,9 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 import { logger } from '../utils/logger.js';
+import { withRetry, CircuitBreakerError } from '../utils/resilience.js';
 
-// Timeout for AI requests (30 seconds)
-const AI_TIMEOUT_MS = 30000;
+const AI_CIRCUIT_NAME = 'gemini-ai';
 
 // Zod schema for validating AI response structure
 const VisibilityScoreSchema = z.object({
@@ -40,16 +40,6 @@ const AIResponseSchema = z.object({
   actionPlan: z.array(ActionItemSchema).min(1).max(10),
   plainLanguageSummary: z.string().min(10).max(1000)
 });
-
-// Helper: Promise with timeout
-function withTimeout<T>(promise: Promise<T>, ms: number, operation: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => 
-      setTimeout(() => reject(new Error(`${operation} timed out after ${ms}ms`)), ms)
-    )
-  ]);
-}
 
 const SYSTEM_PROMPT = `
 You are a veteran US College Soccer Recruiting Director. You are brutally honest, data-driven, and realistic. Your goal is to prevent youth players from having false hope and to give them a concrete roadmap.
@@ -196,14 +186,18 @@ ${JSON.stringify(profile, null, 2)}
 `;
 
   try {
-    // Wrap AI call with timeout
-    const response = await withTimeout(
-      ai.models.generateContent({
+    // AI call with retry, timeout, and circuit breaker
+    const response = await withRetry(
+      () => ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }]
       }),
-      AI_TIMEOUT_MS,
-      'AI analysis'
+      {
+        maxRetries: 2,
+        baseDelay: 1000,
+        timeout: 30000,
+        circuitName: AI_CIRCUIT_NAME
+      }
     );
 
     const text = response.text;

@@ -1,5 +1,77 @@
 import sgMail from '@sendgrid/mail';
 
+const EMAIL_CIRCUIT_NAME = 'sendgrid-email';
+const circuits = new Map();
+const FAILURE_THRESHOLD = 5;
+const RECOVERY_TIME = 60000;
+
+function getCircuit(name) {
+  if (!circuits.has(name)) {
+    circuits.set(name, { failures: 0, lastFailure: 0, state: 'closed' });
+  }
+  return circuits.get(name);
+}
+
+function recordSuccess(name) {
+  const circuit = getCircuit(name);
+  circuit.failures = 0;
+  circuit.state = 'closed';
+}
+
+function recordFailure(name) {
+  const circuit = getCircuit(name);
+  circuit.failures++;
+  circuit.lastFailure = Date.now();
+  
+  if (circuit.failures >= FAILURE_THRESHOLD) {
+    circuit.state = 'open';
+    console.warn(`[Circuit Breaker] ${name} circuit OPENED`);
+  }
+}
+
+function canAttempt(name) {
+  const circuit = getCircuit(name);
+  
+  if (circuit.state === 'closed') return true;
+  
+  if (circuit.state === 'open') {
+    if (Date.now() - circuit.lastFailure > RECOVERY_TIME) {
+      circuit.state = 'half-open';
+      return true;
+    }
+    return false;
+  }
+  
+  return true;
+}
+
+async function withRetry(operation, options = {}) {
+  const { maxRetries = 2, baseDelay = 1000, circuitName } = options;
+
+  if (circuitName && !canAttempt(circuitName)) {
+    throw new Error('Email service temporarily unavailable. Please try again later.');
+  }
+
+  let lastError;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await operation();
+      if (circuitName) recordSuccess(circuitName);
+      return result;
+    } catch (error) {
+      lastError = error;
+      if (circuitName) recordFailure(circuitName);
+      
+      if (attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.log(`[SendGrid] Retry ${attempt + 1}/${maxRetries} in ${delay}ms`);
+        await new Promise(r => setTimeout(r, delay));
+      }
+    }
+  }
+  throw lastError;
+}
+
 let connectionSettings;
 
 async function getCredentials() {
@@ -84,5 +156,8 @@ export async function sendPasswordResetEmail(toEmail, resetToken, resetUrl) {
     `,
   };
 
-  await client.send(msg);
+  await withRetry(
+    () => client.send(msg),
+    { maxRetries: 2, baseDelay: 1000, circuitName: EMAIL_CIRCUIT_NAME }
+  );
 }
