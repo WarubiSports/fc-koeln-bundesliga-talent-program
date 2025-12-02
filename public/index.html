@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warubi Sports - Global Soccer Management Ecosystem</title>
-    <meta name="description" content="Warubi Sports is a global soccer management hub connecting players and coaches to elite pathways: Bundesliga development, college scholarships, pro representation, and coaching licenses.">
+    <title>Warubi Hub - Player Evaluation | Get Your Score</title>
+    <meta name="description" content="Get your personalized player evaluation from Warubi. We analyze your profile and provide a score, bucket rating, and tags to help you benchmark your soccer career.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,354 +22,1210 @@
             color: #ffffff;
         }
 
-        /* Header */
-        .header {
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
             padding: 2rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 100vh;
         }
 
-        .logo-section {
-            margin-bottom: 1rem;
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         .logo-text {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 800;
             letter-spacing: -1px;
             background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            margin-bottom: 0.5rem;
         }
 
         .tagline {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.7;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        /* Stats Bar */
-        .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            padding: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #f39c12;
-        }
-
-        .stat-label {
             font-size: 0.875rem;
             color: rgba(255, 255, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        /* Pathways Section */
-        .pathways-section {
-            padding: 3rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Progress Indicator */
+        .progress-container {
+            margin-bottom: 2rem;
         }
 
-        .section-title {
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 3rem;
-            color: rgba(255, 255, 255, 0.9);
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .pathways-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12 0%, #e74c3c 100%);
+            transition: width 0.3s ease;
         }
 
-        .pathway-card {
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+        }
+
+        .progress-step {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            transition: color 0.3s;
+        }
+
+        .progress-step.active {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .progress-step.completed {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Form Card */
+        .form-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
             padding: 2rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: block;
+            margin-bottom: 1.5rem;
         }
 
-        .pathway-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-4px);
-        }
-
-        .pathway-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .pathway-title {
-            font-size: 1.25rem;
+        .step-title {
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
-        .pathway-subtitle {
+        .step-subtitle {
             font-size: 0.875rem;
-            color: #f39c12;
-            font-weight: 600;
-            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
         }
 
-        .pathway-description {
-            font-size: 0.9375rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
+        /* Form Elements */
+        .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .pathway-partners {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .pathway-arrow {
-            margin-top: 1rem;
-            color: #f39c12;
-            font-size: 1.25rem;
-        }
-
-        .pathway-buttons {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .pathway-btn {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: 2px solid #f39c12;
-            background: transparent;
-            color: #f39c12;
-            border-radius: 0.5rem;
-            font-weight: 600;
+        .form-label {
+            display: block;
             font-size: 0.875rem;
-            text-decoration: none;
-            text-align: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-label .required {
+            color: #e74c3c;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
             transition: all 0.2s;
         }
 
-        .pathway-btn:hover {
-            background: #f39c12;
-            color: #1a1a1a;
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
         }
 
-        /* Connection Visual */
-        .connection-section {
-            padding: 3rem 2rem;
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Checkbox / Radio Groups */
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover,
+        .radio-item:hover {
+            border-color: rgba(243, 156, 18, 0.5);
+        }
+
+        .checkbox-item.selected,
+        .radio-item.selected {
+            background: rgba(243, 156, 18, 0.1);
+            border-color: #f39c12;
+        }
+
+        .checkbox-item input,
+        .radio-item input {
+            display: none;
+        }
+
+        .checkbox-label,
+        .radio-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Tags Input */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: #f39c12;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Step Hidden */
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        /* Error State */
+        .form-input.error,
+        .form-select.error {
+            border-color: #e74c3c;
+        }
+
+        .error-text {
+            color: #e74c3c;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Result Page Styles */
+        .result-container {
+            display: none;
             text-align: center;
         }
 
-        .connection-text {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.7;
+        .result-container.active {
+            display: block;
         }
 
-        .hub-visual {
+        .result-header {
+            margin-bottom: 2rem;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 2rem auto;
-            padding: 1.5rem 2rem;
-            background: rgba(243, 156, 18, 0.1);
-            border: 1px solid rgba(243, 156, 18, 0.3);
-            border-radius: 1rem;
-            display: inline-block;
+            box-shadow: 0 8px 30px rgba(243, 156, 18, 0.3);
         }
 
-        .hub-text {
-            font-size: 1rem;
-            font-weight: 600;
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .result-bucket {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(243, 156, 18, 0.1);
+            border: 2px solid #f39c12;
+            border-radius: 2rem;
+            font-size: 1.125rem;
+            font-weight: 700;
             color: #f39c12;
+            margin-bottom: 1rem;
+        }
+
+        .result-rating {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .result-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .result-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .result-explanation {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .ecosystem-link {
+            display: block;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+        .ecosystem-link:hover {
+            color: #f39c12;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #f39c12;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Footer */
         .footer {
-            padding: 3rem 2rem;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 2rem;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
         }
 
-        .footer-text {
-            font-size: 0.875rem;
+        .footer a {
             color: rgba(255, 255, 255, 0.5);
-        }
-
-        .footer-links {
-            margin-top: 1rem;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
-            margin: 0 1rem;
-            font-size: 0.875rem;
-            transition: color 0.2s;
         }
 
-        .footer-links a:hover {
+        .footer a:hover {
             color: #f39c12;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 1.875rem;
-            }
-
-            .stats-bar {
-                gap: 2rem;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .pathways-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .logo-text {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo-section">
-            <div class="logo-text" data-testid="logo-warubi">WARUBI SPORTS</div>
-        </div>
-        <p class="tagline">Global Soccer Management Hub</p>
-    </header>
+    <div class="container">
+        <header class="header">
+            <div class="logo-text" data-testid="logo-warubi">WARUBI HUB</div>
+            <p class="tagline">Player Evaluation Engine</p>
+        </header>
 
-    <section class="hero">
-        <h1>Connecting Players & Coaches to Elite Pathways Worldwide</h1>
-        <p>Warubi Sports is a global alliance of agencies, coaches, clubs, colleges, and federations. We guide talent through youth, college, and professional stages with proven pathways to success.</p>
-    </section>
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 16.66%"></div>
+            </div>
+            <div class="progress-steps">
+                <span class="progress-step active" data-step="1">Basic Info</span>
+                <span class="progress-step" data-step="2">Club</span>
+                <span class="progress-step" data-step="3">Profile</span>
+                <span class="progress-step" data-step="4">Stats</span>
+                <span class="progress-step" data-step="5">Goals</span>
+                <span class="progress-step" data-step="6">Media</span>
+            </div>
+        </div>
 
-    <section class="stats-bar">
-        <div class="stat-item" data-testid="stat-players">
-            <div class="stat-number">1,000+</div>
-            <div class="stat-label">Players Supported</div>
-        </div>
-        <div class="stat-item" data-testid="stat-commitments">
-            <div class="stat-number">1,000+</div>
-            <div class="stat-label">College Commitments</div>
-        </div>
-        <div class="stat-item" data-testid="stat-coaches">
-            <div class="stat-number">20,000+</div>
-            <div class="stat-label">Coaches Network</div>
-        </div>
-    </section>
+        <!-- Form Steps -->
+        <form id="evaluationForm">
+            <!-- Step 1: Basic Info -->
+            <div class="step active" data-step="1">
+                <div class="form-card">
+                    <h2 class="step-title">Basic Information</h2>
+                    <p class="step-subtitle">Tell us about yourself</p>
 
-    <section class="pathways-section">
-        <h2 class="section-title">Four Pathways to Success</h2>
-        
-        <div class="pathways-grid">
-            <div class="pathway-card" data-testid="card-pathway-players">
-                <div class="pathway-icon">⚽</div>
-                <h3 class="pathway-title">Players Pathway</h3>
-                <div class="pathway-subtitle">Bundesliga Development</div>
-                <p class="pathway-description">Elite training at 1. FC Köln's International Talent Program. Five sessions per week with UEFA-licensed coaches, matches, and performance testing.</p>
-                <div class="pathway-partners">Partner: 1. FC Köln</div>
-                <div class="pathway-buttons">
-                    <a href="/itp-men.html" class="pathway-btn" data-testid="btn-itp-men">Men</a>
-                    <a href="/itp-women.html" class="pathway-btn" data-testid="btn-itp-women">Women</a>
+                    <div class="form-group">
+                        <label class="form-label">Full Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" name="fullName" placeholder="Enter your full name" required data-testid="input-fullName">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email <span class="required">*</span></label>
+                        <input type="email" class="form-input" name="email" placeholder="player@email.com" required data-testid="input-email">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Year of Birth <span class="required">*</span></label>
+                            <select class="form-select" name="yearOfBirth" required data-testid="select-yearOfBirth">
+                                <option value="">Select year</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                                <option value="2009">2009</option>
+                                <option value="2008">2008</option>
+                                <option value="2007">2007</option>
+                                <option value="2006">2006</option>
+                                <option value="2005">2005</option>
+                                <option value="2004">2004</option>
+                                <option value="2003">2003</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Graduation Year</label>
+                            <select class="form-select" name="gradYear" data-testid="select-gradYear">
+                                <option value="">Select year</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Primary Position(s) <span class="required">*</span></label>
+                        <div class="checkbox-group" id="primaryPositions" data-testid="checkbox-primaryPositions">
+                            <label class="checkbox-item"><input type="checkbox" value="Goalkeeper"><span class="checkbox-label">Goalkeeper</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Center Back"><span class="checkbox-label">Center Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Left Back"><span class="checkbox-label">Left Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Right Back"><span class="checkbox-label">Right Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Defensive Midfielder"><span class="checkbox-label">Defensive Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Central Midfielder"><span class="checkbox-label">Central Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Attacking Midfielder"><span class="checkbox-label">Attacking Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Left Winger"><span class="checkbox-label">Left Winger</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Right Winger"><span class="checkbox-label">Right Winger</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Striker"><span class="checkbox-label">Striker</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Secondary Position(s)</label>
+                        <div class="checkbox-group" id="secondaryPositions" data-testid="checkbox-secondaryPositions">
+                            <label class="checkbox-item"><input type="checkbox" value="Goalkeeper"><span class="checkbox-label">Goalkeeper</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Center Back"><span class="checkbox-label">Center Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Left Back"><span class="checkbox-label">Left Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Right Back"><span class="checkbox-label">Right Back</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Defensive Midfielder"><span class="checkbox-label">Defensive Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Central Midfielder"><span class="checkbox-label">Central Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Attacking Midfielder"><span class="checkbox-label">Attacking Mid</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Left Winger"><span class="checkbox-label">Left Winger</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Right Winger"><span class="checkbox-label">Right Winger</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Striker"><span class="checkbox-label">Striker</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Dominant Foot <span class="required">*</span></label>
+                        <div class="radio-group" id="dominantFoot" data-testid="radio-dominantFoot">
+                            <label class="radio-item"><input type="radio" name="dominantFoot" value="right"><span class="radio-label">Right</span></label>
+                            <label class="radio-item"><input type="radio" name="dominantFoot" value="left"><span class="radio-label">Left</span></label>
+                            <label class="radio-item"><input type="radio" name="dominantFoot" value="both"><span class="radio-label">Both</span></label>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-1">Continue</button>
+                    </div>
                 </div>
             </div>
 
-            <a href="#college" class="pathway-card" data-testid="card-pathway-college">
-                <div class="pathway-icon">🎓</div>
-                <h3 class="pathway-title">College Pathway</h3>
-                <div class="pathway-subtitle">US Scholarships</div>
-                <p class="pathway-description">Connect with 20,000+ college coaches across NCAA, NAIA, NJCAA, and CCCAA. Over 1,000 successful college commitments and counting.</p>
-                <div class="pathway-partners">Partner: AthletesUSA</div>
-                <div class="pathway-arrow">→</div>
+            <!-- Step 2: Club & League Context -->
+            <div class="step" data-step="2">
+                <div class="form-card">
+                    <h2 class="step-title">Club & League</h2>
+                    <p class="step-subtitle">Your current team and competition level</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Current Club <span class="required">*</span></label>
+                        <input type="text" class="form-input" name="currentClub" placeholder="Enter your club name" required data-testid="input-currentClub">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Current League <span class="required">*</span></label>
+                        <select class="form-select" name="currentLeague" required data-testid="select-currentLeague">
+                            <option value="">Select league</option>
+                            <option value="MLS NEXT">MLS NEXT</option>
+                            <option value="ECNL">ECNL</option>
+                            <option value="GA">GA (Girls Academy)</option>
+                            <option value="USL Academy">USL Academy</option>
+                            <option value="E64">E64</option>
+                            <option value="PPL">PPL</option>
+                            <option value="NPL">NPL</option>
+                            <option value="UPSL Youth">UPSL Youth</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="otherLeagueGroup" style="display: none;">
+                        <label class="form-label">Specify League</label>
+                        <input type="text" class="form-input" name="otherLeague" placeholder="Enter your league name" data-testid="input-otherLeague">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Age Group <span class="required">*</span></label>
+                            <select class="form-select" name="ageGroup" required data-testid="select-ageGroup">
+                                <option value="">Select age group</option>
+                                <option value="U13">U13</option>
+                                <option value="U14">U14</option>
+                                <option value="U15">U15</option>
+                                <option value="U16">U16</option>
+                                <option value="U17">U17</option>
+                                <option value="U18">U18</option>
+                                <option value="U19">U19</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State/Region <span class="required">*</span></label>
+                            <input type="text" class="form-input" name="stateRegion" placeholder="e.g., California" required data-testid="input-stateRegion">
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-2">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-2">Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Playing Profile -->
+            <div class="step" data-step="3">
+                <div class="form-card">
+                    <h2 class="step-title">Playing Profile</h2>
+                    <p class="step-subtitle">Physical attributes and strengths</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Height (inches) <span class="required">*</span></label>
+                            <input type="number" class="form-input" name="height" placeholder="e.g., 68" min="48" max="84" required data-testid="input-height">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Weight (lbs) <span class="required">*</span></label>
+                            <input type="number" class="form-input" name="weight" placeholder="e.g., 150" min="80" max="250" required data-testid="input-weight">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Primary Strengths</label>
+                        <input type="text" class="form-input" name="strengthsInput" placeholder="Type a strength and press Enter" data-testid="input-strengths">
+                        <div class="tags-container" id="strengthsTags"></div>
+                        <input type="hidden" name="primaryStrengths" id="primaryStrengthsHidden">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Areas to Improve</label>
+                        <input type="text" class="form-input" name="improvementsInput" placeholder="Type an area and press Enter" data-testid="input-improvements">
+                        <div class="tags-container" id="improvementsTags"></div>
+                        <input type="hidden" name="areasToImprove" id="areasToImproveHidden">
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-3">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-3">Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Experience & Stats -->
+            <div class="step" data-step="4">
+                <div class="form-card">
+                    <h2 class="step-title">Experience & Stats</h2>
+                    <p class="step-subtitle">Your playing history and performance</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Years at Current Level <span class="required">*</span></label>
+                        <select class="form-select" name="yearsAtCurrentLevel" required data-testid="select-yearsAtLevel">
+                            <option value="">Select years</option>
+                            <option value="1">1 year</option>
+                            <option value="2">2 years</option>
+                            <option value="3">3 years</option>
+                            <option value="4">4 years</option>
+                            <option value="5">5+ years</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Previous Clubs/Academies</label>
+                        <input type="text" class="form-input" name="previousClubsInput" placeholder="Type a club name and press Enter" data-testid="input-previousClubs">
+                        <div class="tags-container" id="previousClubsTags"></div>
+                        <input type="hidden" name="previousClubs" id="previousClubsHidden">
+                    </div>
+
+                    <p class="step-subtitle" style="margin-top: 2rem; margin-bottom: 1rem;">Season Stats</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Appearances</label>
+                            <input type="number" class="form-input" name="seasonAppearances" placeholder="0" min="0" value="0" data-testid="input-appearances">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Starts</label>
+                            <input type="number" class="form-input" name="seasonStarts" placeholder="0" min="0" value="0" data-testid="input-starts">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Goals</label>
+                            <input type="number" class="form-input" name="seasonGoals" placeholder="0" min="0" value="0" data-testid="input-goals">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Assists</label>
+                            <input type="number" class="form-input" name="seasonAssists" placeholder="0" min="0" value="0" data-testid="input-assists">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Notable Achievements</label>
+                        <input type="text" class="form-input" name="achievementsInput" placeholder="e.g., ODP, state team, tournaments" data-testid="input-achievements">
+                        <div class="tags-container" id="achievementsTags"></div>
+                        <input type="hidden" name="notableAchievements" id="notableAchievementsHidden">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">National Team Experience?</label>
+                            <div class="radio-group" id="nationalTeam">
+                                <label class="radio-item"><input type="radio" name="hasNationalTeamExperience" value="true"><span class="radio-label">Yes</span></label>
+                                <label class="radio-item"><input type="radio" name="hasNationalTeamExperience" value="false" checked><span class="radio-label">No</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Pro Academy Experience?</label>
+                            <div class="radio-group" id="proAcademy">
+                                <label class="radio-item"><input type="radio" name="hasProAcademyExperience" value="true"><span class="radio-label">Yes</span></label>
+                                <label class="radio-item"><input type="radio" name="hasProAcademyExperience" value="false" checked><span class="radio-label">No</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-4">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-4">Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Aspirations & Context -->
+            <div class="step" data-step="5">
+                <div class="form-card">
+                    <h2 class="step-title">Your Goals</h2>
+                    <p class="step-subtitle">Where do you want your career to go?</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Main Goals <span class="required">*</span></label>
+                        <div class="checkbox-group" id="mainGoals" data-testid="checkbox-mainGoals">
+                            <label class="checkbox-item"><input type="checkbox" value="Play college soccer"><span class="checkbox-label">Play college soccer</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Train/compete abroad"><span class="checkbox-label">Train/compete abroad</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Long-term pro ambitions"><span class="checkbox-label">Long-term pro ambitions</span></label>
+                            <label class="checkbox-item"><input type="checkbox" value="Improve within current youth level"><span class="checkbox-label">Improve at current level</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Preferred Future Region <span class="required">*</span></label>
+                        <div class="radio-group" id="preferredRegion" data-testid="radio-preferredRegion">
+                            <label class="radio-item"><input type="radio" name="preferredRegion" value="USA only"><span class="radio-label">USA only</span></label>
+                            <label class="radio-item"><input type="radio" name="preferredRegion" value="USA & Europe"><span class="radio-label">USA & Europe</span></label>
+                            <label class="radio-item"><input type="radio" name="preferredRegion" value="Europe preferred"><span class="radio-label">Europe preferred</span></label>
+                            <label class="radio-item"><input type="radio" name="preferredRegion" value="Open"><span class="radio-label">Open to all</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">When are you ready for a next step? <span class="required">*</span></label>
+                        <div class="radio-group" id="readinessTimeline" data-testid="radio-readiness">
+                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="6-12 months"><span class="radio-label">6-12 months</span></label>
+                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="1-2 years"><span class="radio-label">1-2 years</span></label>
+                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="2+ years"><span class="radio-label">2+ years</span></label>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-5">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-5">Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Media & Contact -->
+            <div class="step" data-step="6">
+                <div class="form-card">
+                    <h2 class="step-title">Media & Contact</h2>
+                    <p class="step-subtitle">Share your highlight video</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Highlight Video Link <span class="required">*</span></label>
+                        <input type="url" class="form-input" name="highlightVideoUrl" placeholder="https://youtube.com/watch?v=..." required data-testid="input-highlightVideo">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Game Links (optional)</label>
+                        <input type="text" class="form-input" name="gameLinksInput" placeholder="Paste a link and press Enter" data-testid="input-gameLinks">
+                        <div class="tags-container" id="gameLinksTags"></div>
+                        <input type="hidden" name="fullGameLinks" id="fullGameLinksHidden">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-item" style="padding: 1rem;">
+                            <input type="checkbox" name="consentToContact" checked>
+                            <span class="checkbox-label">I consent to be contacted by Warubi and its partners about my evaluation results and opportunities.</span>
+                        </label>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-6">Back</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" data-testid="btn-submit">Get My Evaluation</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Loading Spinner -->
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <!-- Result Page -->
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h2 class="result-title">Your Evaluation</h2>
+            </div>
+
+            <div class="score-circle">
+                <span class="score-value" id="resultScore">--</span>
+            </div>
+
+            <div class="result-bucket" id="resultBucket">Bucket --</div>
+            <div class="result-rating" id="resultRating">--</div>
+
+            <div class="result-tags" id="resultTags"></div>
+
+            <div class="result-summary" id="resultSummary"></div>
+
+            <p class="result-explanation">
+                This is an initial, automated evaluation based on the information you submitted. 
+                Use this as a starting point to understand how your current profile looks on paper. 
+                Coaches and scouts always look beyond numbers, but this helps you benchmark your progress.
+            </p>
+
+            <a href="#" class="cta-button" id="ctaButton" data-testid="btn-create-account">
+                Create Your Free Warubi Account
             </a>
 
-            <a href="#pro" class="pathway-card" data-testid="card-pathway-pro">
-                <div class="pathway-icon">⭐</div>
-                <h3 class="pathway-title">Pro Pathway</h3>
-                <div class="pathway-subtitle">Professional Representation</div>
-                <p class="pathway-description">Long-term career management for standout talent. Scouting, trials, and contracts through our licensed agency network.</p>
-                <div class="pathway-partners">Partners: PM Sportmanagement, Karl M. Herzog</div>
-                <div class="pathway-arrow">→</div>
-            </a>
-
-            <a href="#coaching" class="pathway-card" data-testid="card-pathway-coaching">
-                <div class="pathway-icon">📋</div>
-                <h3 class="pathway-title">Coaching Pathway</h3>
-                <div class="pathway-subtitle">UEFA B & C Licenses</div>
-                <p class="pathway-description">Official DFB-UEFA coaching courses taught in English. Online preparation plus in-person certification in Germany.</p>
-                <div class="pathway-partners">Partner: Thuringia FA (TFV)</div>
-                <div class="pathway-arrow">→</div>
+            <a href="/ecosystem.html" class="ecosystem-link" data-testid="link-ecosystem">
+                Explore Warubi Sports Ecosystem →
             </a>
         </div>
-    </section>
 
-    <section class="connection-section">
-        <div class="hub-visual">
-            <span class="hub-text">All Pathways Connected Through Warubi</span>
-        </div>
-        <p class="connection-text">
-            Youth players can progress from camps to ITP, then to college via AthletesUSA or to pro representation. Coaches can earn licenses and observe Bundesliga environments. Every pathway leads somewhere.
-        </p>
-    </section>
+        <footer class="footer">
+            <p>&copy; 2025 Warubi Sports. <a href="/ecosystem.html">Explore Pathways</a></p>
+        </footer>
+    </div>
 
-    <footer class="footer">
-        <p class="footer-text">&copy; 2025 Warubi Sports. Global Soccer Management.</p>
-        <div class="footer-links">
-            <a href="https://warubisports.com" target="_blank" data-testid="link-website">Website</a>
-            <a href="#contact" data-testid="link-contact">Contact</a>
-        </div>
-    </footer>
+    <script>
+        // Form state
+        let currentStep = 1;
+        const totalSteps = 6;
+        const formData = {};
+        
+        // Tags storage
+        const tagsData = {
+            primaryStrengths: [],
+            areasToImprove: [],
+            previousClubs: [],
+            notableAchievements: [],
+            fullGameLinks: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initCheckboxes();
+            initRadios();
+            initTagInputs();
+            initLeagueToggle();
+            initFormSubmit();
+        });
+
+        // Checkbox handling
+        function initCheckboxes() {
+            document.querySelectorAll('.checkbox-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'INPUT') {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    this.classList.toggle('selected', this.querySelector('input').checked);
+                });
+            });
+        }
+
+        // Radio handling
+        function initRadios() {
+            document.querySelectorAll('.radio-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'INPUT') {
+                        const radio = this.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                    }
+                    const group = this.closest('.radio-group');
+                    group.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        }
+
+        // Tag inputs
+        function initTagInputs() {
+            const tagConfigs = [
+                { input: 'strengthsInput', container: 'strengthsTags', hidden: 'primaryStrengthsHidden', key: 'primaryStrengths' },
+                { input: 'improvementsInput', container: 'improvementsTags', hidden: 'areasToImproveHidden', key: 'areasToImprove' },
+                { input: 'previousClubsInput', container: 'previousClubsTags', hidden: 'previousClubsHidden', key: 'previousClubs' },
+                { input: 'achievementsInput', container: 'achievementsTags', hidden: 'notableAchievementsHidden', key: 'notableAchievements' },
+                { input: 'gameLinksInput', container: 'gameLinksTags', hidden: 'fullGameLinksHidden', key: 'fullGameLinks' }
+            ];
+
+            tagConfigs.forEach(config => {
+                const input = document.querySelector(`input[name="${config.input}"]`);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = this.value.trim();
+                            if (value && !tagsData[config.key].includes(value)) {
+                                tagsData[config.key].push(value);
+                                renderTags(config.container, config.key);
+                                document.getElementById(config.hidden).value = JSON.stringify(tagsData[config.key]);
+                            }
+                            this.value = '';
+                        }
+                    });
+                }
+            });
+        }
+
+        function renderTags(containerId, key) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = tagsData[key].map((tag, index) => 
+                `<span class="tag">${tag}<span class="tag-remove" onclick="removeTag('${key}', ${index}, '${containerId}')">&times;</span></span>`
+            ).join('');
+        }
+
+        function removeTag(key, index, containerId) {
+            tagsData[key].splice(index, 1);
+            renderTags(containerId, key);
+            const hiddenId = key === 'primaryStrengths' ? 'primaryStrengthsHidden' :
+                            key === 'areasToImprove' ? 'areasToImproveHidden' :
+                            key === 'previousClubs' ? 'previousClubsHidden' :
+                            key === 'notableAchievements' ? 'notableAchievementsHidden' : 'fullGameLinksHidden';
+            document.getElementById(hiddenId).value = JSON.stringify(tagsData[key]);
+        }
+
+        // League toggle
+        function initLeagueToggle() {
+            const leagueSelect = document.querySelector('select[name="currentLeague"]');
+            if (leagueSelect) {
+                leagueSelect.addEventListener('change', function() {
+                    const otherGroup = document.getElementById('otherLeagueGroup');
+                    otherGroup.style.display = this.value === 'Other' ? 'block' : 'none';
+                });
+            }
+        }
+
+        // Navigation
+        function nextStep() {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+                    currentStep++;
+                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+                    updateProgress();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+                currentStep--;
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+        }
+
+        // Validation
+        function validateStep(step) {
+            const currentStepEl = document.querySelector(`.step[data-step="${step}"]`);
+            let valid = true;
+
+            // Check required inputs
+            currentStepEl.querySelectorAll('input[required], select[required]').forEach(input => {
+                if (!input.value) {
+                    input.classList.add('error');
+                    valid = false;
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            // Check required checkboxes (at least one selected)
+            if (step === 1) {
+                const primaryPositions = currentStepEl.querySelectorAll('#primaryPositions input:checked');
+                if (primaryPositions.length === 0) {
+                    valid = false;
+                    alert('Please select at least one primary position');
+                }
+                const dominantFoot = currentStepEl.querySelector('input[name="dominantFoot"]:checked');
+                if (!dominantFoot) {
+                    valid = false;
+                    alert('Please select your dominant foot');
+                }
+            }
+
+            if (step === 5) {
+                const mainGoals = currentStepEl.querySelectorAll('#mainGoals input:checked');
+                if (mainGoals.length === 0) {
+                    valid = false;
+                    alert('Please select at least one goal');
+                }
+                const preferredRegion = currentStepEl.querySelector('input[name="preferredRegion"]:checked');
+                if (!preferredRegion) {
+                    valid = false;
+                    alert('Please select your preferred region');
+                }
+                const readiness = currentStepEl.querySelector('input[name="readinessTimeline"]:checked');
+                if (!readiness) {
+                    valid = false;
+                    alert('Please select your readiness timeline');
+                }
+            }
+
+            return valid;
+        }
+
+        // Form submission
+        function initFormSubmit() {
+            document.getElementById('evaluationForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!validateStep(6)) return;
+
+                const form = e.target;
+                const submitBtn = document.getElementById('submitBtn');
+                const spinner = document.getElementById('loadingSpinner');
+                
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                spinner.style.display = 'block';
+
+                // Collect form data
+                const data = {
+                    fullName: form.fullName.value,
+                    email: form.email.value,
+                    yearOfBirth: parseInt(form.yearOfBirth.value),
+                    gradYear: form.gradYear.value ? parseInt(form.gradYear.value) : null,
+                    primaryPositions: Array.from(document.querySelectorAll('#primaryPositions input:checked')).map(i => i.value),
+                    secondaryPositions: Array.from(document.querySelectorAll('#secondaryPositions input:checked')).map(i => i.value),
+                    dominantFoot: form.querySelector('input[name="dominantFoot"]:checked')?.value,
+                    currentClub: form.currentClub.value,
+                    currentLeague: form.currentLeague.value,
+                    otherLeague: form.otherLeague?.value || null,
+                    ageGroup: form.ageGroup.value,
+                    stateRegion: form.stateRegion.value,
+                    height: parseInt(form.height.value),
+                    weight: parseInt(form.weight.value),
+                    primaryStrengths: tagsData.primaryStrengths,
+                    areasToImprove: tagsData.areasToImprove,
+                    yearsAtCurrentLevel: parseInt(form.yearsAtCurrentLevel.value),
+                    previousClubs: tagsData.previousClubs,
+                    seasonAppearances: parseInt(form.seasonAppearances.value) || 0,
+                    seasonStarts: parseInt(form.seasonStarts.value) || 0,
+                    seasonGoals: parseInt(form.seasonGoals.value) || 0,
+                    seasonAssists: parseInt(form.seasonAssists.value) || 0,
+                    notableAchievements: tagsData.notableAchievements,
+                    hasNationalTeamExperience: form.querySelector('input[name="hasNationalTeamExperience"]:checked')?.value === 'true',
+                    hasProAcademyExperience: form.querySelector('input[name="hasProAcademyExperience"]:checked')?.value === 'true',
+                    mainGoals: Array.from(document.querySelectorAll('#mainGoals input:checked')).map(i => i.value),
+                    preferredRegion: form.querySelector('input[name="preferredRegion"]:checked')?.value,
+                    readinessTimeline: form.querySelector('input[name="readinessTimeline"]:checked')?.value,
+                    highlightVideoUrl: form.highlightVideoUrl.value,
+                    fullGameLinks: tagsData.fullGameLinks,
+                    consentToContact: form.consentToContact.checked
+                };
+
+                try {
+                    const response = await fetch('/public/evaluations', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showResult(result.evaluation);
+                    } else {
+                        throw new Error(result.message || 'Submission failed');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Something went wrong. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Get My Evaluation';
+                } finally {
+                    spinner.style.display = 'none';
+                }
+            });
+        }
+
+        function showResult(evaluation) {
+            // Hide form elements
+            document.getElementById('evaluationForm').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+
+            // Show result
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.classList.add('active');
+
+            // Populate result data
+            document.getElementById('resultScore').textContent = evaluation.score;
+            document.getElementById('resultBucket').textContent = 'Bucket ' + evaluation.bucket;
+            document.getElementById('resultRating').textContent = evaluation.rating;
+
+            // Tags
+            const tagsContainer = document.getElementById('resultTags');
+            tagsContainer.innerHTML = evaluation.tags.map(tag => 
+                `<span class="result-tag">${tag}</span>`
+            ).join('');
+
+            // Summary
+            const summary = evaluation.summary;
+            const summaryHtml = `
+                <div class="summary-row">
+                    <span class="summary-label">Name</span>
+                    <span class="summary-value">${summary.fullName}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Position</span>
+                    <span class="summary-value">${summary.position}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">League</span>
+                    <span class="summary-value">${summary.league}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Age Group</span>
+                    <span class="summary-value">${summary.ageGroup}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Club</span>
+                    <span class="summary-value">${summary.club}</span>
+                </div>
+            `;
+            document.getElementById('resultSummary').innerHTML = summaryHtml;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>

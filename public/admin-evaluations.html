@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warubi Staff - Player Evaluations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f0f0f;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #f39c12;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.375rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: #f39c12;
+        }
+
+        .filter-select option {
+            background: #1a1a1a;
+        }
+
+        .filters-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .btn-filter {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-filter-primary {
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            color: white;
+        }
+
+        .btn-filter-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f39c12;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        /* Table */
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .evaluations-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .evaluations-table th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .evaluations-table td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .evaluations-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .player-email {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .score-a { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .score-b { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .score-c { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .score-d { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        .bucket-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bucket-a { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .bucket-b { background: rgba(52, 152, 219, 0.15); color: #3498db; border: 1px solid rgba(52, 152, 219, 0.3); }
+        .bucket-c { background: rgba(241, 196, 15, 0.15); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.3); }
+        .bucket-d { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+
+        .tags-cell {
+            max-width: 200px;
+        }
+
+        .tag-small {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            margin: 0.125rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-radius: 0.375rem;
+            color: #f39c12;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background: rgba(243, 156, 18, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #f39c12;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a1a;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section-title {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+            }
+
+            .stat-card {
+                flex: 1 1 calc(50% - 0.5rem);
+            }
+
+            .evaluations-table {
+                font-size: 0.8rem;
+            }
+
+            .evaluations-table th,
+            .evaluations-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-text">WARUBI STAFF</div>
+            <nav class="nav-links">
+                <a href="/" data-testid="link-home">Evaluation Form</a>
+                <a href="/ecosystem.html" data-testid="link-ecosystem">Ecosystem</a>
+            </nav>
+        </header>
+
+        <h1 class="page-title">Player Evaluations</h1>
+        <p class="page-subtitle">Review and filter all player evaluation submissions</p>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-title">Filters</div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>League</label>
+                    <select class="filter-select" id="filterLeague" data-testid="filter-league">
+                        <option value="">All Leagues</option>
+                        <option value="MLS NEXT">MLS NEXT</option>
+                        <option value="ECNL">ECNL</option>
+                        <option value="GA">GA</option>
+                        <option value="USL Academy">USL Academy</option>
+                        <option value="E64">E64</option>
+                        <option value="PPL">PPL</option>
+                        <option value="NPL">NPL</option>
+                        <option value="UPSL Youth">UPSL Youth</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Age Group</label>
+                    <select class="filter-select" id="filterAgeGroup" data-testid="filter-ageGroup">
+                        <option value="">All Age Groups</option>
+                        <option value="U13">U13</option>
+                        <option value="U14">U14</option>
+                        <option value="U15">U15</option>
+                        <option value="U16">U16</option>
+                        <option value="U17">U17</option>
+                        <option value="U18">U18</option>
+                        <option value="U19">U19</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Bucket</label>
+                    <select class="filter-select" id="filterBucket" data-testid="filter-bucket">
+                        <option value="">All Buckets</option>
+                        <option value="A">Bucket A</option>
+                        <option value="B">Bucket B</option>
+                        <option value="C">Bucket C</option>
+                        <option value="D">Bucket D</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Min Score</label>
+                    <input type="number" class="filter-input" id="filterMinScore" placeholder="0" min="0" max="100" data-testid="filter-minScore">
+                </div>
+                <div class="filter-group">
+                    <label>Max Score</label>
+                    <input type="number" class="filter-input" id="filterMaxScore" placeholder="100" min="0" max="100" data-testid="filter-maxScore">
+                </div>
+                <div class="filter-group">
+                    <label>State/Region</label>
+                    <input type="text" class="filter-input" id="filterRegion" placeholder="e.g., California" data-testid="filter-region">
+                </div>
+            </div>
+            <div class="filters-actions">
+                <button class="btn-filter btn-filter-primary" onclick="applyFilters()" data-testid="btn-apply-filters">Apply Filters</button>
+                <button class="btn-filter btn-filter-secondary" onclick="clearFilters()" data-testid="btn-clear-filters">Clear</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">--</div>
+                <div class="stat-label">Total Evaluations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bucketACount">--</div>
+                <div class="stat-label">Bucket A</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bucketBCount">--</div>
+                <div class="stat-label">Bucket B</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgScore">--</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <div class="loading" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading evaluations...</p>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📋</div>
+                <p>No evaluations found. Adjust your filters or wait for new submissions.</p>
+            </div>
+
+            <table class="evaluations-table" id="evaluationsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>League</th>
+                        <th>Age Group</th>
+                        <th>Score</th>
+                        <th>Bucket</th>
+                        <th>Rating</th>
+                        <th>Tags</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Evaluation Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let allEvaluations = [];
+
+        document.addEventListener('DOMContentLoaded', loadEvaluations);
+
+        async function loadEvaluations() {
+            showLoading();
+            try {
+                const response = await fetch('/public/evaluations/all');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allEvaluations = data.evaluations || [];
+                    renderTable(allEvaluations);
+                    updateStats(allEvaluations);
+                } else {
+                    showEmpty();
+                }
+            } catch (error) {
+                console.error('Error loading evaluations:', error);
+                showEmpty();
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('evaluationsTable').style.display = 'none';
+        }
+
+        function showEmpty() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('evaluationsTable').style.display = 'none';
+        }
+
+        function showTable() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('evaluationsTable').style.display = 'table';
+        }
+
+        function renderTable(evaluations) {
+            if (evaluations.length === 0) {
+                showEmpty();
+                return;
+            }
+
+            showTable();
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = evaluations.map(e => {
+                const tags = e.tags || [];
+                const bucketClass = `bucket-${e.bucket.toLowerCase()}`;
+                const scoreClass = `score-${e.bucket.toLowerCase()}`;
+                const date = new Date(e.createdAt).toLocaleDateString();
+
+                return `
+                    <tr data-id="${e.id}">
+                        <td>
+                            <div class="player-name">${e.fullName}</div>
+                            <div class="player-email">${e.email}</div>
+                        </td>
+                        <td>${e.currentLeague}</td>
+                        <td>${e.ageGroup}</td>
+                        <td><span class="score-badge ${scoreClass}">${e.score}</span></td>
+                        <td><span class="bucket-badge ${bucketClass}">Bucket ${e.bucket}</span></td>
+                        <td>${e.rating}</td>
+                        <td class="tags-cell">
+                            ${tags.slice(0, 3).map(t => `<span class="tag-small">${t}</span>`).join('')}
+                            ${tags.length > 3 ? `<span class="tag-small">+${tags.length - 3}</span>` : ''}
+                        </td>
+                        <td>${date}</td>
+                        <td><button class="view-btn" onclick="viewDetails(${e.id})">View</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats(evaluations) {
+            const total = evaluations.length;
+            const bucketA = evaluations.filter(e => e.bucket === 'A').length;
+            const bucketB = evaluations.filter(e => e.bucket === 'B').length;
+            const avgScore = total > 0 
+                ? Math.round(evaluations.reduce((sum, e) => sum + e.score, 0) / total) 
+                : 0;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('bucketACount').textContent = bucketA;
+            document.getElementById('bucketBCount').textContent = bucketB;
+            document.getElementById('avgScore').textContent = avgScore;
+        }
+
+        function applyFilters() {
+            const league = document.getElementById('filterLeague').value;
+            const ageGroup = document.getElementById('filterAgeGroup').value;
+            const bucket = document.getElementById('filterBucket').value;
+            const minScore = parseInt(document.getElementById('filterMinScore').value) || 0;
+            const maxScore = parseInt(document.getElementById('filterMaxScore').value) || 100;
+            const region = document.getElementById('filterRegion').value.toLowerCase();
+
+            const filtered = allEvaluations.filter(e => {
+                if (league && e.currentLeague !== league) return false;
+                if (ageGroup && e.ageGroup !== ageGroup) return false;
+                if (bucket && e.bucket !== bucket) return false;
+                if (e.score < minScore || e.score > maxScore) return false;
+                if (region && !e.stateRegion.toLowerCase().includes(region)) return false;
+                return true;
+            });
+
+            renderTable(filtered);
+            updateStats(filtered);
+        }
+
+        function clearFilters() {
+            document.getElementById('filterLeague').value = '';
+            document.getElementById('filterAgeGroup').value = '';
+            document.getElementById('filterBucket').value = '';
+            document.getElementById('filterMinScore').value = '';
+            document.getElementById('filterMaxScore').value = '';
+            document.getElementById('filterRegion').value = '';
+            renderTable(allEvaluations);
+            updateStats(allEvaluations);
+        }
+
+        async function viewDetails(id) {
+            try {
+                const response = await fetch(`/public/evaluations/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const e = data.evaluation;
+                    document.getElementById('modalTitle').textContent = e.summary.fullName;
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Evaluation Results</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Score</span>
+                                <span class="detail-value">${e.score}/100</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Bucket</span>
+                                <span class="detail-value">Bucket ${e.bucket}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Rating</span>
+                                <span class="detail-value">${e.rating}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Tags</span>
+                                <span class="detail-value">${e.tags.join(', ')}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-section-title">Player Info</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value">${e.summary.email}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Position</span>
+                                <span class="detail-value">${e.summary.position}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Club</span>
+                                <span class="detail-value">${e.summary.club}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">League</span>
+                                <span class="detail-value">${e.summary.league}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Age Group</span>
+                                <span class="detail-value">${e.summary.ageGroup}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Region</span>
+                                <span class="detail-value">${e.summary.stateRegion}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-section-title">Season Stats</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Appearances</span>
+                                <span class="detail-value">${e.summary.stats.appearances}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Starts</span>
+                                <span class="detail-value">${e.summary.stats.starts}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Goals</span>
+                                <span class="detail-value">${e.summary.stats.goals}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Assists</span>
+                                <span class="detail-value">${e.summary.stats.assists}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-section-title">Experience</div>
+                            <div class="detail-row">
+                                <span class="detail-label">National Team</span>
+                                <span class="detail-value">${e.summary.hasNationalTeamExperience ? 'Yes' : 'No'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Pro Academy</span>
+                                <span class="detail-value">${e.summary.hasProAcademyExperience ? 'Yes' : 'No'}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-section-title">Submitted</div>
+                            <div class="detail-row">
+                                <span class="detail-label">Date</span>
+                                <span class="detail-value">${new Date(e.createdAt).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('modalOverlay').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error fetching details:', error);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

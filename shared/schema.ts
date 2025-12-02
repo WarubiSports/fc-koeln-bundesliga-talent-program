@@ -262,3 +262,70 @@ export const notifications = pgTable("notifications", {
 
 export type Session = typeof sessions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+
+// Player Evaluations table - Warubi Hub player evaluation intake and scoring
+export const playerEvaluations = pgTable("player_evaluations", {
+  id: serial("id").primaryKey(),
+  appId: varchar("app_id").default('warubi-hub'), // Multi-tenant
+  
+  // Step 1: Basic Info
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  yearOfBirth: integer("year_of_birth").notNull(),
+  gradYear: integer("grad_year"),
+  primaryPositions: text("primary_positions").notNull(), // JSON array
+  secondaryPositions: text("secondary_positions"), // JSON array
+  dominantFoot: varchar("dominant_foot").notNull(), // 'left', 'right', 'both'
+  
+  // Step 2: Club & League Context
+  currentClub: text("current_club").notNull(),
+  currentLeague: varchar("current_league").notNull(), // MLS NEXT, ECNL, PPL, GA, etc.
+  otherLeague: text("other_league"), // If "Other" is selected
+  ageGroup: varchar("age_group").notNull(), // U13-U19
+  stateRegion: varchar("state_region").notNull(),
+  
+  // Step 3: Playing Profile
+  height: integer("height").notNull(), // in inches or cm
+  weight: integer("weight").notNull(), // in lbs or kg
+  primaryStrengths: text("primary_strengths"), // JSON array of tags/text
+  areasToImprove: text("areas_to_improve"), // JSON array of tags/text
+  
+  // Step 4: Experience & Stats
+  yearsAtCurrentLevel: integer("years_at_current_level").notNull(),
+  previousClubs: text("previous_clubs"), // JSON array
+  seasonAppearances: integer("season_appearances").default(0),
+  seasonStarts: integer("season_starts").default(0),
+  seasonGoals: integer("season_goals").default(0),
+  seasonAssists: integer("season_assists").default(0),
+  notableAchievements: text("notable_achievements"), // JSON array
+  hasNationalTeamExperience: boolean("has_national_team_experience").default(false),
+  nationalTeamDetails: text("national_team_details"),
+  hasProAcademyExperience: boolean("has_pro_academy_experience").default(false),
+  proAcademyDetails: text("pro_academy_details"),
+  
+  // Step 5: Aspirations & Context
+  mainGoals: text("main_goals").notNull(), // JSON array: college, abroad, pro, improve
+  preferredRegion: varchar("preferred_region").notNull(), // USA only, USA & Europe, Europe preferred, Open
+  readinessTimeline: varchar("readiness_timeline").notNull(), // 6-12 months, 1-2 years, 2+ years
+  
+  // Step 6: Media & Contact
+  highlightVideoUrl: text("highlight_video_url").notNull(),
+  fullGameLinks: text("full_game_links"), // JSON array
+  consentToContact: boolean("consent_to_contact").notNull().default(true),
+  
+  // Computed Outputs from Scoring Engine
+  score: integer("score"), // Numeric score (0-100)
+  bucket: varchar("bucket"), // A, B, C, D
+  rating: varchar("rating"), // "Advanced Level", "Competitive Level", etc.
+  tags: text("tags"), // JSON array of generated tags
+  
+  // Metadata
+  status: varchar("status").notNull().default('submitted'), // submitted, reviewed, archived
+  reviewedBy: varchar("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlayerEvaluation = typeof playerEvaluations.$inferSelect;
+export type InsertPlayerEvaluation = typeof playerEvaluations.$inferInsert;

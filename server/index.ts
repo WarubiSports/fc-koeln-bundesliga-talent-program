@@ -30,6 +30,10 @@ app.get('/healthz', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+// Public evaluation routes (no auth required for player intake)
+import evaluationsRoutes from './routes/evaluations.js';
+app.use('/public', evaluationsRoutes);
+
 app.get('/healthz/ready', async (_req, res) => {
   try {
     // Check database connectivity

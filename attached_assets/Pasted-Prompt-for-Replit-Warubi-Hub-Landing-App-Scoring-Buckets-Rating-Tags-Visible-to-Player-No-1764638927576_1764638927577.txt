@@ -1,0 +1,153 @@
+Prompt for Replit — Warubi Hub Landing App
+Scoring + Buckets + Rating + Tags (Visible to Player), No Program Names
+You are my coding assistant inside a Replit project.
+I’ve uploaded college-soccer-transfer-engine.zip as a structural reference.
+I want to repurpose it into a Warubi Hub landing app for American club players (MLS NEXT, ECNL, PPL, GA, USL Academy, etc.) where:
+Players go through an evaluation intake flow
+The system computes Score, Bucket, Rating, and Tags
+These are shown to the player
+But we do not mention specific Warubi programs or pathways (no ITP, AthletesUSA, Futures, “pro rep”, etc.)
+The final CTA is to join a free Warubi platform account
+Think: neutral evaluation product that leads into a free player platform.
+1. Evaluation Flow (Multi-step Form)
+Use the existing transfer-engine project for layout/flow, but replace its fields with the ones below.
+Step 1 – Basic Info
+Full name
+Email (player or parent)
+Year of birth / grad year
+Primary position(s)
+Secondary position(s)
+Dominant foot
+Step 2 – Club & League Context
+Current club
+Current league (dropdown):
+MLS NEXT
+ECNL
+PPL
+GA
+USL Academy
+E64
+NPL
+UPSL Youth
+Other (free text)
+Age group (U13–U19)
+State/Region
+Step 3 – Playing Profile
+(Updated: no self-evals, physical data required.)
+Height (required)
+Weight (required)
+Primary strengths (text or tags)
+Areas to improve (text or tags)
+Step 4 – Experience & Stats
+(Include match stats.)
+Years at current level
+Previous clubs/academies
+Season stats:
+Appearances
+Starts
+Goals
+Assists
+Notable achievements (ODP, state/regional/national teams, major tournaments, etc.)
+Any national team or pro academy experience (yes/no + details)
+Step 5 – Aspirations & Context
+Main goals (multi-select):
+Play college soccer
+Train/compete abroad
+Long-term pro ambitions
+Improve within current youth level
+Preferred “future region”:
+USA only
+USA & Europe
+Europe preferred
+Open
+When they feel ready for a next step:
+6–12 months
+1–2 years
+2+ years
+Step 6 – Media & Contact
+Highlight video link (required)
+Full game links (optional)
+Consent checkbox to be contacted
+Persist all data in the backend using the project’s stack (TypeScript + whatever ORM is in place).
+2. Internal Evaluation Engine (Now Also User-Facing)
+Re-use the idea of the “engine” from college-soccer-transfer-engine, but adapt:
+A. Score (numeric)
+Compute a numeric score based on inputs such as:
+League level (MLS NEXT > ECNL > others)
+Age vs. level
+Stats (apps/starts/goals/assists)
+Achievements
+Aspirations (e.g., pro ambitions at older ages might impact score)
+You don’t need a perfect model — just a clean, configurable scoring function.
+B. Bucket (segment / tier label)
+Map the score into named buckets, for example:
+Bucket A: Advanced competitive profile
+Bucket B: Strong developing profile
+Bucket C: Solid foundational profile
+Bucket D: Early-stage / emerging profile
+C. Rating (simple display label)
+A short, user-friendly rating string (1–3 words), e.g.:
+“Advanced Level”
+“Competitive Level”
+“Developing Level”
+“Emerging Level”
+D. Tags (generated labels)
+Generate a set of short tags from the data & result, such as:
+“Attacking Midfielder”
+“High Output Goal Scorer”
+“Two-Way Fullback”
+“Physically Strong”
+“Technical Profile”
+“Early Stage Prospect”
+Tags are descriptive, not promises.
+3. Result Page (Visible to Player)
+On submission, the user should see a Profile Summary with:
+Their Score (numeric or scaled, e.g. /100)
+Their Bucket (Tier/Group label)
+Their Rating (short phrase)
+Key Tags (chips/pills)
+Plus:
+A recap of key inputs (position, league, stats, etc.)
+Some neutral, encouraging explanatory text, e.g.:
+“This is an initial, automated evaluation based on the information you submitted.”
+“Use this as a starting point to understand how your current profile looks on paper.”
+“Coaches and scouts always look beyond numbers, but this helps you benchmark things.”
+Important:
+Do not mention specific Warubi programs, offers, or outcomes.
+No talk of “you should join X program”, “you qualify for Y”, etc.
+CTA
+After the summary and explanation, show a primary button:
+“Create your free Warubi player account”
+Clicking this should lead to signup/login for a free Warubi platform (even if it’s only a stub for now).
+4. Admin / Staff View
+Create an internal view where Warubi staff can:
+See all submissions
+Filter by:
+League
+Age group
+Region
+Score range
+Bucket
+View:
+Raw intake data
+Score
+Bucket
+Rating
+Tags
+This allows internal routing into the larger ecosystem later (but don’t build that logic yet).
+5. Technical Notes
+Reuse:
+The multi-step wizard from college-soccer-transfer-engine
+Form validation patterns
+Result-page layout ideas
+Replace:
+Transfer-portal-specific copy & fields
+College-transfer–centric scoring
+With:
+US youth club evaluation fields listed above
+New scoring/bucket logic
+Neutral, program-free summary + CTA to free platform
+The final UX should feel like:
+A professional, transparent evaluation tool for MLS NEXT / ECNL / PPL players that shows them a Score, Bucket, Rating, and Tags — then invites them to create a free Warubi account.
+First, design the data model, scoring function structure, and React component layout.
+Then, when asked, implement the code.

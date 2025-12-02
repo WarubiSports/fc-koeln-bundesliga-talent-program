@@ -1,8 +1,18 @@
-# FC Köln Management System
+# Warubi Multi-Tenant Sports Platform
 
 ## Overview
 
-The "1.FC Köln Bundesliga Talent Program" is a full-stack web application designed to manage FC Köln's international talent program. It offers comprehensive features for player management, facility coordination, and administrative tasks, all branded with official FC Köln identity. The system aims to optimize operations and enhance the development of young talent, with a business vision to streamline processes, improve talent nurturing, and establish a leading sports talent management platform. The platform has achieved production-grade readiness with robust testing and observability features.
+The Warubi platform is a multi-tenant web application hosting multiple apps for the Warubi Sports ecosystem. The platform now features:
+
+1. **Warubi Hub Player Evaluation** (Landing Page `/`): A multi-step evaluation wizard for American club players (MLS NEXT, ECNL, PPL, GA, etc.) that computes Score, Bucket, Rating, and Tags visible to the player.
+
+2. **Warubi Ecosystem** (`/ecosystem.html`): The original showcase page connecting players and coaches to elite pathways (Bundesliga development, college scholarships, pro representation, coaching licenses).
+
+3. **FC Köln ITP Brochures** (`/itp-men.html`, `/itp-women.html`): Scrollable brochure pages with embedded YouTube videos for the International Talent Program.
+
+4. **FC Köln Management System**: Full-stack app for managing FC Köln's international talent program with player management, facility coordination, and administrative tasks.
+
+5. **Admin Evaluations** (`/admin-evaluations.html`): Staff view for filtering and reviewing player evaluation submissions.
 
 ## User Preferences
 
