@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db.js';
 import { analyzePlayerExposure, AnalysisResult } from '../services/exposureEngine.js';
+import { safeValidateEvaluationInput } from '../validation/evaluationSchema.js';
+import { sanitizePlayerProfile } from '../utils/sanitize.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -109,51 +112,59 @@ router.get('/evaluations/all', async (_req: Request, res: Response) => {
 
 router.post('/evaluations', async (req: Request, res: Response) => {
   try {
-    const data = req.body;
+    const rawData = req.body;
     
-    const requiredFields = ['fullName', 'email', 'gradYear', 'position', 'stateRegion', 'gpa', 'seasons'];
+    // Normalize data types before validation
+    const normalizedData = {
+      ...rawData,
+      gradYear: typeof rawData.gradYear === 'string' ? parseInt(rawData.gradYear) : rawData.gradYear,
+      gpa: typeof rawData.gpa === 'string' ? parseFloat(rawData.gpa) : rawData.gpa,
+      coachesContacted: typeof rawData.coachesContacted === 'string' ? parseInt(rawData.coachesContacted) : (rawData.coachesContacted || 0),
+      responsesReceived: typeof rawData.responsesReceived === 'string' ? parseInt(rawData.responsesReceived) : (rawData.responsesReceived || 0),
+      hasVideoLink: rawData.hasVideoLink === true || rawData.hasVideoLink === 'true',
+      seasons: Array.isArray(rawData.seasons) ? rawData.seasons : JSON.parse(rawData.seasons || '[]'),
+      events: Array.isArray(rawData.events) ? rawData.events : JSON.parse(rawData.events || '[]')
+    };
     
-    for (const field of requiredFields) {
-      if (data[field] === undefined || data[field] === null || data[field] === '') {
-        return res.status(400).json({
-          success: false,
-          message: `Missing required field: ${field}`
-        });
-      }
-    }
-
-    const seasons = Array.isArray(data.seasons) ? data.seasons : JSON.parse(data.seasons || '[]');
-    const events = Array.isArray(data.events) ? data.events : JSON.parse(data.events || '[]');
-
-    if (seasons.length === 0) {
+    // Validate input with Zod schema
+    const validation = safeValidateEvaluationInput(normalizedData);
+    
+    if (!validation.success) {
+      logger.warn('Evaluation validation failed', { errors: validation.errors });
       return res.status(400).json({
         success: false,
-        message: 'At least one season is required'
+        message: 'Validation failed',
+        errors: validation.errors
       });
     }
+    
+    const validatedData = validation.data!;
+    
+    // Sanitize user-provided text fields before AI processing
+    const sanitizedProfile = sanitizePlayerProfile({
+      fullName: validatedData.fullName,
+      email: validatedData.email,
+      gradYear: validatedData.gradYear,
+      position: validatedData.position,
+      height: validatedData.height,
+      stateRegion: validatedData.stateRegion,
+      gpa: validatedData.gpa,
+      testScore: validatedData.testScore,
+      seasons: validatedData.seasons,
+      hasVideoLink: validatedData.hasVideoLink,
+      coachesContacted: validatedData.coachesContacted,
+      responsesReceived: validatedData.responsesReceived,
+      events: validatedData.events
+    });
 
-    const playerProfile = {
-      fullName: data.fullName,
-      email: data.email,
-      gradYear: parseInt(data.gradYear),
-      position: data.position,
-      height: data.height || undefined,
-      stateRegion: data.stateRegion,
-      gpa: parseFloat(data.gpa),
-      testScore: data.testScore || undefined,
-      seasons: seasons,
-      hasVideoLink: data.hasVideoLink === true || data.hasVideoLink === 'true',
-      coachesContacted: parseInt(data.coachesContacted) || 0,
-      responsesReceived: parseInt(data.responsesReceived) || 0,
-      events: events
-    };
+    const playerProfile = sanitizedProfile;
 
     let analysisResult: AnalysisResult;
     
     try {
       analysisResult = await analyzePlayerExposure(playerProfile);
     } catch (aiError) {
-      console.error('AI Analysis failed, using fallback:', aiError);
+      logger.error('AI Analysis failed, using fallback', aiError as Error);
       analysisResult = generateFallbackAnalysis(playerProfile);
     }
 
@@ -169,20 +180,20 @@ router.post('/evaluations', async (req: Request, res: Response) => {
       ) RETURNING id`,
       [
         'warubi-hub',
-        data.fullName,
-        data.email,
-        playerProfile.gradYear,
-        data.position,
-        data.height || null,
-        data.stateRegion,
-        playerProfile.gpa,
-        data.testScore || null,
-        JSON.stringify(seasons),
-        playerProfile.hasVideoLink,
-        playerProfile.coachesContacted,
-        playerProfile.responsesReceived,
-        JSON.stringify(events),
-        data.consentToContact !== false,
+        validatedData.fullName,
+        validatedData.email,
+        validatedData.gradYear,
+        validatedData.position,
+        validatedData.height || null,
+        validatedData.stateRegion,
+        validatedData.gpa,
+        validatedData.testScore || null,
+        JSON.stringify(validatedData.seasons),
+        validatedData.hasVideoLink,
+        validatedData.coachesContacted,
+        validatedData.responsesReceived,
+        JSON.stringify(validatedData.events),
+        validatedData.consentToContact,
         JSON.stringify(analysisResult.visibilityScores),
         JSON.stringify(analysisResult.readinessScore),
         JSON.stringify(analysisResult.keyStrengths),
@@ -207,7 +218,7 @@ router.post('/evaluations', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Evaluation submission error:', error);
+    logger.error('Evaluation submission error', error as Error);
     res.status(500).json({
       success: false,
       message: 'Failed to submit evaluation'
