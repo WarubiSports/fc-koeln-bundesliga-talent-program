@@ -17,6 +17,58 @@ const router = express.Router();
 // This contains: { id: 'fckoln', name: '1.FC Köln ITP', origins: [...], rps: 600 }
 
 // ==========================================
+// BRUTE-FORCE PROTECTION
+// ==========================================
+
+// In-memory store for failed login attempts (key: appId:email)
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+function getLoginAttemptKey(appId, email) {
+  return `${appId}:${email.toLowerCase()}`;
+}
+
+function checkLoginAttempts(appId, email) {
+  const key = getLoginAttemptKey(appId, email);
+  const attempts = loginAttempts.get(key);
+  
+  if (!attempts) return { allowed: true, remainingAttempts: MAX_ATTEMPTS };
+  
+  // Check if lockout has expired
+  if (attempts.lockedUntil && Date.now() > attempts.lockedUntil) {
+    loginAttempts.delete(key);
+    return { allowed: true, remainingAttempts: MAX_ATTEMPTS };
+  }
+  
+  if (attempts.lockedUntil) {
+    const remainingSeconds = Math.ceil((attempts.lockedUntil - Date.now()) / 1000);
+    return { allowed: false, lockedFor: remainingSeconds };
+  }
+  
+  return { allowed: true, remainingAttempts: MAX_ATTEMPTS - attempts.count };
+}
+
+function recordFailedLogin(appId, email) {
+  const key = getLoginAttemptKey(appId, email);
+  const attempts = loginAttempts.get(key) || { count: 0, firstAttempt: Date.now() };
+  
+  attempts.count += 1;
+  
+  if (attempts.count >= MAX_ATTEMPTS) {
+    attempts.lockedUntil = Date.now() + LOCKOUT_DURATION;
+  }
+  
+  loginAttempts.set(key, attempts);
+  return attempts.count;
+}
+
+function clearLoginAttempts(appId, email) {
+  const key = getLoginAttemptKey(appId, email);
+  loginAttempts.delete(key);
+}
+
+// ==========================================
 // AUTHENTICATION ROUTES
 // ==========================================
 
@@ -31,6 +83,15 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
+    // Check brute-force protection
+    const attemptCheck = checkLoginAttempts(req.appCtx.id, email);
+    if (!attemptCheck.allowed) {
+      return res.status(429).json({ 
+        success: false, 
+        message: `Too many failed login attempts. Please try again in ${Math.ceil(attemptCheck.lockedFor / 60)} minutes.` 
+      });
+    }
+
     // Query user from database with app_id filter
     const result = await pool.query(
       `SELECT id, email, first_name, last_name, role, password 
@@ -41,6 +102,7 @@ router.post('/auth/login', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
+      recordFailedLogin(req.appCtx.id, email);
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid email or password' 
@@ -53,11 +115,24 @@ router.post('/auth/login', async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
     
     if (!passwordMatch) {
+      const failedCount = recordFailedLogin(req.appCtx.id, email);
+      const remaining = MAX_ATTEMPTS - failedCount;
+      
+      if (remaining <= 0) {
+        return res.status(429).json({ 
+          success: false, 
+          message: `Too many failed login attempts. Account locked for 15 minutes.` 
+        });
+      }
+      
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid email or password' 
       });
     }
+
+    // Clear failed attempts on successful login
+    clearLoginAttempts(req.appCtx.id, email);
 
     // Generate JWT token
     const token = jwt.sign(
@@ -87,6 +162,9 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
+// Helper: Hash reset token for secure storage
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
 // Password Reset Request
 router.post('/auth/request-reset', async (req, res) => {
   try {
@@ -115,17 +193,18 @@ router.post('/auth/request-reset', async (req, res) => {
 
     const user = result.rows[0];
 
-    // Generate reset token
+    // Generate reset token and hash it for storage
     const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenHash = hashResetToken(resetToken);
     const resetExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
-    // Save token to database
+    // Save HASHED token to database (never store plaintext)
     await pool.query(
-      `UPDATE users SET password_reset_token = $1, password_reset_expiry = $2 WHERE id = $3`,
-      [resetToken, resetExpiry, user.id]
+      `UPDATE users SET password_reset_token = $1, password_reset_expiry = $2 WHERE id = $3 AND app_id = $4`,
+      [resetTokenHash, resetExpiry, user.id, req.appCtx.id]
     );
 
-    // Send email
+    // Send email with the ORIGINAL (unhashed) token
     const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html`;
     await sendPasswordResetEmail(user.email, resetToken, resetUrl);
 
@@ -161,14 +240,17 @@ router.post('/auth/reset-password', async (req, res) => {
       });
     }
 
-    // Find user with valid token
+    // Hash the incoming token to compare with stored hash
+    const tokenHash = hashResetToken(token);
+
+    // Find user with valid token (comparing hashes)
     const result = await pool.query(
       `SELECT id, email FROM users 
        WHERE password_reset_token = $1 
        AND password_reset_expiry > NOW() 
        AND app_id = $2 
        LIMIT 1`,
-      [token, req.appCtx.id]
+      [tokenHash, req.appCtx.id]
     );
 
     if (result.rows.length === 0) {
@@ -183,12 +265,12 @@ router.post('/auth/reset-password', async (req, res) => {
     // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password and clear reset token
+    // Update password and clear reset token (with app_id check)
     await pool.query(
       `UPDATE users 
        SET password = $1, password_reset_token = NULL, password_reset_expiry = NULL 
-       WHERE id = $2`,
-      [hashedPassword, user.id]
+       WHERE id = $2 AND app_id = $3`,
+      [hashedPassword, user.id, req.appCtx.id]
     );
 
     res.json({ 
@@ -1251,9 +1333,9 @@ router.post('/chores/:id/complete', requireAuth, async (req, res) => {
     const result = await pool.query(
       `UPDATE chores 
        SET status = 'completed', completed_at = NOW() 
-       WHERE id = $1 
+       WHERE id = $1 AND app_id = $2 AND assigned_to = $3
        RETURNING *`,
-      [id]
+      [id, req.appCtx.id, req.userId]
     );
 
     res.json({ 
