@@ -45,10 +45,17 @@ Preferred communication style: Simple, everyday language.
 
 ### System Design Choices
 - **Authentication Stability**: Modular architecture with immutable `auth-core.js`, isolated feature functions in `features-module.js`, and continuous integrity checks via `system-monitor.js`.
-- **Multi-tenancy**: Implemented with `app_id` columns across all database tables to ensure data isolation for different applications.
+- **Multi-tenancy**: Implemented with `app_id` columns across all database tables to ensure data isolation for different applications. All UPDATE/DELETE queries enforce app_id checks.
 - **Deployment Reliability**: Transitioned from Express to Node.js built-in HTTP module for zero-dependency deployment.
 - **Observability**: Production monitoring with request logging, correlation IDs, metrics collection, and structured JSON logging.
 - **Developer Experience**: Comprehensive onboarding guide, clean middleware architecture, and proper error handling.
+
+### Security Hardening (December 2025)
+- **Password Reset Security**: Reset tokens are SHA-256 hashed before storage, with 1-hour expiry enforced.
+- **Brute-Force Protection**: Login attempts limited to 5 per email, with 15-minute lockout after exceeded.
+- **AI Response Validation**: 30-second timeout on Gemini API calls, Zod schema validation on all AI responses.
+- **Startup Validation**: Required environment variables (DATABASE_URL, JWT_SECRET) checked at startup; warnings for optional keys.
+- **Database Constraints**: Unique email per tenant, NOT NULL on users.app_id, foreign keys on event_attendance and grocery_order_items.
 
 ## External Dependencies
 
