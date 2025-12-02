@@ -97,42 +97,36 @@
             display: block;
         }
         
-        .video-section {
-            background: #1a1a1a;
-            padding: 40px 20px;
-        }
-        
-        .video-section h2 {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .video-wrapper {
+        .page-with-video {
             position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #000;
+            width: 100%;
         }
         
-        .video-wrapper iframe {
+        .page-with-video .brochure-page {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65%;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        
+        .video-overlay iframe {
             width: 100%;
             height: 100%;
             border: none;
+        }
+        
+        .video-pos-center {
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .apply-section {
@@ -187,8 +181,8 @@
                 font-size: 16px;
             }
             
-            .video-grid {
-                grid-template-columns: 1fr;
+            .video-overlay {
+                width: 80%;
             }
         }
     </style>
@@ -211,34 +205,37 @@
 
     <div class="brochure-container">
         <img src="/brochure-assets/women/page-01.png" alt="FC Köln ITP Women - Cover" class="brochure-page" loading="eager">
-        <img src="/brochure-assets/women/page-02.png" alt="FC Köln ITP Women - Page 2" class="brochure-page" loading="lazy">
-        <img src="/brochure-assets/women/page-03.png" alt="FC Köln ITP Women - Page 3" class="brochure-page" loading="lazy">
-        <img src="/brochure-assets/women/page-04.png" alt="FC Köln ITP Women - Page 4" class="brochure-page" loading="lazy">
-        <img src="/brochure-assets/women/page-05.png" alt="FC Köln ITP Women - Page 5" class="brochure-page" loading="lazy">
-        <img src="/brochure-assets/women/page-06.png" alt="FC Köln ITP Women - Page 6" class="brochure-page" loading="lazy">
         
-        <div class="video-section">
-            <h2>Program Videos</h2>
-            <div class="video-grid">
-                <div class="video-wrapper">
-                    <iframe 
-                        src="https://www.youtube.com/embed/4dW5bV6QW9o" 
-                        title="FC Cologne - Bundesliga Trailer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="video-wrapper">
-                    <iframe 
-                        src="https://www.youtube.com/embed/jKtI4ACsYjs" 
-                        title="FC Köln ITP Program"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
+        <!-- Page 2 with Bundesliga Trailer video overlay -->
+        <div class="page-with-video">
+            <img src="/brochure-assets/women/page-02.png" alt="FC Köln ITP Women - Page 2" class="brochure-page" loading="lazy">
+            <div class="video-overlay video-pos-center">
+                <iframe 
+                    src="https://www.youtube.com/embed/4dW5bV6QW9o" 
+                    title="FC Cologne - Bundesliga Trailer"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
             </div>
         </div>
         
+        <img src="/brochure-assets/women/page-03.png" alt="FC Köln ITP Women - Page 3" class="brochure-page" loading="lazy">
+        
+        <!-- Page 4 with ITP Program video overlay -->
+        <div class="page-with-video">
+            <img src="/brochure-assets/women/page-04.png" alt="FC Köln ITP Women - Page 4" class="brochure-page" loading="lazy">
+            <div class="video-overlay video-pos-center">
+                <iframe 
+                    src="https://www.youtube.com/embed/jKtI4ACsYjs" 
+                    title="FC Köln ITP Program"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+        
+        <img src="/brochure-assets/women/page-05.png" alt="FC Köln ITP Women - Page 5" class="brochure-page" loading="lazy">
+        <img src="/brochure-assets/women/page-06.png" alt="FC Köln ITP Women - Page 6" class="brochure-page" loading="lazy">
         <img src="/brochure-assets/women/page-07.png" alt="FC Köln ITP Women - Page 7" class="brochure-page" loading="lazy">
         <img src="/brochure-assets/women/page-08.png" alt="FC Köln ITP Women - Page 8" class="brochure-page" loading="lazy">
         <img src="/brochure-assets/women/page-09.png" alt="FC Köln ITP Women - Page 9" class="brochure-page" loading="lazy">
