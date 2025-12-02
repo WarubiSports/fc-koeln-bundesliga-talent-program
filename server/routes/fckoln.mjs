@@ -4,6 +4,28 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { pool } from '../db.cjs';
 import { sendPasswordResetEmail } from '../utils/sendgrid.mjs';
+import {
+  validate,
+  validateQuery,
+  validateParams,
+  loginSchema,
+  requestResetSchema,
+  resetPasswordSchema,
+  updateInjurySchema,
+  createEventSchema,
+  updateEventSchema,
+  attendanceSchema,
+  createGroceryOrderSchema,
+  createChoreSchema,
+  verifyChoreSchema,
+  createGroceryItemSchema,
+  updateGroceryItemSchema,
+  updateProfileSchema,
+  idParamSchema,
+  eventsQuerySchema,
+  choresQuerySchema,
+  groceryQuerySchema
+} from '../validation/schemas.mjs';
 
 // Require JWT secret - fail fast if not configured
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -103,7 +125,7 @@ function recordResetAttempt(appId, email) {
 // AUTHENTICATION ROUTES
 // ==========================================
 
-router.post('/auth/login', async (req, res) => {
+router.post('/auth/login', validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -197,7 +219,7 @@ router.post('/auth/login', async (req, res) => {
 const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 // Password Reset Request (rate limited to prevent abuse)
-router.post('/auth/request-reset', async (req, res) => {
+router.post('/auth/request-reset', validate(requestResetSchema), async (req, res) => {
   try {
     const { email } = req.body;
     
@@ -265,23 +287,9 @@ router.post('/auth/request-reset', async (req, res) => {
 });
 
 // Reset Password
-router.post('/auth/reset-password', async (req, res) => {
+router.post('/auth/reset-password', validate(resetPasswordSchema), async (req, res) => {
   try {
     const { token, newPassword } = req.body;
-    
-    if (!token || !newPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Token and new password are required' 
-      });
-    }
-
-    if (newPassword.length < 8) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Password must be at least 8 characters long' 
-      });
-    }
 
     // Hash the incoming token to compare with stored hash
     const tokenHash = hashResetToken(token);
@@ -384,7 +392,7 @@ router.get('/players/overview', requireAuth, async (req, res) => {
 });
 
 // Update player injury status (staff/admin only)
-router.put('/players/:id/injury', requireAuth, async (req, res) => {
+router.put('/players/:id/injury', requireAuth, validateParams(idParamSchema), validate(updateInjurySchema), async (req, res) => {
   try {
     // Authorization: Only staff and admin can update injury status
     if (req.user.role !== 'staff' && req.user.role !== 'admin') {
@@ -638,7 +646,7 @@ router.get('/events', requireAuth, async (req, res) => {
 });
 
 // Create a new event (staff/admin only)
-router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.post('/events', requireAuth, requireStaffOrAdmin, validate(createEventSchema), async (req, res) => {
   try {
     const { 
       title, eventType, date, startTime, endTime, location, notes,
@@ -689,7 +697,7 @@ router.post('/events', requireAuth, requireStaffOrAdmin, async (req, res) => {
 });
 
 // Update an event (staff/admin only)
-router.put('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.put('/events/:id', requireAuth, requireStaffOrAdmin, validateParams(idParamSchema), validate(updateEventSchema), async (req, res) => {
   try {
     const eventId = req.params.id;
     const { title, eventType, date, startTime, endTime, location, notes, participants } = req.body;
@@ -738,7 +746,7 @@ router.put('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => 
 });
 
 // Delete an event (staff/admin only)
-router.delete('/events/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.delete('/events/:id', requireAuth, requireStaffOrAdmin, validateParams(idParamSchema), async (req, res) => {
   try {
     const eventId = req.params.id;
     
@@ -811,7 +819,7 @@ router.get('/events/:id/attendance', requireAuth, async (req, res) => {
 });
 
 // RSVP or mark attendance for an event
-router.post('/events/:id/attendance', requireAuth, async (req, res) => {
+router.post('/events/:id/attendance', requireAuth, validateParams(idParamSchema), validate(attendanceSchema), async (req, res) => {
   try {
     const eventId = req.params.id;
     const { userId, status } = req.body;
@@ -952,7 +960,7 @@ function requireStaffOrAdmin(req, res, next) {
 }
 
 // Create a new grocery order
-router.post('/grocery/orders', requireAuth, async (req, res) => {
+router.post('/grocery/orders', requireAuth, validate(createGroceryOrderSchema), async (req, res) => {
   try {
     const { deliveryDate, items } = req.body;
     const userId = req.userId;
@@ -1456,7 +1464,7 @@ router.get('/admin/chores', requireAuth, async (req, res) => {
 });
 
 // Create chore assignment (for one-off tasks or weekly assignments)
-router.post('/admin/chores', requireAuth, async (req, res) => {
+router.post('/admin/chores', requireAuth, validate(createChoreSchema), async (req, res) => {
   try {
     // Authorization: Only staff/admin
     if (req.user.role !== 'admin' && req.user.role !== 'staff') {
@@ -1527,7 +1535,7 @@ router.post('/admin/chores', requireAuth, async (req, res) => {
 });
 
 // Verify completed chore
-router.put('/admin/chores/:id/verify', requireAuth, async (req, res) => {
+router.put('/admin/chores/:id/verify', requireAuth, validateParams(idParamSchema), validate(verifyChoreSchema), async (req, res) => {
   try {
     // Authorization: Only staff/admin
     if (req.user.role !== 'admin' && req.user.role !== 'staff') {
@@ -1572,7 +1580,7 @@ router.put('/admin/chores/:id/verify', requireAuth, async (req, res) => {
 });
 
 // Delete chore assignment
-router.delete('/admin/chores/:id', requireAuth, async (req, res) => {
+router.delete('/admin/chores/:id', requireAuth, validateParams(idParamSchema), async (req, res) => {
   try {
     // Authorization: Only staff/admin
     if (req.user.role !== 'admin' && req.user.role !== 'staff') {
@@ -1640,7 +1648,7 @@ router.get('/admin/grocery/items', requireAuth, requireStaffOrAdmin, async (req,
 });
 
 // Add new grocery item
-router.post('/admin/grocery/items', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.post('/admin/grocery/items', requireAuth, requireStaffOrAdmin, validate(createGroceryItemSchema), async (req, res) => {
   try {
     const { name, category, price } = req.body;
 
@@ -1673,7 +1681,7 @@ router.post('/admin/grocery/items', requireAuth, requireStaffOrAdmin, async (req
 });
 
 // Update grocery item
-router.put('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.put('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, validateParams(idParamSchema), validate(updateGroceryItemSchema), async (req, res) => {
   try {
     const { id } = req.params;
     const { name, category, price } = req.body;
@@ -1715,7 +1723,7 @@ router.put('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, async (
 });
 
 // Delete grocery item
-router.delete('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, async (req, res) => {
+router.delete('/admin/grocery/items/:id', requireAuth, requireStaffOrAdmin, validateParams(idParamSchema), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -1838,7 +1846,7 @@ router.get('/profile', requireAuth, async (req, res) => {
 });
 
 // Update current user's profile
-router.put('/profile', requireAuth, async (req, res) => {
+router.put('/profile', requireAuth, validate(updateProfileSchema), async (req, res) => {
   try {
     const {
       firstName,
