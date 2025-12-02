@@ -51,11 +51,17 @@ Preferred communication style: Simple, everyday language.
 - **Developer Experience**: Comprehensive onboarding guide, clean middleware architecture, and proper error handling.
 
 ### Security Hardening (December 2025)
-- **Password Reset Security**: Reset tokens are SHA-256 hashed before storage, with 1-hour expiry enforced.
+- **Password Reset Security**: Reset tokens are SHA-256 hashed before storage, with 1-hour expiry enforced. Rate limited to 3 requests per email per hour.
 - **Brute-Force Protection**: Login attempts limited to 5 per email, with 15-minute lockout after exceeded.
 - **AI Response Validation**: 30-second timeout on Gemini API calls, Zod schema validation on all AI responses.
+- **Service Resilience**: Retry with exponential backoff and circuit breaker pattern for Gemini AI and SendGrid email services.
 - **Startup Validation**: Required environment variables (DATABASE_URL, JWT_SECRET) checked at startup; warnings for optional keys.
 - **Database Constraints**: Unique email per tenant, NOT NULL on users.app_id, foreign keys on event_attendance and grocery_order_items.
+- **Database Indexes**: Composite indexes on (app_id, status), (app_id, user_id), (app_id, date) for optimized multi-tenant queries.
+- **Zod Validation Middleware**: Reusable validation middleware created for body, query, and params validation.
+
+### Post-Launch Tech Debt
+- Split 2,300-line fckoln.mjs into modular route files (auth, chores, grocery, events, players).
 
 ## External Dependencies
 
