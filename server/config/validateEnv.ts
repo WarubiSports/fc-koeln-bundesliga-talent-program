@@ -1,12 +1,12 @@
 import "dotenv/config";
 
 // Critical secrets that must always be present
-const alwaysRequired = ["DATABASE_URL"];
+const alwaysRequired = ["DATABASE_URL", "JWT_SECRET"];
 
-// Secrets required only in production (warnings in development)
-const requiredInProd = ["JWT_SECRET", "SESSION_SECRET", "ADMIN_API_KEY"];
+// Secrets required only in production
+const requiredInProd = ["SESSION_SECRET", "ADMIN_API_KEY"];
 
-// Optional but recommended (always warnings only)
+// Optional but recommended
 const recommended = ["AI_INTEGRATIONS_GEMINI_API_KEY", "SENDGRID_API_KEY"];
 
 function validateEnvironment(): void {
@@ -14,22 +14,18 @@ function validateEnvironment(): void {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Check always-required secrets (DATABASE_URL is truly critical)
+  // Check always-required secrets
   for (const key of alwaysRequired) {
     if (!process.env[key]) {
       errors.push(`${key} is required for server operation`);
     }
   }
 
-  // Check production-required secrets
-  for (const key of requiredInProd) {
-    if (!process.env[key]) {
-      if (isProd) {
-        // In production, these are errors
+  // Check production-only secrets
+  if (isProd) {
+    for (const key of requiredInProd) {
+      if (!process.env[key]) {
         errors.push(`${key} is required in production`);
-      } else {
-        // In development, just warn
-        warnings.push(`${key} not set - using defaults for development`);
       }
     }
   }
@@ -46,7 +42,7 @@ function validateEnvironment(): void {
     console.warn(`⚠️  ${warning}`);
   }
 
-  // Exit on critical errors only
+  // Exit on critical errors
   if (errors.length > 0) {
     console.error("\n❌ FATAL: Missing required environment variables:\n");
     for (const error of errors) {
