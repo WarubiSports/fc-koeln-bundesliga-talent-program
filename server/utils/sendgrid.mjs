@@ -1,81 +1,20 @@
 import sgMail from '@sendgrid/mail';
+import { withRetry, getCircuitStatus } from './resilience.js';
 
 const EMAIL_CIRCUIT_NAME = 'sendgrid-email';
-const circuits = new Map();
-const FAILURE_THRESHOLD = 5;
-const RECOVERY_TIME = 60000;
+const CREDENTIAL_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function getCircuit(name) {
-  if (!circuits.has(name)) {
-    circuits.set(name, { failures: 0, lastFailure: 0, state: 'closed' });
-  }
-  return circuits.get(name);
-}
-
-function recordSuccess(name) {
-  const circuit = getCircuit(name);
-  circuit.failures = 0;
-  circuit.state = 'closed';
-}
-
-function recordFailure(name) {
-  const circuit = getCircuit(name);
-  circuit.failures++;
-  circuit.lastFailure = Date.now();
-  
-  if (circuit.failures >= FAILURE_THRESHOLD) {
-    circuit.state = 'open';
-    console.warn(`[Circuit Breaker] ${name} circuit OPENED`);
-  }
-}
-
-function canAttempt(name) {
-  const circuit = getCircuit(name);
-  
-  if (circuit.state === 'closed') return true;
-  
-  if (circuit.state === 'open') {
-    if (Date.now() - circuit.lastFailure > RECOVERY_TIME) {
-      circuit.state = 'half-open';
-      return true;
-    }
-    return false;
-  }
-  
-  return true;
-}
-
-async function withRetry(operation, options = {}) {
-  const { maxRetries = 2, baseDelay = 1000, circuitName } = options;
-
-  if (circuitName && !canAttempt(circuitName)) {
-    throw new Error('Email service temporarily unavailable. Please try again later.');
-  }
-
-  let lastError;
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await operation();
-      if (circuitName) recordSuccess(circuitName);
-      return result;
-    } catch (error) {
-      lastError = error;
-      if (circuitName) recordFailure(circuitName);
-      
-      if (attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt);
-        console.log(`[SendGrid] Retry ${attempt + 1}/${maxRetries} in ${delay}ms`);
-        await new Promise(r => setTimeout(r, delay));
-      }
-    }
-  }
-  throw lastError;
-}
-
-let connectionSettings;
+let cachedCredentials = null;
+let credentialsCacheTime = 0;
 
 async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME
+  const now = Date.now();
+  
+  if (cachedCredentials && (now - credentialsCacheTime) < CREDENTIAL_CACHE_TTL) {
+    return cachedCredentials;
+  }
+  
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
     : process.env.WEB_REPL_RENEWAL 
@@ -86,7 +25,7 @@ async function getCredentials() {
     throw new Error('X_REPLIT_TOKEN not found for repl/depl');
   }
 
-  connectionSettings = await fetch(
+  const connectionSettings = await fetch(
     'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=sendgrid',
     {
       headers: {
@@ -99,11 +38,19 @@ async function getCredentials() {
   if (!connectionSettings || (!connectionSettings.settings.api_key || !connectionSettings.settings.from_email)) {
     throw new Error('SendGrid not connected');
   }
-  return {apiKey: connectionSettings.settings.api_key, email: connectionSettings.settings.from_email};
+  
+  cachedCredentials = {
+    apiKey: connectionSettings.settings.api_key, 
+    email: connectionSettings.settings.from_email
+  };
+  credentialsCacheTime = now;
+  
+  console.log('[SendGrid] Credentials cached successfully');
+  return cachedCredentials;
 }
 
 export async function getUncachableSendGridClient() {
-  const {apiKey, email} = await getCredentials();
+  const { apiKey, email } = await getCredentials();
   sgMail.setApiKey(apiKey);
   return {
     client: sgMail,
@@ -112,7 +59,13 @@ export async function getUncachableSendGridClient() {
 }
 
 export async function sendPasswordResetEmail(toEmail, resetToken, resetUrl) {
-  const { client, fromEmail } = await getUncachableSendGridClient();
+  const circuitStatus = getCircuitStatus(EMAIL_CIRCUIT_NAME);
+  if (circuitStatus.state === 'open') {
+    console.warn('[SendGrid] Circuit is open, email will be queued or skipped');
+  }
+
+  const { client, fromEmail } = await getCredentials();
+  sgMail.setApiKey(client?.apiKey || (await getCredentials()).apiKey);
   
   const msg = {
     to: toEmail,
@@ -157,7 +110,18 @@ export async function sendPasswordResetEmail(toEmail, resetToken, resetUrl) {
   };
 
   await withRetry(
-    () => client.send(msg),
-    { maxRetries: 2, baseDelay: 1000, circuitName: EMAIL_CIRCUIT_NAME }
+    () => sgMail.send(msg),
+    { 
+      maxRetries: 2, 
+      baseDelay: 1000, 
+      timeout: 30000,
+      circuitName: EMAIL_CIRCUIT_NAME 
+    }
   );
+  
+  console.log(`[SendGrid] Password reset email sent to ${toEmail}`);
+}
+
+export function getEmailCircuitStatus() {
+  return getCircuitStatus(EMAIL_CIRCUIT_NAME);
 }
