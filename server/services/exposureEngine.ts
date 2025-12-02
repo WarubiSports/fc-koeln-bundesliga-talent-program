@@ -1,5 +1,55 @@
 import { GoogleGenAI } from "@google/genai";
+import { z } from "zod";
 import { logger } from '../utils/logger.js';
+
+// Timeout for AI requests (30 seconds)
+const AI_TIMEOUT_MS = 30000;
+
+// Zod schema for validating AI response structure
+const VisibilityScoreSchema = z.object({
+  level: z.string(),
+  visibilityPercent: z.number().min(0).max(100),
+  notes: z.string()
+});
+
+const ReadinessScoreSchema = z.object({
+  athletic: z.number().min(0).max(100),
+  technical: z.number().min(0).max(100),
+  tactical: z.number().min(0).max(100),
+  academic: z.number().min(0).max(100),
+  market: z.number().min(0).max(100)
+});
+
+const RiskFlagSchema = z.object({
+  category: z.string(),
+  message: z.string(),
+  severity: z.enum(['Low', 'Medium', 'High'])
+});
+
+const ActionItemSchema = z.object({
+  timeframe: z.string(),
+  description: z.string(),
+  impact: z.enum(['Low', 'Medium', 'High'])
+});
+
+const AIResponseSchema = z.object({
+  visibilityScores: z.array(VisibilityScoreSchema).length(5),
+  readinessScore: ReadinessScoreSchema,
+  keyStrengths: z.array(z.string()).min(1).max(5),
+  keyRisks: z.array(RiskFlagSchema).min(1).max(10),
+  actionPlan: z.array(ActionItemSchema).min(1).max(10),
+  plainLanguageSummary: z.string().min(10).max(1000)
+});
+
+// Helper: Promise with timeout
+function withTimeout<T>(promise: Promise<T>, ms: number, operation: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error(`${operation} timed out after ${ms}ms`)), ms)
+    )
+  ]);
+}
 
 const SYSTEM_PROMPT = `
 You are a veteran US College Soccer Recruiting Director. You are brutally honest, data-driven, and realistic. Your goal is to prevent youth players from having false hope and to give them a concrete roadmap.
@@ -146,10 +196,15 @@ ${JSON.stringify(profile, null, 2)}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [{ role: 'user', parts: [{ text: userPrompt }] }]
-    });
+    // Wrap AI call with timeout
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ role: 'user', parts: [{ text: userPrompt }] }]
+      }),
+      AI_TIMEOUT_MS,
+      'AI analysis'
+    );
 
     const text = response.text;
     if (!text) throw new Error("No response from AI");
@@ -159,17 +214,19 @@ ${JSON.stringify(profile, null, 2)}
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
     
-    const result = JSON.parse(jsonMatch[0]);
+    const rawResult = JSON.parse(jsonMatch[0]);
     
-    // Validate AI response structure
-    if (!result.visibilityScores || !Array.isArray(result.visibilityScores)) {
-      throw new Error("Invalid AI response: missing visibilityScores");
-    }
-    if (!result.readinessScore || typeof result.readinessScore !== 'object') {
-      throw new Error("Invalid AI response: missing readinessScore");
+    // Validate AI response with Zod schema
+    const parseResult = AIResponseSchema.safeParse(rawResult);
+    if (!parseResult.success) {
+      const firstIssue = parseResult.error.issues[0];
+      logger.error("AI response validation failed", new Error(parseResult.error.message));
+      throw new Error(`Invalid AI response structure: ${firstIssue?.message || 'schema mismatch'}`);
     }
     
-    const avgVisibility = result.visibilityScores.reduce((sum: number, s: VisibilityScore) => sum + s.visibilityPercent, 0) / 5;
+    const result = parseResult.data;
+    
+    const avgVisibility = result.visibilityScores.reduce((sum: number, s) => sum + s.visibilityPercent, 0) / 5;
     const overallScore = Math.round(avgVisibility);
     
     let bucket: string;
