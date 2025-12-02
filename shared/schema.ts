@@ -5,7 +5,7 @@ import { sql } from "drizzle-orm";
 // Users table - comprehensive user management (admins, staff, players)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
-  appId: varchar("app_id"), // Multi-tenant: which app this user belongs to
+  appId: varchar("app_id").notNull(), // Multi-tenant: which app this user belongs to
   email: varchar("email"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
