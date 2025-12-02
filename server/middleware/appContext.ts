@@ -27,11 +27,13 @@ export async function attachAppContext(req: Request, res: Response, next: NextFu
     
     const apiKey = req.headers['x-app-key'] as string | undefined;
     
-    if (!apiKey && process.env.NODE_ENV !== 'production') {
+    if (!apiKey) {
+      const isProduction = process.env.NODE_ENV === 'production';
       const origin = req.headers.origin || req.headers.referer;
       const isLocalhost = !origin || origin.includes('localhost') || origin.includes('127.0.0.1');
       
-      if (isLocalhost) {
+      if (!isProduction && isLocalhost) {
+        logger.debug('Dev mode: auto-attaching fckoln context for localhost request');
         req.appCtx = {
           id: 'fckoln',
           name: '1.FC Köln ITP',
@@ -39,6 +41,13 @@ export async function attachAppContext(req: Request, res: Response, next: NextFu
           rps: 600
         };
         return next();
+      }
+      
+      if (isProduction) {
+        logger.warn('Missing API key in production', { 
+          path: req.path, 
+          origin: origin || 'unknown'
+        });
       }
     }
     

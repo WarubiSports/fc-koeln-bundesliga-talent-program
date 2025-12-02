@@ -1,9 +1,11 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { pool } from '../db.js';
 import { analyzePlayerExposure, AnalysisResult } from '../services/exposureEngine.js';
 import { safeValidateEvaluationInput } from '../validation/evaluationSchema.js';
 import { sanitizePlayerProfile } from '../utils/sanitize.js';
 import { logger } from '../utils/logger.js';
+import { ValidationError, NotFoundError, BadRequestError, DatabaseError } from '../utils/errors.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
 
 const router = Router();
 
@@ -70,17 +72,32 @@ router.get('/evaluations/config/options', async (_req: Request, res: Response) =
   });
 });
 
-router.get('/evaluations/all', async (_req: Request, res: Response) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, full_name, email, position, grad_year, state_region, gpa,
-              score, bucket, rating, tags, visibility_scores, created_at
-       FROM player_evaluations
-       ORDER BY created_at DESC
-       LIMIT 500`
-    );
+router.get('/evaluations/all', asyncHandler(async (_req: Request, res: Response) => {
+  const result = await pool.query(
+    `SELECT id, full_name, email, position, grad_year, state_region, gpa,
+            score, bucket, rating, tags, visibility_scores, created_at
+     FROM player_evaluations
+     ORDER BY created_at DESC
+     LIMIT 500`
+  );
 
-    const evaluations = result.rows.map(row => ({
+  const evaluations = result.rows.map(row => {
+    let tags = [];
+    let visibilityScores = [];
+    
+    try {
+      tags = JSON.parse(row.tags || '[]');
+    } catch {
+      logger.warn('Failed to parse tags JSON', { evaluationId: row.id });
+    }
+    
+    try {
+      visibilityScores = JSON.parse(row.visibility_scores || '[]');
+    } catch {
+      logger.warn('Failed to parse visibility_scores JSON', { evaluationId: row.id });
+    }
+    
+    return {
       id: row.id,
       fullName: row.full_name,
       email: row.email,
@@ -91,31 +108,24 @@ router.get('/evaluations/all', async (_req: Request, res: Response) => {
       score: row.score,
       bucket: row.bucket,
       rating: row.rating,
-      tags: JSON.parse(row.tags || '[]'),
-      visibilityScores: JSON.parse(row.visibility_scores || '[]'),
+      tags,
+      visibilityScores,
       createdAt: row.created_at
-    }));
+    };
+  });
 
-    res.json({
-      success: true,
-      evaluations
-    });
+  res.json({
+    success: true,
+    evaluations
+  });
+}));
 
-  } catch (error) {
-    console.error('Get all evaluations error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get evaluations'
-    });
-  }
-});
-
-router.post('/evaluations', async (req: Request, res: Response) => {
+router.post('/evaluations', asyncHandler(async (req: Request, res: Response) => {
+  const rawData = req.body;
+  
+  let normalizedData;
   try {
-    const rawData = req.body;
-    
-    // Normalize data types before validation
-    const normalizedData = {
+    normalizedData = {
       ...rawData,
       gradYear: typeof rawData.gradYear === 'string' ? parseInt(rawData.gradYear) : rawData.gradYear,
       gpa: typeof rawData.gpa === 'string' ? parseFloat(rawData.gpa) : rawData.gpa,
@@ -125,171 +135,155 @@ router.post('/evaluations', async (req: Request, res: Response) => {
       seasons: Array.isArray(rawData.seasons) ? rawData.seasons : JSON.parse(rawData.seasons || '[]'),
       events: Array.isArray(rawData.events) ? rawData.events : JSON.parse(rawData.events || '[]')
     };
-    
-    // Validate input with Zod schema
-    const validation = safeValidateEvaluationInput(normalizedData);
-    
-    if (!validation.success) {
-      logger.warn('Evaluation validation failed', { errors: validation.errors });
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: validation.errors
-      });
-    }
-    
-    const validatedData = validation.data!;
-    
-    // Sanitize user-provided text fields before AI processing
-    const sanitizedProfile = sanitizePlayerProfile({
-      fullName: validatedData.fullName,
-      email: validatedData.email,
-      gradYear: validatedData.gradYear,
-      position: validatedData.position,
-      height: validatedData.height,
-      stateRegion: validatedData.stateRegion,
-      gpa: validatedData.gpa,
-      testScore: validatedData.testScore,
-      seasons: validatedData.seasons,
-      hasVideoLink: validatedData.hasVideoLink,
-      coachesContacted: validatedData.coachesContacted,
-      responsesReceived: validatedData.responsesReceived,
-      events: validatedData.events
-    });
-
-    const playerProfile = sanitizedProfile;
-
-    let analysisResult: AnalysisResult;
-    
-    try {
-      analysisResult = await analyzePlayerExposure(playerProfile);
-    } catch (aiError) {
-      logger.error('AI Analysis failed, using fallback', aiError as Error);
-      analysisResult = generateFallbackAnalysis(playerProfile);
-    }
-
-    const result = await pool.query(
-      `INSERT INTO player_evaluations (
-        app_id, full_name, email, grad_year, position, height, state_region,
-        gpa, test_score, seasons, has_video_link, coaches_contacted, responses_received,
-        events, consent_to_contact,
-        visibility_scores, readiness_score, key_strengths, key_risks, action_plan, plain_language_summary,
-        score, bucket, rating, tags
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25
-      ) RETURNING id`,
-      [
-        'warubi-hub',
-        validatedData.fullName,
-        validatedData.email,
-        validatedData.gradYear,
-        validatedData.position,
-        validatedData.height || null,
-        validatedData.stateRegion,
-        validatedData.gpa,
-        validatedData.testScore || null,
-        JSON.stringify(validatedData.seasons),
-        validatedData.hasVideoLink,
-        validatedData.coachesContacted,
-        validatedData.responsesReceived,
-        JSON.stringify(validatedData.events),
-        validatedData.consentToContact,
-        JSON.stringify(analysisResult.visibilityScores),
-        JSON.stringify(analysisResult.readinessScore),
-        JSON.stringify(analysisResult.keyStrengths),
-        JSON.stringify(analysisResult.keyRisks),
-        JSON.stringify(analysisResult.actionPlan),
-        analysisResult.plainLanguageSummary,
-        analysisResult.overallScore,
-        analysisResult.bucket,
-        analysisResult.rating,
-        JSON.stringify(analysisResult.tags)
-      ]
-    );
-
-    const newId = result.rows[0].id;
-
-    res.status(201).json({
-      success: true,
-      evaluation: {
-        id: newId,
-        ...analysisResult
-      }
-    });
-
-  } catch (error) {
-    logger.error('Evaluation submission error', error as Error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to submit evaluation'
-    });
+  } catch (parseError) {
+    throw new BadRequestError('Invalid data format in seasons or events fields');
   }
-});
+  
+  const validation = safeValidateEvaluationInput(normalizedData);
+  
+  if (!validation.success) {
+    logger.warn('Evaluation validation failed', { errors: validation.errors });
+    throw new ValidationError('Validation failed', validation.errors);
+  }
+  
+  const validatedData = validation.data!;
+  
+  const sanitizedProfile = sanitizePlayerProfile({
+    fullName: validatedData.fullName,
+    email: validatedData.email,
+    gradYear: validatedData.gradYear,
+    position: validatedData.position,
+    height: validatedData.height,
+    stateRegion: validatedData.stateRegion,
+    gpa: validatedData.gpa,
+    testScore: validatedData.testScore,
+    seasons: validatedData.seasons,
+    hasVideoLink: validatedData.hasVideoLink,
+    coachesContacted: validatedData.coachesContacted,
+    responsesReceived: validatedData.responsesReceived,
+    events: validatedData.events
+  });
 
-router.get('/evaluations/:id', async (req: Request, res: Response) => {
+  const playerProfile = sanitizedProfile;
+
+  let analysisResult: AnalysisResult;
+  
   try {
-    const { id } = req.params;
-
-    if (isNaN(parseInt(id))) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid evaluation ID'
-      });
-    }
-
-    const result = await pool.query(
-      `SELECT * FROM player_evaluations WHERE id = $1`,
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Evaluation not found'
-      });
-    }
-
-    const row = result.rows[0];
-
-    res.json({
-      success: true,
-      evaluation: {
-        id: row.id,
-        fullName: row.full_name,
-        email: row.email,
-        gradYear: row.grad_year,
-        position: row.position,
-        height: row.height,
-        stateRegion: row.state_region,
-        gpa: row.gpa,
-        testScore: row.test_score,
-        seasons: JSON.parse(row.seasons || '[]'),
-        hasVideoLink: row.has_video_link,
-        coachesContacted: row.coaches_contacted,
-        responsesReceived: row.responses_received,
-        events: JSON.parse(row.events || '[]'),
-        visibilityScores: JSON.parse(row.visibility_scores || '[]'),
-        readinessScore: JSON.parse(row.readiness_score || '{}'),
-        keyStrengths: JSON.parse(row.key_strengths || '[]'),
-        keyRisks: JSON.parse(row.key_risks || '[]'),
-        actionPlan: JSON.parse(row.action_plan || '[]'),
-        plainLanguageSummary: row.plain_language_summary,
-        score: row.score,
-        bucket: row.bucket,
-        rating: row.rating,
-        tags: JSON.parse(row.tags || '[]'),
-        createdAt: row.created_at
-      }
-    });
-
-  } catch (error) {
-    console.error('Get evaluation error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get evaluation'
-    });
+    analysisResult = await analyzePlayerExposure(playerProfile);
+  } catch (aiError) {
+    logger.error('AI Analysis failed, using fallback', aiError as Error);
+    analysisResult = generateFallbackAnalysis(playerProfile);
   }
-});
+
+  const result = await pool.query(
+    `INSERT INTO player_evaluations (
+      app_id, full_name, email, grad_year, position, height, state_region,
+      gpa, test_score, seasons, has_video_link, coaches_contacted, responses_received,
+      events, consent_to_contact,
+      visibility_scores, readiness_score, key_strengths, key_risks, action_plan, plain_language_summary,
+      score, bucket, rating, tags
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25
+    ) RETURNING id`,
+    [
+      'warubi-hub',
+      validatedData.fullName,
+      validatedData.email,
+      validatedData.gradYear,
+      validatedData.position,
+      validatedData.height || null,
+      validatedData.stateRegion,
+      validatedData.gpa,
+      validatedData.testScore || null,
+      JSON.stringify(validatedData.seasons),
+      validatedData.hasVideoLink,
+      validatedData.coachesContacted,
+      validatedData.responsesReceived,
+      JSON.stringify(validatedData.events),
+      validatedData.consentToContact,
+      JSON.stringify(analysisResult.visibilityScores),
+      JSON.stringify(analysisResult.readinessScore),
+      JSON.stringify(analysisResult.keyStrengths),
+      JSON.stringify(analysisResult.keyRisks),
+      JSON.stringify(analysisResult.actionPlan),
+      analysisResult.plainLanguageSummary,
+      analysisResult.overallScore,
+      analysisResult.bucket,
+      analysisResult.rating,
+      JSON.stringify(analysisResult.tags)
+    ]
+  );
+
+  const newId = result.rows[0].id;
+
+  res.status(201).json({
+    success: true,
+    evaluation: {
+      id: newId,
+      ...analysisResult
+    }
+  });
+}));
+
+router.get('/evaluations/:id', asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (isNaN(parseInt(id))) {
+    throw new BadRequestError('Invalid evaluation ID');
+  }
+
+  const result = await pool.query(
+    `SELECT * FROM player_evaluations WHERE id = $1`,
+    [id]
+  );
+
+  if (result.rows.length === 0) {
+    throw new NotFoundError('Evaluation');
+  }
+
+  const row = result.rows[0];
+  
+  const safeJsonParse = (value: string | null, fallback: any = []) => {
+    if (!value) return fallback;
+    try {
+      return JSON.parse(value);
+    } catch {
+      logger.warn('Failed to parse JSON field', { evaluationId: row.id });
+      return fallback;
+    }
+  };
+
+  res.json({
+    success: true,
+    evaluation: {
+      id: row.id,
+      fullName: row.full_name,
+      email: row.email,
+      gradYear: row.grad_year,
+      position: row.position,
+      height: row.height,
+      stateRegion: row.state_region,
+      gpa: row.gpa,
+      testScore: row.test_score,
+      seasons: safeJsonParse(row.seasons),
+      hasVideoLink: row.has_video_link,
+      coachesContacted: row.coaches_contacted,
+      responsesReceived: row.responses_received,
+      events: safeJsonParse(row.events),
+      visibilityScores: safeJsonParse(row.visibility_scores),
+      readinessScore: safeJsonParse(row.readiness_score, {}),
+      keyStrengths: safeJsonParse(row.key_strengths),
+      keyRisks: safeJsonParse(row.key_risks),
+      actionPlan: safeJsonParse(row.action_plan),
+      plainLanguageSummary: row.plain_language_summary,
+      score: row.score,
+      bucket: row.bucket,
+      rating: row.rating,
+      tags: safeJsonParse(row.tags),
+      createdAt: row.created_at
+    }
+  });
+}));
 
 function generateFallbackAnalysis(profile: any): AnalysisResult {
   const topSeason = profile.seasons[0] || {};

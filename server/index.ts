@@ -7,6 +7,7 @@ import { attachAppContext } from './middleware/appContext.js';
 import { corsPerApp } from './middleware/corsPerApp.js';
 import { rateLimitPerApp } from './middleware/rateLimit.js';
 import { requestLogger, errorLogger } from './middleware/requestLogger.js';
+import { jsonParseErrorHandler, globalErrorHandler } from './middleware/errorHandler.js';
 import { logger } from './utils/logger.js';
 import { pool } from './db.js';
 
@@ -122,17 +123,10 @@ import { requireAdminAuth } from './middleware/adminAuth.js';
 import { adminRateLimit } from './middleware/adminRateLimit.js';
 app.use('/admin', adminRateLimit, requireAdminAuth, adminRoutes);
 
-// Error logging middleware (before error handler)
-app.use(errorLogger);
-
-// Global error handler
-app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
-    correlationId: req.correlationId, // Include correlation ID for debugging
-  });
-});
+// Error handling middleware (order matters)
+app.use(jsonParseErrorHandler);  // Handle JSON parse errors first (returns 400)
+app.use(errorLogger);            // Log all errors
+app.use(globalErrorHandler);     // Final error handler with proper status codes
 
 // Start server
 const PORT = Number(process.env.PORT || 5000);
