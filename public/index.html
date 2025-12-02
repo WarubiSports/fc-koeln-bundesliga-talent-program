@@ -3,1227 +3,1293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warubi Hub - Player Evaluation | Get Your Score</title>
-    <meta name="description" content="Get your personalized player evaluation from Warubi. We analyze your profile and provide a score, bucket rating, and tags to help you benchmark your soccer career.">
+    <title>ExposureEngine | College Soccer Visibility Check</title>
+    <meta name="description" content="Get a brutally honest AI-powered analysis of your college soccer recruiting visibility. See exactly how visible you are to D1, D2, D3, NAIA coaches.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            color: #ffffff;
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #10b981;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .league-badge {
+            display: none;
+            padding: 0.25rem 0.75rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        @media (min-width: 640px) {
+            .league-badge { display: flex; align-items: center; gap: 0.5rem; }
         }
 
         .container {
-            max-width: 720px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem;
-            min-height: 100vh;
+            padding: 2rem 1rem;
         }
 
-        /* Header */
-        .header {
+        .intro {
             text-align: center;
             margin-bottom: 2rem;
         }
 
-        .logo-text {
+        .intro h2 {
             font-size: 1.75rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .tagline {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Progress Indicator */
-        .progress-container {
-            margin-bottom: 2rem;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f39c12 0%, #e74c3c 100%);
-            transition: width 0.3s ease;
-        }
-
-        .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.75rem;
-        }
-
-        .progress-step {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.4);
-            transition: color 0.3s;
-        }
-
-        .progress-step.active {
-            color: #f39c12;
-            font-weight: 600;
-        }
-
-        .progress-step.completed {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        /* Form Card */
-        .form-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.5rem;
             font-weight: 700;
+            color: #fff;
             margin-bottom: 0.5rem;
         }
 
-        .step-subtitle {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 2rem;
+        .intro p {
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        /* Form Elements */
-        .form-group {
+        .form-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
 
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: #10b981;
         }
 
-        .form-label .required {
-            color: #e74c3c;
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #10b981;
         }
 
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 0.5rem;
-            color: #ffffff;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .form-select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1rem;
-        }
-
-        .form-select option {
-            background: #1a1a2e;
-            color: #ffffff;
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .form-row {
+        .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
 
         @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            .form-grid { grid-template-columns: 1fr; }
         }
 
-        /* Checkbox / Radio Groups */
-        .checkbox-group,
-        .radio-group {
+        .form-group {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
+            flex-direction: column;
         }
 
-        .checkbox-item,
-        .radio-item {
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .form-input, .form-select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.875rem;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        .form-select option {
+            background: #1e293b;
+        }
+
+        .checkbox-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 0.5rem;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .checkbox-item:hover,
-        .radio-item:hover {
-            border-color: rgba(243, 156, 18, 0.5);
+        .checkbox-row:hover {
+            border-color: #10b981;
         }
 
-        .checkbox-item.selected,
-        .radio-item.selected {
-            background: rgba(243, 156, 18, 0.1);
-            border-color: #f39c12;
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #10b981;
         }
 
-        .checkbox-item input,
-        .radio-item input {
-            display: none;
-        }
-
-        .checkbox-label,
-        .radio-label {
+        .checkbox-row span {
             font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: #e2e8f0;
         }
 
-        /* Tags Input */
-        .tags-container {
+        .checkbox-row .hint {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .season-card, .event-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .remove-btn:hover {
+            color: #ef4444;
+        }
+
+        .add-btn {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .tag {
-            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            background: rgba(243, 156, 18, 0.1);
-            border: 1px solid rgba(243, 156, 18, 0.3);
-            border-radius: 2rem;
+            padding: 0.625rem 1rem;
+            background: transparent;
+            border: 1px dashed #334155;
+            border-radius: 8px;
+            color: #10b981;
             font-size: 0.875rem;
-            color: #f39c12;
-        }
-
-        .tag-remove {
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
+            width: 100%;
+            justify-content: center;
         }
 
-        .tag-remove:hover {
-            opacity: 1;
+        .add-btn:hover {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
         }
 
-        /* Buttons */
-        .btn-container {
+        .range-container {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .btn {
+        .range-input {
+            width: 100%;
+            height: 6px;
+            appearance: none;
+            background: #334155;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-value {
+            text-align: right;
+            font-size: 0.875rem;
+            color: #10b981;
+            font-family: monospace;
+        }
+
+        .submit-btn {
+            width: 100%;
             padding: 1rem 2rem;
-            border-radius: 0.5rem;
+            background: #10b981;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            border: none;
-            font-family: inherit;
-        }
-
-        .btn-primary {
-            flex: 1;
-            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Step Hidden */
-        .step {
-            display: none;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        /* Error State */
-        .form-input.error,
-        .form-select.error {
-            border-color: #e74c3c;
-        }
-
-        .error-text {
-            color: #e74c3c;
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Result Page Styles */
-        .result-container {
-            display: none;
-            text-align: center;
-        }
-
-        .result-container.active {
-            display: block;
-        }
-
-        .result-header {
-            margin-bottom: 2rem;
-        }
-
-        .result-title {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 2rem auto;
-            box-shadow: 0 8px 30px rgba(243, 156, 18, 0.3);
+            gap: 0.5rem;
         }
 
-        .score-value {
-            font-size: 3rem;
-            font-weight: 800;
-            color: white;
+        .submit-btn:hover:not(:disabled) {
+            background: #059669;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
         }
 
-        .result-bucket {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            background: rgba(243, 156, 18, 0.1);
-            border: 2px solid #f39c12;
-            border-radius: 2rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #f39c12;
-            margin-bottom: 1rem;
+        .submit-btn:disabled {
+            background: #334155;
+            color: #64748b;
+            cursor: not-allowed;
         }
 
-        .result-rating {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
-        }
-
-        .result-tags {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .result-tag {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2rem;
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .result-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            text-align: left;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .summary-row:last-child {
-            border-bottom: none;
-        }
-
-        .summary-label {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .summary-value {
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .result-explanation {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1.25rem 3rem;
-            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
-            color: white;
-            border-radius: 0.5rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-bottom: 1rem;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
-        }
-
-        .ecosystem-link {
-            display: block;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.875rem;
-            text-decoration: none;
-            margin-top: 1rem;
-        }
-
-        .ecosystem-link:hover {
-            color: #f39c12;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #f39c12;
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: #fff;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Footer */
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-text {
+            color: #94a3b8;
+            line-height: 1.6;
+            border-left: 4px solid #10b981;
+            padding-left: 1rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        .chart-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .chart-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        .score-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.875rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            border-radius: 8px;
+        }
+
+        .score-badge .level {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .score-badge .percent {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .insights-grid { grid-column: 1fr; }
+        }
+
+        .insights-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .insights-card.strengths {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .insights-card.risks {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .insights-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .insights-card.strengths h4 { color: #10b981; }
+        .insights-card.risks h4 { color: #ef4444; }
+
+        .insights-list {
+            list-style: none;
+        }
+
+        .insights-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 0.625rem;
+        }
+
+        .insights-list li::before {
+            content: '•';
+            color: #10b981;
+        }
+
+        .insights-card.risks .insights-list li::before {
+            color: #ef4444;
+        }
+
+        .risk-severity {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .risk-severity.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .risk-severity.medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .action-plan {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .action-plan-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.25rem;
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .action-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #334155;
+            transition: background 0.2s;
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-item:hover {
+            background: rgba(51, 65, 85, 0.3);
+        }
+
+        .action-timeframe {
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .action-timeframe.next-30 {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .action-timeframe.next-90 {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .action-timeframe.next-12 {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+
+        .action-description {
+            flex: 1;
+            font-size: 0.875rem;
+            color: #e2e8f0;
+        }
+
+        .action-impact {
+            font-size: 0.75rem;
+            color: #fbbf24;
+            font-weight: 500;
+        }
+
+        .reset-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin: 0 auto;
+        }
+
+        .reset-btn:hover {
+            color: #fff;
+        }
+
         .footer {
             text-align: center;
             padding: 2rem;
-            color: rgba(255, 255, 255, 0.4);
+            color: #475569;
             font-size: 0.75rem;
         }
 
         .footer a {
-            color: rgba(255, 255, 255, 0.5);
+            color: #64748b;
             text-decoration: none;
         }
 
         .footer a:hover {
-            color: #f39c12;
+            color: #10b981;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #fca5a5;
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo-text" data-testid="logo-warubi">WARUBI HUB</div>
-            <p class="tagline">Player Evaluation Engine</p>
-        </header>
-
-        <!-- Progress Bar -->
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 16.66%"></div>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="6"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>ExposureEngine</h1>
+                    <p>College Recruiting Visibility Check</p>
+                </div>
             </div>
-            <div class="progress-steps">
-                <span class="progress-step active" data-step="1">Basic Info</span>
-                <span class="progress-step" data-step="2">Club</span>
-                <span class="progress-step" data-step="3">Profile</span>
-                <span class="progress-step" data-step="4">Stats</span>
-                <span class="progress-step" data-step="5">Goals</span>
-                <span class="progress-step" data-step="6">Media</span>
+            <div class="league-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                MLS NEXT / ECNL / ELITE
             </div>
         </div>
+    </header>
 
-        <!-- Form Steps -->
-        <form id="evaluationForm">
-            <!-- Step 1: Basic Info -->
-            <div class="step active" data-step="1">
-                <div class="form-card">
-                    <h2 class="step-title">Basic Information</h2>
-                    <p class="step-subtitle">Tell us about yourself</p>
+    <main class="container">
+        <div id="formContainer">
+            <div class="intro">
+                <h2>Are you actually recruitable?</h2>
+                <p>Most players overrate their exposure. Enter your real stats, league level, and outreach to get a brutally honest AI visibility score.</p>
+            </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Full Name <span class="required">*</span></label>
-                        <input type="text" class="form-input" name="fullName" placeholder="Enter your full name" required data-testid="input-fullName">
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+            <form id="evaluationForm">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-number">1</span>
+                        <span class="section-title">The Basics</span>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email <span class="required">*</span></label>
-                        <input type="email" class="form-input" name="email" placeholder="player@email.com" required data-testid="input-email">
-                    </div>
-
-                    <div class="form-row">
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Year of Birth <span class="required">*</span></label>
-                            <select class="form-select" name="yearOfBirth" required data-testid="select-yearOfBirth">
-                                <option value="">Select year</option>
-                                <option value="2012">2012</option>
-                                <option value="2011">2011</option>
-                                <option value="2010">2010</option>
-                                <option value="2009">2009</option>
-                                <option value="2008">2008</option>
-                                <option value="2007">2007</option>
-                                <option value="2006">2006</option>
-                                <option value="2005">2005</option>
-                                <option value="2004">2004</option>
-                                <option value="2003">2003</option>
-                            </select>
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" name="fullName" required data-testid="input-fullName">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Graduation Year</label>
-                            <select class="form-select" name="gradYear" data-testid="select-gradYear">
-                                <option value="">Select year</option>
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" name="email" required data-testid="input-email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grad Year</label>
+                            <select class="form-select" name="gradYear" required data-testid="select-gradYear">
                                 <option value="2025">2025</option>
-                                <option value="2026">2026</option>
+                                <option value="2026" selected>2026</option>
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
                                 <option value="2030">2030</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Primary Position(s) <span class="required">*</span></label>
-                        <div class="checkbox-group" id="primaryPositions" data-testid="checkbox-primaryPositions">
-                            <label class="checkbox-item"><input type="checkbox" value="Goalkeeper"><span class="checkbox-label">Goalkeeper</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Center Back"><span class="checkbox-label">Center Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Left Back"><span class="checkbox-label">Left Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Right Back"><span class="checkbox-label">Right Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Defensive Midfielder"><span class="checkbox-label">Defensive Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Central Midfielder"><span class="checkbox-label">Central Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Attacking Midfielder"><span class="checkbox-label">Attacking Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Left Winger"><span class="checkbox-label">Left Winger</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Right Winger"><span class="checkbox-label">Right Winger</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Striker"><span class="checkbox-label">Striker</span></label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Secondary Position(s)</label>
-                        <div class="checkbox-group" id="secondaryPositions" data-testid="checkbox-secondaryPositions">
-                            <label class="checkbox-item"><input type="checkbox" value="Goalkeeper"><span class="checkbox-label">Goalkeeper</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Center Back"><span class="checkbox-label">Center Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Left Back"><span class="checkbox-label">Left Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Right Back"><span class="checkbox-label">Right Back</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Defensive Midfielder"><span class="checkbox-label">Defensive Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Central Midfielder"><span class="checkbox-label">Central Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Attacking Midfielder"><span class="checkbox-label">Attacking Mid</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Left Winger"><span class="checkbox-label">Left Winger</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Right Winger"><span class="checkbox-label">Right Winger</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Striker"><span class="checkbox-label">Striker</span></label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Dominant Foot <span class="required">*</span></label>
-                        <div class="radio-group" id="dominantFoot" data-testid="radio-dominantFoot">
-                            <label class="radio-item"><input type="radio" name="dominantFoot" value="right"><span class="radio-label">Right</span></label>
-                            <label class="radio-item"><input type="radio" name="dominantFoot" value="left"><span class="radio-label">Left</span></label>
-                            <label class="radio-item"><input type="radio" name="dominantFoot" value="both"><span class="radio-label">Both</span></label>
-                        </div>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-1">Continue</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 2: Club & League Context -->
-            <div class="step" data-step="2">
-                <div class="form-card">
-                    <h2 class="step-title">Club & League</h2>
-                    <p class="step-subtitle">Your current team and competition level</p>
-
-                    <div class="form-group">
-                        <label class="form-label">Current Club <span class="required">*</span></label>
-                        <input type="text" class="form-input" name="currentClub" placeholder="Enter your club name" required data-testid="input-currentClub">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Current League <span class="required">*</span></label>
-                        <select class="form-select" name="currentLeague" required data-testid="select-currentLeague">
-                            <option value="">Select league</option>
-                            <option value="MLS NEXT">MLS NEXT</option>
-                            <option value="ECNL">ECNL</option>
-                            <option value="GA">GA (Girls Academy)</option>
-                            <option value="USL Academy">USL Academy</option>
-                            <option value="E64">E64</option>
-                            <option value="PPL">PPL</option>
-                            <option value="NPL">NPL</option>
-                            <option value="UPSL Youth">UPSL Youth</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="otherLeagueGroup" style="display: none;">
-                        <label class="form-label">Specify League</label>
-                        <input type="text" class="form-input" name="otherLeague" placeholder="Enter your league name" data-testid="input-otherLeague">
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Age Group <span class="required">*</span></label>
-                            <select class="form-select" name="ageGroup" required data-testid="select-ageGroup">
-                                <option value="">Select age group</option>
-                                <option value="U13">U13</option>
-                                <option value="U14">U14</option>
-                                <option value="U15">U15</option>
-                                <option value="U16">U16</option>
-                                <option value="U17">U17</option>
-                                <option value="U18">U18</option>
-                                <option value="U19">U19</option>
+                            <label class="form-label">Primary Position</label>
+                            <select class="form-select" name="position" required data-testid="select-position">
+                                <option value="GK">Goalkeeper</option>
+                                <option value="CB">Center Back</option>
+                                <option value="FB">Full Back</option>
+                                <option value="WB">Wing Back</option>
+                                <option value="DM">Defensive Mid</option>
+                                <option value="CM" selected>Central Mid</option>
+                                <option value="AM">Attacking Mid</option>
+                                <option value="WING">Winger</option>
+                                <option value="9">Striker</option>
+                                <option value="Utility">Utility</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">State/Region <span class="required">*</span></label>
-                            <input type="text" class="form-input" name="stateRegion" placeholder="e.g., California" required data-testid="input-stateRegion">
+                            <label class="form-label">Height</label>
+                            <input type="text" class="form-input" name="height" placeholder="e.g. 5'10" data-testid="input-height">
                         </div>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-2">Back</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-2">Continue</button>
+                        <div class="form-group">
+                            <label class="form-label">State / Region</label>
+                            <input type="text" class="form-input" name="stateRegion" placeholder="e.g. SoCal, NJ, TX" required data-testid="input-stateRegion">
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Step 3: Playing Profile -->
-            <div class="step" data-step="3">
-                <div class="form-card">
-                    <h2 class="step-title">Playing Profile</h2>
-                    <p class="step-subtitle">Physical attributes and strengths</p>
-
-                    <div class="form-row">
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-number">2</span>
+                        <span class="section-title">Academics</span>
+                    </div>
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Height (inches) <span class="required">*</span></label>
-                            <input type="number" class="form-input" name="height" placeholder="e.g., 68" min="48" max="84" required data-testid="input-height">
+                            <label class="form-label">GPA (Unweighted)</label>
+                            <input type="number" step="0.01" min="0" max="4.0" class="form-input" name="gpa" placeholder="e.g. 3.5" required data-testid="input-gpa">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Weight (lbs) <span class="required">*</span></label>
-                            <input type="number" class="form-input" name="weight" placeholder="e.g., 150" min="80" max="250" required data-testid="input-weight">
+                            <label class="form-label">Test Score (Optional)</label>
+                            <input type="text" class="form-input" name="testScore" placeholder="e.g. 1300 SAT or 28 ACT" data-testid="input-testScore">
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Primary Strengths</label>
-                        <input type="text" class="form-input" name="strengthsInput" placeholder="Type a strength and press Enter" data-testid="input-strengths">
-                        <div class="tags-container" id="strengthsTags"></div>
-                        <input type="hidden" name="primaryStrengths" id="primaryStrengthsHidden">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Areas to Improve</label>
-                        <input type="text" class="form-input" name="improvementsInput" placeholder="Type an area and press Enter" data-testid="input-improvements">
-                        <div class="tags-container" id="improvementsTags"></div>
-                        <input type="hidden" name="areasToImprove" id="areasToImproveHidden">
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-3">Back</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-3">Continue</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Step 4: Experience & Stats -->
-            <div class="step" data-step="4">
-                <div class="form-card">
-                    <h2 class="step-title">Experience & Stats</h2>
-                    <p class="step-subtitle">Your playing history and performance</p>
-
-                    <div class="form-group">
-                        <label class="form-label">Years at Current Level <span class="required">*</span></label>
-                        <select class="form-select" name="yearsAtCurrentLevel" required data-testid="select-yearsAtLevel">
-                            <option value="">Select years</option>
-                            <option value="1">1 year</option>
-                            <option value="2">2 years</option>
-                            <option value="3">3 years</option>
-                            <option value="4">4 years</option>
-                            <option value="5">5+ years</option>
-                        </select>
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-number">3</span>
+                        <span class="section-title">Season History</span>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Previous Clubs/Academies</label>
-                        <input type="text" class="form-input" name="previousClubsInput" placeholder="Type a club name and press Enter" data-testid="input-previousClubs">
-                        <div class="tags-container" id="previousClubsTags"></div>
-                        <input type="hidden" name="previousClubs" id="previousClubsHidden">
-                    </div>
-
-                    <p class="step-subtitle" style="margin-top: 2rem; margin-bottom: 1rem;">Season Stats</p>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Appearances</label>
-                            <input type="number" class="form-input" name="seasonAppearances" placeholder="0" min="0" value="0" data-testid="input-appearances">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Starts</label>
-                            <input type="number" class="form-input" name="seasonStarts" placeholder="0" min="0" value="0" data-testid="input-starts">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Goals</label>
-                            <input type="number" class="form-input" name="seasonGoals" placeholder="0" min="0" value="0" data-testid="input-goals">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Assists</label>
-                            <input type="number" class="form-input" name="seasonAssists" placeholder="0" min="0" value="0" data-testid="input-assists">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Notable Achievements</label>
-                        <input type="text" class="form-input" name="achievementsInput" placeholder="e.g., ODP, state team, tournaments" data-testid="input-achievements">
-                        <div class="tags-container" id="achievementsTags"></div>
-                        <input type="hidden" name="notableAchievements" id="notableAchievementsHidden">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">National Team Experience?</label>
-                            <div class="radio-group" id="nationalTeam">
-                                <label class="radio-item"><input type="radio" name="hasNationalTeamExperience" value="true"><span class="radio-label">Yes</span></label>
-                                <label class="radio-item"><input type="radio" name="hasNationalTeamExperience" value="false" checked><span class="radio-label">No</span></label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Pro Academy Experience?</label>
-                            <div class="radio-group" id="proAcademy">
-                                <label class="radio-item"><input type="radio" name="hasProAcademyExperience" value="true"><span class="radio-label">Yes</span></label>
-                                <label class="radio-item"><input type="radio" name="hasProAcademyExperience" value="false" checked><span class="radio-label">No</span></label>
+                    <div id="seasonsContainer">
+                        <div class="season-card" data-season-index="0">
+                            <button type="button" class="remove-btn" onclick="removeSeason(0)" style="display: none;" data-testid="btn-remove-season-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                            </button>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Year</label>
+                                    <input type="number" class="form-input" name="season_year_0" value="2024" data-testid="input-season-year-0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">League</label>
+                                    <select class="form-select" name="season_league_0" data-testid="select-season-league-0">
+                                        <option value="MLS_NEXT">MLS NEXT</option>
+                                        <option value="ECNL" selected>ECNL</option>
+                                        <option value="Girls_Academy">Girls Academy</option>
+                                        <option value="ECNL_RL">ECNL RL</option>
+                                        <option value="USYS_National_League">USYS National League</option>
+                                        <option value="USL_Academy">USL Academy</option>
+                                        <option value="High_School">High School</option>
+                                        <option value="Elite_Local">Elite Local</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Team Name</label>
+                                    <input type="text" class="form-input" name="season_team_0" placeholder="Club Name" data-testid="input-season-team-0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Role</label>
+                                    <select class="form-select" name="season_role_0" data-testid="select-season-role-0">
+                                        <option value="Key_Starter" selected>Key Starter</option>
+                                        <option value="Rotation">Rotation</option>
+                                        <option value="Bench">Bench</option>
+                                        <option value="Injured">Injured</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label">Minutes Played % (Approx)</label>
+                                    <div class="range-container">
+                                        <input type="range" class="range-input" name="season_minutes_0" min="0" max="100" step="5" value="80" oninput="updateRangeDisplay(this)" data-testid="range-season-minutes-0">
+                                        <span class="range-value" id="minutes_display_0">80%</span>
+                                    </div>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label">Honors / Notes</label>
+                                    <input type="text" class="form-input" name="season_honors_0" placeholder="e.g. Captain, All-Conference" data-testid="input-season-honors-0">
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-4">Back</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-4">Continue</button>
-                    </div>
+                    <button type="button" class="add-btn" onclick="addSeason()" data-testid="btn-add-season">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Season
+                    </button>
                 </div>
-            </div>
 
-            <!-- Step 5: Aspirations & Context -->
-            <div class="step" data-step="5">
-                <div class="form-card">
-                    <h2 class="step-title">Your Goals</h2>
-                    <p class="step-subtitle">Where do you want your career to go?</p>
-
-                    <div class="form-group">
-                        <label class="form-label">Main Goals <span class="required">*</span></label>
-                        <div class="checkbox-group" id="mainGoals" data-testid="checkbox-mainGoals">
-                            <label class="checkbox-item"><input type="checkbox" value="Play college soccer"><span class="checkbox-label">Play college soccer</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Train/compete abroad"><span class="checkbox-label">Train/compete abroad</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Long-term pro ambitions"><span class="checkbox-label">Long-term pro ambitions</span></label>
-                            <label class="checkbox-item"><input type="checkbox" value="Improve within current youth level"><span class="checkbox-label">Improve at current level</span></label>
+                <div class="form-section">
+                    <div class="section-header">
+                        <span class="section-number">4</span>
+                        <span class="section-title">Recruiting Reality</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <div class="checkbox-row" onclick="toggleCheckbox('hasVideoLink')">
+                                <input type="checkbox" name="hasVideoLink" id="hasVideoLink" data-testid="checkbox-hasVideoLink">
+                                <div>
+                                    <span>I have a current Highlight Video (Hudl/YouTube)</span>
+                                    <div class="hint">No video usually means zero visibility for schools outside your driving radius.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Coaches Emailed</label>
+                            <input type="number" class="form-input" name="coachesContacted" value="0" min="0" data-testid="input-coachesContacted">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Personal Replies Received</label>
+                            <input type="number" class="form-input" name="responsesReceived" value="0" min="0" data-testid="input-responsesReceived">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Preferred Future Region <span class="required">*</span></label>
-                        <div class="radio-group" id="preferredRegion" data-testid="radio-preferredRegion">
-                            <label class="radio-item"><input type="radio" name="preferredRegion" value="USA only"><span class="radio-label">USA only</span></label>
-                            <label class="radio-item"><input type="radio" name="preferredRegion" value="USA & Europe"><span class="radio-label">USA & Europe</span></label>
-                            <label class="radio-item"><input type="radio" name="preferredRegion" value="Europe preferred"><span class="radio-label">Europe preferred</span></label>
-                            <label class="radio-item"><input type="radio" name="preferredRegion" value="Open"><span class="radio-label">Open to all</span></label>
+                    <div style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <label class="form-label" style="margin: 0;">Major Events (Last 12 Months)</label>
+                            <button type="button" class="add-btn" style="width: auto; padding: 0.375rem 0.75rem;" onclick="addEvent()" data-testid="btn-add-event">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Add Event
+                            </button>
+                        </div>
+                        <div id="eventsContainer">
+                            <p style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 0.75rem;">No events added. National showcases help visibility scoring.</p>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">When are you ready for a next step? <span class="required">*</span></label>
-                        <div class="radio-group" id="readinessTimeline" data-testid="radio-readiness">
-                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="6-12 months"><span class="radio-label">6-12 months</span></label>
-                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="1-2 years"><span class="radio-label">1-2 years</span></label>
-                            <label class="radio-item"><input type="radio" name="readinessTimeline" value="2+ years"><span class="radio-label">2+ years</span></label>
-                        </div>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-5">Back</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()" data-testid="btn-next-5">Continue</button>
+                <div class="form-section">
+                    <div class="checkbox-row" onclick="toggleCheckbox('consentToContact')">
+                        <input type="checkbox" name="consentToContact" id="consentToContact" checked data-testid="checkbox-consentToContact">
+                        <span>I consent to be contacted by Warubi and its partners about opportunities.</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Step 6: Media & Contact -->
-            <div class="step" data-step="6">
-                <div class="form-card">
-                    <h2 class="step-title">Media & Contact</h2>
-                    <p class="step-subtitle">Share your highlight video</p>
-
-                    <div class="form-group">
-                        <label class="form-label">Highlight Video Link <span class="required">*</span></label>
-                        <input type="url" class="form-input" name="highlightVideoUrl" placeholder="https://youtube.com/watch?v=..." required data-testid="input-highlightVideo">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Full Game Links (optional)</label>
-                        <input type="text" class="form-input" name="gameLinksInput" placeholder="Paste a link and press Enter" data-testid="input-gameLinks">
-                        <div class="tags-container" id="gameLinksTags"></div>
-                        <input type="hidden" name="fullGameLinks" id="fullGameLinksHidden">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="checkbox-item" style="padding: 1rem;">
-                            <input type="checkbox" name="consentToContact" checked>
-                            <span class="checkbox-label">I consent to be contacted by Warubi and its partners about my evaluation results and opportunities.</span>
-                        </label>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep()" data-testid="btn-prev-6">Back</button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn" data-testid="btn-submit">Get My Evaluation</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <!-- Loading Spinner -->
-        <div class="spinner" id="loadingSpinner"></div>
-
-        <!-- Result Page -->
-        <div class="result-container" id="resultContainer">
-            <div class="result-header">
-                <h2 class="result-title">Your Evaluation</h2>
-            </div>
-
-            <div class="score-circle">
-                <span class="score-value" id="resultScore">--</span>
-            </div>
-
-            <div class="result-bucket" id="resultBucket">Bucket --</div>
-            <div class="result-rating" id="resultRating">--</div>
-
-            <div class="result-tags" id="resultTags"></div>
-
-            <div class="result-summary" id="resultSummary"></div>
-
-            <p class="result-explanation">
-                This is an initial, automated evaluation based on the information you submitted. 
-                Use this as a starting point to understand how your current profile looks on paper. 
-                Coaches and scouts always look beyond numbers, but this helps you benchmark your progress.
-            </p>
-
-            <a href="#" class="cta-button" id="ctaButton" data-testid="btn-create-account">
-                Create Your Free Warubi Account
-            </a>
-
-            <a href="/ecosystem.html" class="ecosystem-link" data-testid="link-ecosystem">
-                Explore Warubi Sports Ecosystem →
-            </a>
+                <button type="submit" class="submit-btn" id="submitBtn" data-testid="btn-submit">
+                    Calculate Visibility
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                </button>
+            </form>
         </div>
 
-        <footer class="footer">
-            <p>&copy; 2025 Warubi Sports. <a href="/ecosystem.html">Explore Pathways</a></p>
-        </footer>
-    </div>
+        <div id="resultsContainer" class="results-container">
+            <div class="summary-card">
+                <h3>Recruiting Reality Check</h3>
+                <p class="summary-text" id="summaryText"></p>
+            </div>
+
+            <div class="score-badges" id="scoreBadges"></div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Estimated Visibility by Level</div>
+                    <div class="chart-container">
+                        <canvas id="visibilityChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Profile Readiness</div>
+                    <div class="chart-container">
+                        <canvas id="readinessChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insights-card strengths">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Key Strengths
+                    </h4>
+                    <ul class="insights-list" id="strengthsList"></ul>
+                </div>
+                <div class="insights-card risks">
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Critical Risks
+                    </h4>
+                    <ul class="insights-list" id="risksList"></ul>
+                </div>
+            </div>
+
+            <div class="action-plan">
+                <div class="action-plan-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Action Plan
+                </div>
+                <div id="actionPlanList"></div>
+            </div>
+
+            <button class="reset-btn" onclick="resetForm()" data-testid="btn-reset">
+                Start New Analysis
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 ExposureEngine by Warubi Sports. Not affiliated with NCAA, MLS NEXT or ECNL.</p>
+        <p><a href="/ecosystem.html">Explore Pathways</a></p>
+    </footer>
 
     <script>
-        // Form state
-        let currentStep = 1;
-        const totalSteps = 6;
-        const formData = {};
-        
-        // Tags storage
-        const tagsData = {
-            primaryStrengths: [],
-            areasToImprove: [],
-            previousClubs: [],
-            notableAchievements: [],
-            fullGameLinks: []
-        };
+        let seasonCount = 1;
+        let eventCount = 0;
+        let visibilityChart = null;
+        let readinessChart = null;
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initCheckboxes();
-            initRadios();
-            initTagInputs();
-            initLeagueToggle();
-            initFormSubmit();
-        });
-
-        // Checkbox handling
-        function initCheckboxes() {
-            document.querySelectorAll('.checkbox-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const checkbox = this.querySelector('input[type="checkbox"]');
-                    checkbox.checked = !checkbox.checked;
-                    this.classList.toggle('selected', checkbox.checked);
-                });
-            });
+        function updateRangeDisplay(input) {
+            const index = input.name.split('_').pop();
+            document.getElementById(`minutes_display_${index}`).textContent = input.value + '%';
         }
 
-        // Radio handling
-        function initRadios() {
-            document.querySelectorAll('.radio-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const radio = this.querySelector('input[type="radio"]');
-                    radio.checked = true;
-                    const group = this.closest('.radio-group');
-                    group.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            checkbox.checked = !checkbox.checked;
         }
 
-        // Tag inputs
-        function initTagInputs() {
-            const tagConfigs = [
-                { input: 'strengthsInput', container: 'strengthsTags', hidden: 'primaryStrengthsHidden', key: 'primaryStrengths' },
-                { input: 'improvementsInput', container: 'improvementsTags', hidden: 'areasToImproveHidden', key: 'areasToImprove' },
-                { input: 'previousClubsInput', container: 'previousClubsTags', hidden: 'previousClubsHidden', key: 'previousClubs' },
-                { input: 'achievementsInput', container: 'achievementsTags', hidden: 'notableAchievementsHidden', key: 'notableAchievements' },
-                { input: 'gameLinksInput', container: 'gameLinksTags', hidden: 'fullGameLinksHidden', key: 'fullGameLinks' }
-            ];
-
-            tagConfigs.forEach(config => {
-                const input = document.querySelector(`input[name="${config.input}"]`);
-                if (input) {
-                    input.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            const value = this.value.trim();
-                            if (value && !tagsData[config.key].includes(value)) {
-                                tagsData[config.key].push(value);
-                                renderTags(config.container, config.key);
-                                document.getElementById(config.hidden).value = JSON.stringify(tagsData[config.key]);
-                            }
-                            this.value = '';
-                        }
-                    });
-                }
-            });
-        }
-
-        function renderTags(containerId, key) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = tagsData[key].map((tag, index) => 
-                `<span class="tag">${tag}<span class="tag-remove" onclick="removeTag('${key}', ${index}, '${containerId}')">&times;</span></span>`
-            ).join('');
-        }
-
-        function removeTag(key, index, containerId) {
-            tagsData[key].splice(index, 1);
-            renderTags(containerId, key);
-            const hiddenId = key === 'primaryStrengths' ? 'primaryStrengthsHidden' :
-                            key === 'areasToImprove' ? 'areasToImproveHidden' :
-                            key === 'previousClubs' ? 'previousClubsHidden' :
-                            key === 'notableAchievements' ? 'notableAchievementsHidden' : 'fullGameLinksHidden';
-            document.getElementById(hiddenId).value = JSON.stringify(tagsData[key]);
-        }
-
-        // League toggle
-        function initLeagueToggle() {
-            const leagueSelect = document.querySelector('select[name="currentLeague"]');
-            if (leagueSelect) {
-                leagueSelect.addEventListener('change', function() {
-                    const otherGroup = document.getElementById('otherLeagueGroup');
-                    otherGroup.style.display = this.value === 'Other' ? 'block' : 'none';
-                });
-            }
-        }
-
-        // Navigation
-        function nextStep() {
-            if (validateStep(currentStep)) {
-                if (currentStep < totalSteps) {
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
-                    currentStep++;
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
-                    updateProgress();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
-                currentStep--;
-                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
-                updateProgress();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function updateProgress() {
-            const progress = (currentStep / totalSteps) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
+        function addSeason() {
+            const container = document.getElementById('seasonsContainer');
+            const index = seasonCount;
+            const year = 2024 - index;
             
-            document.querySelectorAll('.progress-step').forEach((step, index) => {
-                step.classList.remove('active', 'completed');
-                if (index + 1 === currentStep) {
-                    step.classList.add('active');
-                } else if (index + 1 < currentStep) {
-                    step.classList.add('completed');
-                }
-            });
-        }
-
-        // Validation
-        function validateStep(step) {
-            const currentStepEl = document.querySelector(`.step[data-step="${step}"]`);
-            let valid = true;
-
-            // Check required inputs
-            currentStepEl.querySelectorAll('input[required], select[required]').forEach(input => {
-                if (!input.value) {
-                    input.classList.add('error');
-                    valid = false;
-                } else {
-                    input.classList.remove('error');
-                }
-            });
-
-            // Check required checkboxes (at least one selected)
-            if (step === 1) {
-                const primaryPositions = currentStepEl.querySelectorAll('#primaryPositions input:checked');
-                if (primaryPositions.length === 0) {
-                    valid = false;
-                    alert('Please select at least one primary position');
-                }
-                const dominantFoot = currentStepEl.querySelector('input[name="dominantFoot"]:checked');
-                if (!dominantFoot) {
-                    valid = false;
-                    alert('Please select your dominant foot');
-                }
-            }
-
-            if (step === 5) {
-                const mainGoals = currentStepEl.querySelectorAll('#mainGoals input:checked');
-                if (mainGoals.length === 0) {
-                    valid = false;
-                    alert('Please select at least one goal');
-                }
-                const preferredRegion = currentStepEl.querySelector('input[name="preferredRegion"]:checked');
-                if (!preferredRegion) {
-                    valid = false;
-                    alert('Please select your preferred region');
-                }
-                const readiness = currentStepEl.querySelector('input[name="readinessTimeline"]:checked');
-                if (!readiness) {
-                    valid = false;
-                    alert('Please select your readiness timeline');
-                }
-            }
-
-            return valid;
-        }
-
-        // Form submission
-        function initFormSubmit() {
-            document.getElementById('evaluationForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                if (!validateStep(6)) return;
-
-                const form = e.target;
-                const submitBtn = document.getElementById('submitBtn');
-                const spinner = document.getElementById('loadingSpinner');
-                
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Submitting...';
-                spinner.style.display = 'block';
-
-                // Collect form data
-                const data = {
-                    fullName: form.fullName.value,
-                    email: form.email.value,
-                    yearOfBirth: parseInt(form.yearOfBirth.value),
-                    gradYear: form.gradYear.value ? parseInt(form.gradYear.value) : null,
-                    primaryPositions: Array.from(document.querySelectorAll('#primaryPositions input:checked')).map(i => i.value),
-                    secondaryPositions: Array.from(document.querySelectorAll('#secondaryPositions input:checked')).map(i => i.value),
-                    dominantFoot: form.querySelector('input[name="dominantFoot"]:checked')?.value,
-                    currentClub: form.currentClub.value,
-                    currentLeague: form.currentLeague.value,
-                    otherLeague: form.otherLeague?.value || null,
-                    ageGroup: form.ageGroup.value,
-                    stateRegion: form.stateRegion.value,
-                    height: parseInt(form.height.value),
-                    weight: parseInt(form.weight.value),
-                    primaryStrengths: tagsData.primaryStrengths,
-                    areasToImprove: tagsData.areasToImprove,
-                    yearsAtCurrentLevel: parseInt(form.yearsAtCurrentLevel.value),
-                    previousClubs: tagsData.previousClubs,
-                    seasonAppearances: parseInt(form.seasonAppearances.value) || 0,
-                    seasonStarts: parseInt(form.seasonStarts.value) || 0,
-                    seasonGoals: parseInt(form.seasonGoals.value) || 0,
-                    seasonAssists: parseInt(form.seasonAssists.value) || 0,
-                    notableAchievements: tagsData.notableAchievements,
-                    hasNationalTeamExperience: form.querySelector('input[name="hasNationalTeamExperience"]:checked')?.value === 'true',
-                    hasProAcademyExperience: form.querySelector('input[name="hasProAcademyExperience"]:checked')?.value === 'true',
-                    mainGoals: Array.from(document.querySelectorAll('#mainGoals input:checked')).map(i => i.value),
-                    preferredRegion: form.querySelector('input[name="preferredRegion"]:checked')?.value,
-                    readinessTimeline: form.querySelector('input[name="readinessTimeline"]:checked')?.value,
-                    highlightVideoUrl: form.highlightVideoUrl.value,
-                    fullGameLinks: tagsData.fullGameLinks,
-                    consentToContact: form.consentToContact.checked
-                };
-
-                try {
-                    const response = await fetch('/public/evaluations', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        showResult(result.evaluation);
-                    } else {
-                        throw new Error(result.message || 'Submission failed');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Something went wrong. Please try again.');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Get My Evaluation';
-                } finally {
-                    spinner.style.display = 'none';
-                }
-            });
-        }
-
-        function showResult(evaluation) {
-            // Hide form elements
-            document.getElementById('evaluationForm').style.display = 'none';
-            document.getElementById('progressContainer').style.display = 'none';
-
-            // Show result
-            const resultContainer = document.getElementById('resultContainer');
-            resultContainer.classList.add('active');
-
-            // Populate result data
-            document.getElementById('resultScore').textContent = evaluation.score;
-            document.getElementById('resultBucket').textContent = 'Bucket ' + evaluation.bucket;
-            document.getElementById('resultRating').textContent = evaluation.rating;
-
-            // Tags
-            const tagsContainer = document.getElementById('resultTags');
-            tagsContainer.innerHTML = evaluation.tags.map(tag => 
-                `<span class="result-tag">${tag}</span>`
-            ).join('');
-
-            // Summary
-            const summary = evaluation.summary;
-            const summaryHtml = `
-                <div class="summary-row">
-                    <span class="summary-label">Name</span>
-                    <span class="summary-value">${summary.fullName}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Position</span>
-                    <span class="summary-value">${summary.position}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">League</span>
-                    <span class="summary-value">${summary.league}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Age Group</span>
-                    <span class="summary-value">${summary.ageGroup}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Club</span>
-                    <span class="summary-value">${summary.club}</span>
+            const card = document.createElement('div');
+            card.className = 'season-card';
+            card.dataset.seasonIndex = index;
+            card.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeSeason(${index})" data-testid="btn-remove-season-${index}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <input type="number" class="form-input" name="season_year_${index}" value="${year}" data-testid="input-season-year-${index}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">League</label>
+                        <select class="form-select" name="season_league_${index}" data-testid="select-season-league-${index}">
+                            <option value="MLS_NEXT">MLS NEXT</option>
+                            <option value="ECNL">ECNL</option>
+                            <option value="Girls_Academy">Girls Academy</option>
+                            <option value="ECNL_RL">ECNL RL</option>
+                            <option value="USYS_National_League">USYS National League</option>
+                            <option value="USL_Academy">USL Academy</option>
+                            <option value="High_School" selected>High School</option>
+                            <option value="Elite_Local">Elite Local</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team Name</label>
+                        <input type="text" class="form-input" name="season_team_${index}" placeholder="Club Name" data-testid="input-season-team-${index}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="season_role_${index}" data-testid="select-season-role-${index}">
+                            <option value="Key_Starter">Key Starter</option>
+                            <option value="Rotation" selected>Rotation</option>
+                            <option value="Bench">Bench</option>
+                            <option value="Injured">Injured</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Minutes Played % (Approx)</label>
+                        <div class="range-container">
+                            <input type="range" class="range-input" name="season_minutes_${index}" min="0" max="100" step="5" value="50" oninput="updateRangeDisplay(this)" data-testid="range-season-minutes-${index}">
+                            <span class="range-value" id="minutes_display_${index}">50%</span>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Honors / Notes</label>
+                        <input type="text" class="form-input" name="season_honors_${index}" placeholder="e.g. Captain, All-Conference" data-testid="input-season-honors-${index}">
+                    </div>
                 </div>
             `;
-            document.getElementById('resultSummary').innerHTML = summaryHtml;
+            container.appendChild(card);
+            seasonCount++;
+            updateRemoveButtons();
+        }
 
+        function removeSeason(index) {
+            const card = document.querySelector(`.season-card[data-season-index="${index}"]`);
+            if (card) card.remove();
+            updateRemoveButtons();
+        }
+
+        function updateRemoveButtons() {
+            const cards = document.querySelectorAll('.season-card');
+            cards.forEach((card, i) => {
+                const btn = card.querySelector('.remove-btn');
+                if (btn) btn.style.display = cards.length > 1 ? 'block' : 'none';
+            });
+        }
+
+        function addEvent() {
+            const container = document.getElementById('eventsContainer');
+            if (eventCount === 0) container.innerHTML = '';
+            
+            const index = eventCount;
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.dataset.eventIndex = index;
+            card.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeEvent(${index})" data-testid="btn-remove-event-${index}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                </button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" class="form-input" name="event_name_${index}" placeholder="e.g. MLS NEXT Fest" data-testid="input-event-name-${index}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" name="event_type_${index}" data-testid="select-event-type-${index}">
+                            <option value="Showcase">Showcase</option>
+                            <option value="ID_Camp">ID Camp</option>
+                            <option value="ODP">ODP / Select</option>
+                            <option value="HS_Playoffs">HS Playoffs</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Colleges Noted</label>
+                        <input type="text" class="form-input" name="event_colleges_${index}" placeholder="Colleges you spoke to at this event" data-testid="input-event-colleges-${index}">
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+            eventCount++;
+        }
+
+        function removeEvent(index) {
+            const card = document.querySelector(`.event-card[data-event-index="${index}"]`);
+            if (card) card.remove();
+            if (document.querySelectorAll('.event-card').length === 0) {
+                document.getElementById('eventsContainer').innerHTML = '<p style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 0.75rem;">No events added. National showcases help visibility scoring.</p>';
+            }
+        }
+
+        function collectSeasons() {
+            const seasons = [];
+            document.querySelectorAll('.season-card').forEach(card => {
+                const index = card.dataset.seasonIndex;
+                seasons.push({
+                    year: parseInt(document.querySelector(`[name="season_year_${index}"]`)?.value) || 2024,
+                    teamName: document.querySelector(`[name="season_team_${index}"]`)?.value || '',
+                    league: document.querySelector(`[name="season_league_${index}"]`)?.value || 'ECNL',
+                    minutesPlayedPercent: parseInt(document.querySelector(`[name="season_minutes_${index}"]`)?.value) || 50,
+                    mainRole: document.querySelector(`[name="season_role_${index}"]`)?.value || 'Rotation',
+                    goals: 0,
+                    assists: 0,
+                    honors: document.querySelector(`[name="season_honors_${index}"]`)?.value || ''
+                });
+            });
+            return seasons;
+        }
+
+        function collectEvents() {
+            const events = [];
+            document.querySelectorAll('.event-card').forEach(card => {
+                const index = card.dataset.eventIndex;
+                const name = document.querySelector(`[name="event_name_${index}"]`)?.value;
+                if (name) {
+                    events.push({
+                        name: name,
+                        type: document.querySelector(`[name="event_type_${index}"]`)?.value || 'Showcase',
+                        collegesNoted: document.querySelector(`[name="event_colleges_${index}"]`)?.value || ''
+                    });
+                }
+            });
+            return events;
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Analyzing Trajectory...';
+            
+            try {
+                const formData = {
+                    fullName: document.querySelector('[name="fullName"]').value,
+                    email: document.querySelector('[name="email"]').value,
+                    gradYear: document.querySelector('[name="gradYear"]').value,
+                    position: document.querySelector('[name="position"]').value,
+                    height: document.querySelector('[name="height"]').value,
+                    stateRegion: document.querySelector('[name="stateRegion"]').value,
+                    gpa: parseFloat(document.querySelector('[name="gpa"]').value),
+                    testScore: document.querySelector('[name="testScore"]').value,
+                    seasons: collectSeasons(),
+                    hasVideoLink: document.getElementById('hasVideoLink').checked,
+                    coachesContacted: parseInt(document.querySelector('[name="coachesContacted"]').value) || 0,
+                    responsesReceived: parseInt(document.querySelector('[name="responsesReceived"]').value) || 0,
+                    events: collectEvents(),
+                    consentToContact: document.getElementById('consentToContact').checked
+                };
+                
+                const response = await fetch('/public/evaluations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Submission failed');
+                }
+                
+                displayResults(result.evaluation);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.textContent = error.message || 'Failed to analyze profile. Please try again.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Calculate Visibility <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('resultsContainer').classList.add('active');
+            
+            document.getElementById('summaryText').textContent = data.plainLanguageSummary || 'Analysis complete.';
+            
+            const badgesContainer = document.getElementById('scoreBadges');
+            badgesContainer.innerHTML = data.visibilityScores.map(s => `
+                <div class="score-badge">
+                    <span class="level">${s.level}</span>
+                    <span class="percent">${s.visibilityPercent}%</span>
+                </div>
+            `).join('');
+            
+            const strengthsList = document.getElementById('strengthsList');
+            strengthsList.innerHTML = (data.keyStrengths || []).map(s => `<li>${s}</li>`).join('');
+            
+            const risksList = document.getElementById('risksList');
+            risksList.innerHTML = (data.keyRisks || []).map(r => `
+                <li>
+                    <span class="risk-severity ${r.severity.toLowerCase()}">${r.severity}</span>
+                    ${r.message}
+                </li>
+            `).join('');
+            
+            const actionList = document.getElementById('actionPlanList');
+            actionList.innerHTML = (data.actionPlan || []).map(a => `
+                <div class="action-item">
+                    <span class="action-timeframe ${a.timeframe === 'Next_30_Days' ? 'next-30' : a.timeframe === 'Next_90_Days' ? 'next-90' : 'next-12'}">
+                        ${a.timeframe.replace(/_/g, ' ')}
+                    </span>
+                    <span class="action-description">${a.description}</span>
+                    ${a.impact === 'High' ? '<span class="action-impact">High Impact</span>' : ''}
+                </div>
+            `).join('');
+            
+            createVisibilityChart(data.visibilityScores);
+            createReadinessChart(data.readinessScore);
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        function createVisibilityChart(scores) {
+            const ctx = document.getElementById('visibilityChart').getContext('2d');
+            
+            if (visibilityChart) visibilityChart.destroy();
+            
+            const colors = scores.map(s => {
+                if (s.visibilityPercent >= 50) return '#10b981';
+                if (s.visibilityPercent >= 20) return '#fbbf24';
+                return '#64748b';
+            });
+            
+            visibilityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: scores.map(s => s.level),
+                    datasets: [{
+                        data: scores.map(s => s.visibilityPercent),
+                        backgroundColor: colors,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.raw}% visibility`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            max: 100,
+                            grid: { color: '#334155' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#e2e8f0', font: { weight: 600 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createReadinessChart(readiness) {
+            const ctx = document.getElementById('readinessChart').getContext('2d');
+            
+            if (readinessChart) readinessChart.destroy();
+            
+            readinessChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Athletic', 'Technical', 'Tactical', 'Academic', 'Market'],
+                    datasets: [{
+                        data: [
+                            readiness.athletic || 0,
+                            readiness.technical || 0,
+                            readiness.tactical || 0,
+                            readiness.academic || 0,
+                            readiness.market || 0
+                        ],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: '#334155' },
+                            angleLines: { color: '#334155' },
+                            pointLabels: { color: '#94a3b8', font: { size: 10 } },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('formContainer').style.display = 'block';
+            document.getElementById('evaluationForm').reset();
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').innerHTML = 'Calculate Visibility <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>';
+            
+            const seasonsContainer = document.getElementById('seasonsContainer');
+            seasonsContainer.innerHTML = '';
+            seasonCount = 0;
+            addSeason();
+            
+            document.getElementById('eventsContainer').innerHTML = '<p style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 0.75rem;">No events added. National showcases help visibility scoring.</p>';
+            eventCount = 0;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('evaluationForm').addEventListener('submit', handleSubmit);
     </script>
 </body>
 </html>

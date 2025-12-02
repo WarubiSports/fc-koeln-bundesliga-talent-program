@@ -1,30 +1,77 @@
 import { Router, Request, Response } from 'express';
 import { pool } from '../db.js';
-import { calculateEvaluation, EvaluationInput, LEAGUES, AGE_GROUPS, POSITIONS, MAIN_GOALS, PREFERRED_REGIONS, READINESS_TIMELINES } from '../services/evaluationScoring.js';
+import { analyzePlayerExposure, AnalysisResult } from '../services/exposureEngine.js';
 
 const router = Router();
 
-// Get form configuration (public) - MUST come before :id route
+const LEAGUES = [
+  { value: 'MLS_NEXT', label: 'MLS NEXT' },
+  { value: 'ECNL', label: 'ECNL' },
+  { value: 'Girls_Academy', label: 'Girls Academy' },
+  { value: 'ECNL_RL', label: 'ECNL RL' },
+  { value: 'USYS_National_League', label: 'USYS National League' },
+  { value: 'USL_Academy', label: 'USL Academy' },
+  { value: 'High_School', label: 'High School' },
+  { value: 'Elite_Local', label: 'Elite Local' },
+  { value: 'Other', label: 'Other' }
+];
+
+const POSITIONS = [
+  { value: 'GK', label: 'Goalkeeper' },
+  { value: 'CB', label: 'Center Back' },
+  { value: 'FB', label: 'Full Back' },
+  { value: 'WB', label: 'Wing Back' },
+  { value: 'DM', label: 'Defensive Mid' },
+  { value: 'CM', label: 'Central Mid' },
+  { value: 'AM', label: 'Attacking Mid' },
+  { value: 'WING', label: 'Winger' },
+  { value: '9', label: 'Striker' },
+  { value: 'Utility', label: 'Utility' }
+];
+
+const ROLES = [
+  { value: 'Key_Starter', label: 'Key Starter' },
+  { value: 'Rotation', label: 'Rotation' },
+  { value: 'Bench', label: 'Bench' },
+  { value: 'Injured', label: 'Injured' }
+];
+
+const EVENT_TYPES = [
+  { value: 'Showcase', label: 'Showcase' },
+  { value: 'ID_Camp', label: 'ID Camp' },
+  { value: 'ODP', label: 'ODP / Select' },
+  { value: 'HS_Playoffs', label: 'HS Playoffs' },
+  { value: 'Other', label: 'Other' }
+];
+
 router.get('/evaluations/config/options', async (_req: Request, res: Response) => {
   res.json({
     success: true,
     options: {
       leagues: LEAGUES,
-      ageGroups: AGE_GROUPS,
       positions: POSITIONS,
-      mainGoals: MAIN_GOALS,
-      preferredRegions: PREFERRED_REGIONS,
-      readinessTimelines: READINESS_TIMELINES,
+      roles: ROLES,
+      eventTypes: EVENT_TYPES,
+      gradYears: [2025, 2026, 2027, 2028, 2029, 2030],
+      states: [
+        'Alabama', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+        'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana',
+        'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
+        'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska',
+        'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina',
+        'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+      ]
     }
   });
 });
 
-// Get all evaluations (for admin view) - MUST come before :id route
 router.get('/evaluations/all', async (_req: Request, res: Response) => {
   try {
     const result = await pool.query(
-      `SELECT id, full_name, email, current_league, age_group, state_region,
-              score, bucket, rating, tags, created_at
+      `SELECT id, full_name, email, position, grad_year, state_region, gpa,
+              score, bucket, rating, tags, visibility_scores, created_at
        FROM player_evaluations
        ORDER BY created_at DESC
        LIMIT 500`
@@ -34,13 +81,15 @@ router.get('/evaluations/all', async (_req: Request, res: Response) => {
       id: row.id,
       fullName: row.full_name,
       email: row.email,
-      currentLeague: row.current_league,
-      ageGroup: row.age_group,
+      position: row.position,
+      gradYear: row.grad_year,
       stateRegion: row.state_region,
+      gpa: row.gpa,
       score: row.score,
       bucket: row.bucket,
       rating: row.rating,
       tags: JSON.parse(row.tags || '[]'),
+      visibilityScores: JSON.parse(row.visibility_scores || '[]'),
       createdAt: row.created_at
     }));
 
@@ -58,23 +107,14 @@ router.get('/evaluations/all', async (_req: Request, res: Response) => {
   }
 });
 
-// Public endpoint - no authentication required
-// Submit a new player evaluation
 router.post('/evaluations', async (req: Request, res: Response) => {
   try {
     const data = req.body;
     
-    // Validate required fields
-    const requiredFields = [
-      'fullName', 'email', 'yearOfBirth', 'primaryPositions', 'dominantFoot',
-      'currentClub', 'currentLeague', 'ageGroup', 'stateRegion',
-      'height', 'weight', 'yearsAtCurrentLevel',
-      'mainGoals', 'preferredRegion', 'readinessTimeline',
-      'highlightVideoUrl'
-    ];
+    const requiredFields = ['fullName', 'email', 'gradYear', 'position', 'stateRegion', 'gpa', 'seasons'];
     
     for (const field of requiredFields) {
-      if (!data[field]) {
+      if (data[field] === undefined || data[field] === null || data[field] === '') {
         return res.status(400).json({
           success: false,
           message: `Missing required field: ${field}`
@@ -82,114 +122,87 @@ router.post('/evaluations', async (req: Request, res: Response) => {
       }
     }
 
-    // Prepare evaluation input
-    const evaluationInput: EvaluationInput = {
+    const seasons = Array.isArray(data.seasons) ? data.seasons : JSON.parse(data.seasons || '[]');
+    const events = Array.isArray(data.events) ? data.events : JSON.parse(data.events || '[]');
+
+    if (seasons.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one season is required'
+      });
+    }
+
+    const playerProfile = {
       fullName: data.fullName,
-      yearOfBirth: data.yearOfBirth,
-      gradYear: data.gradYear,
-      primaryPositions: Array.isArray(data.primaryPositions) ? data.primaryPositions : [data.primaryPositions],
-      secondaryPositions: data.secondaryPositions ? (Array.isArray(data.secondaryPositions) ? data.secondaryPositions : [data.secondaryPositions]) : [],
-      dominantFoot: data.dominantFoot,
-      currentClub: data.currentClub,
-      currentLeague: data.currentLeague,
-      ageGroup: data.ageGroup,
+      email: data.email,
+      gradYear: parseInt(data.gradYear),
+      position: data.position,
+      height: data.height || undefined,
       stateRegion: data.stateRegion,
-      height: data.height,
-      weight: data.weight,
-      primaryStrengths: data.primaryStrengths || [],
-      areasToImprove: data.areasToImprove || [],
-      yearsAtCurrentLevel: data.yearsAtCurrentLevel,
-      previousClubs: data.previousClubs || [],
-      seasonAppearances: data.seasonAppearances || 0,
-      seasonStarts: data.seasonStarts || 0,
-      seasonGoals: data.seasonGoals || 0,
-      seasonAssists: data.seasonAssists || 0,
-      notableAchievements: data.notableAchievements || [],
-      hasNationalTeamExperience: data.hasNationalTeamExperience || false,
-      hasProAcademyExperience: data.hasProAcademyExperience || false,
-      mainGoals: Array.isArray(data.mainGoals) ? data.mainGoals : [data.mainGoals],
-      preferredRegion: data.preferredRegion,
-      readinessTimeline: data.readinessTimeline,
+      gpa: parseFloat(data.gpa),
+      testScore: data.testScore || undefined,
+      seasons: seasons,
+      hasVideoLink: data.hasVideoLink === true || data.hasVideoLink === 'true',
+      coachesContacted: parseInt(data.coachesContacted) || 0,
+      responsesReceived: parseInt(data.responsesReceived) || 0,
+      events: events
     };
 
-    // Calculate evaluation score, bucket, rating, and tags
-    const evaluation = calculateEvaluation(evaluationInput);
+    let analysisResult: AnalysisResult;
+    
+    try {
+      analysisResult = await analyzePlayerExposure(playerProfile);
+    } catch (aiError) {
+      console.error('AI Analysis failed, using fallback:', aiError);
+      analysisResult = generateFallbackAnalysis(playerProfile);
+    }
 
-    // Insert into database
     const result = await pool.query(
       `INSERT INTO player_evaluations (
-        app_id,
-        full_name, email, year_of_birth, grad_year, primary_positions, secondary_positions, dominant_foot,
-        current_club, current_league, other_league, age_group, state_region,
-        height, weight, primary_strengths, areas_to_improve,
-        years_at_current_level, previous_clubs, season_appearances, season_starts, season_goals, season_assists,
-        notable_achievements, has_national_team_experience, national_team_details,
-        has_pro_academy_experience, pro_academy_details,
-        main_goals, preferred_region, readiness_timeline,
-        highlight_video_url, full_game_links, consent_to_contact,
+        app_id, full_name, email, grad_year, position, height, state_region,
+        gpa, test_score, seasons, has_video_link, coaches_contacted, responses_received,
+        events, consent_to_contact,
+        visibility_scores, readiness_score, key_strengths, key_risks, action_plan, plain_language_summary,
         score, bucket, rating, tags
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38
-      ) RETURNING id, score, bucket, rating, tags`,
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25
+      ) RETURNING id`,
       [
         'warubi-hub',
         data.fullName,
         data.email,
-        data.yearOfBirth,
-        data.gradYear || null,
-        JSON.stringify(evaluationInput.primaryPositions),
-        JSON.stringify(evaluationInput.secondaryPositions),
-        data.dominantFoot,
-        data.currentClub,
-        data.currentLeague,
-        data.otherLeague || null,
-        data.ageGroup,
+        playerProfile.gradYear,
+        data.position,
+        data.height || null,
         data.stateRegion,
-        data.height,
-        data.weight,
-        JSON.stringify(data.primaryStrengths || []),
-        JSON.stringify(data.areasToImprove || []),
-        data.yearsAtCurrentLevel,
-        JSON.stringify(data.previousClubs || []),
-        data.seasonAppearances || 0,
-        data.seasonStarts || 0,
-        data.seasonGoals || 0,
-        data.seasonAssists || 0,
-        JSON.stringify(data.notableAchievements || []),
-        data.hasNationalTeamExperience || false,
-        data.nationalTeamDetails || null,
-        data.hasProAcademyExperience || false,
-        data.proAcademyDetails || null,
-        JSON.stringify(evaluationInput.mainGoals),
-        data.preferredRegion,
-        data.readinessTimeline,
-        data.highlightVideoUrl,
-        JSON.stringify(data.fullGameLinks || []),
+        playerProfile.gpa,
+        data.testScore || null,
+        JSON.stringify(seasons),
+        playerProfile.hasVideoLink,
+        playerProfile.coachesContacted,
+        playerProfile.responsesReceived,
+        JSON.stringify(events),
         data.consentToContact !== false,
-        evaluation.score,
-        evaluation.bucket,
-        evaluation.rating,
-        JSON.stringify(evaluation.tags)
+        JSON.stringify(analysisResult.visibilityScores),
+        JSON.stringify(analysisResult.readinessScore),
+        JSON.stringify(analysisResult.keyStrengths),
+        JSON.stringify(analysisResult.keyRisks),
+        JSON.stringify(analysisResult.actionPlan),
+        analysisResult.plainLanguageSummary,
+        analysisResult.overallScore,
+        analysisResult.bucket,
+        analysisResult.rating,
+        JSON.stringify(analysisResult.tags)
       ]
     );
 
-    const newEvaluation = result.rows[0];
+    const newId = result.rows[0].id;
 
     res.status(201).json({
       success: true,
       evaluation: {
-        id: newEvaluation.id,
-        score: newEvaluation.score,
-        bucket: newEvaluation.bucket,
-        rating: newEvaluation.rating,
-        tags: JSON.parse(newEvaluation.tags || '[]'),
-        summary: {
-          fullName: data.fullName,
-          position: evaluationInput.primaryPositions[0],
-          league: data.currentLeague,
-          ageGroup: data.ageGroup,
-          club: data.currentClub,
-        }
+        id: newId,
+        ...analysisResult
       }
     });
 
@@ -202,12 +215,10 @@ router.post('/evaluations', async (req: Request, res: Response) => {
   }
 });
 
-// Get evaluation by ID (for result page) - MUST come after static routes
 router.get('/evaluations/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Validate that id is a number
     if (isNaN(parseInt(id))) {
       return res.status(400).json({
         success: false,
@@ -227,34 +238,36 @@ router.get('/evaluations/:id', async (req: Request, res: Response) => {
       });
     }
 
-    const evaluation = result.rows[0];
+    const row = result.rows[0];
 
     res.json({
       success: true,
       evaluation: {
-        id: evaluation.id,
-        score: evaluation.score,
-        bucket: evaluation.bucket,
-        rating: evaluation.rating,
-        tags: JSON.parse(evaluation.tags || '[]'),
-        summary: {
-          fullName: evaluation.full_name,
-          email: evaluation.email,
-          position: JSON.parse(evaluation.primary_positions || '[]')[0],
-          league: evaluation.current_league,
-          ageGroup: evaluation.age_group,
-          club: evaluation.current_club,
-          stateRegion: evaluation.state_region,
-          stats: {
-            appearances: evaluation.season_appearances,
-            starts: evaluation.season_starts,
-            goals: evaluation.season_goals,
-            assists: evaluation.season_assists,
-          },
-          hasNationalTeamExperience: evaluation.has_national_team_experience,
-          hasProAcademyExperience: evaluation.has_pro_academy_experience,
-        },
-        createdAt: evaluation.created_at
+        id: row.id,
+        fullName: row.full_name,
+        email: row.email,
+        gradYear: row.grad_year,
+        position: row.position,
+        height: row.height,
+        stateRegion: row.state_region,
+        gpa: row.gpa,
+        testScore: row.test_score,
+        seasons: JSON.parse(row.seasons || '[]'),
+        hasVideoLink: row.has_video_link,
+        coachesContacted: row.coaches_contacted,
+        responsesReceived: row.responses_received,
+        events: JSON.parse(row.events || '[]'),
+        visibilityScores: JSON.parse(row.visibility_scores || '[]'),
+        readinessScore: JSON.parse(row.readiness_score || '{}'),
+        keyStrengths: JSON.parse(row.key_strengths || '[]'),
+        keyRisks: JSON.parse(row.key_risks || '[]'),
+        actionPlan: JSON.parse(row.action_plan || '[]'),
+        plainLanguageSummary: row.plain_language_summary,
+        score: row.score,
+        bucket: row.bucket,
+        rating: row.rating,
+        tags: JSON.parse(row.tags || '[]'),
+        createdAt: row.created_at
       }
     });
 
@@ -266,5 +279,110 @@ router.get('/evaluations/:id', async (req: Request, res: Response) => {
     });
   }
 });
+
+function generateFallbackAnalysis(profile: any): AnalysisResult {
+  const topSeason = profile.seasons[0] || {};
+  const isTopLeague = ['MLS_NEXT', 'ECNL', 'Girls_Academy'].includes(topSeason.league);
+  const isStarter = topSeason.mainRole === 'Key_Starter';
+  const hasVideo = profile.hasVideoLink;
+  const hasGoodGpa = profile.gpa >= 3.0;
+  const hasGreatGpa = profile.gpa >= 3.5;
+  
+  let d1Score = 10;
+  let d2Score = 20;
+  let d3Score = 30;
+  let naiaScore = 40;
+  let jucoScore = 50;
+  
+  if (isTopLeague) {
+    d1Score += 30;
+    d2Score += 25;
+    d3Score += 20;
+  }
+  if (isStarter) {
+    d1Score += 20;
+    d2Score += 15;
+    d3Score += 10;
+  }
+  if (hasVideo) {
+    d1Score += 15;
+    d2Score += 15;
+    d3Score += 15;
+    naiaScore += 15;
+    jucoScore += 15;
+  }
+  if (hasGreatGpa) {
+    d1Score += 10;
+    d3Score += 20;
+  } else if (hasGoodGpa) {
+    d1Score += 5;
+    d3Score += 10;
+  }
+  if (profile.coachesContacted > 20) {
+    d1Score += 10;
+    d2Score += 10;
+  }
+  if (profile.events.length >= 2) {
+    d1Score += 10;
+    d2Score += 10;
+  }
+  
+  d1Score = Math.min(85, d1Score);
+  d2Score = Math.min(90, d2Score);
+  d3Score = Math.min(95, d3Score);
+  
+  const avgScore = Math.round((d1Score + d2Score + d3Score + naiaScore + jucoScore) / 5);
+  
+  let bucket: string, rating: string;
+  if (avgScore >= 70) { bucket = 'A'; rating = 'Elite Prospect'; }
+  else if (avgScore >= 50) { bucket = 'B'; rating = 'Strong Candidate'; }
+  else if (avgScore >= 30) { bucket = 'C'; rating = 'Development Track'; }
+  else { bucket = 'D'; rating = 'Limited Visibility'; }
+  
+  const tags: string[] = [profile.position];
+  if (isTopLeague) tags.push('Top-Tier League');
+  if (hasVideo) tags.push('Video Available');
+  if (hasGreatGpa) tags.push('Academic Fit');
+  if (profile.coachesContacted > 20) tags.push('Active Recruiter');
+  
+  const keyRisks = [];
+  if (!hasVideo) keyRisks.push({ category: 'Media', message: 'No highlight video significantly limits visibility', severity: 'High' });
+  if (!isTopLeague) keyRisks.push({ category: 'League', message: 'Current league has limited D1 exposure', severity: 'Medium' });
+  if (!hasGoodGpa) keyRisks.push({ category: 'Academics', message: 'GPA below 3.0 limits options significantly', severity: 'High' });
+  if (profile.coachesContacted < 10) keyRisks.push({ category: 'Communication', message: 'Low coach outreach limits visibility', severity: 'Medium' });
+  
+  return {
+    visibilityScores: [
+      { level: 'D1', visibilityPercent: d1Score, notes: isTopLeague ? 'Top league gives good exposure' : 'League limits D1 visibility' },
+      { level: 'D2', visibilityPercent: d2Score, notes: 'Solid D2 potential' },
+      { level: 'D3', visibilityPercent: d3Score, notes: hasGreatGpa ? 'Academic schools are realistic' : 'Good fit with right academics' },
+      { level: 'NAIA', visibilityPercent: naiaScore, notes: 'Strong NAIA potential' },
+      { level: 'JUCO', visibilityPercent: jucoScore, notes: 'JUCO is always an option' }
+    ],
+    readinessScore: {
+      athletic: isStarter ? 70 : 50,
+      technical: isTopLeague ? 65 : 45,
+      tactical: isTopLeague ? 60 : 40,
+      academic: hasGreatGpa ? 85 : (hasGoodGpa ? 65 : 40),
+      market: hasVideo ? 60 : 30
+    },
+    keyStrengths: [
+      isTopLeague ? 'Playing in competitive league' : 'Active player',
+      hasVideo ? 'Has highlight video for coaches' : 'Ready to create video content',
+      hasGoodGpa ? 'Solid academic standing' : 'Can focus on academics'
+    ],
+    keyRisks: keyRisks,
+    actionPlan: [
+      { timeframe: 'Next_30_Days', description: hasVideo ? 'Send video to 20 target schools' : 'Create a 3-5 minute highlight video', impact: 'High' },
+      { timeframe: 'Next_90_Days', description: 'Attend at least 2 ID camps or showcases', impact: 'High' },
+      { timeframe: 'Next_12_Months', description: 'Build relationships with coaches through consistent follow-up', impact: 'Medium' }
+    ],
+    plainLanguageSummary: `Based on your profile, you have ${bucket === 'A' || bucket === 'B' ? 'solid' : 'developing'} college soccer potential. ${!hasVideo ? 'Your biggest gap is not having a highlight video - coaches cannot recruit what they cannot see. ' : ''}${!isTopLeague ? 'Your league level may limit D1 exposure, but D2/D3/NAIA remain realistic targets. ' : ''}Focus on increasing visibility through video and direct coach outreach.`,
+    overallScore: avgScore,
+    bucket,
+    rating,
+    tags
+  };
+}
 
 export default router;

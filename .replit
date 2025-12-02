@@ -1,6 +1,6 @@
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
-modules = ["nodejs-20", "postgresql-16", "python-3.11"]
+modules = ["nodejs-20", "python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-24_05"
@@ -30,4 +30,4 @@ localPort = 5000
 externalPort = 80
 
 [agent]
-integrations = ["sendgrid:1.0.0"]
+integrations = ["sendgrid:1.0.0", "javascript_gemini_ai_integrations:1.0.0"]
