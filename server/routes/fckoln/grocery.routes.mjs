@@ -94,12 +94,14 @@ router.get('/orders', requireAuth, async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const offset = (page - 1) * limit;
     
-    let query, params;
+    let query, params, countQuery, countParams;
     
     if (req.user.role === 'player') {
       query = `SELECT * FROM grocery_player_orders WHERE app_id = $1 AND user_id = $2 
                ORDER BY created_at DESC LIMIT $3 OFFSET $4`;
       params = [req.appCtx.id, req.userId, limit, offset];
+      countQuery = `SELECT COUNT(*) FROM grocery_player_orders WHERE app_id = $1 AND user_id = $2`;
+      countParams = [req.appCtx.id, req.userId];
     } else {
       query = `SELECT o.*, u.first_name, u.last_name 
                FROM grocery_player_orders o
@@ -107,14 +109,23 @@ router.get('/orders', requireAuth, async (req, res) => {
                WHERE o.app_id = $1 
                ORDER BY o.created_at DESC LIMIT $2 OFFSET $3`;
       params = [req.appCtx.id, limit, offset];
+      countQuery = `SELECT COUNT(*) FROM grocery_player_orders WHERE app_id = $1`;
+      countParams = [req.appCtx.id];
     }
     
-    const result = await pool.query(query, params);
+    const [result, countResult] = await Promise.all([
+      pool.query(query, params),
+      pool.query(countQuery, countParams)
+    ]);
     
     res.json({ 
       success: true, 
       orders: result.rows,
-      pagination: { page: parseInt(page), limit: parseInt(limit) }
+      pagination: { 
+        page: parseInt(page), 
+        limit: parseInt(limit),
+        total: parseInt(countResult.rows[0].count)
+      }
     });
   } catch (error) {
     console.error('Get orders error:', error);

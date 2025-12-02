@@ -66,20 +66,28 @@ router.get('/', requireAuth, validateQuery(eventsQuerySchema), async (req, res) 
       paramIndex++;
     }
     
-    query += ` ORDER BY date ASC, start_time ASC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    query += ` ORDER BY date ASC, start_time ASC`;
+    
+    let countQuery = `SELECT COUNT(*) FROM events WHERE app_id = $1`;
+    const countParams = [req.appCtx.id];
+    
+    if (type) {
+      countQuery += ` AND event_type = $2`;
+      countParams.push(type);
+    }
+    
+    query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(limit, offset);
     
-    const result = await pool.query(query, params);
+    const [result, countResult] = await Promise.all([
+      pool.query(query, params),
+      pool.query(countQuery, countParams)
+    ]);
     
     let events = result.rows;
     if (startDate && endDate) {
       events = events.flatMap(event => expandRecurringEvents(event, startDate, endDate));
     }
-    
-    const countResult = await pool.query(
-      `SELECT COUNT(*) FROM events WHERE app_id = $1`,
-      [req.appCtx.id]
-    );
     
     res.json({
       success: true,

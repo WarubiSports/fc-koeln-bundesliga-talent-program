@@ -49,15 +49,42 @@ router.get('/', requireAuth, validateQuery(choresQuerySchema), async (req, res) 
     }
     
     query += ` ORDER BY c.due_date ASC NULLS LAST, c.created_at DESC`;
+    
+    let countQuery = `SELECT COUNT(*) FROM chores c WHERE c.app_id = $1`;
+    const countParams = [req.appCtx.id];
+    let countParamIndex = 2;
+    
+    if (req.user.role === 'player') {
+      countQuery += ` AND c.assigned_to = $${countParamIndex}`;
+      countParams.push(req.userId);
+      countParamIndex++;
+    }
+    
+    if (house) {
+      countQuery += ` AND c.house = $${countParamIndex}`;
+      countParams.push(house);
+      countParamIndex++;
+    }
+    
+    if (status) {
+      countQuery += ` AND c.status = $${countParamIndex}`;
+      countParams.push(status);
+      countParamIndex++;
+    }
+    
+    if (weekStartDate) {
+      countQuery += ` AND c.week_start_date = $${countParamIndex}`;
+      countParams.push(weekStartDate);
+      countParamIndex++;
+    }
+    
     query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(limit, offset);
     
-    const result = await pool.query(query, params);
-    
-    const countResult = await pool.query(
-      `SELECT COUNT(*) FROM chores WHERE app_id = $1`,
-      [req.appCtx.id]
-    );
+    const [result, countResult] = await Promise.all([
+      pool.query(query, params),
+      pool.query(countQuery, countParams)
+    ]);
     
     res.json({ 
       success: true, 
