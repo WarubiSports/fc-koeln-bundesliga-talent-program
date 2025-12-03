@@ -146,57 +146,284 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
       
       const container = reportContainerRef.current;
       
-      // Clone the container and prepare for PDF
-      const clone = container.cloneNode(true) as HTMLElement;
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      clone.style.top = '0';
-      clone.style.width = '800px';
-      clone.style.backgroundColor = '#0f172a';
-      clone.style.padding = '20px';
-      document.body.appendChild(clone);
+      // Create an iframe with fresh document to avoid oklch colors from Tailwind
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'absolute';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '0';
+      iframe.style.width = '900px';
+      iframe.style.height = '10000px';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
       
-      // Convert oklch colors to rgb (html2canvas doesn't support oklch)
-      const convertOklchToRgb = (element: Element) => {
-        const computed = window.getComputedStyle(element);
-        const htmlEl = element as HTMLElement;
-        
-        // Get computed colors and apply as inline styles
-        const bgColor = computed.backgroundColor;
-        const textColor = computed.color;
-        const borderColor = computed.borderColor;
-        
-        if (bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
-          htmlEl.style.backgroundColor = bgColor;
-        }
-        if (textColor) {
-          htmlEl.style.color = textColor;
-        }
-        if (borderColor && borderColor !== 'transparent') {
-          htmlEl.style.borderColor = borderColor;
-        }
-        
-        // Recursively process children
-        Array.from(element.children).forEach(child => convertOklchToRgb(child));
-      };
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!iframeDoc) {
+        throw new Error('Could not access iframe document');
+      }
       
-      convertOklchToRgb(clone);
+      // Build HTML with inline styles (no oklch)
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              background: #0f172a;
+              color: #f1f5f9;
+              padding: 24px;
+              width: 850px;
+            }
+            .report-header {
+              background: #1e293b;
+              border-radius: 12px;
+              padding: 24px;
+              margin-bottom: 24px;
+              border: 1px solid #334155;
+            }
+            .header-content { display: flex; justify-content: space-between; align-items: center; }
+            .brand-title { font-size: 24px; font-weight: 700; color: #f1f5f9; }
+            .brand-accent { color: #10b981; }
+            .subtitle { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+            .player-info { text-align: right; }
+            .player-name { font-size: 18px; font-weight: 700; color: #e2e8f0; }
+            .player-details { font-size: 12px; color: #94a3b8; }
+            
+            .section {
+              background: #1e293b;
+              border-radius: 16px;
+              padding: 24px;
+              margin-bottom: 20px;
+              border: 1px solid #334155;
+            }
+            .section-title {
+              font-size: 18px;
+              font-weight: 700;
+              color: #f1f5f9;
+              margin-bottom: 16px;
+              display: flex;
+              align-items: center;
+            }
+            .icon { width: 20px; height: 20px; margin-right: 8px; color: #10b981; }
+            .summary-text { font-size: 16px; line-height: 1.6; color: #cbd5e1; }
+            
+            .prob-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+            .prob-card {
+              background: #0f172a;
+              border: 1px solid #334155;
+              border-radius: 8px;
+              padding: 12px;
+              text-align: center;
+            }
+            .prob-level { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+            .prob-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+            .prob-high { color: #10b981; }
+            .prob-med { color: #eab308; }
+            .prob-low { color: #f97316; }
+            .prob-vlow { color: #ef4444; }
+            
+            .strength-item {
+              display: flex;
+              align-items: flex-start;
+              margin-bottom: 12px;
+              padding: 12px;
+              background: rgba(16, 185, 129, 0.1);
+              border-radius: 8px;
+              border-left: 3px solid #10b981;
+            }
+            .strength-icon { color: #10b981; margin-right: 12px; font-size: 16px; }
+            .strength-text { color: #e2e8f0; font-size: 14px; }
+            
+            .risk-item {
+              display: flex;
+              align-items: flex-start;
+              margin-bottom: 12px;
+              padding: 12px;
+              border-radius: 8px;
+            }
+            .risk-high { background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; }
+            .risk-med { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; }
+            .risk-low { background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; }
+            .risk-icon { margin-right: 12px; font-size: 16px; }
+            .risk-icon-high { color: #ef4444; }
+            .risk-icon-med { color: #f59e0b; }
+            .risk-icon-low { color: #3b82f6; }
+            .risk-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+            .risk-text { color: #e2e8f0; font-size: 14px; }
+            
+            .action-item {
+              padding: 16px;
+              background: #0f172a;
+              border-radius: 12px;
+              margin-bottom: 12px;
+              border: 1px solid #334155;
+              display: flex;
+              align-items: flex-start;
+              gap: 16px;
+            }
+            .action-critical {
+              border: 1px dashed #3b82f6;
+              background: rgba(59, 130, 246, 0.05);
+            }
+            .action-timeframe {
+              font-size: 11px;
+              font-weight: 700;
+              color: #94a3b8;
+              text-transform: uppercase;
+              min-width: 100px;
+            }
+            .action-text { color: #e2e8f0; font-size: 14px; flex: 1; }
+            .action-impact {
+              font-size: 10px;
+              font-weight: 700;
+              padding: 4px 8px;
+              border-radius: 4px;
+              text-transform: uppercase;
+            }
+            .impact-high { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+            .impact-med { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+            
+            .funnel-stage {
+              background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+              border: 1px solid #334155;
+              border-radius: 12px;
+              padding: 20px;
+              text-align: center;
+            }
+            .funnel-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
+            .funnel-value { font-size: 24px; font-weight: 700; color: #a78bfa; margin: 8px 0; }
+            .funnel-rate { font-size: 14px; color: #10b981; }
+            
+            .footer {
+              margin-top: 32px;
+              padding-top: 16px;
+              border-top: 1px solid #334155;
+              text-align: center;
+              font-size: 11px;
+              color: #64748b;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="report-header">
+            <div class="header-content">
+              <div>
+                <div class="brand-title">Exposure<span class="brand-accent">Engine</span> Report</div>
+                <div class="subtitle">Generated via Warubi Sports Analytics</div>
+              </div>
+              <div class="player-info">
+                <div class="player-name">${profile.firstName} ${profile.lastName}</div>
+                <div class="player-details">Class of ${profile.gradYear} • ${profile.position}</div>
+                <div class="player-details">${new Date().toLocaleDateString()}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">⚡</span> Executive Summary
+            </div>
+            <p class="summary-text">${result.plainLanguageSummary}</p>
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">🏆</span> Recruiting Probabilities
+            </div>
+            <div class="prob-grid">
+              ${['D1', 'D2', 'D3', 'NAIA', 'JUCO'].map(lvl => {
+                const score = visibilityScores.find(v => normalizeLevel(v.level) === lvl)?.visibilityPercent || 0;
+                const colorClass = score >= 75 ? 'prob-high' : score >= 50 ? 'prob-med' : score >= 25 ? 'prob-low' : 'prob-vlow';
+                return `<div class="prob-card">
+                  <div class="prob-level">${lvl}</div>
+                  <div class="prob-value ${colorClass}">${score}%</div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">✓</span> Key Strengths
+            </div>
+            ${keyStrengths.map(s => `
+              <div class="strength-item">
+                <span class="strength-icon">✓</span>
+                <span class="strength-text">${s}</span>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">⚠</span> Performance Constraints
+            </div>
+            ${keyRisks.map(r => `
+              <div class="risk-item risk-${r.severity.toLowerCase()}">
+                <span class="risk-icon risk-icon-${r.severity.toLowerCase()}">⚠</span>
+                <div>
+                  <div class="risk-category" style="color: ${r.severity === 'High' ? '#ef4444' : r.severity === 'Medium' ? '#f59e0b' : '#3b82f6'}">
+                    ${r.severity === 'High' ? 'Critical Blocker' : r.severity === 'Medium' ? 'Warning' : 'Optimization'}
+                  </div>
+                  <div class="risk-text">${r.message}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">📋</span> 90-Day Game Plan
+            </div>
+            ${finalActionPlan.map((item, idx) => {
+              const isVideo = ['video', 'highlight', 'reel', 'film', 'footage'].some(k => item.description.toLowerCase().includes(k));
+              return `
+              <div class="action-item ${isVideo ? 'action-critical' : ''}">
+                <div class="action-timeframe">${item.timeframe.replace(/_/g, ' ')}</div>
+                <div class="action-text">${item.description}</div>
+                <div class="action-impact ${item.impact === 'High' ? 'impact-high' : 'impact-med'}">${item.impact} Impact</div>
+              </div>
+            `;}).join('')}
+          </div>
+          
+          <div class="section">
+            <div class="section-title">
+              <span class="icon">📊</span> Recruiting Funnel
+            </div>
+            <div class="funnel-stage">
+              <div class="funnel-label">Current Stage</div>
+              <div class="funnel-value">${funnelAnalysis.stage}</div>
+              <div class="funnel-rate">Conversion Rate: ${funnelAnalysis.conversionRate}</div>
+            </div>
+          </div>
+          
+          <div class="footer">
+            ExposureEngine by Warubi Sports • ${new Date().toLocaleDateString()} • warubisports.com
+          </div>
+        </body>
+        </html>
+      `;
       
-      // Wait for styles to apply
-      await new Promise(resolve => setTimeout(resolve, 100));
+      iframeDoc.open();
+      iframeDoc.write(htmlContent);
+      iframeDoc.close();
       
-      const canvas = await html2canvas(clone, {
+      // Wait for content to render
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const canvas = await html2canvas(iframeDoc.body, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#0f172a',
         logging: false,
         allowTaint: true,
-        width: 800,
-        windowWidth: 800,
+        width: 850,
+        windowWidth: 850,
       });
       
-      // Remove the clone
-      document.body.removeChild(clone);
+      // Remove iframe
+      document.body.removeChild(iframe);
       
       if (!canvas || canvas.width === 0 || canvas.height === 0) {
         throw new Error('Failed to capture report content');
