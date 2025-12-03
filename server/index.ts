@@ -131,6 +131,12 @@ import { requireAdminAuth } from './middleware/adminAuth.js';
 import { adminRateLimit } from './middleware/adminRateLimit.js';
 app.use('/admin', adminRateLimit, requireAdminAuth, adminRoutes);
 
+// SPA Fallback: Serve index.html for frontend routes handled by React Router
+// This must come after API routes but before error handlers
+app.get('/report/*', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
 // Error handling middleware (order matters)
 app.use(jsonParseErrorHandler);  // Handle JSON parse errors first (returns 400)
 app.use(errorLogger);            // Log all errors

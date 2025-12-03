@@ -53,11 +53,20 @@ const PDFReportPage = () => {
 
   useEffect(() => {
     if (result && profile && !loading) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         window.__PDF_READY__ = true;
-      }, 1000);
+        console.log('PDF_READY signal set');
+      }, 2000);
+      return () => clearTimeout(timeoutId);
     }
   }, [result, profile, loading]);
+
+  useEffect(() => {
+    if (error) {
+      window.__PDF_READY__ = true;
+      console.log('PDF_READY set due to error state');
+    }
+  }, [error]);
 
   if (loading) {
     return (

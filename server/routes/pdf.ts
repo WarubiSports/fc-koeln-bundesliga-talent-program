@@ -138,22 +138,32 @@ router.post("/generate/:token", async (req: Request, res: Response) => {
     
     await page.setViewport({ width: 1200, height: 900 });
     
-    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : 'http://localhost:5000';
-    
+    const baseUrl = 'http://localhost:5000';
     const reportUrl = `${baseUrl}/report/${token}`;
     
     logger.info("Navigating to report page", { url: reportUrl });
     
-    await page.goto(reportUrl, { 
-      waitUntil: "networkidle0",
-      timeout: 60000
-    });
-    
-    await page.waitForFunction(() => {
-      return (window as any).__PDF_READY__ === true;
-    }, { timeout: 30000 });
+    try {
+      await page.goto(reportUrl, { 
+        waitUntil: "networkidle2",
+        timeout: 45000
+      });
+      
+      logger.info("Page loaded, waiting for PDF ready signal");
+      
+      await page.waitForFunction(() => {
+        return (window as any).__PDF_READY__ === true;
+      }, { timeout: 20000 });
+      
+      logger.info("PDF ready signal received");
+    } catch (navError) {
+      logger.error("Navigation or wait error", { error: navError });
+      
+      const pageContent = await page.content();
+      logger.info("Page content length", { length: pageContent.length });
+      
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
     
     await new Promise(resolve => setTimeout(resolve, 500));
     
