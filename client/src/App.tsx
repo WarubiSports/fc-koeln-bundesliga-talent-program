@@ -97,15 +97,15 @@ function App() {
 
         {!analysisResult ? (
           <div className="space-y-8 animate-fade-in">
-             <div className="text-center mb-10 mx-auto">
-               <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight leading-tight text-center">
+             <div className="text-center mb-10">
+               <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight leading-tight">
                  What level would a college <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600 dark:from-emerald-400 dark:to-teal-500">coach put you at today?</span>
                </h2>
-               <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed text-center">
+               <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-lg leading-relaxed">
                  Answer a few questions about your league, minutes, grades, and video to get an honest visibility score and 90 day plan.
                </p>
                
-               <div className="mt-8 flex justify-center items-center gap-8 text-xs font-mono text-slate-500 uppercase tracking-widest">
+               <div className="mt-8 flex justify-center space-x-8 text-xs font-mono text-slate-500 uppercase tracking-widest">
                   <span>MLS NEXT</span>
                   <span className="text-slate-400 dark:text-slate-700">•</span>
                   <span>ECNL</span>
