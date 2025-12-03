@@ -2,10 +2,31 @@ import { Router, Request, Response } from "express";
 import puppeteer from "puppeteer";
 import { exec } from "child_process";
 import { promisify } from "util";
+import crypto from "crypto";
 import { logger } from "../utils/logger.js";
 
 const execAsync = promisify(exec);
 const router = Router();
+
+interface StoredReport {
+  result: any;
+  profile: any;
+  createdAt: number;
+}
+
+const reportStore = new Map<string, StoredReport>();
+const TOKEN_EXPIRY_MS = 5 * 60 * 1000;
+
+function cleanupExpiredTokens() {
+  const now = Date.now();
+  for (const [token, report] of reportStore.entries()) {
+    if (now - report.createdAt > TOKEN_EXPIRY_MS) {
+      reportStore.delete(token);
+    }
+  }
+}
+
+setInterval(cleanupExpiredTokens, 60 * 1000);
 
 async function getChromiumPath(): Promise<string> {
   try {
@@ -16,20 +37,86 @@ async function getChromiumPath(): Promise<string> {
   }
 }
 
-router.post("/generate", async (req: Request, res: Response) => {
-  const { analysisHtml, playerName } = req.body;
+router.post("/store", (req: Request, res: Response) => {
+  const { result, profile } = req.body;
   
-  if (!analysisHtml || !playerName) {
+  if (!result || !profile) {
     return res.status(400).json({ 
       success: false, 
-      error: "Missing required fields: analysisHtml and playerName" 
+      error: "Missing required fields: result and profile" 
+    });
+  }
+  
+  const token = crypto.randomBytes(32).toString('hex');
+  
+  reportStore.set(token, {
+    result,
+    profile,
+    createdAt: Date.now()
+  });
+  
+  logger.info("Report stored for PDF generation", { 
+    playerName: `${profile.firstName} ${profile.lastName}`,
+    token: token.substring(0, 8) + '...'
+  });
+  
+  res.json({ success: true, token });
+});
+
+router.get("/data/:token", (req: Request, res: Response) => {
+  const { token } = req.params;
+  
+  const report = reportStore.get(token);
+  
+  if (!report) {
+    return res.status(404).json({ 
+      success: false, 
+      error: "Report not found or expired" 
+    });
+  }
+  
+  if (Date.now() - report.createdAt > TOKEN_EXPIRY_MS) {
+    reportStore.delete(token);
+    return res.status(410).json({ 
+      success: false, 
+      error: "Report expired" 
+    });
+  }
+  
+  res.json({ 
+    success: true, 
+    result: report.result, 
+    profile: report.profile 
+  });
+});
+
+router.post("/generate/:token", async (req: Request, res: Response) => {
+  const { token } = req.params;
+  
+  const report = reportStore.get(token);
+  
+  if (!report) {
+    return res.status(404).json({ 
+      success: false, 
+      error: "Report not found or expired" 
+    });
+  }
+  
+  if (Date.now() - report.createdAt > TOKEN_EXPIRY_MS) {
+    reportStore.delete(token);
+    return res.status(410).json({ 
+      success: false, 
+      error: "Report expired" 
     });
   }
   
   let browser;
   
   try {
-    logger.info("Starting PDF generation", { playerName });
+    const { profile } = report;
+    logger.info("Starting PDF generation from actual page", { 
+      playerName: `${profile.firstName} ${profile.lastName}` 
+    });
     
     const chromiumPath = await getChromiumPath();
     
@@ -49,61 +136,44 @@ router.post("/generate", async (req: Request, res: Response) => {
     
     const page = await browser.newPage();
     
-    await page.setViewport({ width: 900, height: 1200 });
+    await page.setViewport({ width: 1200, height: 900 });
     
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          html, body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            background: #0f172a;
-            color: #f1f5f9;
-            font-size: 12px;
-            line-height: 1.4;
-          }
-          .pdf-container {
-            padding: 24px;
-            max-width: 850px;
-            margin: 0 auto;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="pdf-container">
-          ${analysisHtml}
-        </div>
-      </body>
-      </html>
-    `;
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'http://localhost:5000';
     
-    await page.setContent(fullHtml, { 
+    const reportUrl = `${baseUrl}/report/${token}`;
+    
+    logger.info("Navigating to report page", { url: reportUrl });
+    
+    await page.goto(reportUrl, { 
       waitUntil: "networkidle0",
-      timeout: 30000
+      timeout: 60000
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await page.waitForFunction(() => {
+      return (window as any).__PDF_READY__ === true;
+    }, { timeout: 30000 });
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     const pdfBuffer = await page.pdf({
       format: "Letter",
       printBackground: true,
-      margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" },
-      displayHeaderFooter: false
+      margin: { top: "0.4in", right: "0.4in", bottom: "0.4in", left: "0.4in" },
+      displayHeaderFooter: false,
+      preferCSSPageSize: false
     });
     
     await browser.close();
     
-    logger.info("PDF generated successfully", { playerName });
+    reportStore.delete(token);
     
-    const safeName = playerName.replace(/[^a-zA-Z0-9_-]/g, "_");
+    logger.info("PDF generated successfully from actual page", { 
+      playerName: `${profile.firstName} ${profile.lastName}` 
+    });
+    
+    const safeName = `${profile.firstName}_${profile.lastName}`.replace(/[^a-zA-Z0-9_-]/g, "_");
     
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="ExposureEngine_${safeName}_Report.pdf"`);
@@ -111,7 +181,7 @@ router.post("/generate", async (req: Request, res: Response) => {
     res.end(Buffer.from(pdfBuffer));
     
   } catch (error) {
-    logger.error("PDF generation failed", { error, playerName });
+    logger.error("PDF generation failed", { error });
     
     if (browser) {
       await browser.close().catch(() => {});
