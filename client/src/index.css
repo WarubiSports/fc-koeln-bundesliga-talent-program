@@ -123,22 +123,23 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 @media print {
+  /* Hide non-printable elements */
+  .print\:hidden,
+  header,
+  nav,
+  footer:not(.print-footer),
+  button,
   .print-hidden {
     display: none !important;
   }
   
-  body {
-    background: white !important;
-    color: #0f172a !important;
-    font-size: 10pt !important;
-    line-height: 1.25 !important;
-  }
-  
+  /* Page setup */
   @page {
-    margin: 0.4in;
+    margin: 0.5in;
     size: letter;
   }
   
+  /* Force color printing */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -147,103 +148,96 @@ input[type=range]::-webkit-slider-runnable-track {
     transition: none !important;
   }
   
-  .print-layout {
-    display: block !important;
+  /* Light theme for printing (saves ink, better readability) */
+  html, body {
+    background: white !important;
+    background-color: white !important;
+    color: #1e293b !important;
+    font-size: 9pt !important;
+    line-height: 1.3 !important;
   }
   
-  .print-layout > * {
-    display: block !important;
-    width: 100% !important;
+  /* Card backgrounds - light theme */
+  .bg-white,
+  .dark\:bg-slate-900\/60,
+  .dark\:bg-slate-900,
+  [class*="bg-slate"] {
+    background-color: white !important;
+    border-color: #e2e8f0 !important;
   }
   
-  .print-page-1 {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-  
-  .print-page-2 {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-  
-  .print-page-3 {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-  
-  .print-page-4 {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-  
-  .print-page-4 .grid {
-    display: block !important;
-  }
-  
-  .print-page-4 .grid > * {
-    display: block !important;
-    width: 100% !important;
-    margin-bottom: 16pt !important;
-  }
-  
-  .print-page-5-6 .print-game-plan-header {
-    page-break-after: avoid !important;
-  }
-  
-  .print-action-items {
-    display: block !important;
-  }
-  
-  .print-action-items > div:nth-child(2) {
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-  
-  .lg\:col-span-2 {
-    width: 100% !important;
-  }
-  
-  h1, h2, h3, h4 {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+  /* Text colors - dark for readability */
+  .text-slate-900,
+  .dark\:text-white,
+  .text-white,
+  h1, h2, h3, h4, h5 {
     color: #0f172a !important;
   }
   
-  .recharts-wrapper {
-    width: 280px !important;
-    height: 200px !important;
-    max-width: 280px !important;
-    max-height: 200px !important;
-    overflow: visible !important;
-    page-break-inside: avoid !important;
-    margin: 0 auto !important;
+  .text-slate-600,
+  .text-slate-500,
+  .dark\:text-slate-300,
+  .dark\:text-slate-400 {
+    color: #475569 !important;
   }
   
+  /* Preserve accent colors */
+  .text-emerald-500,
+  .text-emerald-600,
+  .dark\:text-emerald-400 {
+    color: #059669 !important;
+  }
+  
+  .text-red-500,
+  .text-red-600,
+  .dark\:text-red-400 {
+    color: #dc2626 !important;
+  }
+  
+  .text-amber-500,
+  .text-amber-600,
+  .dark\:text-amber-400 {
+    color: #d97706 !important;
+  }
+  
+  .text-blue-500,
+  .text-blue-600,
+  .dark\:text-blue-400 {
+    color: #2563eb !important;
+  }
+  
+  .text-purple-500,
+  .dark\:text-purple-400 {
+    color: #7c3aed !important;
+  }
+  
+  /* Remove gradients for cleaner print */
+  .bg-gradient-to-r,
+  .bg-gradient-to-br {
+    background: white !important;
+  }
+  
+  /* Charts - ensure proper sizing */
+  .recharts-wrapper,
   .recharts-responsive-container {
-    width: 280px !important;
-    height: 200px !important;
-    max-width: 280px !important;
-    max-height: 200px !important;
+    width: 100% !important;
+    min-width: 250px !important;
+    max-width: 400px !important;
+    height: auto !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
     overflow: visible !important;
+    page-break-inside: avoid !important;
   }
   
   .recharts-surface {
     overflow: visible !important;
   }
   
-  svg {
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
-  
-  .h-\[250px\] {
-    height: 180px !important;
-    max-height: 180px !important;
-  }
-  
+  .h-\[250px\],
   .h-\[200px\] {
-    height: 160px !important;
-    max-height: 160px !important;
+    height: 180px !important;
+    min-height: 180px !important;
   }
   
   .h-\[280px\] {
