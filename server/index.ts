@@ -137,6 +137,10 @@ app.get('/report/*', (_req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
+app.get('/pathways', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
 // Error handling middleware (order matters)
 app.use(jsonParseErrorHandler);  // Handle JSON parse errors first (returns 400)
 app.use(errorLogger);            // Log all errors
