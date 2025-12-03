@@ -196,15 +196,13 @@ const PDFReportContent = ({ result, profile }: ContentProps) => {
             <Target className="w-5 h-5 mr-2 text-emerald-400" />
             Player Readiness
           </h3>
-          <div className="flex justify-center">
-            <div style={{ width: 350, height: 250 }}>
-              <RadarChart cx={175} cy={125} outerRadius={90} width={350} height={250} data={radarData}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="You" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.3} isAnimationActive={false} />
-              </RadarChart>
-            </div>
+          <div className="flex justify-center" style={{ width: '100%', minHeight: 250 }}>
+            <RadarChart cx={175} cy={125} outerRadius={90} width={350} height={250} data={radarData}>
+              <PolarGrid stroke="#334155" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+              <Radar name="You" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.3} isAnimationActive={false} />
+            </RadarChart>
           </div>
         </div>
 
@@ -214,8 +212,8 @@ const PDFReportContent = ({ result, profile }: ContentProps) => {
             <Trophy className="w-5 h-5 mr-2 text-emerald-400" />
             Recruiting Probabilities
           </h3>
-          <div style={{ width: '100%', height: 200 }}>
-            <BarChart data={chartData} layout="vertical" width={850} height={200} margin={{ left: 10, right: 30 }}>
+          <div style={{ width: '100%', minHeight: 200 }}>
+            <BarChart data={chartData} layout="vertical" width={820} height={200} margin={{ left: 10, right: 30 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
               <XAxis type="number" domain={[0, 100]} hide />
               <YAxis
