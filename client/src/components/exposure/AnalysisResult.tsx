@@ -265,23 +265,23 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
         </div>
       ) : (
         /* PLAYER VIEW - Detailed Analysis */
-        <div className="space-y-6">
+        <div className="space-y-6 print-layout">
           
-          {/* Executive Summary */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-              <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
-              Executive Summary
-            </h3>
-            <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-              {result.plainLanguageSummary}
-            </p>
-          </div>
+          {/* PRINT PAGE 1: Executive Summary & Player Readiness */}
+          <div className="print-page-1">
+            {/* Executive Summary */}
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
+                Executive Summary
+              </h3>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
+                {result.plainLanguageSummary}
+              </p>
+            </div>
 
-          {/* Section 1: Visibility Radar & Graph */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print-section">
             {/* Radar Chart: Readiness */}
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-avoid-break">
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                 <Target className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
                 Player Readiness
@@ -306,9 +306,12 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                 * Analysis based on self-reported ratings relative to current league level. Not independently verified.
               </p>
             </div>
+          </div>
 
+          {/* PRINT PAGE 2: Recruiting Probabilities */}
+          <div className="print-page-2">
             {/* Bar Chart: Recruiting Probabilities */}
-            <div className="lg:col-span-2 bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between print-avoid-break">
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <Trophy className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
@@ -366,8 +369,9 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
           </div>
 
-          {/* Section 2: Reality Check (Benchmark Analysis) */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group print-page-break print-section">
+          {/* PRINT PAGE 3: Reality Check */}
+          <div className="print-page-3">
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-emerald-500 opacity-50"></div>
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -438,10 +442,12 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                   </div>
                ))}
             </div>
+            </div>
           </div>
 
-          {/* Section 3: The Funnel & Constraints */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print-page-break">
+          {/* PRINT PAGE 4: Funnel & Constraints */}
+          <div className="print-page-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              {/* Recruiting Funnel */}
              <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
@@ -476,7 +482,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
              </div>
 
              {/* Constraints & Blockers */}
-             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
+             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <AlertTriangle className="w-5 h-5 mr-2 text-amber-500 dark:text-amber-400" />
                    Performance Constraints
@@ -508,16 +514,18 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                    ))}
                 </div>
              </div>
+            </div>
           </div>
 
-          {/* Section 4: 90 Day Game Plan */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-page-break print-section">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-              <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
-              90 Day Game Plan
-            </h3>
-            <div className="space-y-4">
-              {finalActionPlan.map((item, index) => {
+          {/* PRINT PAGES 5-6: 90 Day Game Plan */}
+          <div className="print-page-5-6">
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center print-game-plan-header">
+                <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
+                90 Day Game Plan
+              </h3>
+              <div className="print-action-items">
+                {finalActionPlan.map((item, index) => {
                  // Determine if this is the Video Action Item by checking keywords
                  // Logic updated to be content-aware rather than index-dependent
                  const videoKeywords = ['video', 'highlight', 'reel', 'film', 'footage'];
@@ -569,6 +577,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* TAKE ACTION FOOTER (PDF & EMAIL) */}
