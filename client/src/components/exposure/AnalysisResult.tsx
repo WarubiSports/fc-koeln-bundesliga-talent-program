@@ -268,7 +268,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
         <div className="space-y-6">
           
           {/* Executive Summary */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
               <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
               Executive Summary
@@ -279,9 +279,9 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Section 1: Visibility Radar & Graph */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print-section">
             {/* Radar Chart: Readiness */}
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-avoid-break">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                 <Target className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
                 Player Readiness
@@ -308,7 +308,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
 
             {/* Bar Chart: Recruiting Probabilities */}
-            <div className="lg:col-span-2 bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between">
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between print-avoid-break">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <Trophy className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
@@ -367,7 +367,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Section 2: Reality Check (Benchmark Analysis) */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group print-page-break print-section">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-emerald-500 opacity-50"></div>
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -441,9 +441,9 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Section 3: The Funnel & Constraints */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print-page-break">
              {/* Recruiting Funnel */}
-             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <Share2 className="w-5 h-5 mr-2 text-purple-500 dark:text-purple-400" />
                    Recruiting Funnel
@@ -476,7 +476,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
              </div>
 
              {/* Constraints & Blockers */}
-             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+             <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <AlertTriangle className="w-5 h-5 mr-2 text-amber-500 dark:text-amber-400" />
                    Performance Constraints
@@ -511,7 +511,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Section 4: 90 Day Game Plan */}
-          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-page-break print-section">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
               <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
               90 Day Game Plan

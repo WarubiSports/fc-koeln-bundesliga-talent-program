@@ -129,5 +129,120 @@ input[type=range]::-webkit-slider-runnable-track {
   
   body {
     background: white !important;
+    color: #0f172a !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  @page {
+    margin: 0.75in;
+    size: letter;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+  
+  .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  .print-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 24pt !important;
+  }
+  
+  h1, h2, h3, h4 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    color: #0f172a !important;
+  }
+  
+  .recharts-wrapper {
+    width: 100% !important;
+    max-width: 400px !important;
+    height: auto !important;
+    min-height: 250px !important;
+    page-break-inside: avoid !important;
+  }
+  
+  .recharts-responsive-container {
+    width: 100% !important;
+    max-width: 400px !important;
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .recharts-surface {
+    overflow: visible !important;
+  }
+  
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  div[class*="bg-slate"], div[class*="bg-white"] {
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+  }
+  
+  div[class*="dark:bg-"] {
+    background: white !important;
+  }
+  
+  p, span, div {
+    color: #1e293b !important;
+  }
+  
+  .text-emerald-500, .text-emerald-600, .text-emerald-400 {
+    color: #059669 !important;
+  }
+  
+  .text-red-500, .text-red-600 {
+    color: #dc2626 !important;
+  }
+  
+  .text-amber-500, .text-yellow-500 {
+    color: #d97706 !important;
+  }
+  
+  .border-emerald-500 {
+    border-color: #059669 !important;
+  }
+  
+  .bg-emerald-500, .bg-emerald-600 {
+    background-color: #10b981 !important;
+    color: white !important;
+  }
+  
+  .bg-red-500 {
+    background-color: #ef4444 !important;
+  }
+  
+  .bg-amber-500, .bg-yellow-500 {
+    background-color: #f59e0b !important;
+  }
+  
+  a {
+    text-decoration: none !important;
+  }
+  
+  button {
+    display: none !important;
+  }
+  
+  .print-show-button {
+    display: inline-block !important;
   }
 }
