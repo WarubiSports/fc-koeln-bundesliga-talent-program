@@ -161,151 +161,247 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
         throw new Error('Could not access iframe document');
       }
       
-      // Build HTML with inline styles (no oklch)
+      // Build HTML with inline styles matching web UI (no oklch)
+      const getProbColor = (score: number) => score >= 75 ? '#10b981' : score >= 50 ? '#eab308' : score >= 25 ? '#f97316' : '#ef4444';
+      const getProbLabel = (score: number) => score >= 75 ? 'high' : score >= 50 ? 'medium' : score >= 25 ? 'low' : 'very low';
+      
       const htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { 
               font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
               background: #0f172a;
               color: #f1f5f9;
-              padding: 24px;
+              padding: 32px;
               width: 850px;
             }
+            
+            /* Header matching web UI */
             .report-header {
-              background: #1e293b;
-              border-radius: 12px;
-              padding: 24px;
+              background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+              border-radius: 16px;
+              padding: 28px;
               margin-bottom: 24px;
-              border: 1px solid #334155;
+              border: 1px solid rgba(255,255,255,0.05);
+              box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             }
             .header-content { display: flex; justify-content: space-between; align-items: center; }
-            .brand-title { font-size: 24px; font-weight: 700; color: #f1f5f9; }
+            .brand-title { font-size: 26px; font-weight: 700; color: #f1f5f9; }
             .brand-accent { color: #10b981; }
-            .subtitle { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+            .subtitle { font-size: 13px; color: #94a3b8; margin-top: 6px; }
             .player-info { text-align: right; }
-            .player-name { font-size: 18px; font-weight: 700; color: #e2e8f0; }
-            .player-details { font-size: 12px; color: #94a3b8; }
+            .player-name { font-size: 20px; font-weight: 700; color: #e2e8f0; }
+            .player-details { font-size: 13px; color: #94a3b8; margin-top: 4px; }
             
+            /* Sections matching web UI */
             .section {
-              background: #1e293b;
+              background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
               border-radius: 16px;
-              padding: 24px;
+              padding: 28px;
               margin-bottom: 20px;
-              border: 1px solid #334155;
+              border: 1px solid rgba(255,255,255,0.05);
+              box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             }
             .section-title {
-              font-size: 18px;
+              font-size: 20px;
               font-weight: 700;
               color: #f1f5f9;
-              margin-bottom: 16px;
+              margin-bottom: 20px;
               display: flex;
               align-items: center;
             }
-            .icon { width: 20px; height: 20px; margin-right: 8px; color: #10b981; }
-            .summary-text { font-size: 16px; line-height: 1.6; color: #cbd5e1; }
+            .section-title-icon { 
+              width: 24px; 
+              height: 24px; 
+              margin-right: 12px; 
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .icon-emerald { color: #10b981; }
+            .icon-purple { color: #a78bfa; }
+            .icon-blue { color: #3b82f6; }
+            .summary-text { font-size: 17px; line-height: 1.7; color: #cbd5e1; }
             
-            .prob-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-            .prob-card {
-              background: #0f172a;
-              border: 1px solid #334155;
-              border-radius: 8px;
-              padding: 12px;
+            /* Two column grid */
+            .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            
+            /* Readiness Scores (replaces radar chart) */
+            .readiness-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+            .readiness-item {
+              background: rgba(15, 23, 42, 0.6);
+              border: 1px solid rgba(255,255,255,0.05);
+              border-radius: 12px;
+              padding: 16px 12px;
               text-align: center;
             }
-            .prob-level { font-size: 14px; font-weight: 700; color: #f1f5f9; }
-            .prob-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
-            .prob-high { color: #10b981; }
-            .prob-med { color: #eab308; }
-            .prob-low { color: #f97316; }
-            .prob-vlow { color: #ef4444; }
+            .readiness-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+            .readiness-value { font-size: 28px; font-weight: 700; color: #10b981; }
+            .readiness-bar { height: 4px; background: #1e293b; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+            .readiness-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 2px; }
             
+            /* Probability bars matching web UI */
+            .prob-bar-container { margin-bottom: 16px; }
+            .prob-bar-row { display: flex; align-items: center; margin-bottom: 12px; }
+            .prob-label { width: 50px; font-size: 13px; font-weight: 700; color: #f1f5f9; }
+            .prob-track { flex: 1; height: 24px; background: #1e293b; border-radius: 4px; overflow: hidden; margin: 0 12px; }
+            .prob-fill { height: 100%; border-radius: 0 4px 4px 0; transition: width 0.3s; }
+            .prob-percent { width: 50px; font-size: 14px; font-weight: 700; text-align: right; }
+            
+            /* Probability grid at bottom */
+            .prob-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+            .prob-card {
+              background: rgba(15, 23, 42, 0.6);
+              border: 1px solid rgba(255,255,255,0.05);
+              border-radius: 8px;
+              padding: 14px 10px;
+              text-align: center;
+            }
+            .prob-level { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+            .prob-status { font-size: 11px; font-weight: 600; margin-top: 4px; }
+            
+            /* Benchmark section */
+            .benchmark-grid { display: flex; justify-content: space-around; gap: 16px; }
+            .benchmark-item {
+              flex: 1;
+              text-align: center;
+              padding: 20px 16px;
+              background: rgba(15, 23, 42, 0.5);
+              border-radius: 12px;
+              border: 1px solid rgba(255,255,255,0.05);
+            }
+            .benchmark-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+            .benchmark-track { height: 120px; width: 40px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 6px; margin: 0 auto 12px; position: relative; border: 1px solid rgba(255,255,255,0.1); }
+            .benchmark-you { position: absolute; left: 4px; right: 4px; height: 16px; background: #10b981; border-radius: 4px; }
+            .benchmark-d1 { position: absolute; left: 0; right: 0; height: 2px; border-top: 2px dashed #94a3b8; }
+            .benchmark-d3 { position: absolute; left: 0; right: 0; height: 2px; border-top: 2px dashed #475569; }
+            .benchmark-value { font-size: 18px; font-weight: 700; color: #10b981; }
+            
+            /* Funnel section */
+            .funnel-content { display: flex; gap: 24px; }
+            .funnel-stage-box {
+              flex: 1;
+              background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+              border: 1px solid rgba(255,255,255,0.08);
+              border-radius: 16px;
+              padding: 24px;
+              text-align: center;
+            }
+            .funnel-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+            .funnel-value { font-size: 28px; font-weight: 700; color: #a78bfa; margin: 8px 0; }
+            .funnel-rate { font-size: 14px; color: #10b981; font-weight: 600; }
+            .funnel-advice {
+              flex: 2;
+              background: rgba(15, 23, 42, 0.5);
+              border-radius: 12px;
+              padding: 20px;
+              border-left: 3px solid #a78bfa;
+            }
+            .funnel-advice-title { font-size: 12px; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+            .funnel-advice-text { font-size: 14px; color: #e2e8f0; line-height: 1.6; }
+            
+            /* Strengths */
             .strength-item {
               display: flex;
               align-items: flex-start;
               margin-bottom: 12px;
-              padding: 12px;
-              background: rgba(16, 185, 129, 0.1);
-              border-radius: 8px;
+              padding: 14px 16px;
+              background: rgba(16, 185, 129, 0.08);
+              border-radius: 10px;
               border-left: 3px solid #10b981;
             }
-            .strength-icon { color: #10b981; margin-right: 12px; font-size: 16px; }
-            .strength-text { color: #e2e8f0; font-size: 14px; }
+            .strength-icon { color: #10b981; margin-right: 14px; font-size: 18px; flex-shrink: 0; }
+            .strength-text { color: #e2e8f0; font-size: 14px; line-height: 1.5; }
             
+            /* Constraints/Risks */
             .risk-item {
               display: flex;
               align-items: flex-start;
               margin-bottom: 12px;
-              padding: 12px;
-              border-radius: 8px;
+              padding: 14px 16px;
+              border-radius: 10px;
             }
-            .risk-high { background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; }
-            .risk-med { background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; }
-            .risk-low { background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; }
-            .risk-icon { margin-right: 12px; font-size: 16px; }
-            .risk-icon-high { color: #ef4444; }
-            .risk-icon-med { color: #f59e0b; }
-            .risk-icon-low { color: #3b82f6; }
+            .risk-high { background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; }
+            .risk-medium { background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; }
+            .risk-low { background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; }
+            .risk-icon { margin-right: 14px; font-size: 18px; flex-shrink: 0; }
+            .risk-content { flex: 1; }
             .risk-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-            .risk-text { color: #e2e8f0; font-size: 14px; }
+            .risk-text { color: #e2e8f0; font-size: 14px; line-height: 1.5; }
             
+            /* Action items */
             .action-item {
-              padding: 16px;
-              background: #0f172a;
-              border-radius: 12px;
-              margin-bottom: 12px;
-              border: 1px solid #334155;
+              padding: 18px 20px;
+              background: rgba(15, 23, 42, 0.6);
+              border-radius: 14px;
+              margin-bottom: 14px;
+              border: 1px solid rgba(255,255,255,0.05);
               display: flex;
               align-items: flex-start;
-              gap: 16px;
+              gap: 18px;
             }
             .action-critical {
-              border: 1px dashed #3b82f6;
+              border: 1px dashed rgba(59, 130, 246, 0.5);
               background: rgba(59, 130, 246, 0.05);
+              position: relative;
+            }
+            .action-badge {
+              position: absolute;
+              top: -10px;
+              left: 16px;
+              background: #3b82f6;
+              color: white;
+              font-size: 9px;
+              font-weight: 700;
+              padding: 3px 8px;
+              border-radius: 4px;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
             }
             .action-timeframe {
-              font-size: 11px;
-              font-weight: 700;
-              color: #94a3b8;
-              text-transform: uppercase;
-              min-width: 100px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              min-width: 110px;
             }
-            .action-text { color: #e2e8f0; font-size: 14px; flex: 1; }
+            .action-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+            .action-time-text { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+            .action-text { color: #e2e8f0; font-size: 14px; flex: 1; line-height: 1.5; }
             .action-impact {
               font-size: 10px;
               font-weight: 700;
-              padding: 4px 8px;
-              border-radius: 4px;
+              padding: 5px 10px;
+              border-radius: 6px;
               text-transform: uppercase;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              flex-shrink: 0;
             }
-            .impact-high { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-            .impact-med { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+            .impact-high { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
+            .impact-medium { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
             
-            .funnel-stage {
-              background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-              border: 1px solid #334155;
-              border-radius: 12px;
-              padding: 20px;
-              text-align: center;
-            }
-            .funnel-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
-            .funnel-value { font-size: 24px; font-weight: 700; color: #a78bfa; margin: 8px 0; }
-            .funnel-rate { font-size: 14px; color: #10b981; }
-            
+            /* Footer */
             .footer {
-              margin-top: 32px;
-              padding-top: 16px;
-              border-top: 1px solid #334155;
+              margin-top: 36px;
+              padding-top: 20px;
+              border-top: 1px solid rgba(255,255,255,0.05);
               text-align: center;
-              font-size: 11px;
+              font-size: 12px;
               color: #64748b;
             }
+            .footer-brand { font-weight: 600; color: #94a3b8; }
+            
+            /* Page break helpers */
+            .page-break { page-break-before: always; }
           </style>
         </head>
         <body>
+          <!-- HEADER -->
           <div class="report-header">
             <div class="header-content">
               <div>
@@ -320,51 +416,153 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
           </div>
           
+          <!-- EXECUTIVE SUMMARY -->
           <div class="section">
             <div class="section-title">
-              <span class="icon">⚡</span> Executive Summary
+              <span class="section-title-icon icon-emerald">⚡</span> Executive Summary
             </div>
             <p class="summary-text">${result.plainLanguageSummary}</p>
           </div>
           
+          <!-- PLAYER READINESS (replaces radar chart) -->
           <div class="section">
             <div class="section-title">
-              <span class="icon">🏆</span> Recruiting Probabilities
+              <span class="section-title-icon icon-emerald">🎯</span> Player Readiness
+            </div>
+            <div class="readiness-grid">
+              ${[
+                { label: 'Athletic', value: readinessScore.athletic },
+                { label: 'Technical', value: readinessScore.technical },
+                { label: 'Tactical', value: readinessScore.tactical },
+                { label: 'Academic', value: readinessScore.academic },
+                { label: 'Market', value: readinessScore.market }
+              ].map(item => `
+                <div class="readiness-item">
+                  <div class="readiness-label">${item.label}</div>
+                  <div class="readiness-value">${item.value}</div>
+                  <div class="readiness-bar">
+                    <div class="readiness-fill" style="width: ${item.value}%"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 12px;">* Analysis based on self-reported ratings relative to current league level</p>
+          </div>
+          
+          <!-- RECRUITING PROBABILITIES with bars -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon icon-emerald">🏆</span> Recruiting Probabilities
+            </div>
+            <div class="prob-bar-container">
+              ${sortedVisibility.map(item => {
+                const score = item.visibilityPercent;
+                return `
+                <div class="prob-bar-row">
+                  <div class="prob-label">${normalizeLevel(item.level)}</div>
+                  <div class="prob-track">
+                    <div class="prob-fill" style="width: ${score}%; background: ${getProbColor(score)};"></div>
+                  </div>
+                  <div class="prob-percent" style="color: ${getProbColor(score)}">${score}%</div>
+                </div>
+              `;}).join('')}
             </div>
             <div class="prob-grid">
               ${['D1', 'D2', 'D3', 'NAIA', 'JUCO'].map(lvl => {
                 const score = visibilityScores.find(v => normalizeLevel(v.level) === lvl)?.visibilityPercent || 0;
-                const colorClass = score >= 75 ? 'prob-high' : score >= 50 ? 'prob-med' : score >= 25 ? 'prob-low' : 'prob-vlow';
                 return `<div class="prob-card">
                   <div class="prob-level">${lvl}</div>
-                  <div class="prob-value ${colorClass}">${score}%</div>
+                  <div class="prob-status" style="color: ${getProbColor(score)}">${getProbLabel(score)}</div>
                 </div>`;
               }).join('')}
             </div>
           </div>
           
-          <div class="section">
+          <!-- REALITY CHECK: Benchmarks -->
+          <div class="section" style="border-top: 3px solid rgba(59, 130, 246, 0.3);">
             <div class="section-title">
-              <span class="icon">✓</span> Key Strengths
+              <span class="section-title-icon icon-blue">📊</span> Reality Check: You vs The Market
             </div>
-            ${keyStrengths.map(s => `
-              <div class="strength-item">
-                <span class="strength-icon">✓</span>
-                <span class="strength-text">${s}</span>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Comparing your current profile against typical commits</p>
+            <div class="benchmark-grid">
+              ${benchmarkAnalysis.map(metric => {
+                const youPos = 100 - metric.you;
+                const d1Pos = 100 - metric.d1Avg;
+                const d3Pos = 100 - metric.d3Avg;
+                return `
+                <div class="benchmark-item">
+                  <div class="benchmark-label">${metric.metric}</div>
+                  <div class="benchmark-track">
+                    <div class="benchmark-you" style="bottom: ${metric.you}%;"></div>
+                    <div class="benchmark-d1" style="bottom: ${metric.d1Avg}%;"></div>
+                    <div class="benchmark-d3" style="bottom: ${metric.d3Avg}%;"></div>
+                  </div>
+                  <div class="benchmark-value">${metric.you}</div>
+                </div>
+              `;}).join('')}
+            </div>
+            <div style="display: flex; justify-content: center; gap: 32px; margin-top: 16px; font-size: 11px;">
+              <div style="display: flex; align-items: center; gap: 8px; color: #94a3b8;">
+                <div style="width: 16px; height: 12px; background: #10b981; border-radius: 3px;"></div> You
               </div>
-            `).join('')}
+              <div style="display: flex; align-items: center; gap: 8px; color: #94a3b8;">
+                <div style="width: 20px; height: 0; border-top: 2px dashed #94a3b8;"></div> D1 Avg
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; color: #94a3b8;">
+                <div style="width: 20px; height: 0; border-top: 2px dashed #475569;"></div> D3 Avg
+              </div>
+            </div>
           </div>
           
+          <!-- FUNNEL & STRENGTHS side by side -->
+          <div class="two-col">
+            <!-- Recruiting Funnel -->
+            <div class="section">
+              <div class="section-title">
+                <span class="section-title-icon icon-purple">📈</span> Recruiting Funnel
+              </div>
+              <div class="funnel-content" style="flex-direction: column; gap: 16px;">
+                <div class="funnel-stage-box">
+                  <div class="funnel-label">Current Stage</div>
+                  <div class="funnel-value">${funnelAnalysis.stage}</div>
+                  <div class="funnel-rate">${funnelAnalysis.conversionRate}</div>
+                </div>
+                <div class="funnel-advice" style="border-left-color: #f59e0b;">
+                  <div class="funnel-advice-title" style="color: #f59e0b;">⚠ Bottleneck</div>
+                  <div class="funnel-advice-text">${funnelAnalysis.bottleneck}</div>
+                </div>
+                <div class="funnel-advice">
+                  <div class="funnel-advice-title">💡 Advice</div>
+                  <div class="funnel-advice-text">${funnelAnalysis.advice}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Key Strengths -->
+            <div class="section">
+              <div class="section-title">
+                <span class="section-title-icon icon-emerald">✅</span> Key Strengths
+              </div>
+              ${keyStrengths.map(s => `
+                <div class="strength-item">
+                  <span class="strength-icon">✓</span>
+                  <span class="strength-text">${s}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- PERFORMANCE CONSTRAINTS -->
           <div class="section">
             <div class="section-title">
-              <span class="icon">⚠</span> Performance Constraints
+              <span class="section-title-icon" style="color: #ef4444;">⚠️</span> Performance Constraints
             </div>
             ${keyRisks.map(r => `
               <div class="risk-item risk-${r.severity.toLowerCase()}">
-                <span class="risk-icon risk-icon-${r.severity.toLowerCase()}">⚠</span>
-                <div>
+                <span class="risk-icon" style="color: ${r.severity === 'High' ? '#ef4444' : r.severity === 'Medium' ? '#f59e0b' : '#3b82f6'}">⚠</span>
+                <div class="risk-content">
                   <div class="risk-category" style="color: ${r.severity === 'High' ? '#ef4444' : r.severity === 'Medium' ? '#f59e0b' : '#3b82f6'}">
-                    ${r.severity === 'High' ? 'Critical Blocker' : r.severity === 'Medium' ? 'Warning' : 'Optimization'}
+                    ${r.severity === 'High' ? 'Critical Blocker' : r.severity === 'Medium' ? 'Warning' : 'Optimization'} • ${r.category}
                   </div>
                   <div class="risk-text">${r.message}</div>
                 </div>
@@ -372,34 +570,31 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             `).join('')}
           </div>
           
+          <!-- 90-DAY GAME PLAN -->
           <div class="section">
             <div class="section-title">
-              <span class="icon">📋</span> 90-Day Game Plan
+              <span class="section-title-icon icon-emerald">📅</span> 90-Day Game Plan
             </div>
             ${finalActionPlan.map((item, idx) => {
               const isVideo = ['video', 'highlight', 'reel', 'film', 'footage'].some(k => item.description.toLowerCase().includes(k));
               return `
-              <div class="action-item ${isVideo ? 'action-critical' : ''}">
-                <div class="action-timeframe">${item.timeframe.replace(/_/g, ' ')}</div>
-                <div class="action-text">${item.description}</div>
-                <div class="action-impact ${item.impact === 'High' ? 'impact-high' : 'impact-med'}">${item.impact} Impact</div>
+              <div class="action-item ${isVideo ? 'action-critical' : ''}" style="${isVideo ? 'margin-top: 20px;' : ''}">
+                ${isVideo ? '<div class="action-badge">Critical Action Item</div>' : ''}
+                <div class="action-timeframe">
+                  <div class="action-dot" style="background: ${isVideo ? '#3b82f6' : '#10b981'};"></div>
+                  <span class="action-time-text" style="color: ${isVideo ? '#93c5fd' : '#94a3b8'}">${item.timeframe.replace(/_/g, ' ')}</span>
+                </div>
+                <div class="action-text" style="${isVideo ? 'color: #bfdbfe; font-weight: 500;' : ''}">${item.description}</div>
+                <div class="action-impact ${item.impact === 'High' ? 'impact-high' : 'impact-medium'}">
+                  ${item.impact === 'High' ? '↗' : '→'} ${item.impact} Impact
+                </div>
               </div>
             `;}).join('')}
           </div>
           
-          <div class="section">
-            <div class="section-title">
-              <span class="icon">📊</span> Recruiting Funnel
-            </div>
-            <div class="funnel-stage">
-              <div class="funnel-label">Current Stage</div>
-              <div class="funnel-value">${funnelAnalysis.stage}</div>
-              <div class="funnel-rate">Conversion Rate: ${funnelAnalysis.conversionRate}</div>
-            </div>
-          </div>
-          
+          <!-- FOOTER -->
           <div class="footer">
-            ExposureEngine by Warubi Sports • ${new Date().toLocaleDateString()} • warubisports.com
+            <div class="footer-brand">ExposureEngine</div> by Warubi Sports • ${new Date().toLocaleDateString()} • warubisports.com
           </div>
         </body>
         </html>
