@@ -508,35 +508,142 @@ export default function PlayerInputForm({ onSubmit, isLoading }: Props) {
       </div>
 
       <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg">
-        <SectionHeader step="05" title="Market Activity" icon={Video} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <Label>Do you have a highlight video?</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={() => handleInputChange('videoLink', true)} className={`py-2.5 text-sm rounded-lg border transition-all ${profile.videoLink ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600' : 'bg-white dark:bg-slate-950/50 border-slate-300 dark:border-slate-700/50 text-slate-500'}`} data-testid="button-video-yes">Yes</button>
-              <button type="button" onClick={() => handleInputChange('videoLink', false)} className={`py-2.5 text-sm rounded-lg border transition-all ${!profile.videoLink ? 'bg-red-500/10 border-red-500 text-red-600' : 'bg-white dark:bg-slate-950/50 border-slate-300 dark:border-slate-700/50 text-slate-500'}`} data-testid="button-video-no">No</button>
+        <SectionHeader step="04" title="Market Reality" icon={Video} />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div 
+            className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer ${profile.videoLink ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/50' : 'bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-500'}`}
+            onClick={() => handleInputChange('videoLink', !profile.videoLink)}
+            data-testid="toggle-video"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-slate-900 dark:text-white flex items-center">
+                <Video className={`w-4 h-4 mr-2 ${profile.videoLink ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-500'}`} />
+                Highlight Video
+              </span>
+              <div className={`w-10 h-5 rounded-full relative transition-colors ${profile.videoLink ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 ${profile.videoLink ? 'left-6' : 'left-1'}`} />
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              {profile.videoLink 
+                ? "Great. Having accessible footage is the #1 requirement for remote recruiting." 
+                : "WARNING: Without video, your visibility score will be severely penalized."}
+            </p>
+          </div>
+           
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label>Coaches Emailed</Label>
+              <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.coachesContacted} onChange={(e) => handleInputChange('coachesContacted', parseInt(e.target.value) || 0)} data-testid="input-coaches-contacted" />
+            </div>
+            <div>
+              <Label>Personal Replies</Label>
+              <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.responsesReceived} onChange={(e) => handleInputChange('responsesReceived', parseInt(e.target.value) || 0)} data-testid="input-responses" />
+            </div>
+            <div>
+              <Label>Concrete Offers</Label>
+              <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.offersReceived} onChange={(e) => handleInputChange('offersReceived', parseInt(e.target.value) || 0)} data-testid="input-offers" />
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <Label>Coaches Contacted</Label>
-            <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.coachesContacted} onChange={(e) => handleInputChange('coachesContacted', parseInt(e.target.value) || 0)} data-testid="input-coaches-contacted" />
+
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <Label>Showcase Events (Last 12 Months)</Label>
+            <button 
+              type="button" 
+              onClick={() => setProfile(prev => ({ ...prev, events: [...(prev.events || []), { name: '', type: 'Showcase', collegesNoted: '' }] }))}
+              className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-medium"
+              data-testid="button-add-event"
+            >
+              <Plus className="w-3 h-3" />Add Event
+            </button>
           </div>
-          <div>
-            <Label>Responses Received</Label>
-            <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.responsesReceived} onChange={(e) => handleInputChange('responsesReceived', parseInt(e.target.value) || 0)} data-testid="input-responses" />
-          </div>
-          <div>
-            <Label>Offers Received</Label>
-            <input type="number" min={0} className={`${inputClass} font-mono`} value={profile.offersReceived} onChange={(e) => handleInputChange('offersReceived', parseInt(e.target.value) || 0)} data-testid="input-offers" />
-          </div>
+          
+          {(!profile.events || profile.events.length === 0) ? (
+            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700/50 rounded-xl p-6 text-center">
+              <p className="text-sm text-slate-400 dark:text-slate-500">No events added.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {profile.events.map((event, idx) => (
+                <div key={idx} className="bg-slate-50 dark:bg-slate-950/30 p-4 rounded-lg relative">
+                  <button 
+                    type="button" 
+                    onClick={() => setProfile(prev => ({ ...prev, events: prev.events?.filter((_, i) => i !== idx) || [] }))}
+                    className="absolute top-2 right-2 text-slate-400 hover:text-red-500"
+                    data-testid={`button-remove-event-${idx}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Event Name</Label>
+                      <input 
+                        type="text" 
+                        className={inputClass} 
+                        placeholder="e.g. Surf Cup"
+                        value={event.name}
+                        onChange={(e) => {
+                          const newEvents = [...(profile.events || [])];
+                          newEvents[idx] = { ...newEvents[idx], name: e.target.value };
+                          setProfile(prev => ({ ...prev, events: newEvents }));
+                        }}
+                        data-testid={`input-event-${idx}-name`}
+                      />
+                    </div>
+                    <div>
+                      <Label>Type</Label>
+                      <select 
+                        className={selectClass}
+                        value={event.type}
+                        onChange={(e) => {
+                          const newEvents = [...(profile.events || [])];
+                          newEvents[idx] = { ...newEvents[idx], type: e.target.value as any };
+                          setProfile(prev => ({ ...prev, events: newEvents }));
+                        }}
+                        data-testid={`select-event-${idx}-type`}
+                      >
+                        <option value="Showcase">Showcase</option>
+                        <option value="ID_Camp">ID Camp</option>
+                        <option value="College_Visit">College Visit</option>
+                        <option value="Tournament">Tournament</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label>Colleges Noted</Label>
+                      <input 
+                        type="text" 
+                        className={inputClass}
+                        placeholder="e.g. UCLA, Stanford"
+                        value={event.collegesNoted}
+                        onChange={(e) => {
+                          const newEvents = [...(profile.events || [])];
+                          newEvents[idx] = { ...newEvents[idx], collegesNoted: e.target.value };
+                          setProfile(prev => ({ ...prev, events: newEvents }));
+                        }}
+                        data-testid={`input-event-${idx}-colleges`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <button type="submit" disabled={isLoading} className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-lg transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="button-submit">
-        Analyze My Visibility
-      </button>
+      <div className="p-2 rounded-2xl border-2 border-dashed border-emerald-400/50 dark:border-emerald-500/30 bg-transparent">
+        <button 
+          type="submit" 
+          disabled={isLoading} 
+          className="w-full py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-600 hover:to-emerald-500 text-slate-900 font-bold rounded-xl text-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" 
+          data-testid="button-submit"
+        >
+          Calculate Visibility Score <ChevronRight className="ml-2 w-5 h-5" />
+        </button>
+      </div>
     </form>
   );
 }
