@@ -156,14 +156,40 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
       clone.style.padding = '20px';
       document.body.appendChild(clone);
       
-      // Wait for any images/fonts to load
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Convert oklch colors to rgb (html2canvas doesn't support oklch)
+      const convertOklchToRgb = (element: Element) => {
+        const computed = window.getComputedStyle(element);
+        const htmlEl = element as HTMLElement;
+        
+        // Get computed colors and apply as inline styles
+        const bgColor = computed.backgroundColor;
+        const textColor = computed.color;
+        const borderColor = computed.borderColor;
+        
+        if (bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
+          htmlEl.style.backgroundColor = bgColor;
+        }
+        if (textColor) {
+          htmlEl.style.color = textColor;
+        }
+        if (borderColor && borderColor !== 'transparent') {
+          htmlEl.style.borderColor = borderColor;
+        }
+        
+        // Recursively process children
+        Array.from(element.children).forEach(child => convertOklchToRgb(child));
+      };
+      
+      convertOklchToRgb(clone);
+      
+      // Wait for styles to apply
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#0f172a',
-        logging: true,
+        logging: false,
         allowTaint: true,
         width: 800,
         windowWidth: 800,
