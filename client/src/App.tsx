@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
+import { Switch, Route } from 'wouter';
 import Header from './components/exposure/Header';
 import PlayerInputForm from './components/exposure/PlayerInputForm';
 import AnalysisResultView from './components/exposure/AnalysisResult';
+import PDFReportPage from './pages/PDFReport';
 import type { PlayerProfile, AnalysisResult } from '../../shared/exposure-types';
 import { GraduationCap, Users, ShieldCheck } from 'lucide-react';
 
-function App() {
+function ExposureEnginePage() {
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -173,6 +175,15 @@ function App() {
         <p>© {new Date().getFullYear()} ExposureEngine. Not affiliated with NCAA, MLS NEXT or ECNL.</p>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Switch>
+      <Route path="/report/:token" component={PDFReportPage} />
+      <Route path="/" component={ExposureEnginePage} />
+    </Switch>
   );
 }
 
