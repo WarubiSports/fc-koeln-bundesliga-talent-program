@@ -41,13 +41,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   
-  const headerRef = useRef<HTMLDivElement>(null);
-  const executiveSummaryRef = useRef<HTMLDivElement>(null);
-  const playerReadinessRef = useRef<HTMLDivElement>(null);
-  const recruitingProbabilitiesRef = useRef<HTMLDivElement>(null);
-  const realityCheckRef = useRef<HTMLDivElement>(null);
-  const funnelConstraintsRef = useRef<HTMLDivElement>(null);
-  const gamePlanRef = useRef<HTMLDivElement>(null);
+  const reportContainerRef = useRef<HTMLDivElement>(null);
 
   // Defensive Coding: Ensure we have arrays even if API returns undefined
   const visibilityScores = result.visibilityScores || [];
@@ -146,80 +140,88 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
     setIsGeneratingPdf(true);
     
     try {
+      if (!reportContainerRef.current) {
+        throw new Error('Report container not found');
+      }
+      
+      const container = reportContainerRef.current;
+      
+      // Clone the container and prepare for PDF
+      const clone = container.cloneNode(true) as HTMLElement;
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      clone.style.top = '0';
+      clone.style.width = '800px';
+      clone.style.backgroundColor = '#0f172a';
+      clone.style.padding = '20px';
+      document.body.appendChild(clone);
+      
+      // Wait for any images/fonts to load
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0f172a',
+        logging: true,
+        allowTaint: true,
+        width: 800,
+        windowWidth: 800,
+      });
+      
+      // Remove the clone
+      document.body.removeChild(clone);
+      
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        throw new Error('Failed to capture report content');
+      }
+      
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      // Create PDF with multiple pages if needed
       const pdf = new jsPDF('p', 'mm', 'letter');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 10;
       const contentWidth = pageWidth - (margin * 2);
-      const maxContentHeight = pageHeight - (margin * 2);
       
-      const sections = [
-        { ref: headerRef, name: 'Header' },
-        { ref: executiveSummaryRef, name: 'Executive Summary' },
-        { ref: playerReadinessRef, name: 'Player Readiness' },
-        { ref: recruitingProbabilitiesRef, name: 'Recruiting Probabilities' },
-        { ref: realityCheckRef, name: 'Reality Check' },
-        { ref: funnelConstraintsRef, name: 'Funnel & Constraints' },
-        { ref: gamePlanRef, name: '90 Day Game Plan' },
-      ];
+      const imgWidth = contentWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const maxHeight = pageHeight - (margin * 2);
       
-      let currentY = margin;
-      let isFirstPage = true;
-      let capturedSections = 0;
-      
-      for (const section of sections) {
-        if (!section.ref.current) {
-          console.log(`Skipping ${section.name}: ref is null`);
-          continue;
-        }
+      // If content fits on one page
+      if (imgHeight <= maxHeight) {
+        pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+      } else {
+        // Split across multiple pages
+        let remainingHeight = imgHeight;
+        let srcY = 0;
+        let isFirstPage = true;
         
-        try {
-          const canvas = await html2canvas(section.ref.current, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#0f172a',
-            logging: false,
-            allowTaint: true,
-            foreignObjectRendering: false,
-          });
-          
-          if (!canvas || canvas.width === 0 || canvas.height === 0) {
-            console.warn(`Empty canvas for ${section.name}`);
-            continue;
-          }
-          
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = contentWidth;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          
-          if (!isFirstPage && (currentY + imgHeight > maxContentHeight)) {
+        while (remainingHeight > 0) {
+          if (!isFirstPage) {
             pdf.addPage();
-            currentY = margin;
           }
           
-          if (isFirstPage && section.name !== 'Header' && (currentY + imgHeight > maxContentHeight)) {
-            pdf.addPage();
-            currentY = margin;
+          const sliceHeight = Math.min(remainingHeight, maxHeight);
+          const srcHeight = (sliceHeight / imgWidth) * canvas.width;
+          
+          // Create a temporary canvas for this slice
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = srcHeight;
+          const ctx = sliceCanvas.getContext('2d');
+          
+          if (ctx) {
+            ctx.drawImage(canvas, 0, srcY, canvas.width, srcHeight, 0, 0, canvas.width, srcHeight);
+            const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+            pdf.addImage(sliceData, 'JPEG', margin, margin, imgWidth, sliceHeight);
           }
           
-          pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
-          currentY += imgHeight + 8;
+          srcY += srcHeight;
+          remainingHeight -= sliceHeight;
           isFirstPage = false;
-          capturedSections++;
-          
-          if (section.name !== 'Header' && section.name !== 'Executive Summary') {
-            if (currentY + 50 > maxContentHeight) {
-              pdf.addPage();
-              currentY = margin;
-            }
-          }
-        } catch (sectionError) {
-          console.error(`Error capturing ${section.name}:`, sectionError);
         }
-      }
-      
-      if (capturedSections === 0) {
-        throw new Error('No sections were captured for the PDF');
       }
       
       pdf.save(`ExposureEngine_${profile.firstName}_${profile.lastName}_Report.pdf`);
@@ -362,25 +364,25 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
         </div>
       ) : (
         /* PLAYER VIEW - Detailed Analysis */
-        <div className="space-y-6 print-layout">
+        <div ref={reportContainerRef} className="space-y-6">
           
           {/* PDF Header - visible during PDF generation */}
-          <div ref={headerRef} className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 mb-6 border border-slate-200 dark:border-slate-700">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Exposure<span className="text-emerald-600">Engine</span> Report</h1>
-                <p className="text-sm text-slate-500 mt-1">Generated via Warubi Sports Analytics</p>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Exposure<span className="text-emerald-600">Engine</span> Report</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Generated via Warubi Sports Analytics</p>
               </div>
               <div className="text-right">
-                <h2 className="text-lg font-bold text-slate-800">{profile.firstName} {profile.lastName}</h2>
-                <p className="text-sm text-slate-500">Class of {profile.gradYear} • {profile.position}</p>
+                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">{profile.firstName} {profile.lastName}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Class of {profile.gradYear} • {profile.position}</p>
                 <p className="text-xs text-slate-400 mt-1">{new Date().toLocaleDateString()}</p>
               </div>
             </div>
           </div>
 
           {/* Executive Summary */}
-          <div ref={executiveSummaryRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
               <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
               Executive Summary
@@ -391,7 +393,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Radar Chart: Readiness */}
-          <div ref={playerReadinessRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                 <Target className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
                 Player Readiness
@@ -418,7 +420,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Recruiting Probabilities */}
-          <div ref={recruitingProbabilitiesRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between mb-6">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between mb-6">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <Trophy className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
@@ -476,7 +478,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Reality Check */}
-          <div ref={realityCheckRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group mb-6">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group mb-6">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-emerald-500 opacity-50"></div>
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -550,7 +552,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* Funnel & Constraints */}
-          <div ref={funnelConstraintsRef} className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
              {/* Recruiting Funnel */}
              <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
@@ -620,7 +622,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
           </div>
 
           {/* 90 Day Game Plan */}
-          <div ref={gamePlanRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+          <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
               <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
               90 Day Game Plan
