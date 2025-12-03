@@ -1,10 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { AnalysisResult, RiskFlag, ActionItem, PlayerProfile, BenchmarkMetric } from '../../../../shared/exposure-types';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis
-} from 'recharts';
-import { 
   AlertTriangle, CheckCircle2, Calendar, ArrowRight, Shield, 
   TrendingUp, Activity, Minus, AlertCircle, Zap, Target, Trophy
 } from 'lucide-react';
@@ -31,6 +27,64 @@ const PrintHeader = ({ profile }: { profile: PlayerProfile }) => (
     </div>
   </div>
 );
+
+const SimpleBarChart = ({ data, isDark }: { data: Array<{ level: string; visibilityPercent: number }>; isDark: boolean }) => {
+  const getBarColor = (score: number) => {
+    if (score < 25) return '#ef4444';
+    if (score < 50) return '#f97316';
+    if (score < 75) return '#eab308';
+    return '#10b981';
+  };
+
+  return (
+    <div className="space-y-3">
+      {data.map((item) => (
+        <div key={item.level} className="flex items-center gap-4">
+          <span className="w-12 text-sm font-bold text-slate-600 dark:text-slate-400">{item.level}</span>
+          <div className="flex-1 h-6 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: `${item.visibilityPercent}%`,
+                backgroundColor: getBarColor(item.visibilityPercent)
+              }}
+            />
+          </div>
+          <span className="w-12 text-right text-sm font-bold text-slate-700 dark:text-slate-300">{item.visibilityPercent}%</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const SimpleRadarChart = ({ data, isDark }: { data: { athletic: number; technical: number; tactical: number; academic: number; market: number }; isDark: boolean }) => {
+  const categories = [
+    { key: 'athletic', label: 'Athletic', value: data.athletic },
+    { key: 'technical', label: 'Technical', value: data.technical },
+    { key: 'tactical', label: 'Tactical', value: data.tactical },
+    { key: 'academic', label: 'Academic', value: data.academic },
+    { key: 'market', label: 'Market', value: data.market },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {categories.map((cat) => (
+        <div key={cat.key}>
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-slate-500 dark:text-slate-400">{cat.label}</span>
+            <span className="font-bold text-slate-700 dark:text-slate-300">{cat.value}%</span>
+          </div>
+          <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+              style={{ width: `${cat.value}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function AnalysisResultView({ result, profile, onReset, isDark }: Props) {
   const [viewMode, setViewMode] = useState<'player' | 'coach'>('player');
@@ -177,7 +231,7 @@ export default function AnalysisResultView({ result, profile, onReset, isDark }:
               </div>
               <div>
                 <span className="block text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-wider mb-1">Position</span>
-                <span className="text-slate-900 dark:text-white">{profile.position} {profile.secondaryPositions.length > 0 && `(${profile.secondaryPositions[0]})`}</span>
+                <span className="text-slate-900 dark:text-white">{profile.position} {profile.secondaryPositions && profile.secondaryPositions.length > 0 && `(${profile.secondaryPositions[0]})`}</span>
               </div>
               <div>
                 <span className="block text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-wider mb-1">Primary Level</span>
@@ -245,22 +299,7 @@ export default function AnalysisResultView({ result, profile, onReset, isDark }:
                 <Target className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
                 Player Readiness
               </h3>
-              <div className="h-[250px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
-                    { subject: 'Athletic', A: readinessScore.athletic, fullMark: 100 },
-                    { subject: 'Technical', A: readinessScore.technical, fullMark: 100 },
-                    { subject: 'Market', A: readinessScore.market, fullMark: 100 },
-                    { subject: 'Academic', A: readinessScore.academic, fullMark: 100 },
-                    { subject: 'Tactical', A: readinessScore.tactical, fullMark: 100 },
-                  ]}>
-                    <PolarGrid stroke={isDark ? "#334155" : "#e2e8f0"} />
-                    <PolarAngleAxis dataKey="subject" tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 10 }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                    <Radar name="You" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
+              <SimpleRadarChart data={readinessScore} isDark={isDark} />
             </div>
 
             <div className="lg:col-span-2 bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between">
@@ -270,36 +309,8 @@ export default function AnalysisResultView({ result, profile, onReset, isDark }:
                   Recruiting Probabilities
                 </h3>
                 
-                <div className="h-[200px] w-full mb-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#e2e8f0"} horizontal={false} />
-                      <XAxis type="number" domain={[0, 100]} hide />
-                      <YAxis 
-                        dataKey="level" 
-                        type="category" 
-                        width={60} 
-                        tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontWeight: 700, fontSize: 12 }} 
-                        axisLine={false} 
-                        tickLine={false} 
-                      />
-                      <Tooltip 
-                        cursor={{fill: 'transparent'}}
-                        contentStyle={{ 
-                          backgroundColor: isDark ? '#0f172a' : '#ffffff', 
-                          border: isDark ? '1px solid #1e293b' : '1px solid #e2e8f0', 
-                          borderRadius: '8px',
-                          color: isDark ? '#f1f5f9' : '#0f172a'
-                        }}
-                        itemStyle={{ color: isDark ? '#f1f5f9' : '#0f172a' }}
-                      />
-                      <Bar dataKey="visibilityPercent" radius={[0, 4, 4, 0]} barSize={20}>
-                        {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={getProbabilityStatus(entry.visibilityPercent).color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div className="mb-6">
+                  <SimpleBarChart data={chartData} isDark={isDark} />
                 </div>
               </div>
 
