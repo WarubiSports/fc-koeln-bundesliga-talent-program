@@ -92,7 +92,7 @@ router.post("/generate", async (req: Request, res: Response) => {
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const pdf = await page.pdf({
+    const pdfBuffer = await page.pdf({
       format: "Letter",
       printBackground: true,
       margin: { top: "0.5in", right: "0.5in", bottom: "0.5in", left: "0.5in" },
@@ -107,7 +107,8 @@ router.post("/generate", async (req: Request, res: Response) => {
     
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="ExposureEngine_${safeName}_Report.pdf"`);
-    res.send(pdf);
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.end(Buffer.from(pdfBuffer));
     
   } catch (error) {
     logger.error("PDF generation failed", { error, playerName });
