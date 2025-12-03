@@ -88,7 +88,7 @@ function App() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500/30 transition-colors duration-300">
       <Header toggleTheme={toggleTheme} isDark={theme === 'dark'} />
       
-      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-12">
+      <main className="w-full max-w-6xl mx-auto px-6 lg:px-8 py-12">
         {error && (
           <div className="mb-8 p-4 bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-500/20 rounded-xl flex items-center text-red-800 dark:text-red-200 text-sm backdrop-blur-sm" data-testid="error-message">
              <span className="font-bold mr-2">Error:</span> {error}
@@ -127,7 +127,7 @@ function App() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-10">
                     <div className="bg-white/50 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 text-center hover:bg-white dark:hover:bg-slate-900/60 transition-colors group shadow-sm">
                        <div className="w-10 h-10 mx-auto bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20 transition-colors">
                           <GraduationCap className="w-5 h-5 text-slate-500 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
