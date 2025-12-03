@@ -8,7 +8,7 @@ interface HeaderProps {
 export default function Header({ toggleTheme, isDark }: HeaderProps) {
   return (
     <header className="w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 sticky top-0 z-50 transition-all duration-300 print:hidden">
-      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3 group cursor-pointer">
           <div className="relative">
             <div className="absolute inset-0 bg-emerald-500 blur opacity-20 group-hover:opacity-40 transition duration-500 rounded-full"></div>

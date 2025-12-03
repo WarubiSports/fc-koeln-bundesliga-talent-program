@@ -85,15 +85,10 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative transition-colors duration-300">
-      <div className="fixed inset-0 z-0 pointer-events-none print:hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-200/20 dark:bg-emerald-900/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-[120px]"></div>
-      </div>
-
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-500/30 transition-colors duration-300">
       <Header toggleTheme={toggleTheme} isDark={theme === 'dark'} />
       
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-12">
+      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-12">
         {error && (
           <div className="mb-8 p-4 bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-500/20 rounded-xl flex items-center text-red-800 dark:text-red-200 text-sm backdrop-blur-sm" data-testid="error-message">
              <span className="font-bold mr-2">Error:</span> {error}
