@@ -165,46 +165,67 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
       
       let currentY = margin;
       let isFirstPage = true;
+      let capturedSections = 0;
       
       for (const section of sections) {
-        if (!section.ref.current) continue;
-        
-        const canvas = await html2canvas(section.ref.current, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        if (!isFirstPage && (currentY + imgHeight > maxContentHeight)) {
-          pdf.addPage();
-          currentY = margin;
+        if (!section.ref.current) {
+          console.log(`Skipping ${section.name}: ref is null`);
+          continue;
         }
         
-        if (isFirstPage && section.name !== 'Header' && (currentY + imgHeight > maxContentHeight)) {
-          pdf.addPage();
-          currentY = margin;
-        }
-        
-        pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
-        currentY += imgHeight + 8;
-        isFirstPage = false;
-        
-        if (section.name !== 'Header' && section.name !== 'Executive Summary') {
-          if (currentY + 50 > maxContentHeight) {
+        try {
+          const canvas = await html2canvas(section.ref.current, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#0f172a',
+            logging: false,
+            allowTaint: true,
+            foreignObjectRendering: false,
+          });
+          
+          if (!canvas || canvas.width === 0 || canvas.height === 0) {
+            console.warn(`Empty canvas for ${section.name}`);
+            continue;
+          }
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = contentWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          if (!isFirstPage && (currentY + imgHeight > maxContentHeight)) {
             pdf.addPage();
             currentY = margin;
           }
+          
+          if (isFirstPage && section.name !== 'Header' && (currentY + imgHeight > maxContentHeight)) {
+            pdf.addPage();
+            currentY = margin;
+          }
+          
+          pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+          currentY += imgHeight + 8;
+          isFirstPage = false;
+          capturedSections++;
+          
+          if (section.name !== 'Header' && section.name !== 'Executive Summary') {
+            if (currentY + 50 > maxContentHeight) {
+              pdf.addPage();
+              currentY = margin;
+            }
+          }
+        } catch (sectionError) {
+          console.error(`Error capturing ${section.name}:`, sectionError);
         }
+      }
+      
+      if (capturedSections === 0) {
+        throw new Error('No sections were captured for the PDF');
       }
       
       pdf.save(`ExposureEngine_${profile.firstName}_${profile.lastName}_Report.pdf`);
     } catch (error) {
-      console.error('PDF generation error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('PDF generation error:', errorMessage, error);
       alert('There was an error generating the PDF. Please try again.');
     } finally {
       setIsGeneratingPdf(false);
