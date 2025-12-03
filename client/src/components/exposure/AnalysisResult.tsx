@@ -8,7 +8,7 @@ import {
 import { 
   AlertTriangle, CheckCircle2, Calendar, ArrowRight, Shield, 
   Mail, Printer, Share2, TrendingUp, Activity, Minus, 
-  AlertCircle, Info, Zap, User, Target, Globe, Trophy
+  AlertCircle, Info, Zap, User, Target, Globe, Trophy, Download, Loader2
 } from 'lucide-react';
 
 interface Props {
@@ -37,6 +37,7 @@ const PrintHeader = ({ profile }: { profile: PlayerProfile }) => (
 const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
   const [viewMode, setViewMode] = useState<'player' | 'coach'>('player');
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   
   const reportContainerRef = useRef<HTMLDivElement>(null);
 
@@ -133,8 +134,216 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
     return { label: 'high', color: '#10b981', textClass: 'text-emerald-600 dark:text-emerald-500' };
   };
 
-  const generatePDF = () => {
-    window.print();
+  const generatePDF = async () => {
+    setIsGeneratingPdf(true);
+    
+    try {
+      const getProbColor = (score: number) => score >= 75 ? '#10b981' : score >= 50 ? '#eab308' : score >= 25 ? '#f97316' : '#ef4444';
+      const getProbLabel = (score: number) => score >= 75 ? 'high' : score >= 50 ? 'medium' : score >= 25 ? 'low' : 'very low';
+      
+      const analysisHtml = `
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          .section { background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+          .section-title { font-size: 18px; font-weight: 700; color: #f1f5f9; margin-bottom: 16px; display: flex; align-items: center; }
+          .section-icon { color: #10b981; margin-right: 10px; }
+          .summary-text { font-size: 15px; line-height: 1.7; color: #cbd5e1; }
+          .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+          .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+          .readiness-item { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px; text-align: center; }
+          .readiness-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+          .readiness-value { font-size: 24px; font-weight: 700; color: #10b981; }
+          .readiness-bar { height: 4px; background: #1e293b; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+          .readiness-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 2px; }
+          .prob-row { display: flex; align-items: center; margin-bottom: 10px; }
+          .prob-label { width: 45px; font-size: 12px; font-weight: 700; color: #f1f5f9; }
+          .prob-track { flex: 1; height: 20px; background: #1e293b; border-radius: 4px; overflow: hidden; margin: 0 10px; }
+          .prob-fill { height: 100%; border-radius: 0 4px 4px 0; }
+          .prob-percent { width: 45px; font-size: 13px; font-weight: 700; text-align: right; }
+          .strength-item { display: flex; align-items: flex-start; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; border-left: 3px solid #10b981; }
+          .strength-icon { color: #10b981; margin-right: 10px; flex-shrink: 0; }
+          .strength-text { color: #e2e8f0; font-size: 13px; line-height: 1.5; }
+          .risk-item { display: flex; align-items: flex-start; margin-bottom: 10px; padding: 12px; border-radius: 8px; }
+          .risk-high { background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; }
+          .risk-medium { background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; }
+          .risk-low { background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; }
+          .risk-category { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+          .risk-text { color: #e2e8f0; font-size: 13px; line-height: 1.4; }
+          .action-item { padding: 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 14px; }
+          .action-critical { border: 1px dashed rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.05); }
+          .action-time { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; min-width: 90px; }
+          .action-text { color: #e2e8f0; font-size: 13px; flex: 1; line-height: 1.4; }
+          .action-impact { font-size: 9px; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+          .impact-high { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+          .impact-medium { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+          .funnel-box { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 12px; }
+          .funnel-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
+          .funnel-value { font-size: 22px; font-weight: 700; color: #a78bfa; margin: 6px 0; }
+          .funnel-rate { font-size: 13px; color: #10b981; font-weight: 600; }
+          .advice-box { background: rgba(15, 23, 42, 0.5); border-radius: 10px; padding: 14px; border-left: 3px solid #a78bfa; margin-bottom: 10px; }
+          .advice-title { font-size: 11px; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+          .advice-text { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
+          .header-box { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%); border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+          .brand-title { font-size: 24px; font-weight: 700; color: #f1f5f9; }
+          .brand-accent { color: #10b981; }
+          .subtitle { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+          .player-name { font-size: 18px; font-weight: 700; color: #e2e8f0; text-align: right; }
+          .player-details { font-size: 12px; color: #94a3b8; text-align: right; margin-top: 3px; }
+          .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 11px; color: #64748b; }
+        </style>
+        
+        <!-- HEADER -->
+        <div class="header-box">
+          <div>
+            <div class="brand-title">Exposure<span class="brand-accent">Engine</span> Report</div>
+            <div class="subtitle">Generated via Warubi Sports Analytics</div>
+          </div>
+          <div>
+            <div class="player-name">${profile.firstName} ${profile.lastName}</div>
+            <div class="player-details">Class of ${profile.gradYear} • ${profile.position}</div>
+            <div class="player-details">${new Date().toLocaleDateString()}</div>
+          </div>
+        </div>
+        
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="section">
+          <div class="section-title"><span class="section-icon">⚡</span> Executive Summary</div>
+          <p class="summary-text">${result.plainLanguageSummary}</p>
+        </div>
+        
+        <!-- PLAYER READINESS -->
+        <div class="section">
+          <div class="section-title"><span class="section-icon">🎯</span> Player Readiness</div>
+          <div class="grid-5">
+            ${[
+              { label: 'Athletic', value: readinessScore.athletic },
+              { label: 'Technical', value: readinessScore.technical },
+              { label: 'Tactical', value: readinessScore.tactical },
+              { label: 'Academic', value: readinessScore.academic },
+              { label: 'Market', value: readinessScore.market }
+            ].map(item => `
+              <div class="readiness-item">
+                <div class="readiness-label">${item.label}</div>
+                <div class="readiness-value">${item.value}</div>
+                <div class="readiness-bar"><div class="readiness-fill" style="width: ${item.value}%"></div></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- RECRUITING PROBABILITIES -->
+        <div class="section">
+          <div class="section-title"><span class="section-icon">🏆</span> Recruiting Probabilities</div>
+          ${sortedVisibility.map(item => {
+            const score = item.visibilityPercent;
+            return `
+              <div class="prob-row">
+                <div class="prob-label">${normalizeLevel(item.level)}</div>
+                <div class="prob-track"><div class="prob-fill" style="width: ${score}%; background: ${getProbColor(score)};"></div></div>
+                <div class="prob-percent" style="color: ${getProbColor(score)}">${score}%</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <!-- TWO COLUMN: FUNNEL & STRENGTHS -->
+        <div class="grid-2">
+          <div class="section">
+            <div class="section-title"><span style="color: #a78bfa; margin-right: 10px;">📈</span> Recruiting Funnel</div>
+            <div class="funnel-box">
+              <div class="funnel-label">Current Stage</div>
+              <div class="funnel-value">${funnelAnalysis.stage}</div>
+              <div class="funnel-rate">${funnelAnalysis.conversionRate}</div>
+            </div>
+            <div class="advice-box" style="border-left-color: #f59e0b;">
+              <div class="advice-title" style="color: #f59e0b;">⚠ Bottleneck</div>
+              <div class="advice-text">${funnelAnalysis.bottleneck}</div>
+            </div>
+            <div class="advice-box">
+              <div class="advice-title">💡 Advice</div>
+              <div class="advice-text">${funnelAnalysis.advice}</div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="section-title"><span class="section-icon">✅</span> Key Strengths</div>
+            ${keyStrengths.map(s => `
+              <div class="strength-item">
+                <span class="strength-icon">✓</span>
+                <span class="strength-text">${s}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- PERFORMANCE CONSTRAINTS -->
+        <div class="section">
+          <div class="section-title"><span style="color: #ef4444; margin-right: 10px;">⚠️</span> Performance Constraints</div>
+          ${keyRisks.map(r => `
+            <div class="risk-item risk-${r.severity.toLowerCase()}">
+              <div style="flex: 1;">
+                <div class="risk-category" style="color: ${r.severity === 'High' ? '#ef4444' : r.severity === 'Medium' ? '#f59e0b' : '#3b82f6'}">
+                  ${r.severity === 'High' ? 'Critical Blocker' : r.severity === 'Medium' ? 'Warning' : 'Optimization'} • ${r.category}
+                </div>
+                <div class="risk-text">${r.message}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <!-- 90-DAY GAME PLAN -->
+        <div class="section">
+          <div class="section-title"><span class="section-icon">📅</span> 90-Day Game Plan</div>
+          ${finalActionPlan.map(item => {
+            const isVideo = ['video', 'highlight', 'reel', 'film', 'footage'].some(k => item.description.toLowerCase().includes(k));
+            return `
+              <div class="action-item ${isVideo ? 'action-critical' : ''}">
+                <div class="action-time" style="color: ${isVideo ? '#93c5fd' : '#94a3b8'}">${item.timeframe.replace(/_/g, ' ')}</div>
+                <div class="action-text" style="${isVideo ? 'color: #bfdbfe; font-weight: 500;' : ''}">${item.description}</div>
+                <div class="action-impact ${item.impact === 'High' ? 'impact-high' : 'impact-medium'}">
+                  ${item.impact === 'High' ? '↗' : '→'} ${item.impact}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+          <strong>ExposureEngine</strong> by Warubi Sports • ${new Date().toLocaleDateString()} • warubisports.com
+        </div>
+      `;
+      
+      const response = await fetch('/public/pdf/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          analysisHtml,
+          playerName: `${profile.firstName}_${profile.lastName}`
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'PDF generation failed');
+      }
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ExposureEngine_${profile.firstName}_${profile.lastName}_Report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('There was an error generating the PDF. Please try again.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handleEmailReport = () => {
@@ -595,10 +804,20 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             <div className="flex space-x-4">
                <button 
                   onClick={generatePDF}
-                  className="flex items-center px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 transition-colors text-sm font-medium shadow-sm"
+                  disabled={isGeneratingPdf}
+                  className="flex items-center px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                >
-                  <Printer className="w-4 h-4 mr-2" />
-                  Print / Save PDF
+                  {isGeneratingPdf ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </>
+                  )}
                </button>
                <button 
                   onClick={() => setShowEmailModal(true)}

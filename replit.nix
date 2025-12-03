@@ -2,6 +2,7 @@
 
 {
   deps = [
+    pkgs.chromium
     pkgs.unzip
     pkgs.poppler_utils
     pkgs.openssh

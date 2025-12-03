@@ -39,6 +39,10 @@ app.use('/public', evaluationsRoutes);
 import exposureRoutes from './routes/exposure.js';
 app.use('/public/exposure', exposureRoutes);
 
+// Public PDF generation routes (ExposureEngine - no auth required)
+import pdfRoutes from './routes/pdf.js';
+app.use('/public/pdf', pdfRoutes);
+
 app.get('/healthz/ready', async (_req, res) => {
   try {
     // Check database connectivity
