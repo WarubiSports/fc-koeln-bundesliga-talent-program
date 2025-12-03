@@ -16,9 +16,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Serve static files from public folder (for FC Köln frontend)
+// Serve static files - dist folder first (ExposureEngine React app), then public (legacy FC Köln pages)
+app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(express.static(path.join(__dirname, '../client/client-dist')));
 
 // Parse JSON
 app.use(express.json());
@@ -34,6 +34,10 @@ app.get('/healthz', (_req, res) => {
 // Public evaluation routes (no auth required for player intake)
 import evaluationsRoutes from './routes/evaluations.js';
 app.use('/public', evaluationsRoutes);
+
+// Public exposure analysis routes (ExposureEngine - no auth required)
+import exposureRoutes from './routes/exposure.js';
+app.use('/public/exposure', exposureRoutes);
 
 app.get('/healthz/ready', async (_req, res) => {
   try {
@@ -137,9 +141,9 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     defaultApp: 'fckoln' 
   });
   console.log(`🚀 Warubi Multi-App Platform`);
-  console.log(`📍 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`🔑 Apps registered: core, fckoln`);
-  console.log(`✅ FC Köln auto-enabled for localhost requests`);
+  console.log(`📍 API Server running on http://0.0.0.0:${PORT}`);
+  console.log(`🔑 Apps registered: core, fckoln, exposureengine`);
+  console.log(`✅ ExposureEngine landing page active`);
 });
 
 // Graceful shutdown handler

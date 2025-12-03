@@ -4,7 +4,7 @@
 
 The Warubi platform is a multi-tenant web application hosting multiple apps for the Warubi Sports ecosystem. The platform now features:
 
-1. **Warubi Hub Player Evaluation** (Landing Page `/`): A multi-step evaluation wizard for American club players (MLS NEXT, ECNL, PPL, GA, etc.) that computes Score, Bucket, Rating, and Tags visible to the player.
+1. **ExposureEngine** (Landing Page `/`): AI-powered college soccer recruiting visibility analyzer using Gemini AI. Players input their profile (league, stats, academics, video status, outreach) and receive personalized D1-JUCO visibility scores with a 90-day action plan. Built with React 18, TypeScript, and Tailwind CSS.
 
 2. **Warubi Ecosystem** (`/ecosystem.html`): The original showcase page connecting players and coaches to elite pathways (Bundesliga development, college scholarships, pro representation, coaching licenses).
 
@@ -59,6 +59,15 @@ Preferred communication style: Simple, everyday language.
 - **Database Constraints**: Unique email per tenant, NOT NULL on users.app_id, foreign keys on event_attendance and grocery_order_items.
 - **Database Indexes**: Composite indexes on (app_id, status), (app_id, user_id), (app_id, date) for optimized multi-tenant queries.
 - **Zod Validation Middleware**: Reusable validation middleware created for body, query, and params validation.
+- **ExposureEngine Rate Limiting**: 10 requests per IP per minute on /public/exposure/analyze endpoint with Zod input validation.
+
+### ExposureEngine Architecture
+- **Frontend**: React 18 with TypeScript, Tailwind CSS v4, lucide-react icons
+- **Components**: client/src/components/exposure/ (Header, PlayerInputForm, AnalysisResult)
+- **Types**: shared/exposure-types.ts (PlayerProfile, AnalysisResult interfaces)
+- **Backend API**: /public/exposure/analyze (POST) - Zod validated, rate limited
+- **AI Service**: server/services/exposureAnalysis.ts using Gemini AI with structured JSON schema
+- **Note**: React 18 used (not 19) for lucide-react compatibility
 
 ### Post-Launch Tech Debt
 - Split 2,300-line fckoln.mjs into modular route files (auth, chores, grocery, events, players).
