@@ -298,7 +298,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                     <PolarGrid stroke={isDark ? "#334155" : "#e2e8f0"} />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 10 }} />
                     <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                    <Radar name="You" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                    <Radar name="You" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.3} isAnimationActive={false} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -338,7 +338,7 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                         }}
                         itemStyle={{ color: isDark ? '#f1f5f9' : '#0f172a' }}
                       />
-                      <Bar dataKey="visibilityPercent" radius={[0, 4, 4, 0]} barSize={20}>
+                      <Bar dataKey="visibilityPercent" radius={[0, 4, 4, 0]} barSize={20} isAnimationActive={false}>
                         {chartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={getProbabilityStatus(entry.visibilityPercent).color} />
                         ))}
