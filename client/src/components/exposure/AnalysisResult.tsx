@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import type { AnalysisResult, RiskFlag, ActionItem, PlayerProfile, BenchmarkMetric } from '../../../../shared/exposure-types';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
@@ -8,8 +8,10 @@ import {
 import { 
   AlertTriangle, CheckCircle2, Calendar, ArrowRight, Shield, 
   Download, Mail, Printer, Share2, TrendingUp, Activity, Minus, 
-  AlertCircle, Info, Zap, User, Target, Globe, Trophy
+  AlertCircle, Info, Zap, User, Target, Globe, Trophy, Loader2
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 interface Props {
   result: AnalysisResult;
@@ -37,6 +39,15 @@ const PrintHeader = ({ profile }: { profile: PlayerProfile }) => (
 const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
   const [viewMode, setViewMode] = useState<'player' | 'coach'>('player');
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  
+  const headerRef = useRef<HTMLDivElement>(null);
+  const executiveSummaryRef = useRef<HTMLDivElement>(null);
+  const playerReadinessRef = useRef<HTMLDivElement>(null);
+  const recruitingProbabilitiesRef = useRef<HTMLDivElement>(null);
+  const realityCheckRef = useRef<HTMLDivElement>(null);
+  const funnelConstraintsRef = useRef<HTMLDivElement>(null);
+  const gamePlanRef = useRef<HTMLDivElement>(null);
 
   // Defensive Coding: Ensure we have arrays even if API returns undefined
   const visibilityScores = result.visibilityScores || [];
@@ -131,8 +142,73 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
     return { label: 'high', color: '#10b981', textClass: 'text-emerald-600 dark:text-emerald-500' };
   };
 
-  const handlePrint = () => {
-    window.print();
+  const generatePDF = async () => {
+    setIsGeneratingPdf(true);
+    
+    try {
+      const pdf = new jsPDF('p', 'mm', 'letter');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pageWidth - (margin * 2);
+      const maxContentHeight = pageHeight - (margin * 2);
+      
+      const sections = [
+        { ref: headerRef, name: 'Header' },
+        { ref: executiveSummaryRef, name: 'Executive Summary' },
+        { ref: playerReadinessRef, name: 'Player Readiness' },
+        { ref: recruitingProbabilitiesRef, name: 'Recruiting Probabilities' },
+        { ref: realityCheckRef, name: 'Reality Check' },
+        { ref: funnelConstraintsRef, name: 'Funnel & Constraints' },
+        { ref: gamePlanRef, name: '90 Day Game Plan' },
+      ];
+      
+      let currentY = margin;
+      let isFirstPage = true;
+      
+      for (const section of sections) {
+        if (!section.ref.current) continue;
+        
+        const canvas = await html2canvas(section.ref.current, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        if (!isFirstPage && (currentY + imgHeight > maxContentHeight)) {
+          pdf.addPage();
+          currentY = margin;
+        }
+        
+        if (isFirstPage && section.name !== 'Header' && (currentY + imgHeight > maxContentHeight)) {
+          pdf.addPage();
+          currentY = margin;
+        }
+        
+        pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
+        currentY += imgHeight + 8;
+        isFirstPage = false;
+        
+        if (section.name !== 'Header' && section.name !== 'Executive Summary') {
+          if (currentY + 50 > maxContentHeight) {
+            pdf.addPage();
+            currentY = margin;
+          }
+        }
+      }
+      
+      pdf.save(`ExposureEngine_${profile.firstName}_${profile.lastName}_Report.pdf`);
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('There was an error generating the PDF. Please try again.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handleEmailReport = () => {
@@ -267,21 +343,34 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
         /* PLAYER VIEW - Detailed Analysis */
         <div className="space-y-6 print-layout">
           
-          {/* PRINT PAGE 1: Executive Summary & Player Readiness */}
-          <div className="print-page-1">
-            {/* Executive Summary */}
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
-                Executive Summary
-              </h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-                {result.plainLanguageSummary}
-              </p>
+          {/* PDF Header - visible during PDF generation */}
+          <div ref={headerRef} className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Exposure<span className="text-emerald-600">Engine</span> Report</h1>
+                <p className="text-sm text-slate-500 mt-1">Generated via Warubi Sports Analytics</p>
+              </div>
+              <div className="text-right">
+                <h2 className="text-lg font-bold text-slate-800">{profile.firstName} {profile.lastName}</h2>
+                <p className="text-sm text-slate-500">Class of {profile.gradYear} • {profile.position}</p>
+                <p className="text-xs text-slate-400 mt-1">{new Date().toLocaleDateString()}</p>
+              </div>
             </div>
+          </div>
 
-            {/* Radar Chart: Readiness */}
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
+          {/* Executive Summary */}
+          <div ref={executiveSummaryRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+              <Zap className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
+              Executive Summary
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
+              {result.plainLanguageSummary}
+            </p>
+          </div>
+
+          {/* Radar Chart: Readiness */}
+          <div ref={playerReadinessRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                 <Target className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
                 Player Readiness
@@ -305,13 +394,10 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
               <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-4 text-center leading-relaxed">
                 * Analysis based on self-reported ratings relative to current league level. Not independently verified.
               </p>
-            </div>
           </div>
 
-          {/* PRINT PAGE 2: Recruiting Probabilities */}
-          <div className="print-page-2">
-            {/* Bar Chart: Recruiting Probabilities */}
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between">
+          {/* Recruiting Probabilities */}
+          <div ref={recruitingProbabilitiesRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl flex flex-col justify-between mb-6">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
                    <Trophy className="w-5 h-5 mr-2 text-emerald-500 dark:text-emerald-400" />
@@ -366,12 +452,10 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                     );
                  })}
               </div>
-            </div>
           </div>
 
-          {/* PRINT PAGE 3: Reality Check */}
-          <div className="print-page-3">
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group">
+          {/* Reality Check */}
+          <div ref={realityCheckRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-blue-500/20 shadow-lg dark:shadow-xl relative overflow-hidden group mb-6">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-emerald-500 opacity-50"></div>
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -442,12 +526,10 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                   </div>
                ))}
             </div>
-            </div>
           </div>
 
-          {/* PRINT PAGE 4: Funnel & Constraints */}
-          <div className="print-page-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Funnel & Constraints */}
+          <div ref={funnelConstraintsRef} className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
              {/* Recruiting Funnel */}
              <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl print-section">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
@@ -514,17 +596,15 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                    ))}
                 </div>
              </div>
-            </div>
           </div>
 
-          {/* PRINT PAGES 5-6: 90 Day Game Plan */}
-          <div className="print-page-5-6">
-            <div className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center print-game-plan-header">
-                <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
-                90 Day Game Plan
-              </h3>
-              <div className="print-action-items">
+          {/* 90 Day Game Plan */}
+          <div ref={gamePlanRef} className="bg-white dark:bg-slate-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl mb-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
+              <Calendar className="w-6 h-6 mr-3 text-emerald-500 dark:text-emerald-400" />
+              90 Day Game Plan
+            </h3>
+            <div className="space-y-4">
                 {finalActionPlan.map((item, index) => {
                  // Determine if this is the Video Action Item by checking keywords
                  // Logic updated to be content-aware rather than index-dependent
@@ -577,7 +657,6 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* TAKE ACTION FOOTER (PDF & EMAIL) */}
@@ -589,11 +668,21 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
             <div className="flex space-x-4">
                <button 
-                  onClick={handlePrint}
-                  className="flex items-center px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 transition-colors text-sm font-medium shadow-sm"
+                  onClick={generatePDF}
+                  disabled={isGeneratingPdf}
+                  className="flex items-center px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-lg border border-slate-300 dark:border-slate-600 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                >
-                  <Printer className="w-4 h-4 mr-2" />
-                  Print / PDF
+                  {isGeneratingPdf ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </>
+                  )}
                </button>
                <button 
                   onClick={() => setShowEmailModal(true)}
