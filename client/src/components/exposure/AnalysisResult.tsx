@@ -392,14 +392,14 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
                {benchmarkAnalysis.map((metric, idx) => (
                   <div key={idx} className="flex flex-col items-center h-full w-1/3 max-w-[120px] group relative">
                      {/* The Track */}
-                     <div className="relative w-full flex-1 bg-slate-100 dark:bg-slate-950 rounded-t-lg border-x border-t border-slate-200 dark:border-white/5 overflow-visible">
+                     <div className="relative w-full flex-1 bg-slate-100 dark:bg-slate-950 rounded-t-lg border-x border-t border-slate-200 dark:border-white/5 overflow-visible print-benchmark-track">
                         
-                        {/* Grid lines (optional aesthetic) */}
-                        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(0deg,transparent_24%,rgba(0,0,0,0.1)_25%,rgba(0,0,0,0.1)_26%,transparent_27%,transparent_74%,rgba(0,0,0,0.1)_75%,rgba(0,0,0,0.1)_76%,transparent_77%,transparent)] dark:bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,0.3)_25%,rgba(255,255,255,0.3)_26%,transparent_27%,transparent_74%,rgba(255,255,255,0.3)_75%,rgba(255,255,255,0.3)_76%,transparent_77%,transparent)] bg-[length:100%_20px]"></div>
+                        {/* Grid lines (optional aesthetic) - hidden in print */}
+                        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(0deg,transparent_24%,rgba(0,0,0,0.1)_25%,rgba(0,0,0,0.1)_26%,transparent_27%,transparent_74%,rgba(0,0,0,0.1)_75%,rgba(0,0,0,0.1)_76%,transparent_77%,transparent)] dark:bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,0.3)_25%,rgba(255,255,255,0.3)_26%,transparent_27%,transparent_74%,rgba(255,255,255,0.3)_75%,rgba(255,255,255,0.3)_76%,transparent_77%,transparent)] bg-[length:100%_20px] print:hidden"></div>
 
                         {/* User Bar */}
                         <div 
-                           className="absolute bottom-0 left-2 right-2 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-md transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]"
+                           className="absolute bottom-0 left-2 right-2 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-md transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] print-benchmark-bar"
                            style={{ height: `${metric.userScore}%` }}
                         >
                            {/* Score Tooltip/Label */}
