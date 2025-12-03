@@ -2,6 +2,7 @@
 
 {
   deps = [
+    pkgs.unzip
     pkgs.poppler_utils
     pkgs.openssh
     pkgs.nano
