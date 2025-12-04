@@ -5,6 +5,7 @@ import PlayerInputForm from './components/exposure/PlayerInputForm';
 import AnalysisResultView from './components/exposure/AnalysisResult';
 import PDFReportPage from './pages/PDFReport';
 import Pathways from './pages/Pathways';
+import Leads from './pages/Leads';
 import type { PlayerProfile, AnalysisResult } from '../../shared/exposure-types';
 import { GraduationCap, Users, ShieldCheck } from 'lucide-react';
 
@@ -184,6 +185,7 @@ function App() {
     <Switch>
       <Route path="/report/:token" component={PDFReportPage} />
       <Route path="/pathways" component={Pathways} />
+      <Route path="/leads" component={Leads} />
       <Route path="/" component={ExposureEnginePage} />
     </Switch>
   );
