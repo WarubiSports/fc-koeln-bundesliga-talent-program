@@ -2,13 +2,16 @@
 # Installs Chromium for Puppeteer PDF generation
 
 [phases.setup]
-nixPkgs = ['chromium', 'nodejs_20']
+nixPkgs = ['chromium', 'nodejs_20', 'nodePackages.pnpm']
+
+[phases.install]
+cmds = ['pnpm install --frozen-lockfile']
 
 [phases.build]
-cmds = ['npm install', 'npm run build']
+cmds = ['pnpm run build']
 
 [start]
-cmd = 'npm start'
+cmd = 'pnpm start'
 
 [variables]
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
