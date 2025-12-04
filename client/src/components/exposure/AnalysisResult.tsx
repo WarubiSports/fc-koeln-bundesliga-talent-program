@@ -38,6 +38,10 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
   const [viewMode, setViewMode] = useState<'player' | 'coach'>('player');
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailAddress, setEmailAddress] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSuccess, setEmailSuccess] = useState(false);
   
   const reportContainerRef = useRef<HTMLDivElement>(null);
 
@@ -180,11 +184,45 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
     }
   };
 
-  const handleEmailReport = () => {
-    setTimeout(() => {
-      setShowEmailModal(false);
-      alert(`Report sent to ${profile.firstName}'s email address.`);
-    }, 1000);
+  const handleEmailReport = async () => {
+    if (!emailAddress || !emailAddress.includes('@')) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+    
+    setIsSendingEmail(true);
+    setEmailError(null);
+    
+    try {
+      const response = await fetch('/public/pdf/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: emailAddress,
+          result, 
+          profile 
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send email');
+      }
+      
+      setEmailSuccess(true);
+      setTimeout(() => {
+        setShowEmailModal(false);
+        setEmailSuccess(false);
+        setEmailAddress('');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Email send error:', error);
+      setEmailError(error instanceof Error ? error.message : 'Failed to send email. Please try again.');
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   return (
@@ -697,29 +735,67 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
       {showEmailModal && (
          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 print:hidden">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 max-w-md w-full shadow-2xl relative animate-slide-up">
-               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Email Full Report</h3>
-               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter your email address to receive the full PDF analysis.</p>
-               
-               <input 
-                  type="email" 
-                  placeholder="player@example.com" 
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-slate-900 dark:text-white mb-4 focus:border-emerald-500 focus:outline-none"
-               />
-               
-               <div className="flex justify-end space-x-3">
-                  <button 
-                     onClick={() => setShowEmailModal(false)}
-                     className="px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm"
-                  >
-                     Cancel
-                  </button>
-                  <button 
-                     onClick={handleEmailReport}
-                     className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium text-sm"
-                  >
-                     Send Report
-                  </button>
-               </div>
+               {emailSuccess ? (
+                  <div className="text-center py-8">
+                     <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                     </div>
+                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Report Sent!</h3>
+                     <p className="text-sm text-slate-500 dark:text-slate-400">Check your inbox at {emailAddress}</p>
+                  </div>
+               ) : (
+                  <>
+                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Email Full Report</h3>
+                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter your email address to receive the full PDF analysis.</p>
+                     
+                     <input 
+                        type="email" 
+                        placeholder="player@example.com"
+                        value={emailAddress}
+                        onChange={(e) => {
+                           setEmailAddress(e.target.value);
+                           setEmailError(null);
+                        }}
+                        disabled={isSendingEmail}
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-slate-900 dark:text-white mb-2 focus:border-emerald-500 focus:outline-none disabled:opacity-50"
+                        data-testid="input-email-report"
+                     />
+                     
+                     {emailError && (
+                        <p className="text-red-500 dark:text-red-400 text-sm mb-4">{emailError}</p>
+                     )}
+                     
+                     <div className="flex justify-end space-x-3 mt-4">
+                        <button 
+                           onClick={() => {
+                              setShowEmailModal(false);
+                              setEmailError(null);
+                              setEmailAddress('');
+                           }}
+                           disabled={isSendingEmail}
+                           className="px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm disabled:opacity-50"
+                           data-testid="button-cancel-email"
+                        >
+                           Cancel
+                        </button>
+                        <button 
+                           onClick={handleEmailReport}
+                           disabled={isSendingEmail}
+                           className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium text-sm disabled:opacity-50 flex items-center"
+                           data-testid="button-send-email"
+                        >
+                           {isSendingEmail ? (
+                              <>
+                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                 Sending...
+                              </>
+                           ) : (
+                              'Send Report'
+                           )}
+                        </button>
+                     </div>
+                  </>
+               )}
             </div>
          </div>
       )}

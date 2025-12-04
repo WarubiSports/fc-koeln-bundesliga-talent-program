@@ -4,6 +4,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import crypto from "crypto";
 import { logger } from "../utils/logger.js";
+import { sendExposureReportEmail, isBrevoConfigured } from "../utils/brevo.js";
 
 const execAsync = promisify(exec);
 const router = Router();
@@ -201,6 +202,123 @@ router.post("/generate/:token", async (req: Request, res: Response) => {
     res.status(500).json({ 
       success: false, 
       error: error instanceof Error ? error.message : "PDF generation failed" 
+    });
+  }
+});
+
+router.post("/email", async (req: Request, res: Response) => {
+  const { email, result, profile } = req.body;
+  
+  if (!email || !result || !profile) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Missing required fields: email, result, and profile" 
+    });
+  }
+  
+  if (!isBrevoConfigured()) {
+    return res.status(503).json({ 
+      success: false, 
+      error: "Email service is not configured" 
+    });
+  }
+  
+  const token = crypto.randomBytes(32).toString('hex');
+  
+  reportStore.set(token, {
+    result,
+    profile,
+    createdAt: Date.now()
+  });
+  
+  let browser;
+  
+  try {
+    const playerName = `${profile.firstName} ${profile.lastName}`;
+    logger.info("Starting PDF generation for email", { 
+      playerName,
+      email 
+    });
+    
+    const chromiumPath = await getChromiumPath();
+    
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process"
+      ],
+      executablePath: chromiumPath
+    });
+    
+    const page = await browser.newPage();
+    
+    await page.setViewport({ width: 1200, height: 900 });
+    
+    const port = process.env.PORT || 5000;
+    const baseUrl = `http://localhost:${port}`;
+    const reportUrl = `${baseUrl}/report/${token}`;
+    
+    logger.info("Navigating to report page for email", { url: reportUrl });
+    
+    try {
+      await page.goto(reportUrl, { 
+        waitUntil: "networkidle2",
+        timeout: 45000
+      });
+      
+      await page.waitForFunction(() => {
+        return (window as any).__PDF_READY__ === true;
+      }, { timeout: 20000 });
+      
+    } catch (navError) {
+      logger.error("Navigation or wait error", { error: navError });
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const pdfBuffer = await page.pdf({
+      format: "Letter",
+      printBackground: true,
+      margin: { top: "0.4in", right: "0.4in", bottom: "0.4in", left: "0.4in" },
+      displayHeaderFooter: false,
+      preferCSSPageSize: false
+    });
+    
+    await browser.close();
+    
+    reportStore.delete(token);
+    
+    await sendExposureReportEmail(email, playerName, Buffer.from(pdfBuffer));
+    
+    logger.info("PDF emailed successfully", { 
+      playerName,
+      email 
+    });
+    
+    res.json({ 
+      success: true, 
+      message: `Report sent to ${email}` 
+    });
+    
+  } catch (error) {
+    logger.error("PDF email failed", { error });
+    
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
+    
+    reportStore.delete(token);
+    
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to send email" 
     });
   }
 });
