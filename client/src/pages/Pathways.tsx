@@ -98,15 +98,17 @@ const PathwayCard = ({
   category,
   title, 
   subtitle, 
+  link,
   children,
 }: { 
   category: string;
   title: string; 
   subtitle: string; 
+  link: string;
   children?: React.ReactNode;
 }) => {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-neutral-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group w-full cursor-default">
+    <div className="bg-white rounded-3xl overflow-hidden border border-neutral-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group w-full">
       <div className="w-full relative bg-neutral-100">
         {children}
       </div>
@@ -127,14 +129,20 @@ const PathwayCard = ({
           </p>
         </div>
 
-        <div className="mt-auto pt-6 border-t border-neutral-100 flex items-center justify-between">
+        <a 
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-auto pt-6 border-t border-neutral-100 flex items-center justify-between cursor-pointer"
+          data-testid={`link-explore-${title.toLowerCase().replace(/\s+/g, '-')}`}
+        >
           <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider group-hover:text-neutral-900 transition-colors">
             Explore Pathway
           </span>
           <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center group-hover:bg-red-500 transition-colors duration-300">
             <ChevronRight size={16} className="text-neutral-400 group-hover:text-white transition-colors" />
           </div>
-        </div>
+        </a>
       </div>
     </div>
   );
@@ -585,6 +593,7 @@ export default function Pathways() {
             category="Pathway 01"
             title="College Pathway" 
             subtitle="Realistic placement to NCAA and NAIA universities with long-term development."
+            link="https://warubi-sports.com/college-scholarships/"
           >
             <VideoCard 
               title="Avery - College Pathway Story"
@@ -600,6 +609,7 @@ export default function Pathways() {
             category="Pathway 02"
             title="Development in Europe" 
             subtitle="Full season training and playing opportunities in top German environments."
+            link="https://warubi-sports.com/3-german-soccer-academy-facts/"
           >
             <VideoCard 
               title="ITP Cologne"
@@ -615,6 +625,7 @@ export default function Pathways() {
             category="Pathway 03"
             title="UEFA & German FA Coaching" 
             subtitle="Official licenses and hands-on coaching experience in German academies."
+            link="https://warubi-sports.com/uefa-coaching-license-course/"
           >
             <VideoCard 
               title="UEFA Coaching Story"
@@ -630,6 +641,7 @@ export default function Pathways() {
             category="Pathway 04"
             title="Exposure Events" 
             subtitle="High-level showcases and ID camps for direct scouting opportunities."
+            link="https://germany-socceracademy.com/tryouts-id-camps/"
           >
             <VideoCard 
               title="Showcase Cologne"
