@@ -318,3 +318,24 @@ export const playerEvaluations = pgTable("player_evaluations", {
 
 export type PlayerEvaluation = typeof playerEvaluations.$inferSelect;
 export type InsertPlayerEvaluation = typeof playerEvaluations.$inferInsert;
+
+// Pathway Leads table - captures form submissions from /pathways intake modal
+export const pathwayLeads = pgTable("pathway_leads", {
+  id: serial("id").primaryKey(),
+  role: varchar("role").notNull(), // 'Player', 'Coach', 'Parent'
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull(),
+  age: varchar("age"),
+  gradYear: varchar("grad_year"),
+  goals: text("goals"), // JSON array of selected goals
+  currentLevel: varchar("current_level"),
+  budgetPreference: varchar("budget_preference"),
+  gapYearInterest: boolean("gap_year_interest").default(false),
+  source: varchar("source").default('pathways'), // Track where lead came from
+  status: varchar("status").notNull().default('new'), // 'new', 'contacted', 'qualified', 'converted'
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type PathwayLead = typeof pathwayLeads.$inferSelect;
+export type InsertPathwayLead = typeof pathwayLeads.$inferInsert;
