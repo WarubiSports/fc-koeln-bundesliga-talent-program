@@ -31,3 +31,9 @@ externalPort = 80
 
 [agent]
 integrations = ["sendgrid:1.0.0", "javascript_gemini_ai_integrations:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+BREVO_SENDER_EMAIL = "info@warubi-sports.com"
+BREVO_SENDER_NAME = "Warubi Sports"
