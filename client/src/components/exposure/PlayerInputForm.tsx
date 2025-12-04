@@ -9,8 +9,8 @@ interface Props {
 }
 
 // Helper component for input labels
-const Label = ({ children }: { children?: JSX.Element | string }) => (
-  <label className="block text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1.5 font-mono">{children}</label>
+const Label = ({ children, className = '' }: { children?: JSX.Element | string, className?: string }) => (
+  <label className={`block text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1.5 font-mono ${className}`}>{children}</label>
 );
 
 // Helper for Section Headers
