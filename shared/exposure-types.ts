@@ -2,6 +2,7 @@ export type YouthLeague =
   | "MLS_NEXT"
   | "ECNL"
   | "Girls_Academy"
+  | "USL_Academy"
   | "USYS_National_League"
   | "ECNL_RL"
   | "High_School"
@@ -11,7 +12,7 @@ export type YouthLeague =
 export type CollegeLevel = "D1" | "D2" | "D3" | "NAIA" | "JUCO";
 
 export type Position =
-  | "GK" | "CB" | "FB" | "WB" | "DM" | "CM" | "AM" | "WING" | "9" | "Utility";
+  | "GK" | "CB" | "LB" | "RB" | "CDM" | "CM" | "CAM" | "LW" | "RW" | "ST";
 
 export type ExperienceLevel = 
   | "Youth_Club_Only"
@@ -133,6 +134,7 @@ export const LEAGUES: YouthLeague[] = [
   "MLS_NEXT",
   "ECNL",
   "Girls_Academy",
+  "USL_Academy",
   "ECNL_RL",
   "USYS_National_League",
   "High_School",
@@ -141,7 +143,7 @@ export const LEAGUES: YouthLeague[] = [
 ];
 
 export const POSITIONS: Position[] = [
-  "GK", "CB", "FB", "WB", "DM", "CM", "AM", "WING", "9", "Utility"
+  "GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"
 ];
 
 export const LEVELS: CollegeLevel[] = [

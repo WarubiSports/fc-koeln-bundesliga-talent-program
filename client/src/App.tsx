@@ -7,7 +7,7 @@ import PDFReportPage from './pages/PDFReport';
 import Pathways from './pages/Pathways';
 import Leads from './pages/Leads';
 import type { PlayerProfile, AnalysisResult } from '../../shared/exposure-types';
-import { GraduationCap, Users, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Users, ShieldCheck, X, Info } from 'lucide-react';
 
 function ExposureEnginePage() {
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
@@ -15,6 +15,7 @@ function ExposureEnginePage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [showMethodologyModal, setShowMethodologyModal] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
@@ -120,6 +121,8 @@ function ExposureEnginePage() {
                   <span>ECNL</span>
                   <span className="text-slate-400 dark:text-slate-700">•</span>
                   <span>GA</span>
+                  <span className="text-slate-400 dark:text-slate-700">•</span>
+                  <span>USL ACADEMY</span>
                </div>
              </div>
 
@@ -130,9 +133,9 @@ function ExposureEnginePage() {
                   <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-3">
                     Powered by Warubi Sports
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Decade of Excellence. Global Reach.</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Elite Pathways. Global Reach.</h3>
                   <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed">
-                    Warubi Sports has spent more than 10 years helping players reach NCAA, NAIA, and JUCO programs, working with professional agents worldwide, developing players in a Bundesliga academy in Germany, and supporting coaches through UEFA coaching licenses.
+                    Warubi Sports provides pathways into NCAA, NAIA, and JuCo soccer, collaborates with pro agents across the world, develops players in a Bundesliga academy, and supports coaches in earning UEFA licenses.
                   </p>
                 </div>
 
@@ -160,11 +163,14 @@ function ExposureEnginePage() {
                     </div>
                 </div>
                 
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-[11px] font-medium text-slate-500 uppercase tracking-wide">
-                    <span className="flex items-center"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>Trusted by College Coaches</span>
-                    <span className="flex items-center"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>FIFA-Licensed Agents</span>
-                    <span className="flex items-center"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>UEFA Licensed Educators</span>
-                </div>
+                <button
+                  onClick={() => setShowMethodologyModal(true)}
+                  className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors mt-8"
+                  data-testid="button-read-methodology"
+                >
+                  <Info className="w-4 h-4" />
+                  Read Algorithm Methodology
+                </button>
              </div>
 
           </div>
@@ -176,6 +182,76 @@ function ExposureEnginePage() {
       <footer className="relative z-10 py-8 text-center text-[10px] text-slate-500 dark:text-slate-600 font-mono print:hidden">
         <p>© {new Date().getFullYear()} ExposureEngine. Not affiliated with NCAA, MLS NEXT or ECNL.</p>
       </footer>
+
+      {showMethodologyModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowMethodologyModal(false)}>
+          <div 
+            className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowMethodologyModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors z-10"
+              data-testid="button-close-methodology"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-8">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Algorithm Methodology</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Transparency in our predictive modeling.</p>
+
+              <div className="bg-slate-100 dark:bg-slate-800/50 border-l-4 border-amber-500 p-4 rounded-lg mb-6">
+                <p className="text-sm text-slate-700 dark:text-slate-300">
+                  <span className="font-bold text-amber-600 dark:text-amber-400">Disclaimer:</span> These results are based purely on user inputs and our proprietary modeling logic. They serve as an objective orientation tool, not a guarantee of recruitment.
+                </p>
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
+                The ExposureEngine Algorithm uses a multivariate predictive model designed to simulate the evaluation process of a US collegiate recruiting director. Unlike generic "chance calculators," this system utilizes a weighted scoring matrix based on historical recruiting data, roster composition analytics, and NCAA/NAIA eligibility standards.
+              </p>
+
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Phase 1: The "On-Paper" Baseline</h3>
+              <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
+                The foundation is the competitive environment. The algorithm assigns a base "Visibility Score" derived from the league tier relative to the target college division. A "Minutes Coefficient" adjusts this: a Key Starter (&gt;80% minutes) receives a positive multiplier, while a Bench player (&lt;30%) sees their league advantage reduced.
+              </p>
+
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Phase 2: Athletic & Academic Filters</h3>
+              <ul className="text-slate-600 dark:text-slate-300 text-sm mb-6 space-y-2">
+                <li><span className="font-bold text-slate-900 dark:text-white">Academic Admissibility:</span> GPAs below 3.0 trigger a "Hard Blocker" for D3 (no athletic scholarships) and Ivy/Patriot D1s.</li>
+                <li><span className="font-bold text-slate-900 dark:text-white">Athletic Benchmarking:</span> Self-reported metrics are normalized. "Average" ratings reduce D1/D2 probability, which require "Above Average" to "Elite" profiles.</li>
+              </ul>
+
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Phase 3: Market Reality Multiplier</h3>
+              <ul className="text-slate-600 dark:text-slate-300 text-sm mb-6 space-y-2">
+                <li><span className="font-bold text-slate-900 dark:text-white">Video Binary:</span> No video results in a 0.6x penalty (40% reduction) across all levels.</li>
+                <li><span className="font-bold text-slate-900 dark:text-white">Funnel Logic:</span> High outreach with low replies flags "Spamming" or "Talent Gap". Zero outreach triggers "Invisible" status.</li>
+              </ul>
+
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Phase 4: Maturity & Experience</h3>
+              <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
+                Players over 18.5 years old or with verified Semi-Pro/International Academy experience receive scoring boosts for D1/D2, reflecting readiness for college physicality.
+              </p>
+
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Scoring Key</h3>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-emerald-500/20 border border-emerald-500/30 p-3 rounded-lg text-center">
+                  <div className="text-emerald-400 font-bold text-sm">90-100%</div>
+                  <div className="text-slate-400 text-xs">Ideal Fit. Expect offers.</div>
+                </div>
+                <div className="bg-yellow-500/20 border border-yellow-500/30 p-3 rounded-lg text-center">
+                  <div className="text-yellow-400 font-bold text-sm">70-89%</div>
+                  <div className="text-slate-400 text-xs">Possible. Needs optimization.</div>
+                </div>
+                <div className="bg-red-500/20 border border-red-500/30 p-3 rounded-lg text-center">
+                  <div className="text-red-400 font-bold text-sm">&lt; 50%</div>
+                  <div className="text-slate-400 text-xs">Misalignment / Blocker.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
