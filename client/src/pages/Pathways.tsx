@@ -168,7 +168,7 @@ const Credibility = () => {
       <div className="bg-white rounded-3xl border border-neutral-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-6 md:p-10 flex flex-col xl:flex-row items-center justify-between gap-8 xl:gap-12 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-neutral-50 rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
 
-        <div className="flex items-start gap-5 w-full xl:w-auto">
+        <div className="flex flex-col items-center text-center gap-4 w-full xl:w-auto">
           <div className="w-14 h-14 rounded-2xl bg-neutral-900 flex items-center justify-center shrink-0 shadow-lg shadow-neutral-900/20 text-white">
              <ShieldCheck size={28} strokeWidth={2} />
           </div>
