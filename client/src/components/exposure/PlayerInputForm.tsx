@@ -812,9 +812,9 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
               </p>
            </div>
            
-           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 items-end">
-              <div>
-                <Label>Coaches Emailed</Label>
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="flex flex-col">
+                <Label className="min-h-[2.5rem] flex items-start">Coaches Emailed</Label>
                 <input
                   type="number"
                   className={`${inputClass} font-mono`}
@@ -822,8 +822,8 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
                   onChange={(e) => handleInputChange('coachesContacted', parseInt(e.target.value))}
                 />
               </div>
-              <div>
-                <Label>Personal Replies</Label>
+              <div className="flex flex-col">
+                <Label className="min-h-[2.5rem] flex items-start">Personal Replies</Label>
                 <input
                   type="number"
                   className={`${inputClass} font-mono`}
@@ -831,8 +831,8 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
                   onChange={(e) => handleInputChange('responsesReceived', parseInt(e.target.value))}
                 />
               </div>
-              <div>
-                <Label>Concrete Offers</Label>
+              <div className="flex flex-col">
+                <Label className="min-h-[2.5rem] flex items-start">Concrete Offers</Label>
                 <input
                   type="number"
                   className={`${inputClass} font-mono`}
