@@ -138,7 +138,8 @@ router.post("/generate/:token", async (req: Request, res: Response) => {
     
     await page.setViewport({ width: 1200, height: 900 });
     
-    const baseUrl = 'http://localhost:5000';
+    const port = process.env.PORT || 5000;
+    const baseUrl = `http://localhost:${port}`;
     const reportUrl = `${baseUrl}/report/${token}`;
     
     logger.info("Navigating to report page", { url: reportUrl });
