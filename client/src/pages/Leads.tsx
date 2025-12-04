@@ -40,19 +40,27 @@ export default function Leads() {
   const fetchLeads = async () => {
     setLoading(true);
     setError(null);
+    console.log('Fetching leads...');
     try {
       const params = new URLSearchParams();
       if (filterRole) params.append('role', filterRole);
       if (filterStatus) params.append('status', filterStatus);
       
-      const response = await fetch(`/public/leads?${params.toString()}`);
+      const url = `/public/leads?${params.toString()}`;
+      console.log('Fetch URL:', url);
+      
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
+      
       const data = await response.json();
+      console.log('Response data:', data);
       
       if (!response.ok) throw new Error(data.error);
       
       setLeads(data.leads);
       setTotal(data.total);
     } catch (err) {
+      console.error('Fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load leads');
     } finally {
       setLoading(false);
