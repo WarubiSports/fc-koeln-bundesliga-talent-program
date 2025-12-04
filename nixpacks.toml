@@ -1,0 +1,14 @@
+# Railway deployment configuration
+# Installs Chromium for Puppeteer PDF generation
+
+[phases.setup]
+nixPkgs = ['chromium', 'nodejs_20']
+
+[phases.build]
+cmds = ['npm install', 'npm run build']
+
+[start]
+cmd = 'npm start'
+
+[variables]
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
