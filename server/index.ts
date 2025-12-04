@@ -43,6 +43,10 @@ app.use('/public/exposure', exposureRoutes);
 import pdfRoutes from './routes/pdf.js';
 app.use('/public/pdf', pdfRoutes);
 
+// Public leads routes (Pathways intake form - no auth required)
+import leadsRoutes from './routes/leads.js';
+app.use('/public/leads', leadsRoutes);
+
 app.get('/healthz/ready', async (_req, res) => {
   try {
     // Check database connectivity
