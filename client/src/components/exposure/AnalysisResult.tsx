@@ -721,7 +721,9 @@ const AnalysisResultView = ({ result, profile, onReset, isDark }: Props) => {
             </div>
             
             <a 
-              href="/pathways"
+              href="https://warubi-sports.com/eliteplayer-pathways/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative z-10 shrink-0 flex items-center px-8 py-4 bg-white text-slate-950 hover:bg-emerald-50 rounded-xl font-bold text-sm transition-all transform group-hover:scale-105 shadow-xl shadow-emerald-900/20"
               data-testid="link-request-access"
             >
