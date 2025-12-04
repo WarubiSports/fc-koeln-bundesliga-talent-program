@@ -7,16 +7,15 @@
   "scripts": {
     "start": "node server/index.js || tsx server/index.ts",
     "dev": "tsx watch server/index.ts",
-
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "tsc -p tsconfig.server.json || true",
-
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup:apps": "tsx server/setup/setup-apps.ts",
     "stop": "pkill -f 'server/index.ts|tsx watch|pnpm dev' || true"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@google/genai": "^1.30.0",
     "@hookform/resolvers": "^5.2.2",
     "@sendgrid/mail": "^8.1.5",
