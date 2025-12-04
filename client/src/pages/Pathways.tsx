@@ -260,24 +260,30 @@ const IntakeModal = ({ isOpen, onClose }: IntakeModalProps) => {
     setIsSubmitting(true);
     setError(null);
 
+    const payload = {
+      role: formData.role,
+      name: formData.name,
+      email: formData.email,
+      age: formData.age || undefined,
+      gradYear: formData.gradYear || undefined,
+      goals: formData.goals.length > 0 ? formData.goals : undefined,
+      currentLevel: formData.currentLevel || undefined,
+      budgetPreference: formData.budget || undefined,
+      gapYearInterest: formData.gapYear,
+    };
+
+    console.log('Submitting lead:', payload);
+
     try {
       const response = await fetch('/public/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role: formData.role,
-          name: formData.name,
-          email: formData.email,
-          age: formData.age || undefined,
-          gradYear: formData.gradYear || undefined,
-          goals: formData.goals.length > 0 ? formData.goals : undefined,
-          currentLevel: formData.currentLevel || undefined,
-          budgetPreference: formData.budget || undefined,
-          gapYearInterest: formData.gapYear,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to submit form');
@@ -285,6 +291,7 @@ const IntakeModal = ({ isOpen, onClose }: IntakeModalProps) => {
 
       setStep(2);
     } catch (err) {
+      console.error('Submit error:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
