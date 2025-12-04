@@ -216,6 +216,8 @@ interface IntakeModalProps {
 
 const IntakeModal = ({ isOpen, onClose }: IntakeModalProps) => {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     role: 'Player',
     name: '',
@@ -253,9 +255,40 @@ const IntakeModal = ({ isOpen, onClose }: IntakeModalProps) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTimeout(() => setStep(2), 500);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/public/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: formData.role,
+          name: formData.name,
+          email: formData.email,
+          age: formData.age || undefined,
+          gradYear: formData.gradYear || undefined,
+          goals: formData.goals.length > 0 ? formData.goals : undefined,
+          currentLevel: formData.currentLevel || undefined,
+          budgetPreference: formData.budget || undefined,
+          gapYearInterest: formData.gapYear,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit form');
+      }
+
+      setStep(2);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -437,12 +470,19 @@ const IntakeModal = ({ isOpen, onClose }: IntakeModalProps) => {
                 <span className="text-sm font-medium text-neutral-700">Interested in a Gap Year?</span>
               </div>
 
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
               <button 
                 type="submit"
-                className="w-full bg-red-600 text-white font-bold text-lg py-4 rounded-xl hover:bg-red-700 active:scale-[0.99] transition-all duration-200 shadow-lg shadow-red-600/20"
+                disabled={isSubmitting}
+                className="w-full bg-red-600 text-white font-bold text-lg py-4 rounded-xl hover:bg-red-700 active:scale-[0.99] transition-all duration-200 shadow-lg shadow-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="button-submit-intake"
               >
-                Analyze my options
+                {isSubmitting ? 'Submitting...' : 'Analyze my options'}
               </button>
             </form>
           </div>
