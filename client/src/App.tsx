@@ -163,14 +163,16 @@ function ExposureEnginePage() {
                     </div>
                 </div>
                 
-                <button
-                  onClick={() => setShowMethodologyModal(true)}
-                  className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors mt-8"
-                  data-testid="button-read-methodology"
-                >
-                  <Info className="w-4 h-4" />
-                  Read Algorithm Methodology
-                </button>
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => setShowMethodologyModal(true)}
+                    className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors"
+                    data-testid="button-read-methodology"
+                  >
+                    <Info className="w-4 h-4" />
+                    Read Algorithm Methodology
+                  </button>
+                </div>
              </div>
 
           </div>
@@ -180,7 +182,7 @@ function ExposureEnginePage() {
       </main>
 
       <footer className="relative z-10 py-8 text-center text-[10px] text-slate-500 dark:text-slate-600 font-mono print:hidden">
-        <p>© {new Date().getFullYear()} ExposureEngine. Not affiliated with NCAA, MLS NEXT or ECNL.</p>
+        <p>© 2025 ExposureEngine by Warubi Sports Analytics</p>
       </footer>
 
       {showMethodologyModal && (
