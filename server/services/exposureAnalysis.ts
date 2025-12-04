@@ -251,19 +251,17 @@ const responseSchema = {
 
 export async function analyzePlayerExposure(profile: PlayerProfile): Promise<AnalysisResult> {
   const apiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
-  const baseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
+  const baseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL; // optional
 
-  if (!apiKey || !baseUrl) {
+  if (!apiKey) {
     throw new Error("Gemini AI integration not configured");
   }
 
-  const ai = new GoogleGenAI({
-    apiKey,
-    httpOptions: {
-      apiVersion: "",
-      baseUrl,
-    },
-  });
+  const ai = new GoogleGenAI(
+    baseUrl
+      ? { apiKey, httpOptions: { apiVersion: "", baseUrl } }
+      : { apiKey }
+  );
 
   const userPrompt = `
     ${SYSTEM_PROMPT}
@@ -280,11 +278,10 @@ export async function analyzePlayerExposure(profile: PlayerProfile): Promise<Ana
       responseSchema,
     },
   });
+    const text = response.text;
+    if (!text) {
+      throw new Error("No response from AI");
+    }
 
-  const text = response.text;
-  if (!text) {
-    throw new Error("No response from AI");
+    return JSON.parse(text) as AnalysisResult;
   }
-
-  return JSON.parse(text) as AnalysisResult;
-}
