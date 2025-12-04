@@ -3,6 +3,22 @@ import type { PlayerProfile, SeasonStat, ExposureEvent, Position, YouthLeague } 
 import { LEAGUES, POSITIONS, ATHLETIC_RATINGS } from '../../../../shared/exposure-types';
 import { Plus, Trash2, ChevronRight, Video, History, Zap, Check, ChevronsUpDown, Lightbulb, ChevronDown, User, GraduationCap } from 'lucide-react';
 
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+  "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+  "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+  "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+  "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+  "District of Columbia", "Puerto Rico"
+];
+
+const NATIONALITIES = [
+  "USA", "Mexico", "Canada", "Brazil", "Argentina", "Colombia", "Germany", "England", "Spain", "France",
+  "Italy", "Portugal", "Netherlands", "Belgium", "Ghana", "Nigeria", "Cameroon", "Senegal", "Japan", "South Korea",
+  "Australia", "Jamaica", "Haiti", "Honduras", "El Salvador", "Guatemala", "Costa Rica", "Panama", "Ecuador", "Peru",
+  "Chile", "Uruguay", "Venezuela", "Ireland", "Scotland", "Wales", "Poland", "Croatia", "Serbia", "Other"
+];
+
 interface Props {
   onSubmit: (profile: PlayerProfile) => void;
   isLoading: boolean;
@@ -85,6 +101,65 @@ const LeagueMultiSelect = ({ selected, onChange }: { selected: YouthLeague[], on
   );
 };
 
+const NationalityMultiSelect = ({ selected, onChange }: { selected: string[], onChange: (nations: string[]) => void }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleNationality = (nation: string) => {
+    if (selected.includes(nation)) {
+      onChange(selected.filter(n => n !== nation));
+    } else {
+      onChange([...selected, nation]);
+    }
+  };
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-white dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700/50 rounded-lg p-2.5 text-sm text-left text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all hover:border-slate-400 dark:hover:border-slate-600 flex justify-between items-center group"
+      >
+        <span className="truncate block pr-6">
+          {selected.length > 0 
+            ? selected.join(', ') 
+            : <span className="text-slate-400 dark:text-slate-500">Select Nationality...</span>}
+        </span>
+        <ChevronsUpDown className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 absolute right-2.5" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+          {NATIONALITIES.map((nation) => (
+            <div
+              key={nation}
+              onClick={() => toggleNationality(nation)}
+              className="flex items-center px-3 py-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0"
+            >
+              <div className={`w-4 h-4 rounded border flex items-center justify-center mr-3 transition-colors ${selected.includes(nation) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950'}`}>
+                {selected.includes(nation) && <Check className="w-3 h-3 text-white" />}
+              </div>
+              <span className={`text-sm ${selected.includes(nation) ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-500 dark:text-slate-400'}`}>
+                {nation}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // DEMO DATA PRESETS (Kept same as provided)
 const DEMO_PROFILES: Record<string, Partial<PlayerProfile>> = {
   "Blue Chip D1 (MLS NEXT)": {
@@ -102,28 +177,28 @@ const DEMO_PROFILES: Record<string, Partial<PlayerProfile>> = {
     seasons: [{ year: 2024, teamName: 'Mustang SC', league: ['ECNL'], minutesPlayedPercent: 85, mainRole: 'Key_Starter', goals: 3, assists: 1, honors: '1st Team All-Conference' }]
   },
   "High Academic D3 (ECNL RL)": {
-    firstName: 'Emma', lastName: 'Davis', gender: 'Female', position: 'DM', gradYear: 2025,
+    firstName: 'Emma', lastName: 'Davis', gender: 'Female', position: 'CDM', gradYear: 2025,
     experienceLevel: 'Youth_Club_Only', videoLink: true, coachesContacted: 40, responsesReceived: 12, offersReceived: 2,
     academics: { graduationYear: 2025, gpa: 4.0, testScore: '1450 SAT' },
     athleticProfile: { speed: 'Average', strength: 'Average', endurance: 'Above_Average', workRate: 'Top_10_Percent', technical: 'Above_Average', tactical: 'Top_10_Percent' },
     seasons: [{ year: 2024, teamName: 'Crossfire', league: ['ECNL_RL'], minutesPlayedPercent: 95, mainRole: 'Key_Starter', goals: 2, assists: 6, honors: 'Scholar Athlete' }]
   },
   "D2/NAIA Target (NPL/USYS)": {
-    firstName: 'Carlos', lastName: 'Mendez', gender: 'Male', position: 'WING', gradYear: 2026,
+    firstName: 'Carlos', lastName: 'Mendez', gender: 'Male', position: 'LW', gradYear: 2026,
     experienceLevel: 'Youth_Club_Only', videoLink: true, coachesContacted: 10, responsesReceived: 1, offersReceived: 0,
     academics: { graduationYear: 2026, gpa: 2.8, testScore: '' },
     athleticProfile: { speed: 'Top_10_Percent', strength: 'Average', endurance: 'Above_Average', workRate: 'Above_Average', technical: 'Above_Average', tactical: 'Average' },
     seasons: [{ year: 2024, teamName: 'Local Club', league: ['Elite_Local'], minutesPlayedPercent: 80, mainRole: 'Key_Starter', goals: 12, assists: 4, honors: 'Team MVP' }]
   },
   "JUCO Route (Academic Risk)": {
-    firstName: 'Jayden', lastName: 'Williams', gender: 'Male', position: '9', gradYear: 2025,
+    firstName: 'Jayden', lastName: 'Williams', gender: 'Male', position: 'ST', gradYear: 2025,
     experienceLevel: 'Youth_Club_Only', videoLink: true, coachesContacted: 5, responsesReceived: 0, offersReceived: 0,
     academics: { graduationYear: 2025, gpa: 2.1, testScore: '' },
     athleticProfile: { speed: 'Elite', strength: 'Elite', endurance: 'Average', workRate: 'Average', technical: 'Top_10_Percent', tactical: 'Above_Average' },
     seasons: [{ year: 2024, teamName: 'Top Academy', league: ['MLS_NEXT'], minutesPlayedPercent: 70, mainRole: 'Key_Starter', goals: 15, assists: 2, honors: 'Top Scorer' }]
   },
   "High School Star (No Club)": {
-    firstName: 'Sarah', lastName: 'Johnson', gender: 'Female', position: 'AM', gradYear: 2026,
+    firstName: 'Sarah', lastName: 'Johnson', gender: 'Female', position: 'CAM', gradYear: 2026,
     experienceLevel: 'High_School_Varsity', videoLink: true, coachesContacted: 0, responsesReceived: 0, offersReceived: 0,
     academics: { graduationYear: 2026, gpa: 3.5, testScore: '1200' },
     athleticProfile: { speed: 'Top_10_Percent', strength: 'Average', endurance: 'Average', workRate: 'Average', technical: 'Top_10_Percent', tactical: 'Average' },
@@ -144,7 +219,7 @@ const DEMO_PROFILES: Record<string, Partial<PlayerProfile>> = {
     seasons: [{ year: 2024, teamName: 'Big Club', league: ['MLS_NEXT'], minutesPlayedPercent: 10, mainRole: 'Bench', goals: 0, assists: 0, honors: '' }]
   },
   "The Ghost (No Video)": {
-    firstName: 'Chris', lastName: 'Invisible', gender: 'Male', position: 'WB', gradYear: 2026,
+    firstName: 'Chris', lastName: 'Invisible', gender: 'Male', position: 'RB', gradYear: 2026,
     experienceLevel: 'Youth_Club_Only', videoLink: false, coachesContacted: 0, responsesReceived: 0, offersReceived: 0,
     academics: { graduationYear: 2026, gpa: 3.5, testScore: '' },
     athleticProfile: { speed: 'Elite', strength: 'Average', endurance: 'Top_10_Percent', workRate: 'Elite', technical: 'Above_Average', tactical: 'Average' },
@@ -489,15 +564,23 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
             />
           </div>
           <div>
-            <Label>State / Region</Label>
-            <input
-              type="text"
-              placeholder="e.g. SoCal, TX"
-              required
-              className={inputClass}
-              value={profile.state}
-              onChange={(e) => handleInputChange('state', e.target.value)}
-            />
+            <Label>State</Label>
+            <div className="relative">
+              <select
+                required
+                className="w-full bg-white dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700/50 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all hover:border-slate-400 dark:hover:border-slate-600 appearance-none pr-10"
+                value={profile.state}
+                onChange={(e) => handleInputChange('state', e.target.value)}
+              >
+                <option value="">Select State...</option>
+                {US_STATES.map(state => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-3 pointer-events-none text-slate-500">
+                <ChevronRight className="w-4 h-4 rotate-90" />
+              </div>
+            </div>
           </div>
         </div>
         
@@ -505,12 +588,9 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
            <div>
             <Label>Nationality / Citizenship</Label>
-            <input
-              type="text"
-              placeholder="e.g. USA, Germany"
-              className={inputClass}
-              value={profile.citizenship}
-              onChange={(e) => handleInputChange('citizenship', e.target.value)}
+            <NationalityMultiSelect
+              selected={profile.citizenship ? profile.citizenship.split(', ').filter(Boolean) : []}
+              onChange={(nations) => handleInputChange('citizenship', nations.join(', '))}
             />
           </div>
           <div>
