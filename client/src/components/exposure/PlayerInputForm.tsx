@@ -812,7 +812,7 @@ const PlayerInputForm = ({ onSubmit, isLoading }: Props) => {
               </p>
            </div>
            
-           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 items-end">
               <div>
                 <Label>Coaches Emailed</Label>
                 <input

@@ -202,7 +202,7 @@ const Ticker = () => {
   return (
     <div className="w-full bg-white border-y border-neutral-100 py-6 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 mb-4">
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-400">Recent Moves</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 text-center">Recent Moves</h3>
       </div>
       <div className="relative w-full flex overflow-hidden whitespace-nowrap">
         <div className="animate-marquee flex gap-12 items-center">
